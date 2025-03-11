@@ -1,7 +1,0 @@
-﻿  JJ.cpp
-C:\DevStudy\CppStudy\DataStructure\JJ\JJ.cpp(15,26): error C2248: 'jj::jj': private 멤버('jj' 클래스에서 선언)에 액세스할 수 없습니다.
-      C:\DevStudy\CppStudy\DataStructure\JJ\JJ.cpp(7,5):
-      'jj::jj' 선언을 참조하십시오.
-      C:\DevStudy\CppStudy\DataStructure\JJ\JJ.cpp(6,7):
-      'jj' 선언을 참조하십시오.
-  
