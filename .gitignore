@@ -1,3 +1,18 @@
+# Visual Studio 관련 파일
+.vs/
+*.suo
+*.user
+*.cache
+*.ilk
+*.pdb
+*.obj
+*.ipch
+*.log
+*.tlog
+*.VC.db
+*.db-shm
+*.db-wal
+
 # Prerequisites
 *.d
 
