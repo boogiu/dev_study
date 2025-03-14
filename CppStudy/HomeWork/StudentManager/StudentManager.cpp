@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include "function.h"
 #include "CStudent.h"
 #include "CStudentList.h"
 
@@ -6,18 +7,14 @@ int main()
 {
 	CStudentList studentLsit;
 	bool notSet = true;
-	studentLsit.AddStudent();
-	studentLsit.AddStudent();
-	studentLsit.AddStudent();
-
+	
 	while (true) {
 		cout << "=================" << endl;
 		cout << "1. 전체 보기" << endl;
 		cout << "2. 학생 검색" << endl;
 		cout << "3. 학생 추가" << endl;
 		cout << "4. 종료" << endl;
-		int iSelect(0);
-		cin >> iSelect;
+		int iSelect = SafeCIn(1, 4);
 
 		if (cin.fail()) {
 			cout << "잘못 입력했습니다." << endl;

@@ -1,14 +1,27 @@
 #include "CStudent.h"
+#include "function.h"
 
 
-CStudent::CStudent(const char* _name)
+CStudent::CStudent()
 	:m_cName(nullptr), m_iKor(0), m_iEng(0), m_iMath(0)
 {
-		if (_name) {
-			int length = strlen(_name);
-			m_cName = new char[length + 1];
-			strcpy_s(m_cName, length + 1, _name);
-		}
+	cout << "=======================" << endl;
+	cout << "학생의 이름은? : ";
+	
+	m_cName=SafeCharIn();
+
+	cout << endl;
+	cout << "국어 점수 : ";
+	m_iKor= SafeCIn(0,100);
+	cout << endl;
+
+	cout << "수학 점수 : ";
+	m_iEng = SafeCIn(0,100);
+	cout << endl;
+
+	cout << "영어 점수 : ";
+	m_iMath = SafeCIn(0,100);
+	cout << endl;
 }
 
 CStudent::CStudent(const char* _name, int i_kor, int i_eng, int i_math)
@@ -65,7 +78,7 @@ float CStudent::getAverage() const
 	return static_cast<float>(m_iKor + m_iEng + m_iMath) / 3.f;;
 }
 
-char* CStudent::getName() const
+const char* CStudent::getName() const
 {
 	return m_cName;
 }

@@ -4,15 +4,15 @@
 #include "pch.h"
 #include "CStudent.h"
 
+class CStudent;
+
 class CStudentList
 {
 public:
 	CStudentList();
-	CStudentList(CStudent* student);
 	~CStudentList();
 
 public:
-	void SetList();
 	void PrintAll();
 	void PrintOne(CStudent* student);
 	void FindStudent(const char* _name);
@@ -22,7 +22,6 @@ private:
 	int m_Capacity;
 	int m_Count;
 	CStudent** m_StudentArr;
-	int SafeCIn();
 };
 
 #endif // !_CStudentList_

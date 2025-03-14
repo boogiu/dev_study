@@ -30,6 +30,9 @@
     <ClCompile Include="CStudentList.cpp">
       <Filter>CStudentList</Filter>
     </ClCompile>
+    <ClCompile Include="function.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -40,6 +43,9 @@
     </ClInclude>
     <ClInclude Include="CStudentList.h">
       <Filter>CStudentList</Filter>
+    </ClInclude>
+    <ClInclude Include="function.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
