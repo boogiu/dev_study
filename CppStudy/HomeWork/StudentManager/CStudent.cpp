@@ -7,20 +7,20 @@ CStudent::CStudent()
 {
 	cout << "=======================" << endl;
 	cout << "학생의 이름은? : ";
-	
-	m_cName=SafeCharIn();
+
+	m_cName = SafeCharIn();
 
 	cout << endl;
 	cout << "국어 점수 : ";
-	m_iKor= SafeCIn(0,100);
+	m_iKor = SafeCIn(0, 100);
 	cout << endl;
 
 	cout << "수학 점수 : ";
-	m_iEng = SafeCIn(0,100);
+	m_iEng = SafeCIn(0, 100);
 	cout << endl;
 
 	cout << "영어 점수 : ";
-	m_iMath = SafeCIn(0,100);
+	m_iMath = SafeCIn(0, 100);
 	cout << endl;
 }
 

@@ -6,8 +6,7 @@
 int main()
 {
 	CStudentList studentLsit;
-	bool notSet = true;
-	
+
 	while (true) {
 		cout << "=================" << endl;
 		cout << "1. 전체 보기" << endl;
@@ -19,7 +18,7 @@ int main()
 		if (cin.fail()) {
 			cout << "잘못 입력했습니다." << endl;
 			cin.clear();
-			cin.ignore(100,'\n');
+			cin.ignore(100, '\n');
 			continue;
 		}
 		system("cls");
@@ -28,19 +27,22 @@ int main()
 		case 1:
 			studentLsit.PrintAll();
 			break;
+
 		case 2: {
 			char szName[32];
 			cout << ">>>검색할 학생의 이름을 입력해주세요" << endl;
 			cin >> szName;
 			studentLsit.FindStudent(szName);
 		}
-			break;
+			  break;
+
 		case 3:
 			studentLsit.AddStudent();
 			break;
 
 		case 4:
 			return 0;
+
 		default:
 			break;
 		}
@@ -48,5 +50,5 @@ int main()
 		system("cls");
 	}
 	studentLsit.PrintAll();
-	
+
 }

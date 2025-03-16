@@ -4,8 +4,8 @@
 #include "pch.h"
 #include "CStudentList.h"
 
-enum SUBJECT{
-	KOR=1,
+enum SUBJECT {
+	KOR = 1,
 	ENG,
 	MATH,
 	NONE
@@ -34,7 +34,6 @@ private:
 	int m_iMath;
 
 	friend class CStudentList;
-
 };
 
 #endif // !1

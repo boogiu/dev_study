@@ -1,14 +1,15 @@
 #include "CStudentList.h"
 
 CStudentList::CStudentList()
-	:m_StudentArr(nullptr), m_Capacity(5), m_Count(0)
+	:m_StudentArr(nullptr), m_Capacity(5), m_Count(0)  //이단계가 최종 생성 단계. -> 멤버함수 선언과 똑같이
 {
 	m_StudentArr = new CStudent * [m_Capacity]; //초기 용량 5명
 	
 	AddStudent();
 	AddStudent();
-	AddStudent();
 
+	//AddStudent(); // 생성자에서 함수를 부르면 굉장히 안좋다!!
+	//이건 왜 되지?
 }
 
 CStudentList::~CStudentList()
@@ -25,13 +26,7 @@ CStudentList::~CStudentList()
 void CStudentList::PrintAll()
 {
 	for (int i = 0;i < m_Count; ++i) {
-		cout << "=====================================" << endl;
-		cout << "학생 :" << m_StudentArr[i]->getName() << endl;
-		cout << "국어 :" << m_StudentArr[i]->getScore(KOR) << endl;
-		cout << "영어 :" << m_StudentArr[i]->getScore(ENG) << endl;
-		cout << "수학 :" << m_StudentArr[i]->getScore(MATH) << endl;
-		cout << "평균 :" << m_StudentArr[i]->getAverage() << endl;
-		cout << "=====================================" << endl;
+		PrintOne(m_StudentArr[i]);
 	}
 }
 
@@ -44,7 +39,7 @@ void CStudentList::PrintOne(CStudent* student)
 	cout << "수학 :" << student->getScore(MATH) << endl;
 	cout << "평균 :" << student->getAverage() << endl;
 	cout << "=====================================" << endl;
-}
+} //student 클래 스안으로 
 
 void CStudentList::FindStudent(const char* _name)
 {
@@ -57,13 +52,14 @@ void CStudentList::FindStudent(const char* _name)
 		}
 	}
 	cout << "===========================" << endl;
-	cout << "찾는 학생" <<iCount<<"명 검색 됨." << endl;
+	cout << "찾는 학생" << iCount << "명 검색 됨." << endl;
 }
 
 void CStudentList::AddStudent()
 {
 	if (m_Count == m_Capacity) {
 		CStudent** tmp = new CStudent * [m_Capacity * 2]; //용량이 이미 가득찼으면 메모리 재할당
+		//memcpy 써도 됨
 		for (int i = 0; i < m_Count; ++i) {
 			tmp[i] = m_StudentArr[i];
 		}
@@ -72,7 +68,7 @@ void CStudentList::AddStudent()
 		m_StudentArr = tmp;
 		m_Capacity *= 2;
 	}
-	
+
 	m_StudentArr[m_Count] = new CStudent(); //하나 생성
 	++m_Count;
 }

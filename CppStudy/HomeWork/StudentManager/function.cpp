@@ -20,6 +20,7 @@ int SafeCIn(int _first, int _last) // 범위 지정 :: 이상 이하
 			cout << "다시 입력해주세요." << endl;
 			continue;
 		}
+
 		cin.ignore(100, '\n'); // 남아 있는 입력 제거
 		break;
 	}
@@ -31,9 +32,7 @@ char* SafeCharIn() {
 	char* result;
 
 	while (true) {
-
 		cin.getline(_tmp, 32);
-
 		if (cin.fail()) { // 입력 길이가 31자를 초과했을 경우
 			cout << "입력 가능한 범위를 벗어났습니다. (최대 31자)\n";
 			cout << "다시 입력해주세요.\n";
@@ -44,7 +43,7 @@ char* SafeCharIn() {
 			break;
 		}
 	}
-	
+
 	//cin.ignore(100, '\n'); getLine은 \n전까지 읽기 때문에
 	//정상 작동 이후에 ignore해주면 엔터가 먹히지 않는 상황이 발생할 수 잇음.
 
