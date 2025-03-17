@@ -20,7 +20,7 @@ void CSceneManager::Initialize()
 	sceneArr[1] = new CSelectScene;
 
 }
-
+//
 void CSceneManager::Render()
 {
 	system("cls");
