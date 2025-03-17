@@ -2,6 +2,7 @@
 #include "CGameManager.h"
 
 SCENE nowScene;
+CBroker broker;
 
 int main()
 {
@@ -11,7 +12,7 @@ int main()
 
 	while (true) {//프로그램의 구동 : while을 통한 지속 실행
 
-		//게임의 진행 : 게임의 관리자들을 생성하고 단계를 밟아감.
+		//게임의 진행 :  단계를 밟아감.
 		gameManager.Render();
 
 		if (nowScene == END) {

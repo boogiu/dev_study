@@ -43,6 +43,12 @@
     <Filter Include="04. Object\Player">
       <UniqueIdentifier>{d760b6a8-aa43-45ff-82b7-a82902dd4a8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Scene\VillageScene">
+      <UniqueIdentifier>{04c5d52a-332e-4be4-be44-de8803f0fc7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Manager\BrokerManager">
+      <UniqueIdentifier>{2a05ddab-9cd9-40cc-b1c9-35821c34bad2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="function.cpp">
@@ -72,6 +78,12 @@
     <ClCompile Include="CPlayer.cpp">
       <Filter>04. Object\Player</Filter>
     </ClCompile>
+    <ClCompile Include="CVillageScene.cpp">
+      <Filter>03.Scene\VillageScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CBroker.cpp">
+      <Filter>02. Manager\BrokerManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -97,6 +109,12 @@
     </ClInclude>
     <ClInclude Include="CPlayer.h">
       <Filter>04. Object\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CVillageScene.h">
+      <Filter>03.Scene\VillageScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CBroker.h">
+      <Filter>02. Manager\BrokerManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -25,10 +25,32 @@ void CSelectScene::Render()
 
 	switch (iSelect)
 	{
+	case 1:
+		broker.DealPC(1);
+		cout << "전사를 선택하셨습니다." << endl;
+		break;
+
+	case 2:
+		broker.DealPC(1);
+		cout << "마법사를 선택하셨습니다." << endl;
+		break;
+
+	case 3:
+		broker.DealPC(1);
+		cout << "도적을 선택하셨습니다." << endl;
+		break;
+
+	case 4:
+		broker.DealPC(1);
+		cout << "궁수를 선택하셨습니다." << endl;
+		break;
+
 	default:
+		cout << "뭐를 선택하긴 하셨군요!" << endl;
 		break;
 	}
-
+	system("pause");
+	nowScene = VILLAGE;
 }
 
 void CSelectScene::Release()

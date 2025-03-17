@@ -12,6 +12,15 @@ public:
 	void Update();
 	void Render();
 	void Release();
+
+	void SetName();
+	char* GetName();
+
+	void SetClass(int _class);
+	void GetClass();
+
+private :
+	char* cName;
 };
 
 #endif // !_PLAYER_

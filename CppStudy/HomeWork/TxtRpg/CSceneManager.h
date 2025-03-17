@@ -3,6 +3,7 @@
 #include "CScene.h"
 #include "CStartScene.h"
 #include "CSelectScene.h"
+#include "CVillageScene.h"
 
 class CSceneManager
 {

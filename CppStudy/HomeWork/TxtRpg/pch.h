@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include "function.h"
+#include "CBroker.h"
 
 using namespace std;
 
@@ -15,9 +16,11 @@ enum SCENE
 {
 	START,
 	SELECT,
+	VILLAGE,
 	END
 };
 
 extern SCENE nowScene;
+extern CBroker broker;
 
 #endif //PCH_H
