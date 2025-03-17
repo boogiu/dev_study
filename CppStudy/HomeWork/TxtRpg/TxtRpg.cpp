@@ -1,28 +1,22 @@
 ﻿#include "pch.h"
-#include "GamePlay.h"
+#include "CGameManager.h"
+
+SCENE nowScene;
 
 int main()
 {
-	GamePlay mainGame;
-	mainGame.Initialize();
+	//게임의 내부를 구성할 Manager객체 생성
+	CGameManager gameManager;
+	gameManager.Initialize();
 
-	while (true) 
-	{
-		//게임 진행
-		if (GamePlay::START == mainGame.GetGameState()) {
-			mainGame.Update();
-			mainGame.Render();
-		}
+	while (true) {//프로그램의 구동 : while을 통한 지속 실행
 
-		//게임 일시 중지
-		else if (GamePlay::PAUSE == mainGame.GetGameState()) {
-			continue;
-		}
+		//게임의 진행 : 게임의 관리자들을 생성하고 단계를 밟아감.
+		gameManager.Render();
 
-		//게임 중단
-		else if (GamePlay::END == mainGame.GetGameState()) {
+		if (nowScene == END) {
 			break;
 		}
-
 	}
+	gameManager.Release();
 }
