@@ -1,32 +1,28 @@
-#ifndef _SCENE_
-#define _SCENE_
+#ifndef _SCENEMANAGER_
+#define _SCENEMANAGER_
+#include "CScene.h"
+#include "CStartScene.h"
+#include "CSelectScene.h"
 
 class CSceneManager
 {
-public:
-	enum SCENE {
-		MAIN,
-		START,
-		VILLAGE,
-		SHOP,
-		MOTEL,
-		BATTLE,
-		END
-	};
-public:
+
+public: 
 	CSceneManager();
 	~CSceneManager();
 
+public:
 	void Initialize();
-	void Render(SCENE _scene);
+	void Render();
 	void Update();
 	void Release();
-	SCENE SetScene(SCENE _scene) { scene = _scene; }
-	SCENE GetScene() { return scene; }
+
 private:
-	SCENE scene;
+	//필요 객체 : Scene들의 배열.
+	CScene** sceneArr;  // 각 scene을 생성하고(포인터) -> 그 포인터들을 관리할 배열을 생성(포인터)
+
 };
 
-#endif // !_SCENE_
+#endif // !_SCENEMANAGER_
 
 
