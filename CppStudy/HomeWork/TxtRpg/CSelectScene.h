@@ -5,7 +5,7 @@
 class CSelectScene  : public CScene
 {
 public:
-	CSelectScene() = default;
+	CSelectScene();
 	~CSelectScene() override;
 
 public:

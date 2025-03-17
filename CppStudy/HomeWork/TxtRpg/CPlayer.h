@@ -1,11 +1,11 @@
 #ifndef _PLAYER_
 #define _PLAYER_
+#include "pch.h"
 
 class CPlayer
 {
-public :
-	CPlayer();
-	~CPlayer();
+
+	SINGLETON(CPlayer)
 
 public:
 	void Initialize();
@@ -17,10 +17,20 @@ public:
 	char* GetName();
 
 	void SetClass(int _class);
-	void GetClass();
+	int GetGold();
+	int GetAtk() { return m_iAtk; }
+	int GetHp() { return m_iNowHp; }
+
+	void GetDamage(int Dmg);
 
 private :
-	char* cName;
+	char* m_cName;
+	int m_iGold;
+	
+	int m_iMaxHp;
+	int m_iNowHp;
+
+	int m_iAtk;
 };
 
 #endif // !_PLAYER_

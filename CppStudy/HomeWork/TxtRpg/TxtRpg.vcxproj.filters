@@ -46,8 +46,23 @@
     <Filter Include="03.Scene\VillageScene">
       <UniqueIdentifier>{04c5d52a-332e-4be4-be44-de8803f0fc7d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Manager\BrokerManager">
-      <UniqueIdentifier>{2a05ddab-9cd9-40cc-b1c9-35821c34bad2}</UniqueIdentifier>
+    <Filter Include="03.Scene\ShopScene">
+      <UniqueIdentifier>{903ab727-fab5-4346-b085-9688c518a2ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Scene\MotelScene">
+      <UniqueIdentifier>{c80a9d6e-ecfa-4a80-b243-ad34e058db15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Scene\BattleScene">
+      <UniqueIdentifier>{91347443-1325-48c4-9a06-b9eba56c657b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Object\Monster">
+      <UniqueIdentifier>{95135679-a5db-434c-9dad-079f9adb905f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05.Logic">
+      <UniqueIdentifier>{e4b53532-9a27-4516-b5cf-0d35e9dc7ec7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05.Logic\Fight">
+      <UniqueIdentifier>{5c772d8c-a91b-45d3-ad81-c6b7428b37f3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -81,8 +96,17 @@
     <ClCompile Include="CVillageScene.cpp">
       <Filter>03.Scene\VillageScene</Filter>
     </ClCompile>
-    <ClCompile Include="CBroker.cpp">
-      <Filter>02. Manager\BrokerManager</Filter>
+    <ClCompile Include="CShopScene.cpp">
+      <Filter>03.Scene\ShopScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CBattleScene.cpp">
+      <Filter>03.Scene\BattleScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CMonster.cpp">
+      <Filter>04. Object\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="CFight.cpp">
+      <Filter>05.Logic\Fight</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,8 +137,20 @@
     <ClInclude Include="CVillageScene.h">
       <Filter>03.Scene\VillageScene</Filter>
     </ClInclude>
-    <ClInclude Include="CBroker.h">
-      <Filter>02. Manager\BrokerManager</Filter>
+    <ClInclude Include="CShopScene.h">
+      <Filter>03.Scene\ShopScene</Filter>
+    </ClInclude>
+    <ClInclude Include="define.h">
+      <Filter>00.Common</Filter>
+    </ClInclude>
+    <ClInclude Include="CBattleScene.h">
+      <Filter>03.Scene\BattleScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CMonster.h">
+      <Filter>04. Object\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="CFight.h">
+      <Filter>05.Logic\Fight</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

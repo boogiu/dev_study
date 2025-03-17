@@ -135,11 +135,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CBroker.cpp" />
+    <ClCompile Include="CBattleScene.cpp" />
+    <ClCompile Include="CFight.cpp" />
     <ClCompile Include="CGameManager.cpp" />
+    <ClCompile Include="CMonster.cpp" />
     <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="CScene.cpp" />
     <ClCompile Include="CSelectScene.cpp" />
+    <ClCompile Include="CShopScene.cpp" />
     <ClCompile Include="CStartScene.cpp" />
     <ClCompile Include="CVillageScene.cpp" />
     <ClCompile Include="function.cpp" />
@@ -148,16 +151,20 @@
     <ClCompile Include="TxtRpg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CBroker.h" />
+    <ClInclude Include="CBattleScene.h" />
+    <ClInclude Include="CFight.h" />
     <ClInclude Include="CGameManager.h" />
+    <ClInclude Include="CMonster.h" />
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CScene.h" />
     <ClInclude Include="CSelectScene.h" />
+    <ClInclude Include="CShopScene.h" />
     <ClInclude Include="CStartScene.h" />
     <ClInclude Include="CVillageScene.h" />
     <ClInclude Include="function.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="CSceneManager.h" />
+    <ClInclude Include="define.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,7 +2,7 @@
 #include "pch.h"
 
 CPlayer::CPlayer()
-	:cName(nullptr)
+	:m_cName(nullptr),m_iGold(0),m_iMaxHp(0),m_iNowHp(0),m_iAtk(0)
 {
 }
 
@@ -12,11 +12,15 @@ CPlayer::~CPlayer()
 
 void CPlayer::Initialize()
 {
-	broker.SetPlayer(this); //브로커에게 자신 전달
+	m_iGold = 100;
+	m_iAtk = 10;
+	m_iMaxHp = 100;
+	m_iNowHp = 100;
 }
 
 void CPlayer::Update()
 {
+
 }
 
 void CPlayer::Render()
@@ -25,28 +29,60 @@ void CPlayer::Render()
 
 void CPlayer::Release()
 {
-	delete[] cName;
+	delete[] m_cName;
 }
 
 void CPlayer::SetName()
 {
-	if (cName != nullptr) return;
-	cout << "누군가 당신의 이름을 물어봅니다" << endl;
-	cout << "당신을 무엇이라고 소개하시겠습니까?" << endl;
-	cName = SafeChar();
+	if (m_cName != nullptr) return;
+	m_cName = SafeChar();
 }
 
 char*  CPlayer::GetName()
 {
-	if (cName == nullptr) return nullptr;
-
-	return cName;
+	if (m_cName == nullptr) return nullptr;
+	return m_cName;
 }
 
 void CPlayer::SetClass(int _class)
 {
+	switch (_class)
+	{
+	case 1:
+		m_iGold = 100;
+		m_iAtk = 10;
+		m_iMaxHp = 100;
+		m_iNowHp = m_iMaxHp;
+		break;
+	case 2:
+		m_iGold = 100;
+		m_iAtk = 10;
+		m_iMaxHp = 100;
+		m_iNowHp = m_iMaxHp;
+		break;
+	case 3:
+		m_iGold = 100;
+		m_iAtk = 10;
+		m_iMaxHp = 100;
+		m_iNowHp = m_iMaxHp;
+		break;
+	case 4:
+		m_iGold = 100;
+		m_iAtk = 10;
+		m_iMaxHp = 100;
+		m_iNowHp = m_iMaxHp;
+		break;
+	default:
+		break;
+	}
 }
 
-void CPlayer::GetClass()
+int CPlayer::GetGold()
 {
+	return m_iGold;
+}
+
+void CPlayer::GetDamage(int Dmg)
+{
+	m_iNowHp -= Dmg;
 }

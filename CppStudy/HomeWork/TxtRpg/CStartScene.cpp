@@ -1,5 +1,6 @@
 #include "CStartScene.h"
 #include "pch.h"
+#include "CSceneManager.h"
 
 CStartScene::CStartScene()
 {
@@ -26,10 +27,9 @@ void CStartScene::Render()
 	switch (iSelect)
 	{
 	case 1:
-		nowScene = SCENE::SELECT;
+		CSceneManager::GetInstance().ChangerScene(SCENE::SELECT);
 		break;
-	case 2:
-		nowScene = SCENE::END;
+	case 2:		
 		break;
 	default:
 		break;

@@ -30,3 +30,11 @@ char *  CBroker::DealPN()
 	}
 	return player->GetName();
 }
+
+void CBroker::DealPG()
+{
+	cout << "===============" << endl;
+	cout << "¼ÒÁö±Ý : " << player->GetGold() << endl;
+	cout << "===============" << endl;
+
+}

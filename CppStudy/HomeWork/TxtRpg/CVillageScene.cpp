@@ -1,5 +1,7 @@
 #include "CVillageScene.h"
 #include "pch.h"
+#include "CSceneManager.h"
+#include "CPlayer.h"
 
 CVillageScene::CVillageScene()
 {
@@ -20,16 +22,20 @@ void CVillageScene::Update()
 void CVillageScene::Render()
 {
 	cout << "당신은 마을에 당도하였습니다." << endl;
-	char* tmp = broker.DealPN();
-	
-	cout << "================================" << endl;
-	if (tmp ==nullptr) {
-		cout << broker.DealPN() << "이라.... 이곳에는 처음인가보군. 반갑네" << endl;
+	system("cls");
+
+	if (!CPlayer::GetInstance().GetName()) {
+		cout << "늙수구레하게 생긴 노인이 당신에게 다가와 이름을 묻습니다." << endl;
+		cout << "================================" << endl;
+		cout << "김촌장 : " << endl;
+		cout << "처음 보는 청년이구만, 이름이 뭔가?" << endl;
+		cout << "================================" << endl;
+		CPlayer::GetInstance().SetName();
+		cout << "당신은 스스로를 \""<< CPlayer::GetInstance().GetName()<<"\"라고 소개했다." << endl;
+
 	}
-	else {
-		cout << broker.DealPN() <<"로군! 또 보는구만 그래!" << endl;
-	}
-	cout << broker.DealPN() << "그래서 무엇을 하고자 하는가?" << endl;
+	cout << "김촌장 : " << endl;
+	cout << "아," << CPlayer::GetInstance().GetName() << "이로군. 그래!  무슨 일인가?" << endl;
 	cout << "================================" << endl;
 
 	cout << "1. 구매할 물건이 있다." << endl;
@@ -41,22 +47,24 @@ void CVillageScene::Render()
 	switch (iSelect)
 	{
 	case 1:
-		cout << "상점" << endl;
-
+		cout << "그렇군. 허허, 상점은 저기 왼쪽 골목에 있으니 참고하게." << endl;
+		CSceneManager::GetInstance().ChangerScene(SCENE::SHOP);
 		break;
 
 	case 2:
-		cout << "여관" << endl;
+		cout << "그렇군. 허허, 여관은 저기 오른쪽 골목에 있으니 참고하게." << endl;
+		CSceneManager::GetInstance().ChangerScene(SCENE::MOTEL);
 		break;
 
 	case 3:
-		cout << "사냥터" << endl;
+		cout << "그렇군. 허허, 앞으로 쭈욱 나아가게. 몸 조심하고 말이야." << endl;
+		CSceneManager::GetInstance().ChangerScene(SCENE::BATTLE);
 		break;
 
-	case 4:
-		cout << "전투 or 종료" << endl;
+	case 4:		
+		cout << "이런 싸가지 없는 놈의 애새끼!" << endl;
+		CSceneManager::GetInstance().ChangerScene(SCENE::BATTLE);
 		break;
-
 	default:
 		break;
 	}

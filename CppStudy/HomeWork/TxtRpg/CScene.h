@@ -1,5 +1,6 @@
 #ifndef _SCENE_
 #define _SCENE_
+#include "pch.h"
 
 class CScene // 해당 씬은 부모의 씬으로 활용
 {
