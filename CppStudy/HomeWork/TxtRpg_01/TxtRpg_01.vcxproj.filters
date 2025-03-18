@@ -43,6 +43,12 @@
     <Filter Include="04.Object\Monster">
       <UniqueIdentifier>{7b66c173-7686-4818-b008-23a59db1e680}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.Scene\ShopScene">
+      <UniqueIdentifier>{62bbe83e-9f08-499f-8fd7-6dfed2a9e101}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Object\Item">
+      <UniqueIdentifier>{54d3e76a-b621-402a-b6d3-b57d1ad4b10d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

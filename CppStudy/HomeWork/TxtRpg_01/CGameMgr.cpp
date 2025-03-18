@@ -28,14 +28,22 @@ void CGameMgr::Init()
 	m_SceneArr[MAIN] = new CMainScene;
 	m_SceneArr[FIELD] = new CFieldScene;
 
+	for (int i = 0; i < SCENE_ENUM::END; ++i) {
+		m_SceneArr[i]->Init();
+	}
+
 	m_player = new CPlayer;
+	m_player->Init();
 }
 
 bool CGameMgr::Render()
 {
+	if (m_nowScene == SCENE_ENUM::END) return false;
+
 	m_SceneArr[m_nowScene]->Render();
 	system("cls");
-	return GameOn;
+	
+	return true;
 }
 
 void CGameMgr::Release()
@@ -44,6 +52,8 @@ void CGameMgr::Release()
 	if (!m_player) return;
 
 	for (int i = 0; i < SCENE_ENUM::END; ++i) {
+		if (!m_SceneArr[i]) continue;
+
 		m_SceneArr[i]->Release();
 		SAFE_DELETE(m_SceneArr[i]);
 	}

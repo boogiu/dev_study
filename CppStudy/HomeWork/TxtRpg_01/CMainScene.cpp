@@ -1,4 +1,6 @@
 #include "CMainScene.h"
+#include "pch.h"
+
 #include "CGameMgr.h"
 #include "CPlayer.h"
 
@@ -51,14 +53,13 @@ void CMainScene::AskDirection()
 		switch (SafeInt(1, 2))
 		{
 		case 1:
-			cout << "사냥터 입장" << endl;
+			ChangeScene(SCENE_ENUM::FIELD);
 			break;
 
 		case 2:
-			cout << "게임 종료" << endl;
-			system("pause");
-			CGameMgr::GetInstance()->SetGameOn(false);
+			ChangeScene(SCENE_ENUM::END);
 			break;
+
 		default:
 			break;
 		}

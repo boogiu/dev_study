@@ -1,6 +1,5 @@
 #include "CBaseScene.h"
 #include "CGameMgr.h"
-
 CBaseScene::CBaseScene()
 {
 }

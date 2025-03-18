@@ -4,6 +4,7 @@
 
 class CPlayer;
 class CMonster;
+
 class CFieldScene : public CBaseScene
 {
 public:
@@ -16,9 +17,10 @@ public:
 	void Render() override;
 	void Release() override;
 	void MonsterPool();
-
+	int FightMonster(CPlayer* player, CMonster* monster);
 private:
 	CMonster** m_MonsterArr;
+	int m_iMonsterCount;
 };
 
 #endif // !__FIELDSCENE_H__

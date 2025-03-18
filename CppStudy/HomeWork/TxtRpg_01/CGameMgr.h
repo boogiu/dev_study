@@ -5,7 +5,6 @@
 //전방 선언
 class CBaseScene;
 class CPlayer;
-
 class CGameMgr
 {
 private: //생성자, 소멸자, 복사생성자, 대입 연산자 숨김(삭제)
@@ -31,7 +30,6 @@ public :
 	CPlayer* GetPlayer() { return m_player; }
 	SCENE_ENUM GetScene() { return m_nowScene; }
 	void SetScene(SCENE_ENUM _scene) {  m_nowScene = _scene; }
-	void SetGameOn(bool _bool) { GameOn= _bool; };
 
 private:
 	bool GameOn;
@@ -43,7 +41,6 @@ private:
 	//플레이어 데이터
 	CPlayer* m_player;
 
-	//몬스터들의 배열
 };
 #endif // !__CGAMEMGR_H__
 

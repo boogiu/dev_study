@@ -6,8 +6,8 @@ int SafeInt(int first, int last) {
 		cin >> iTmp;
 		if (iTmp > last || iTmp < first || cin.fail()) {
 			cout << "잘못 입력하셨습니다." << endl;
-			cin.ignore();
 			cin.clear();
+			cin.ignore(100, '\n');
 			continue;
 		}
 		break;

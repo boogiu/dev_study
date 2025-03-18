@@ -1,4 +1,5 @@
 #include "CStartScene.h"
+#include "pch.h"
 #include "CGameMgr.h"
 #include "CPlayer.h"
 
@@ -17,7 +18,7 @@ void CStartScene::Init()
 void CStartScene::Render()
 {
 	if (2==RenderMain()) {
-		CGameMgr::GetInstance()->SetGameOn(false);
+		ChangeScene(SCENE_ENUM::END);
 		return; 
 	}
 	SelectClass();

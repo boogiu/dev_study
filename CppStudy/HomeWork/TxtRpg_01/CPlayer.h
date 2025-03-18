@@ -1,6 +1,6 @@
 #ifndef __CPLAYER_H__
 #define __CPLAYER_H__
-#include "pch.h"
+#include "define.h"
 
 class CPlayer
 {
@@ -18,15 +18,17 @@ public:
 	void SetClass(CLASS_ENUM _class);
 	void SetName();
 	char* GetName();
+	void ShowStat();
+	//Á×À¸¸é false
+	void GetDamage(int dmg);
+	void Restore();
+	int GetAtk() { return m_pInfo.m_iAtk; }
+	bool isAlive() { return !(m_pInfo.m_iNowHp <= 0); }
 private:
 	char* m_cName;
 	CLASS_ENUM m_Class;
 	int m_iGold;
-	int m_iMaxHp;
-	int m_iNowHp;
-
-	int m_iAtk;
-
+	tagInfo m_pInfo;
 	friend class CGameMgr;
 };
 
