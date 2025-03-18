@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="00.Main">
+      <UniqueIdentifier>{274d003b-34ab-4a4b-969e-d7bffca86ef6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Manager">
+      <UniqueIdentifier>{abdad371-1812-4c0a-a181-5e6d8b730c9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.Scene">
+      <UniqueIdentifier>{83bb7363-3e3f-479a-9016-3c59a954b122}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Player">
+      <UniqueIdentifier>{0fbcb771-8437-49b4-9fa3-7f6ffb766c05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Object">
+      <UniqueIdentifier>{74dba94e-f33d-4d87-8bb0-4e9c0d66c0b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.Scene\StartScene">
+      <UniqueIdentifier>{18d0f3ff-35da-4859-8ce4-b561528a8f13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.Scene\MainScene">
+      <UniqueIdentifier>{113a9824-9c17-437b-9eac-2eaf4e537253}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00.Main\func">
+      <UniqueIdentifier>{710d9ed7-bc67-49ab-9c0a-b8fe671de666}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.Scene\FieldScene">
+      <UniqueIdentifier>{3bf8ebd3-4a16-48eb-8433-0660c7c2adaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Object\Monster">
+      <UniqueIdentifier>{7b66c173-7686-4818-b008-23a59db1e680}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>00.Main</Filter>
+    </ClInclude>
+    <ClInclude Include="define.h">
+      <Filter>00.Main</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameMgr.h">
+      <Filter>01.Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CBaseScene.h">
+      <Filter>02.Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>03.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CStartScene.h">
+      <Filter>02.Scene\StartScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CMainScene.h">
+      <Filter>02.Scene\MainScene</Filter>
+    </ClInclude>
+    <ClInclude Include="function.h">
+      <Filter>00.Main\func</Filter>
+    </ClInclude>
+    <ClInclude Include="CFieldScene.h">
+      <Filter>02.Scene\FieldScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CMonster.h">
+      <Filter>04.Object\Monster</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TxtRpg_01.cpp">
+      <Filter>00.Main</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameMgr.cpp">
+      <Filter>01.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="CBaseScene.cpp">
+      <Filter>02.Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>03.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CStartScene.cpp">
+      <Filter>02.Scene\StartScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CMainScene.cpp">
+      <Filter>02.Scene\MainScene</Filter>
+    </ClCompile>
+    <ClCompile Include="function.cpp">
+      <Filter>00.Main\func</Filter>
+    </ClCompile>
+    <ClCompile Include="CFieldScene.cpp">
+      <Filter>02.Scene\FieldScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CMonster.cpp">
+      <Filter>04.Object\Monster</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

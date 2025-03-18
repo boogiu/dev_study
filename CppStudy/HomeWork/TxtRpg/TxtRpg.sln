@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178
+VisualStudioVersion = 17.12.35707.178 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StudentManager", "StudentManager\StudentManager.vcxproj", "{1454817F-34D6-498E-98DB-5E9FEBEE04D1}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TxtRpg", "TxtRpg\TxtRpg.vcxproj", "{61964A70-8BA2-44B6-8B02-0B9FEBDFBBE6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TxtRpg", "TxtRpg.vcxproj", "{61964A70-8BA2-44B6-8B02-0B9FEBDFBBE6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,14 +13,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1454817F-34D6-498E-98DB-5E9FEBEE04D1}.Debug|x64.ActiveCfg = Debug|x64
-		{1454817F-34D6-498E-98DB-5E9FEBEE04D1}.Debug|x64.Build.0 = Debug|x64
-		{1454817F-34D6-498E-98DB-5E9FEBEE04D1}.Debug|x86.ActiveCfg = Debug|Win32
-		{1454817F-34D6-498E-98DB-5E9FEBEE04D1}.Debug|x86.Build.0 = Debug|Win32
-		{1454817F-34D6-498E-98DB-5E9FEBEE04D1}.Release|x64.ActiveCfg = Release|x64
-		{1454817F-34D6-498E-98DB-5E9FEBEE04D1}.Release|x64.Build.0 = Release|x64
-		{1454817F-34D6-498E-98DB-5E9FEBEE04D1}.Release|x86.ActiveCfg = Release|Win32
-		{1454817F-34D6-498E-98DB-5E9FEBEE04D1}.Release|x86.Build.0 = Release|Win32
 		{61964A70-8BA2-44B6-8B02-0B9FEBDFBBE6}.Debug|x64.ActiveCfg = Debug|x64
 		{61964A70-8BA2-44B6-8B02-0B9FEBDFBBE6}.Debug|x64.Build.0 = Debug|x64
 		{61964A70-8BA2-44B6-8B02-0B9FEBDFBBE6}.Debug|x86.ActiveCfg = Debug|Win32
@@ -34,8 +24,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {4BC3D8E7-FDA8-458E-87DE-EE5F402FAEB0}
 	EndGlobalSection
 EndGlobal

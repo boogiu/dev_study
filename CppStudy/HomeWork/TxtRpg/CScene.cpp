@@ -1,25 +1,21 @@
 #include "CScene.h"
 
-CScene::CScene()
+CBaseScene::CBaseScene()
 {
 }
 
-CScene::~CScene()
+CBaseScene::~CBaseScene()
 {
 }
 
-void CScene::Initialize()
+void CBaseScene::Initialize()
 {
 }
 
-void CScene::Update()
+void CBaseScene::Update()
 {
 }
 
-void CScene::Render()
-{
-}
-
-void CScene::Release()
+void CBaseScene::Release()
 {
 }
