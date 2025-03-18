@@ -5,7 +5,7 @@ int main()
 {
 	CGameManager::GetInstance().Initialize();
 
-	while (true)
+	while (CGameManager::GetInstance().GetGameOn())
 	{
 		CGameManager::GetInstance().Update();
 		CGameManager::GetInstance().Render();

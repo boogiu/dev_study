@@ -2,6 +2,7 @@
 #include "pch.h"
 
 CGameManager::CGameManager()
+	:m_isGameOn(true)
 {
 }
 

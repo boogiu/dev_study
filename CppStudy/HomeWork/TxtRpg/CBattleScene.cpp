@@ -2,6 +2,7 @@
 #include "CPlayer.h"
 #include "CFight.h"
 #include "CSceneManager.h"
+#include "CGameManager.h"
 
 CBattleScene::CBattleScene()
 	: monsters(nullptr)
@@ -41,8 +42,17 @@ void CBattleScene::Render()
 
 		else if (iResult == 0) {// 플레이어 죽음
 			cout << "당신의 죽음!" << endl;
-			system("pause");
-			//죽음 화면으로.
+			cout << "1. 마을로 돌아가기"<<endl;
+			cout << "2. 종료하기"<<endl;
+			int iSelect = SafeInt(1, 2);
+
+			if (iSelect == 1) {
+				CPlayer::GetInstance().Restore();
+				CSceneManager::GetInstance().ChangerScene(SCENE::VILLAGE);
+			}
+			else {
+				CGameManager::GetInstance().SetGameOn(false);
+			}
 			return;
 		}	
 	}

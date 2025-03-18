@@ -22,6 +22,7 @@ public:
 	int GetHp() { return m_iNowHp; }
 
 	void GetDamage(int Dmg);
+	void Restore();
 
 private :
 	char* m_cName;

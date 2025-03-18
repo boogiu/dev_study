@@ -86,3 +86,7 @@ void CPlayer::GetDamage(int Dmg)
 {
 	m_iNowHp -= Dmg;
 }
+
+void CPlayer::Restore()
+{
+}
