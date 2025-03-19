@@ -8,23 +8,10 @@ namespace myClass {
 	public:
 		Kitty(); //생성자
 		~Kitty(); //소멸자
-
+		Kitty(const Kitty& _kitty); // 복사 생성자
+		Kitty& operator = (const Kitty& _kitty); //대입 연산자
 	private:
 
 	};
-
-	Kitty::Kitty()
-	{
-	}
-
-	Kitty::~Kitty()
-	{
-	}
-}
-
-using namespace myClass;
-
-int main()
-{
 
 }

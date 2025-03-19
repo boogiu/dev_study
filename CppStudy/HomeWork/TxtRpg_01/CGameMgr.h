@@ -45,3 +45,4 @@ private:
 #endif // !__CGAMEMGR_H__
 
 
+
