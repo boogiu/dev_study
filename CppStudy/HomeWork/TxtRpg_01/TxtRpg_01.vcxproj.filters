@@ -81,6 +81,15 @@
     <ClInclude Include="CMonster.h">
       <Filter>04.Object\Monster</Filter>
     </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>00.Main</Filter>
+    </ClInclude>
+    <ClInclude Include="CShop.h">
+      <Filter>02.Scene\ShopScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CItem.h">
+      <Filter>04.Object\Item</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TxtRpg_01.cpp">
@@ -109,6 +118,12 @@
     </ClCompile>
     <ClCompile Include="CMonster.cpp">
       <Filter>04.Object\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="CShop.cpp">
+      <Filter>02.Scene\ShopScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CItem.cpp">
+      <Filter>04.Object\Item</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -67,7 +67,6 @@ void CPlayer::ShowStat()
 	cout << m_cName<< endl;
 	cout << "체력 : " << m_pInfo.m_iNowHp <<"/"<< m_pInfo.m_iMaxHp << endl;
 	cout << "공격력 : " << m_pInfo.m_iAtk << endl;
-	cout << m_cName << endl;
 }
 
 void CPlayer::GetDamage(int dmg)

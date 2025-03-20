@@ -16,10 +16,10 @@ public:
 	void Init() override;
 	void Render() override;
 	void Release() override;
-	void MonsterPool();
 	int FightMonster(CPlayer* player, CMonster* monster);
 private:
 	CMonster** m_MonsterArr;
+	CPlayer* pPlayer;
 	int m_iMonsterCount;
 };
 

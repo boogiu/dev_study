@@ -5,7 +5,7 @@
 #include "CMonster.h"
 
 CFieldScene::CFieldScene()
-	:m_MonsterArr(nullptr), m_iMonsterCount(0)
+	:m_MonsterArr(nullptr), m_iMonsterCount(0), pPlayer(nullptr)
 {
 }
 
@@ -39,7 +39,7 @@ void CFieldScene::Render()
 		return;
 	}
 
-	CPlayer*  pPlayer = CGameMgr::GetInstance()->GetPlayer();
+	 pPlayer = CGameMgr::GetInstance()->GetPlayer();
 
 	while (true) {
 		RandSeed;
@@ -50,7 +50,6 @@ void CFieldScene::Render()
 		if (iResult == 0) {
 			//플레이어 패배	
 			cout << "마을로 돌아갑니다" << endl;
-			pPlayer->Restore();
 			system("pause");
 			ChangeScene(SCENE_ENUM::MAIN);
 			return;
@@ -93,23 +92,35 @@ int CFieldScene::FightMonster(CPlayer* player, CMonster* monster)
 		ChangeScene(SCENE_ENUM::MAIN);
 		return 0 ;
 	}
+	system("cls");
+	cout << ">>>>>>>>>>>>>전투를 시작합니다!!!<<<<<<<<<<<<<<<" << endl;
 
 	while (true) {
-
 		cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
 		monster->ShowStat();
+		cout << "=============================" << endl;
+		cout << "1. 전투\t 2.도망" << endl;
+		cout << "=============================" << endl;
+		player->ShowStat();
+		cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+		int iSelect = SafeInt(1, 2);
+		system("cls");
+		if (iSelect == 2) {
+			cout << "하하 겁쟁이 같은 녀석!" << endl;
+			system("pause");
+			ChangeScene(SCENE_ENUM::MAIN);
+			return 0;
+		}
 		cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
 		player->GetDamage(monster->GetAtk());
 		monster->GetDamage(player->GetAtk());
 		cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
-		player->ShowStat();
-		cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
-		system("pause");
-
-		if (!player->isAlive()) return 0;
+		if (!player->isAlive())
+		{
+			pPlayer->Restore();
+			return 0;
+		}
 		if (!monster->isAlive()) return 1;
-
-
 	}
 }
 
