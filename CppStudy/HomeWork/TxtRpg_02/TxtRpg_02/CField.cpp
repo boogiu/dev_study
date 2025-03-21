@@ -15,9 +15,9 @@ CField::~CField()
 {
 }
 
-void CField::Init(CPlayer* _pPlayer)
+void CField::Init()
 {
-	m_pPlayer = _pPlayer;
+	m_pPlayer = CGameManager::GetInstance().GetPlayer();
 }
 
 void CField::Render()
@@ -54,7 +54,7 @@ void CField::Render()
 	case 4:
 		std::cout << ">> 당신은 마을로 돌아갔습니다." << std::endl;
 		system("pause");
-		CGameManager::SceneChange(E_SCENE::VILLAGE);
+		CGameManager::GetInstance().SceneChange(E_SCENE::VILLAGE);
 		return;
 	default:
 		break;

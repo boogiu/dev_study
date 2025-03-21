@@ -78,9 +78,6 @@
     <ClCompile Include="TxtRpg_02.cpp">
       <Filter>01. Main</Filter>
     </ClCompile>
-    <ClCompile Include="CScene.cpp">
-      <Filter>03. Scene</Filter>
-    </ClCompile>
     <ClCompile Include="CPlayer.cpp">
       <Filter>04. Object\Player</Filter>
     </ClCompile>

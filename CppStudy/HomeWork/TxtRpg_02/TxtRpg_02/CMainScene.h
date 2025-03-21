@@ -9,7 +9,7 @@ public:
 	~CMainScene() override;
 
 public:
-	void Init(CPlayer* _pPlayer)override;
+	void Init()override;
 	void Render()override;
 	void Release()override;
 };

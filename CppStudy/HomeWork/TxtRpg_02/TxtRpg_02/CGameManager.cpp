@@ -7,10 +7,9 @@
 #include "CPlayer.h"
 #include "CDataBase.h"
 
-E_SCENE CGameManager::m_nowScene = E_SCENE::START;
 
 CGameManager::CGameManager()
-	:  m_pPlayer(nullptr), m_SceneArr(nullptr),m_DataBase(nullptr)
+	:  m_pPlayer(nullptr), m_SceneArr(nullptr),m_DataBase(nullptr),m_nowScene(E_SCENE::START)
 {
 }
 
@@ -20,11 +19,13 @@ CGameManager::~CGameManager()
 
 void CGameManager::Init()
 {
+	//플레이어 생성
 	if (!m_pPlayer) {
 		m_pPlayer = new CPlayer();
 		m_pPlayer->Init();
 	}
 
+	//씬 생성
 	if (!m_SceneArr) {
 		m_SceneArr = new CScene * [E_SCENE::END];
 		//각 인덱스별로 씬 객체 할당해주기.
@@ -32,15 +33,20 @@ void CGameManager::Init()
 		m_SceneArr[E_SCENE::VILLAGE] = new CVillage;
 		m_SceneArr[E_SCENE::FIELD] = new CField;
 	}
+
+	//씬 초기화
+	for (int i = 0; i < E_SCENE::END; ++i) {
+		if (m_SceneArr[i]) {
+			m_SceneArr[i]->Init();
+		}
+	}
+
+	//데이터베이스 불러오기
 	if (!m_DataBase) {
 		m_DataBase = new CDataBase;
 		m_DataBase->Init();
 	}
-	for (int i = 0; i < E_SCENE::END; ++i) {
-		if (m_SceneArr[i]) {
-			m_SceneArr[i]->Init(m_pPlayer);
-		}
-	}
+	
 }
 
 bool CGameManager::Render()
@@ -56,11 +62,13 @@ bool CGameManager::Render()
 
 void CGameManager::Release()
 {
-	if (m_pPlayer) {
-		m_pPlayer->Release();
-		SAFE_DELETE(m_pPlayer);
+	//데이터 베이스 반환
+	if (m_DataBase) {
+		m_DataBase->Release();
+		SAFE_DELETE(m_DataBase);
 	}
 
+	//씬 반환
 	if (m_SceneArr) {
 		for (int i = 0; i < E_SCENE::END; ++i) {
 			if (m_SceneArr[i]) {
@@ -71,8 +79,24 @@ void CGameManager::Release()
 		SAFE_DELETE_ARR(m_SceneArr);
 	}
 
+	//플레이어 반환
+	if (m_pPlayer) {
+		m_pPlayer->Release();
+		SAFE_DELETE(m_pPlayer);
+	}
+}
+
+CPlayer* CGameManager::GetPlayer()
+{
+	if (m_pPlayer) {
+		return m_pPlayer;
+	}
+	return nullptr;
+}
+
+CObject** CGameManager::GetMonsterArr()
+{
 	if (m_DataBase) {
-		m_DataBase->Release();
-		SAFE_DELETE(m_DataBase);
+		return m_DataBase->GetMonster();
 	}
 }

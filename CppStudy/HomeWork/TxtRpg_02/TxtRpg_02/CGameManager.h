@@ -6,20 +6,28 @@ class CScene;
 class CDataBase;
 class CGameManager
 {
-public : 
+private : 
 	CGameManager();
 	~CGameManager();
+	CGameManager(const CGameManager&) = delete;
+	CGameManager& operator = (const CGameManager& rhs)=delete;
+
+public :
+	static CGameManager& GetInstance() {
+		static CGameManager instance;
+		return instance;
+	}
 
 public: 
 	void Init();
 	bool Render();
 	void Release();
-
-	static void SceneChange(E_SCENE _scene) { m_nowScene = _scene; };
-
-
+	void SceneChange(E_SCENE _scene) { m_nowScene = _scene; };
+	CPlayer* GetPlayer();
+	CObject** GetMonsterArr();
+	
 private :
-	static E_SCENE m_nowScene;
+	E_SCENE m_nowScene;
 	CPlayer* m_pPlayer;
 	CScene** m_SceneArr;
 	CDataBase* m_DataBase;

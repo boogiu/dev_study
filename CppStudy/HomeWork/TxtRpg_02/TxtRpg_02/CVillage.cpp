@@ -10,9 +10,9 @@ CVillage::~CVillage()
 {
 }
 
-void CVillage::Init(CPlayer* _pPlayer)
+void CVillage::Init()
 {
-	m_pPlayer = _pPlayer;
+	m_pPlayer = CGameManager::GetInstance().GetPlayer();
 }
 
 void CVillage::Render()
@@ -47,10 +47,10 @@ void CVillage::Render()
 
 	int iSelect = CFunction::SafeInt(1, 3);
 	if (3 == iSelect) {
-		CGameManager::SceneChange(E_SCENE::END);
+		CGameManager::GetInstance().SceneChange(E_SCENE::END);
 	}
 	else if (2 == iSelect) {
-		CGameManager::SceneChange(E_SCENE::FIELD);
+		CGameManager::GetInstance().SceneChange(E_SCENE::FIELD);
 	}
 	else if (1 == iSelect) {
 		//상점 -> shop으로

@@ -4,9 +4,8 @@
 
 int main()
 {
-    CGameManager gameManger;
-    gameManger.Init();
-    while (gameManger.Render()){}
-    gameManger.Release();
+    CGameManager::GetInstance().Init();
+    while (CGameManager::GetInstance().Render()){}
+    CGameManager::GetInstance().Release();
     _CrtDumpMemoryLeaks();
 }

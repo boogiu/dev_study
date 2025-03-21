@@ -11,9 +11,9 @@ CMainScene::~CMainScene()
 {
 }
 
-void CMainScene::Init(CPlayer* _pPlayer)
+void CMainScene::Init()
 {
-	m_pPlayer = _pPlayer;
+	m_pPlayer = CGameManager::GetInstance().GetPlayer();
 }
 
 void CMainScene::Render()
@@ -28,7 +28,7 @@ void CMainScene::Render()
 
 	int iSelect = CFunction::SafeInt(1, 2);
 	if (2 == iSelect) {
-		CGameManager::SceneChange(E_SCENE::END);
+		CGameManager::GetInstance().SceneChange(E_SCENE::END);
 	}
 	iSelect = 0;
 
@@ -52,7 +52,7 @@ void CMainScene::Render()
 	m_pPlayer->SetClass((E_CLASS)iSelect);
 	system("pause");
 
-	CGameManager::SceneChange(E_SCENE::VILLAGE);
+	CGameManager::GetInstance().SceneChange(E_SCENE::VILLAGE);
 }
 
 void CMainScene::Release()

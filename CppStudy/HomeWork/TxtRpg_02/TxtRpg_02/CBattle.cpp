@@ -42,7 +42,7 @@ bool CBattle::StartFight(CPlayer* pPlayer, CObject* right)
 			system("cls");
 			std::cout << ">>>> 마을로 돌아갑니다. " << std::endl;
 			pPlayer->Heal(pPlayer->GetStatus().m_iMaxHp);
-			CGameManager::SceneChange(E_SCENE::VILLAGE);
+			CGameManager::GetInstance().SceneChange(E_SCENE::END);
 			return true;
 		}
 		system("pause");
