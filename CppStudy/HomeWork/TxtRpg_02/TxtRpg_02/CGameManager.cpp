@@ -5,12 +5,12 @@
 #include "CVillage.h"
 #include "CField.h"
 #include "CPlayer.h"
-
+#include "CDataBase.h"
 
 E_SCENE CGameManager::m_nowScene = E_SCENE::START;
 
 CGameManager::CGameManager()
-	:  m_pPlayer(nullptr), m_SceneArr(nullptr)
+	:  m_pPlayer(nullptr), m_SceneArr(nullptr),m_DataBase(nullptr)
 {
 }
 
@@ -32,7 +32,10 @@ void CGameManager::Init()
 		m_SceneArr[E_SCENE::VILLAGE] = new CVillage;
 		m_SceneArr[E_SCENE::FIELD] = new CField;
 	}
-
+	if (!m_DataBase) {
+		m_DataBase = new CDataBase;
+		m_DataBase->Init();
+	}
 	for (int i = 0; i < E_SCENE::END; ++i) {
 		if (m_SceneArr[i]) {
 			m_SceneArr[i]->Init(m_pPlayer);
@@ -66,5 +69,10 @@ void CGameManager::Release()
 			}
 		}
 		SAFE_DELETE_ARR(m_SceneArr);
+	}
+
+	if (m_DataBase) {
+		m_DataBase->Release();
+		SAFE_DELETE(m_DataBase);
 	}
 }

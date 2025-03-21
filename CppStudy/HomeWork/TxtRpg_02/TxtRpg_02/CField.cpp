@@ -5,8 +5,9 @@
 #include "CObject.h"
 #include "CMonster.h"
 
+
 CField::CField()
-	:m_MonsterArr(nullptr), m_iSpawnCnt(3)
+	:nowMonster(nullptr)
 {
 }
 
@@ -60,37 +61,14 @@ void CField::Render()
 	}
 
 	system("cls");
-	bool BattleEnd = false;
-
-	while (!BattleEnd)
-	{
-		SetRandom;
-		int iSpawn = Random(m_iSpawnCnt);
-		BattleEnd = CBattle::StartFight(m_pPlayer, m_MonsterArr[iSpawn]);
-		m_MonsterArr[iSpawn]->Restore();
-	}
+	
 }
 
 void CField::Release()
 {
-	if (!m_MonsterArr) return;
-	for (int i = 0; i < m_iSpawnCnt;i++) {
-		if (m_MonsterArr[i]) {
-			m_MonsterArr[i]->Release();
-			SAFE_DELETE(m_MonsterArr[i]);
-		}
-	}
-	SAFE_DELETE_ARR(m_MonsterArr);
+	
 }
 
 void CField::MonsterPool(int _level)
 {
-	Release(); //우선 다 해제
-
-	m_MonsterArr = new CObject *[m_iSpawnCnt];
-
-	for (int i = 0; i < m_iSpawnCnt; i++) {
-		m_MonsterArr[i] = new CMonster(_level);
-		m_MonsterArr[i]->Init();
-	}
 }

@@ -33,6 +33,12 @@ struct  tagStat
 	int m_iExp;
 };
 
+struct  tagItem
+{
+	int m_iCost;
+	char* m_cName;
+	char* m_cDesc;
+};
 #include "ctime"
 
 #define SetRandom srand((unsigned int)time(nullptr))

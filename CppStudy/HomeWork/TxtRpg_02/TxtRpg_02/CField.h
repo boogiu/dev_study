@@ -16,7 +16,6 @@ public :
 	void MonsterPool(int _level);
 
 private:
-	int m_iSpawnCnt;
-	CObject** m_MonsterArr;
+	CObject* nowMonster;
 };
 

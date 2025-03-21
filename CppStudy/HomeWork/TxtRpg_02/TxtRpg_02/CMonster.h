@@ -13,7 +13,7 @@ public:
 	char* GetName() override { return m_cName; }
 
 private:
-	int m_iLevel;
 	char m_cName[32];
+	int m_iLevel;
 };
 

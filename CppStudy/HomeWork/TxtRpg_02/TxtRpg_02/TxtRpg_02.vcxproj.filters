@@ -43,11 +43,35 @@
     <Filter Include="05. Function\Battle">
       <UniqueIdentifier>{f871b45e-f91a-4ccb-84f1-c4197ffb48f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="06. Item">
+      <UniqueIdentifier>{672ed6c6-87d3-4940-a509-e57fd362df27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Item\Potion">
+      <UniqueIdentifier>{69a961d9-ab76-458d-9a37-ca0ac40c59e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Item\Weapon">
+      <UniqueIdentifier>{681c1e29-3e42-4ad9-9688-e5a44f2ef19b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Item\Shield">
+      <UniqueIdentifier>{4ae355e0-6c14-410e-bc78-70f2c417bd5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Item\Armor">
+      <UniqueIdentifier>{fc1b2400-f896-477f-8a7f-d4e9bb38a73c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Item\Potion\Health">
+      <UniqueIdentifier>{e30cddcf-3526-40c5-91f8-d9ba1d3153a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Item\Weapon\Sword">
+      <UniqueIdentifier>{ebfe857a-40ed-47ca-812d-138c48f91b11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Manager\Game">
+      <UniqueIdentifier>{5b44e81c-775e-4f9f-8ee4-3d9d1ebfeacb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Manager\Data">
+      <UniqueIdentifier>{1a0eeede-f1df-4400-bfd8-0743ca79c5f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CGameManager.cpp">
-      <Filter>02. Manager</Filter>
-    </ClCompile>
     <ClCompile Include="CObject.cpp">
       <Filter>04. Object</Filter>
     </ClCompile>
@@ -81,6 +105,21 @@
     <ClCompile Include="CBattle.cpp">
       <Filter>05. Function\Battle</Filter>
     </ClCompile>
+    <ClCompile Include="CHealthPotion.cpp">
+      <Filter>06. Item\Potion\Health</Filter>
+    </ClCompile>
+    <ClCompile Include="CWeapon.cpp">
+      <Filter>06. Item\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="CSword.cpp">
+      <Filter>06. Item\Weapon\Sword</Filter>
+    </ClCompile>
+    <ClCompile Include="CDataBase.cpp">
+      <Filter>02. Manager\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameManager.cpp">
+      <Filter>02. Manager\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="define.h">
@@ -88,9 +127,6 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>00. Common</Filter>
-    </ClInclude>
-    <ClInclude Include="CGameManager.h">
-      <Filter>02. Manager</Filter>
     </ClInclude>
     <ClInclude Include="CObject.h">
       <Filter>04. Object</Filter>
@@ -121,6 +157,27 @@
     </ClInclude>
     <ClInclude Include="Debug.h">
       <Filter>00. Common</Filter>
+    </ClInclude>
+    <ClInclude Include="CPotion.h">
+      <Filter>06. Item\Potion</Filter>
+    </ClInclude>
+    <ClInclude Include="CHealthPotion.h">
+      <Filter>06. Item\Potion\Health</Filter>
+    </ClInclude>
+    <ClInclude Include="CItem.h">
+      <Filter>06. Item</Filter>
+    </ClInclude>
+    <ClInclude Include="CWeapon.h">
+      <Filter>06. Item\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="CSword.h">
+      <Filter>06. Item\Weapon\Sword</Filter>
+    </ClInclude>
+    <ClInclude Include="CDataBase.h">
+      <Filter>02. Manager\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameManager.h">
+      <Filter>02. Manager\Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
