@@ -24,13 +24,15 @@ void CMainScene::Render()
 	std::cout << "===================" << std::endl;
 	std::cout << "1. 시작하기 \t 2. 종료하기" << std::endl;
 	std::cout << "===================" << std::endl;
-	int iSelect = CFunction::SafeInt(1, 2);
 
+
+	int iSelect = CFunction::SafeInt(1, 2);
 	if (2 == iSelect) {
 		CGameManager::SceneChange(E_SCENE::END);
 	}
-
 	iSelect = 0;
+
+
 	system("cls");
 	std::cout << ">> 직업 선택" << std::endl;
 	std::cout << std::endl;
@@ -42,10 +44,14 @@ void CMainScene::Render()
 	std::cout << "===================" << std::endl;
 	std::cout <<std::endl;
 	std::cout << ">> 플레이할 직업 선택" << std::endl;
+
+
 	iSelect = CFunction::SafeInt(1, 4);
 	std::cout << CFunction::ReturnClass((E_CLASS)iSelect) << " 선택" <<std:: endl;
+
 	m_pPlayer->SetClass((E_CLASS)iSelect);
 	system("pause");
+
 	CGameManager::SceneChange(E_SCENE::VILLAGE);
 }
 

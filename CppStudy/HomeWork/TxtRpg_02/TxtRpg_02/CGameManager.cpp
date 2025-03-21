@@ -3,6 +3,7 @@
 #include "CScene.h"
 #include "CMainScene.h"
 #include "CVillage.h"
+#include "CField.h"
 #include "CPlayer.h"
 
 
@@ -21,6 +22,7 @@ void CGameManager::Init()
 {
 	if (!m_pPlayer) {
 		m_pPlayer = new CPlayer();
+		m_pPlayer->Init();
 	}
 
 	if (!m_SceneArr) {
@@ -28,6 +30,7 @@ void CGameManager::Init()
 		//∞¢ ¿Œµ¶Ω∫∫∞∑Œ æ¿ ∞¥√º «“¥Á«ÿ¡÷±‚.
 		m_SceneArr[E_SCENE::START] = new CMainScene;
 		m_SceneArr[E_SCENE::VILLAGE] = new CVillage;
+		m_SceneArr[E_SCENE::FIELD] = new CField;
 	}
 
 	for (int i = 0; i < E_SCENE::END; ++i) {

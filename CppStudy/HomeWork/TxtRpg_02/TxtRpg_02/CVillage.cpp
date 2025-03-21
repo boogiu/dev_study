@@ -50,7 +50,7 @@ void CVillage::Render()
 		CGameManager::SceneChange(E_SCENE::END);
 	}
 	else if (2 == iSelect) {
-		//사냥터 -> field로
+		CGameManager::SceneChange(E_SCENE::FIELD);
 	}
 	else if (1 == iSelect) {
 		//상점 -> shop으로

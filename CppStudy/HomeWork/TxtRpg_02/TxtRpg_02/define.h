@@ -3,6 +3,7 @@
 enum E_SCENE {
 	START,
 	VILLAGE,
+	FIELD,
 	END
 };
 
@@ -19,8 +20,6 @@ enum E_CLASS {
 
 struct  tagStat
 {
-	int m_iLevel;
-
 	int m_iMaxHp;
 	int m_iNowHp;
 	
@@ -33,3 +32,8 @@ struct  tagStat
 	int m_iGold;
 	int m_iExp;
 };
+
+#include "ctime"
+
+#define SetRandom srand((unsigned int)time(nullptr))
+#define Random(p) (rand()%p)
