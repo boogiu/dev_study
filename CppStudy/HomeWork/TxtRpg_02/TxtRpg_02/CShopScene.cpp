@@ -102,13 +102,8 @@ void CShopScene::ShowItems(int _level) {
 	std::cout << std::endl;
 
 	std::cout << "이 중에 구매하고 싶은 것이 있는가?\n 번호로 말해주시게나" << std::endl;
-	std::cout << ">>"<<tmp.size()+1<<". 뒤로 돌아가기" << std::endl;
 
-	int iSelect = CFunction::SafeInt(1, tmp.size() + 1);
-	if (iSelect == tmp.size()+1) {
-		return;
-	}
-	
+	int iSelect = CFunction::SafeInt(1, tmp.size());
 	bool purchase =m_pPlayer->Purchase(tmp[iSelect-1]);
 
 	if (!purchase) {
