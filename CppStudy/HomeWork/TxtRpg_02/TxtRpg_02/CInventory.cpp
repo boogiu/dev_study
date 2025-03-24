@@ -30,10 +30,8 @@ void CInventory::Render()
 		item->Render();
 	}
 	std::cout << "----------------------" << std::endl;
-
-	system("pause");
+	std::cout << "1. 확인\t 2. 아이템 사용하기" << std::endl;
 	int iSelect = CFunction::SafeInt(1, 2);
-	std::cout << "1. 확인" << std::endl;
 	if (iSelect == 1) {
 		return;
 	}
@@ -41,10 +39,7 @@ void CInventory::Render()
 
 void CInventory::Release()
 {
-	for (CItem* item : m_inventory) {
-		item->Release();
-		SAFE_DELETE(item);
-	}
+	//여기서 삭제하면 안된다.
 }
 
 bool CInventory::PushItem(CItem* _item)
@@ -56,30 +51,9 @@ bool CInventory::PushItem(CItem* _item)
 		return false;
 	}
 
-	E_Item e_cat = _item->GetCategory();
-	//포인터를 받아왔지만, 원본을 복사하는 걸로.
-	CItem* item = nullptr;
-	switch (e_cat)
-	{
-	case NONE:
-		break;
-	case HEALTHPOTION:
-	{
-		CHealthPotion* tmp = dynamic_cast<CHealthPotion*>(_item); //스태틱 써도 됨
-		item = new CHealthPotion(*tmp);
-	}
-	break;
-	case SWORD:
-	{
-		CSword* tmp = dynamic_cast<CSword*>(_item);
-		item = new CSword(*tmp);
-	}
-	break;
-	case ENDITEM:
-		break;
-	default:
-		break;
-	}
+
+	CItem* item = _item;
+	
 	if (item) {
 		m_inventory.push_back(item);
 		m_Size++;
