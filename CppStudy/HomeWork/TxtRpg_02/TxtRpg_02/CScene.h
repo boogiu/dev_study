@@ -3,8 +3,8 @@ class CPlayer;
 class CScene
 {
 public:
-	CScene() :m_pPlayer(nullptr) {};
-	virtual ~CScene()=0;
+	CScene();
+	virtual ~CScene();
 
 public:
 	virtual void Init() = 0;

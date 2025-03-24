@@ -1,4 +1,5 @@
 #pragma once
+
 class CPlayer;
 class CObject;
 class CItem;
@@ -20,13 +21,14 @@ public:
 
 public :
 	void LoadMonster();
-	CObject** GetMonster();
+	CObject* GetRandMonster(int _level);
+
 public :
 	void LoadCItem();
-	CItem** GetItem();
+	const std::vector<CItem*>&  GetItem() const;
 
 private:
-	CObject** m_MonsterArr;
-	CItem** m_ItemArr;
+	std::vector<CObject*> m_monsterVec;
+	std::vector<CItem*> m_ItemArr;
 };
 

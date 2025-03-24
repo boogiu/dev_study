@@ -4,6 +4,8 @@ class CObject;
 class CPlayer;
 class CScene;
 class CDataBase;
+class CItem;
+
 class CGameManager
 {
 private : 
@@ -24,8 +26,9 @@ public:
 	void Release();
 	void SceneChange(E_SCENE _scene) { m_nowScene = _scene; };
 	CPlayer* GetPlayer();
-	CObject** GetMonsterArr();
-	
+	CObject* GetMonster(int _level);
+	const std::vector<CItem*>& GetItems()const;
+
 private :
 	E_SCENE m_nowScene;
 	CPlayer* m_pPlayer;

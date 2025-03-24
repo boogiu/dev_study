@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "CVillage.h"
-#include "CPlayer.h";
+#include "CPlayer.h"
 #include "CGameManager.h"
 CVillage::CVillage()
 {
@@ -53,7 +53,7 @@ void CVillage::Render()
 		CGameManager::GetInstance().SceneChange(E_SCENE::FIELD);
 	}
 	else if (1 == iSelect) {
-		//상점 -> shop으로
+		CGameManager::GetInstance().SceneChange(E_SCENE::SHOP);
 	}
 }
 

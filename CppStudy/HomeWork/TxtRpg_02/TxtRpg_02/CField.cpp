@@ -71,4 +71,11 @@ void CField::Release()
 
 void CField::MonsterPool(int _level)
 {
+	while (true) {
+		CObject* monsterArr = CGameManager::GetInstance().GetMonster(_level);
+		monsterArr->Restore();
+		if (CBattle::StartFight(m_pPlayer, monsterArr)) {
+			break;
+		}
+	}
 }

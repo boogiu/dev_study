@@ -4,6 +4,7 @@ enum E_SCENE {
 	START,
 	VILLAGE,
 	FIELD,
+	SHOP,
 	END
 };
 
@@ -33,8 +34,16 @@ struct  tagStat
 	int m_iExp;
 };
 
+enum E_Item {
+	NONE,
+	HEALTHPOTION,
+	SWORD,
+	ENDITEM
+};
 struct  tagItem
 {
+	E_Item category;
+	int m_iLevel;
 	int m_iCost;
 	char* m_cName;
 	char* m_cDesc;

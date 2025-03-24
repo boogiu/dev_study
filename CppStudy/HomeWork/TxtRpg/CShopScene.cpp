@@ -1,5 +1,5 @@
-#include "CShopScene.h"
 #include "pch.h"
+
 #include "CSceneManager.h"
 #include "CPlayer.h"
 

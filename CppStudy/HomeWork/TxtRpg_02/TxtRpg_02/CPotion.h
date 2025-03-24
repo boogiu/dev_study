@@ -5,8 +5,8 @@ class CPlayer;
 class CPotion : public CItem
 {
 public:
-	virtual ~CPotion() =0;
+	CPotion();
+	virtual ~CPotion();
 	virtual void Activate(CPlayer* _player) =0;
-
 };
 

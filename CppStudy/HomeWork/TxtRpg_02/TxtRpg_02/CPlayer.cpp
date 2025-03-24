@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "CPlayer.h"
+#include "CInventory.h"
+#include "CItem.h"
 
 CPlayer::CPlayer()
-	: m_cName(nullptr), m_Class(NOCLASS), m_iLevel(1), m_iMaxExp(10)
+	: m_cName(nullptr), m_Class(NOCLASS), m_iLevel(1), m_iMaxExp(10),m_inven(nullptr)
 {
 }
 
@@ -12,6 +14,7 @@ CPlayer::~CPlayer()
 
 void CPlayer::Init()
 {
+	//고쳐야 함 : 데이터베이스로 가도록
 	m_Stat.m_iMaxHp = 100;
 	m_Stat.m_iNowHp = m_Stat.m_iMaxHp;
 
@@ -25,15 +28,23 @@ void CPlayer::Init()
 
 	m_Stat.m_iExp = 0;
 	m_Stat.m_iGold = 100;
+
+	//-------------------//
+	if (!m_inven) {
+		m_inven = new CInventory;
+	}
 }
 
 void CPlayer::Release()
 {
 	SAFE_DELETE_ARR(m_cName);
+	m_inven->Release();
+	SAFE_DELETE(m_inven);
 }
 
 void CPlayer::SetClass(E_CLASS _class)
 {
+	m_Class = _class;
 	switch (_class)
 	{
 	case NOCLASS:
@@ -62,7 +73,25 @@ void CPlayer::SetClass(E_CLASS _class)
 
 void CPlayer::ShowStatus()
 {
-	
+	while (true)
+	{
+		std::cout << m_cName << "[" << CFunction::ReturnClass(m_Class) << "]" << std::endl;
+		std::cout << "플레이어 레벨 : " << m_iLevel << std::endl;
+		std::cout << "소지금 : " << m_Stat.m_iGold << std::endl;
+		std::cout << "체력 : " << m_Stat.m_iNowHp << "/" << m_Stat.m_iMaxHp << std::endl;
+		std::cout << "방어력 : " << m_Stat.m_iDef << std::endl;
+		std::cout << "크리티컬 : " << m_Stat.m_iCrit << "%\t크리티컬 데미지: " << m_Stat.m_fCritDgm + 100 << "%" << std::endl;
+		std::cout << "회피 : " << m_Stat.m_iAvd << std::endl;
+
+		std::cout << std::endl;
+		std::cout << "1. 인벤토리 \t 2. 돌아가기 "  << std::endl;
+
+		int iSelect = CFunction::SafeInt(1, 2);
+		if (iSelect == 2) {
+			return;
+		}
+		m_inven->Render();
+	}
 }
 
 void CPlayer::LevelUp()
@@ -88,10 +117,18 @@ void CPlayer::LevelUp()
 	if (m_Stat.m_iAvd > 100) {
 		m_Stat.m_iAvd = 100;
 	}
+	m_iMaxExp += 10;
 }
 
-void CPlayer::Purchase()
+bool CPlayer::Purchase(CItem* _item)
 {
+	if (m_Stat.m_iGold < _item->GetCostl()) {
+		return false;
+	}
+	if (m_inven->PushItem(_item)) {
+		m_Stat.m_iGold -= _item->GetCostl();
+	}
+	return true;
 }
 
 void CPlayer::GetBooty(CObject* object)

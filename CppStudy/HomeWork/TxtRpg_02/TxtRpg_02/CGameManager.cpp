@@ -1,12 +1,11 @@
 #include "pch.h"
 #include "CGameManager.h"
-#include "CScene.h"
-#include "CMainScene.h"
-#include "CVillage.h"
-#include "CField.h"
+
+#include "Scenes.h"
+#include "Items.h"
+
 #include "CPlayer.h"
 #include "CDataBase.h"
-
 
 CGameManager::CGameManager()
 	:  m_pPlayer(nullptr), m_SceneArr(nullptr),m_DataBase(nullptr),m_nowScene(E_SCENE::START)
@@ -32,6 +31,8 @@ void CGameManager::Init()
 		m_SceneArr[E_SCENE::START] = new CMainScene;
 		m_SceneArr[E_SCENE::VILLAGE] = new CVillage;
 		m_SceneArr[E_SCENE::FIELD] = new CField;
+		m_SceneArr[E_SCENE::SHOP] = new CShopScene;
+
 	}
 
 	//¾À ÃÊ±âÈ­
@@ -46,7 +47,6 @@ void CGameManager::Init()
 		m_DataBase = new CDataBase;
 		m_DataBase->Init();
 	}
-	
 }
 
 bool CGameManager::Render()
@@ -94,9 +94,15 @@ CPlayer* CGameManager::GetPlayer()
 	return nullptr;
 }
 
-CObject** CGameManager::GetMonsterArr()
+CObject* CGameManager::GetMonster(int _level)
 {
-	if (m_DataBase) {
-		return m_DataBase->GetMonster();
+	if (!m_DataBase) {
+		return nullptr;
 	}
+	return m_DataBase->GetRandMonster(_level);
+}
+
+ const std::vector<CItem*>& CGameManager::GetItems()const
+{
+	return m_DataBase->GetItem();
 }

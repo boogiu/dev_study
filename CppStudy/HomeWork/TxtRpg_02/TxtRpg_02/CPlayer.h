@@ -1,6 +1,9 @@
 #pragma once
 #include "CObject.h"
 
+class CItem;
+class CInventory;
+
 class CPlayer : public CObject
 {
 public:
@@ -15,14 +18,17 @@ public:
 	void SetClass(E_CLASS _class);
 	void ShowStatus();
 	void LevelUp();
-	void Purchase();
+	bool Purchase(CItem * _item);
 	void GetBooty(CObject* object);
 	void SetName();
 	char* GetName() override { return m_cName; }
+	int GetLevel()override { return m_iLevel; }
+
 private:
 	char* m_cName;
 	E_CLASS m_Class;
 	int m_iLevel;
 	int m_iMaxExp;
+	CInventory* m_inven;
 };
 

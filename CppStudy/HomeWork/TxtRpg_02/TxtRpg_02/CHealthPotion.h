@@ -4,7 +4,8 @@ class CPlayer;
 class CHealthPotion : public CPotion
 {
 public:
-	CHealthPotion();
+	CHealthPotion(tagItem _Info,int _Point);
+	CHealthPotion(const CHealthPotion& rhs);
 	~CHealthPotion() override;
 
 public:
@@ -12,10 +13,16 @@ public:
 	void Init() override;
 	void Release() override;
 	void Activate(CPlayer*_player) override;
+	void Render() override;
 
 public :
+	int GetLevel() override;
 	int GetCost() {return m_ItemInfo.m_iCost;};
+	int GetCostl() override;
+	E_Item GetCategory() override;
+
 private:
 	int m_HealPoint;
+
 };
 

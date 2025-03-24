@@ -135,10 +135,15 @@
     <ClCompile Include="CFunction.cpp" />
     <ClCompile Include="CGameManager.cpp" />
     <ClCompile Include="CHealthPotion.cpp" />
+    <ClCompile Include="CInventory.cpp" />
+    <ClCompile Include="CItem.cpp" />
     <ClCompile Include="CMainScene.cpp" />
     <ClCompile Include="CMonster.cpp" />
     <ClCompile Include="CObject.cpp" />
     <ClCompile Include="CPlayer.cpp" />
+    <ClCompile Include="CPotion.cpp" />
+    <ClCompile Include="CScene.cpp" />
+    <ClCompile Include="CShopScene.cpp" />
     <ClCompile Include="CSword.cpp" />
     <ClCompile Include="CVillage.cpp" />
     <ClCompile Include="CWeapon.cpp" />
@@ -152,6 +157,7 @@
     <ClInclude Include="CFunction.h" />
     <ClInclude Include="CGameManager.h" />
     <ClInclude Include="CHealthPotion.h" />
+    <ClInclude Include="CInventory.h" />
     <ClInclude Include="CItem.h" />
     <ClInclude Include="CMainScene.h" />
     <ClInclude Include="CMonster.h" />
@@ -159,12 +165,19 @@
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CPotion.h" />
     <ClInclude Include="CScene.h" />
+    <ClInclude Include="CShopScene.h" />
     <ClInclude Include="CSword.h" />
     <ClInclude Include="CVillage.h" />
     <ClInclude Include="CWeapon.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="define.h" />
+    <ClInclude Include="Items.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Scenes.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\ItemData.csv" />
+    <None Include="Data\MonsterData.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
