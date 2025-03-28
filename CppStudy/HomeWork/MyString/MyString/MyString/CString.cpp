@@ -4,7 +4,10 @@ using namespace std;
 
 CString::CString()
     : m_cData(nullptr),m_iLength(0),m_iCapacity(0)
-{
+{}
+
+CString::~CString() {
+    delete[] m_cData;
 }
 
 CString::CString(const char* _cValue)
