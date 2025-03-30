@@ -35,6 +35,7 @@ public:
 
 	//플레이어 포인터
 	CPlayer* GetPlayer() { return m_player; }
+	CDataMgr* GetData() { return m_dataMgr; }
 
 private:
 	bool m_GameEnd = false;

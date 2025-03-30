@@ -18,6 +18,6 @@ public:
 
 protected:
 	wstring m_Sname;
-	tagStatus m_stat;
+	tagStatus m_Stat;
 };
 

@@ -34,6 +34,7 @@ enum class KEY
 };
 
 
+
 struct  tagStatus
 {
 	int iMaxHp;
@@ -42,8 +43,10 @@ struct  tagStatus
 	int iNormDef;
 	int iMgDef;
 	int iCrit;
-	int iCritPcnt;
+	int iCritDmg;
 	int iAvd;
+	int iExp;
+	int iGold;
 };
 
 //AtkType

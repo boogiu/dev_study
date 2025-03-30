@@ -8,6 +8,8 @@ public:
 	~CPlayer() override;
 public :
 	void Initialize() override;
+	void Update()override;
+	void Render() override;
 	void Release() override;
 	
 public:

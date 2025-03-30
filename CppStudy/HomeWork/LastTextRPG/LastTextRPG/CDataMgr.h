@@ -15,9 +15,11 @@ public:
 	void LoadPlayer();
 	void LoadMonster();
 	void LoadItem();
-
+	vector<CObject*>& GetMonster(int level);
 private:
-	vector<CObject*> m_monsterData;
+	tagStatus ApplyStat(const vector<wstring>& _dataLine);
+private:
+	vector<vector<CObject*>>m_monsterData;
 	vector<CItem*> m_itemData;
 };
 
