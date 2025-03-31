@@ -1,5 +1,5 @@
 #pragma once
-#include "pch.h"
+class CItem;
 class CObject
 {
 public: 
@@ -11,13 +11,26 @@ public :
 	virtual void Render();
 	virtual void Update();
 	virtual void Release();
+	virtual int GetAtkType();
 
 public:
-	virtual void GetDamage();
+	tagStatus GetInfo() { return m_Stat;};
+	void GetDamage(CObject* obj);
+	void GetDebuff(int _AtkType);
+	void CheckState();
+	bool CheckDead() { return 0 >= nowHp; }
+	
+	void Heal(int point);
 	const wstring& GetName();
+	wstring RenderState();
 
 protected:
 	wstring m_Sname;
 	tagStatus m_Stat;
+
+	int nowHp;
+	int m_AtkType; // 공격 타입
+	int m_State; //현재 상태
+	unordered_map<wstring, vector<int>> m_stateContainer;
 };
 

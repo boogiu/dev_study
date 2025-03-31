@@ -1,11 +1,10 @@
 #include "pch.h"
-#include <random>
 #include "CMazeScene.h"
 #include "CSceneMgr.h"
 #include "CGameMgr.h"
 
 CMazeScene::CMazeScene()
-	: player_x(0), player_y(0), lastKey(KEY::RIGHT), m_stage(1)
+	: player_x(0), player_y(0), lastKey(KEY::RIGHT), m_stage(1), Board{}, BuffBoard{}
 {
 }
 
@@ -41,6 +40,8 @@ void CMazeScene::Render()
 		wcout << endl;
 	}
 	wcout << L"--------------------------" << endl;
+	wcout << L"ESC : 마을로 돌아가기" << endl;
+
 }
 
 void CMazeScene::Release()
@@ -77,7 +78,11 @@ void CMazeScene::MovePlayer()
 			player_x += 1;
 		}
 		break;
-	case KEY::ENTER:
+	case KEY::ESC:
+		player_x = 0;
+		player_y = 0;
+		m_stage = 1;
+		CSceneMgr::GetInstance().ChangeScene(SCENE::VILLAGE);
 		break;
 	default:
 		break;

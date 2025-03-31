@@ -45,6 +45,8 @@ KEY CInput::GetKey()
 		return KEY::DOWN;
 	case 75:
 		return KEY::LEFT;
+	case 27:
+		return KEY::ESC;
 	default:
 		return KEY::NONE;
 	}
@@ -56,7 +58,7 @@ int CInput::getCommand() {
 	while (true)
 	{
 		int iKey = _getch();
-		if (iKey == 72 || iKey == 77 || iKey == 80 || iKey == 75) {
+		if (iKey == 72 || iKey == 77 || iKey == 80 || iKey == 75 || iKey==27) {
 			return iKey;
 		}
 	}

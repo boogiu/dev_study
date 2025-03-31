@@ -1,8 +1,9 @@
 #pragma once
 class CPlayer;
+class CObject;
 class CDataMgr;
 class CSceneMgr;
-class CKeyMgr;
+class CItem;
 
 class CGameMgr
 {
@@ -35,7 +36,13 @@ public:
 
 	//플레이어 포인터
 	CPlayer* GetPlayer() { return m_player; }
-	CDataMgr* GetData() { return m_dataMgr; }
+	void SetClass(CLASS _class);
+	//몬스터 풀
+	vector<CObject*>& GetMonsterPool(int _level);
+
+	//아이템 데이터
+	vector<CItem*>& GetDisposItem();
+	vector<CItem*>& GetEquipItem();
 
 private:
 	bool m_GameEnd = false;

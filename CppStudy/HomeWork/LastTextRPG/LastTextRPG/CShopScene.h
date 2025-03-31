@@ -10,5 +10,7 @@ public:
 	void Update()override;
 	void Render()override;
 	void Release()override;
+private :
+	void ShowItem(int i);
 };
 

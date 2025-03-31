@@ -31,6 +31,7 @@ enum class KEY
 	LEFT,
 	RIGHT,
 	ENTER,
+	ESC
 };
 
 
@@ -49,8 +50,20 @@ struct  tagStatus
 	int iGold;
 };
 
+struct tagItem
+{
+	int m_Cost;
+	int m_Point;
+	std::wstring m_Name;
+	std::wstring m_Desc;
+	std::wstring m_Level;
+};
+
+
 //AtkType
-constexpr int Nmal = 0 << 0;
-constexpr int Magical = 0 << 0;
-constexpr int Burn = 1 << 1;
-constexpr int Poison = 1 << 2;
+constexpr int NormalAtk = 1<< 0;
+constexpr int MagicalAtk = 1 << 1;
+constexpr int BurnAtk = 1 << 2;
+constexpr int PoisonAtk = 1 << 3;
+
+//StateType

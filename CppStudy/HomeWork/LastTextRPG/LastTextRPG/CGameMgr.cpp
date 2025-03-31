@@ -60,3 +60,29 @@ void CGameMgr::Render()
 {
 	CSceneMgr::GetInstance().Render();
 }
+
+void CGameMgr::SetClass(CLASS _class)
+{
+	m_dataMgr->LoadPlayer(_class, m_player);
+}
+
+vector<CObject*>& CGameMgr::GetMonsterPool(int _level)
+{
+	if (m_dataMgr) {
+		return m_dataMgr->GetMonster(_level);
+	}
+}
+
+vector<CItem*>& CGameMgr::GetDisposItem()
+{
+	if (m_dataMgr) {
+		return m_dataMgr->GetDisposData();
+	}
+}
+
+vector<CItem*>& CGameMgr::GetEquipItem()
+{
+	if (m_dataMgr) {
+		return m_dataMgr->GetEquipData();
+	}
+}

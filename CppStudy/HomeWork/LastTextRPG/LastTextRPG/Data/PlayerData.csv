@@ -1,1 +1,5 @@
-CLASS	Level	MaxHP	NormAtk	MagicAtk	NormDef	MagicDef	Critical	CritDmg	Avoid	EXP	Gold
+CLASS,Level,MaxHP,NormAtk,MagicAtk,NormDef,MagicDef,Critical,CritDmg,Avoid,EXP,Gold
+전사,1,150,10,0,10,10,5,10,5,0,100
+마법사,1,100,10,10,0,5,5,10,5,0,100
+도적,1,100,10,0,0,0,5,10,5,0,100
+궁수,1,100,10,0,0,0,5,10,5,0,100

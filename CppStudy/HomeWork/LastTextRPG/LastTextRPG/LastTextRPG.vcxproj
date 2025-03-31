@@ -130,8 +130,12 @@
     <ClCompile Include="CBattleScene.cpp" />
     <ClCompile Include="CClassScene.cpp" />
     <ClCompile Include="CDataMgr.cpp" />
+    <ClCompile Include="CDispoable.cpp" />
     <ClCompile Include="CGameMgr.cpp" />
+    <ClCompile Include="CHealthPotion.cpp" />
     <ClCompile Include="CInput.cpp" />
+    <ClCompile Include="CInventory.cpp" />
+    <ClCompile Include="CItem.cpp" />
     <ClCompile Include="CMainScene.cpp" />
     <ClCompile Include="CMazeScene.cpp" />
     <ClCompile Include="CMonster.cpp" />
@@ -140,6 +144,8 @@
     <ClCompile Include="CScene.cpp" />
     <ClCompile Include="CSceneMgr.cpp" />
     <ClCompile Include="CShopScene.cpp" />
+    <ClCompile Include="CSlot.cpp" />
+    <ClCompile Include="CThrow.cpp" />
     <ClCompile Include="CVillageScene.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -147,8 +153,12 @@
     <ClInclude Include="CBattleScene.h" />
     <ClInclude Include="CClassScene.h" />
     <ClInclude Include="CDataMgr.h" />
+    <ClInclude Include="CDispoable.h" />
     <ClInclude Include="CGameMgr.h" />
+    <ClInclude Include="CHealthPotion.h" />
     <ClInclude Include="CInput.h" />
+    <ClInclude Include="CInventory.h" />
+    <ClInclude Include="CItem.h" />
     <ClInclude Include="CMainScene.h" />
     <ClInclude Include="CMazeScene.h" />
     <ClInclude Include="CMonster.h" />
@@ -157,8 +167,11 @@
     <ClInclude Include="CScene.h" />
     <ClInclude Include="CSceneMgr.h" />
     <ClInclude Include="CShopScene.h" />
+    <ClInclude Include="CSlot.h" />
+    <ClInclude Include="CThrow.h" />
     <ClInclude Include="CVillageScene.h" />
     <ClInclude Include="Define.h" />
+    <ClInclude Include="Items.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Scenes.h" />
   </ItemGroup>
