@@ -24,5 +24,6 @@ private:
 	wchar_t BuffBoard[10][10];
 	KEY lastKey;
 	int m_stage;
+	bool isFinished;
 };
 

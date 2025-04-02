@@ -13,12 +13,15 @@ CMonster::~CMonster()
 
 void CMonster::Initialize()
 {
-	m_AtkType |= NormalAtk;
 	nowHp = m_Stat.iMaxHp;
+	StateRestore();
+	m_AtkType |= NormalAtk;
+	m_State = 0;
 }
 
 void CMonster::Render()
 {
+	wcout << endl;
 	wcout << m_Sname << RenderState()<<endl;
 	wcout << L"-----------" << endl;
 	wcout << L"Ã¼·Â : "<<nowHp<<L" / " << m_Stat.iMaxHp << endl;

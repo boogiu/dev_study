@@ -26,6 +26,24 @@ void CDataMgr::Initialize()
 
 void CDataMgr::Release()
 {
+	//모든 멤버 벡터 순회 돌면서 삭제.
+
+	for (vector<CObject*> pool : m_monsterData) {
+		for (CObject* monster : pool) {
+			monster->Release();
+			SAFE_DELETE(monster);
+		}
+	}
+
+	for (CItem* disposable : m_DisposItem) {
+		disposable->Release();
+		SAFE_DELETE(disposable);
+	}
+
+	for (CItem* equipable : m_EquipItem) {
+		equipable->Release();
+		SAFE_DELETE(equipable);
+	}
 }
 
 void CDataMgr::LoadPlayer(CLASS _class, CPlayer* player)
@@ -95,9 +113,17 @@ void CDataMgr::LoadItem()
 			m_DisposItem.push_back(new CHealthPotion(ApplyInfo(tmpBuffer)));
 		}
 		else if (tmpBuffer[3] == L"THROWVENOM") {
-			m_DisposItem.push_back(new CThrow(ApplyInfo(tmpBuffer)));
+			m_DisposItem.push_back(new CThrowVenom(ApplyInfo(tmpBuffer)));
 		}
-
+		else if (tmpBuffer[3] == L"THROWBURN") {
+			m_DisposItem.push_back(new CThrowVenom(ApplyInfo(tmpBuffer)));
+		}
+		else if (tmpBuffer[3] == L"SWORD") {
+			m_EquipItem.push_back(new CSword(ApplyInfo(tmpBuffer)));
+		}
+		else if (tmpBuffer[3] == L"STAFF") {
+			m_EquipItem.push_back(new CStaff(ApplyInfo(tmpBuffer)));
+		}
 	}
 	fs.close();
 }
@@ -138,7 +164,7 @@ tagStatus CDataMgr::ApplyStat(const vector<wstring>& _dataLine)
 
 tagItem CDataMgr::ApplyInfo(const vector<wstring>& _dataLine)
 {
-	// NAME	LEVEL	COST	 CATEGORY	POINT	Disposable 	DESCRIPT
+	// NAME	LEVEL	COST	 CATEGORY	POINT	SUBPOINT 	DESCRIPT 설명
 
 	tagItem tmpInfo;
 
@@ -146,7 +172,10 @@ tagItem CDataMgr::ApplyInfo(const vector<wstring>& _dataLine)
 	tmpInfo.m_Level = _dataLine[1];
 	tmpInfo.m_Cost = stoi(_dataLine[2]);
 	tmpInfo.m_Point = stoi(_dataLine[4]);
+	tmpInfo.m_subPoint = stoi(_dataLine[5]);
 	tmpInfo.m_Desc = _dataLine[6];
+	tmpInfo.m_Desc = _dataLine[6];
+
 
 	return tmpInfo;
 }

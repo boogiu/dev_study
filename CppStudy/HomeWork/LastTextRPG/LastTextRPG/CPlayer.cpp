@@ -2,9 +2,10 @@
 #include "CPlayer.h"
 #include "CInventory.h"
 #include "Items.h"
+#include "CEquip.h"
 
 CPlayer::CPlayer()
-	:m_Class(CLASS::NONE), m_inven(nullptr), m_MaxExp(10), m_BonusStat(0)
+	:m_Class(CLASS::NONE), m_inven(nullptr),m_Equip(nullptr),m_compete(nullptr), m_MaxExp(10), m_BonusStat(0), m_AtkType(0)
 {
 }
 
@@ -14,24 +15,8 @@ CPlayer::~CPlayer()
 
 void CPlayer::Initialize()
 {
-	if (!m_inven) {
-		m_inven = new CInventory;
-		m_inven->Initialize();
-	}
-}
-
-void CPlayer::Update()
-{
-
-	CheckState();
-
-}
-
-void CPlayer::Render()
-{
-	wcout << m_Sname << RenderState() << endl;
-	wcout << L"-----------" << endl;
-	wcout << L"체력 : " << nowHp << L" / " << m_Stat.iMaxHp << endl;
+	m_inven = new CInventory;
+	m_inven->Initialize();
 }
 
 void CPlayer::Release()
@@ -41,6 +26,20 @@ void CPlayer::Release()
 		SAFE_DELETE(m_inven);
 	}
 }
+
+void CPlayer::Update()
+{
+
+}
+
+void CPlayer::Render()
+{
+	wcout << m_Sname << RenderState() << endl;
+	wcout << L"-----------" << endl;
+	wcout << L"체력 : " << nowHp << L" / " << m_Stat.iMaxHp << endl;
+	wcout << L"공격력 : " << m_Stat.iNormAtk << L" / " << L"마법 공격력 : " <<m_Stat.iMgAtk << endl;
+}
+
 
 void CPlayer::SetName()
 {
@@ -115,7 +114,10 @@ void CPlayer::ShowStatus()
 		wcout << L"0.나가기 \t" << endl;
 		wcout << L"> 강화할 스탯의 번호를 입력" << endl;
 		int iSelcet = CInput::SafeInt(0, 7);
-		if (iSelcet == 0) return;
+		if (iSelcet == 0) {
+			system("cls");
+			return;
+		}
 		if (m_BonusStat > 0) {
 			switch (iSelcet) {
 			case 1:
@@ -151,6 +153,7 @@ void CPlayer::ShowStatus()
 				wcout << L"회피율 " << 2 << L"% 상승" << endl;
 				break;
 			}
+			--m_BonusStat;
 			system("pause");
 		}
 		else {
@@ -158,49 +161,14 @@ void CPlayer::ShowStatus()
 			system("pause");
 		}
 	}
+
 }
 
 void CPlayer::ShowInventory()
 {
 	system("cls");
 	m_inven->ShowInven();
-	wcout << L"0. 나가기" << endl;
-	int itemSelcet = CInput::SafeInt(0, 0);
-	if (itemSelcet == 0) {
-		system("cls");
-		return;
-	}
-}
-
-void CPlayer::ShowInventory(CObject* compete)
-{
-	while (true)
-	{
-		m_inven->ShowInven();
-		wcout << L"0. 나가기" << endl;
-		int itemSelcet = CInput::SafeInt(0, m_inven->GetSlotCount());
-		system("cls");
-
-		if (itemSelcet == 0) {
-			return;
-		}
-		--itemSelcet;
-
-		if (!m_inven->CheckItemPtr(itemSelcet)) {
-			wcout << L"아이템 존재하지 않음" << endl;
-			system("pause");
-			continue;
-		}
-
-		if (dynamic_cast<CThrow*>(m_inven->CheckItemPtr(itemSelcet))) {
-			m_inven->UseSlot(itemSelcet, compete);
-		}
-		else {
-			m_inven->UseSlot(itemSelcet, this);
-		}
-		wcout << m_Sname << L"의"<< m_inven->CheckItemPtr(itemSelcet)->GetName() <<L" 사용!" << endl;
-		break;
-	}
+	return;
 }
 
 void CPlayer::ShowSkill()
@@ -217,9 +185,10 @@ int CPlayer::GetAtkType()
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(0, 100);
 
-	if (dis(gen) < 6) {
-		return m_AtkType;
+	if (dis(gen) < 10) {
+		return m_AtkType; //--> 10%확률로 추가 공격 타입
 	}
+
 	return (m_AtkType & (~PoisonAtk)) & (m_AtkType & (~BurnAtk));
 }
 
@@ -234,6 +203,10 @@ void CPlayer::Purchase(CItem* item)
 		if (m_inven->PushItem(item)) {
 			m_Stat.iGold -= item->GetCost();
 		}
+		else {
+			wcout << L"구입에 실패했습니다. 인벤토리를 확인해보세요." << endl;
+			system("pause");
+		}
 	}
 }
 
@@ -243,11 +216,14 @@ void CPlayer::GetProps(CObject* object)
 	GetExp(object->GetInfo().iExp);
 }
 
-void CPlayer::UseSlot(int index, CObject* target)
+CObject* CPlayer::GetCompete()
 {
-	if (!m_inven->UseSlot(index, target)) {
-		wcout << "슬롯을 사용할 수 없습니다." << endl;
-	}
+	return m_compete;
+}
+
+void CPlayer::SetCompete(CObject* object)
+{
+	m_compete = object;
 }
 
 void CPlayer::GetExp(int exp)

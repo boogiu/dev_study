@@ -22,7 +22,7 @@ public:
 private:
 	tagStatus ApplyStat(const vector<wstring>& _dataLine);
 	tagItem ApplyInfo(const vector<wstring>& _dataLine);
-	CItem* ClassficateItem(const wstring& category);
+
 private:
 	vector<vector<CObject*>>m_monsterData;
 	vector<CItem*> m_DisposItem;

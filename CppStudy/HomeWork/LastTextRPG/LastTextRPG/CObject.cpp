@@ -5,8 +5,9 @@
 CObject::CObject()
 	:m_Sname{}, m_Stat(), m_AtkType(0),m_State(0), nowHp(0)
 {
-	m_stateContainer.insert({ L"화상", {0,0} });
-	m_stateContainer.insert({ L"중독", {0,0} });
+	//L"화상" {Turn,Damage}
+	m_stateContainer.insert({ STATE_KEY::BURN ,{0,0}});
+	m_stateContainer.insert({ STATE_KEY::POISON ,{0,0} });
 }
 
 CObject::~CObject()
@@ -15,7 +16,6 @@ CObject::~CObject()
 
 void CObject::Initialize()
 {
-
 }
 
 void CObject::Render()
@@ -24,7 +24,6 @@ void CObject::Render()
 
 void CObject::Update()
 {
-	CheckState();
 }
 
 void CObject::Release()
@@ -43,105 +42,65 @@ void CObject::GetDamage(CObject* obj)
 		return;
 	}
 	
-	int AtkTmpType = obj->GetAtkType();
-	int AtkTmp = 0;
-
+	int AtkTmpType = obj->GetAtkType();	//공격 상대의 어택 타입
+	int AtkTmp = 0;													//데미지 계산 변수
+	
 	if (AtkTmpType & NormalAtk) {
-		wcout << obj->GetName() << L"-> "<<m_Sname<<L"  일반 공격!" << endl;
+		wcout << obj->GetName() << L" -> "<<m_Sname<<L"  일반 공격!" << endl;
 		AtkTmp=obj->GetInfo().iNormAtk;
+		AtkTmp -= m_Stat.iNormDef;
 	}
 	if (AtkTmpType & MagicalAtk) {
-		wcout << obj->GetName() << L"-> " << m_Sname << L"  마법 공격!" << endl;
+		wcout << obj->GetName() << L" -> " << m_Sname << L"  마법 공격!" << endl;
 		AtkTmp=obj->GetInfo().iMgAtk;
+		AtkTmp -= m_Stat.iMgDef;
 	}
+
 	if (dis(gen) < m_Stat.iCrit) {
-		AtkTmp += static_cast<int>((m_Stat.iCritDmg / 100.0) * AtkTmp);
+		AtkTmp += static_cast<int>((m_Stat.iCritDmg / 100.0) * AtkTmp); //크리티컬 계산
 	}
 
 	nowHp -= AtkTmp;
 
 	if (AtkTmpType & BurnAtk) {
-		GetDebuff(BurnAtk);
+		GetDebuff(BurnAtk);		//속성 부여
+	}
+	if (AtkTmpType & PoisonAtk) {
+		GetDebuff(PoisonAtk); //속성 부여
 	}
 
-	if (AtkTmpType & PoisonAtk) {
-		GetDebuff(PoisonAtk);
-	}
+	CheckState();
 }
 
-void CObject::GetDebuff(int _AtkType)
+void CObject::GetDebuff(int _AtkType, int turn, int damage)
 {
+	
 	if (_AtkType & BurnAtk) {
-		m_State |= BurnAtk;
+		if (m_State |= BurnAtk) {//화상 중첨 => 데미지 증가
+			m_stateContainer[STATE_KEY::BURN][0] += turn;//턴
+			m_stateContainer[STATE_KEY::BURN][1] += damage; //데미지
+		}
+		else {
+			m_stateContainer[STATE_KEY::BURN][1] += damage;
+		}
 	}
-	if (_AtkType & PoisonAtk) {
-		m_State |= PoisonAtk;
+
+	if (_AtkType & PoisonAtk) { //중독 중첨 => 턴 증가
+		if (m_State |= PoisonAtk) {
+			m_stateContainer[STATE_KEY::POISON][0] += turn;//턴
+			m_stateContainer[STATE_KEY::POISON][1] += damage; //데미지
+		}
+		else {
+			m_stateContainer[STATE_KEY::POISON][0] += turn;//턴
+			m_stateContainer[STATE_KEY::POISON][1] = damage; //데미지
+		}
 	}
+
 }
 
 int CObject::GetAtkType()
 {
 	return m_AtkType;
-}
-
-void CObject::Heal(int point)
-{
-	if (point + nowHp > m_Stat.iMaxHp) {
-		nowHp = m_Stat.iMaxHp;
-	}
-	else {
-		nowHp += point;
-	}
-}
-
-const wstring& CObject::GetName()
-{
-	return m_Sname;
-}
-
-void CObject::CheckState()
-{
-	if (m_State & BurnAtk) {
-		if (0 < m_stateContainer[L"화상"][0]) 
-		{ //이미 화상이 걸려 있다면.
-			--m_stateContainer[L"화상"][0]; //턴 차감 
-			m_stateContainer[L"화상"][1] += 2; // 데미지 증가
-		}
-		else 
-		{//이미 화상이 걸려 있지 않다면
-			wcout << m_Sname << L"가  화상 상태!" << endl;
-			m_stateContainer[L"화상"][0] =3;  //3번
-			m_stateContainer[L"화상"][1] = 2; //2데미지
-		}
-		
-		nowHp -= m_stateContainer[L"화상"][1]; 
-		wcout << m_Sname << L"가 " << m_stateContainer[L"화상"][1] << L"만큼의 화상 피해!" << endl;
-
-		if (m_stateContainer[L"화상"][0] == 0) {
-			m_State &= ~BurnAtk; //화상 턴이 끝나면
-			wcout << m_Sname << L"의 상태이상 해제!" << endl;
-		}
-	}
-
-	if (m_State & PoisonAtk) {
-
-		if (0 < m_stateContainer[L"중독"][0]) {
-			--m_stateContainer[L"중독"][0];
-		}
-		else {
-			m_stateContainer[L"중독"][0] = 2;
-			m_stateContainer[L"중독"][1] = 5;
-			wcout << m_Sname << L"가  중독 상태!" << endl;
-		}
-
-		nowHp -= m_stateContainer[L"중독"][1];
-		wcout << m_Sname << L"가 " << m_stateContainer[L"중독"][1] << L"만큼의 중독 피해!" << endl;
-
-		if (m_stateContainer[L"중독"][0] == 0) {
-			m_State &= ~PoisonAtk;
-			wcout << m_Sname << L"의 상태이상 해제!" << endl;
-		}
-	}
 }
 
 wstring CObject::RenderState()
@@ -154,12 +113,60 @@ wstring CObject::RenderState()
 	tmp += L"(";
 
 	if (m_State & BurnAtk) {
-		tmp += (L"화상 :" + to_wstring(m_stateContainer[L"화상"][0]));
+		tmp += (L"화상 :" + to_wstring(m_stateContainer[STATE_KEY::BURN][0]));
 	}
 	if (m_State & PoisonAtk) {
-		tmp += (L"중독 :" + to_wstring(m_stateContainer[L"중독"][0]));
+		tmp += (L"중독 :" + to_wstring(m_stateContainer[STATE_KEY::POISON][0]));
 	}
 	tmp += L")";
 	
 	return tmp;
+}
+
+void CObject::CheckState()
+{
+	unordered_map<STATE_KEY, vector<int>>::iterator iter = m_stateContainer.begin();
+	for (;iter != m_stateContainer.end();++iter) {
+		vector<int>&tmp = iter->second;
+		if (tmp[0] > 0) {//턴
+			--tmp[0];
+			nowHp -= tmp[1];//데미지
+		}
+		if (tmp[0] <= 0) {
+			tmp[0] = 0;
+			m_State &= ~(static_cast<int>(iter->first));
+		}
+	}
+}
+
+void CObject::Heal(int point)
+{
+	if (point + nowHp > m_Stat.iMaxHp) {
+		nowHp = m_Stat.iMaxHp;
+	}
+	else {
+		nowHp += point;
+	}
+}
+
+void CObject::StateRestore()
+{
+	unordered_map<STATE_KEY, vector<int>>::iterator iter = m_stateContainer.begin();
+
+	for (;iter != m_stateContainer.end();++iter) {
+		vector<int>& tmp = iter->second;
+		tmp[0] = 0;
+		tmp[1] = 0;
+	}
+}
+
+void CObject::StateRestore(STATE_KEY key)
+{
+	m_stateContainer[key][0] = 0;
+	m_stateContainer[key][1] = 0;
+}
+
+const wstring& CObject::GetName()
+{
+	return m_Sname;
 }

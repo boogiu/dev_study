@@ -17,12 +17,13 @@ CGameMgr::~CGameMgr()
 void CGameMgr::Initialize()
 {
 	if (!m_dataMgr) {
+		//데이터매니저 생성
 		m_dataMgr = new CDataMgr;
 		m_dataMgr->Initialize();
 	}
 
 	if (!m_player) {
-		//플레이서 생성
+		//플레이어 생성
 		m_player = new CPlayer;
 		m_player->Initialize();
 	}

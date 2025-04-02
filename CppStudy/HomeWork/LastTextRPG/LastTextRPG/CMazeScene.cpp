@@ -4,7 +4,7 @@
 #include "CGameMgr.h"
 
 CMazeScene::CMazeScene()
-	: player_x(0), player_y(0), lastKey(KEY::RIGHT), m_stage(1), Board{}, BuffBoard{}
+	: player_x(0), player_y(0), lastKey(KEY::RIGHT), m_stage(1), Board{}, BuffBoard{}, isFinished(false)
 {
 }
 
@@ -23,7 +23,6 @@ void CMazeScene::Initialize()
 
 void CMazeScene::Update()
 {
-	
 	MovePlayer();
 	CopyBoard();
 	EventCheck();
@@ -41,7 +40,6 @@ void CMazeScene::Render()
 	}
 	wcout << L"--------------------------" << endl;
 	wcout << L"ESC : 마을로 돌아가기" << endl;
-
 }
 
 void CMazeScene::Release()
@@ -79,6 +77,7 @@ void CMazeScene::MovePlayer()
 		}
 		break;
 	case KEY::ESC:
+		isFinished = true;
 		player_x = 0;
 		player_y = 0;
 		m_stage = 1;
@@ -110,6 +109,7 @@ void CMazeScene::CopyBoard()
 
 void CMazeScene::EventCheck()
 {
+	if (isFinished) return;
 	// 시드값을 얻기 위한 random_device 생성.
 	std::random_device rd;
 

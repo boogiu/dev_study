@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "pch.h"
 #include "CItem.h"
 
 CItem::CItem()
+	: type(ITEM_TYPE::NONE)
 {
 }
 

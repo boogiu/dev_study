@@ -37,9 +37,10 @@ public:
 	//플레이어 포인터
 	CPlayer* GetPlayer() { return m_player; }
 	void SetClass(CLASS _class);
+
 	//몬스터 풀
 	vector<CObject*>& GetMonsterPool(int _level);
-
+	
 	//아이템 데이터
 	vector<CItem*>& GetDisposItem();
 	vector<CItem*>& GetEquipItem();

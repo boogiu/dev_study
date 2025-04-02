@@ -70,11 +70,17 @@
     <Filter Include="06. Item\Disposable\HealthPotion">
       <UniqueIdentifier>{1eec3756-fa3e-4c39-a5e1-021eff5280f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Object\Player\Inventory">
+      <UniqueIdentifier>{bae16bb7-cdb8-4097-8fc1-4dc184c273be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Item\Equipable\Sword">
+      <UniqueIdentifier>{232aac20-1fea-4a8c-a4cf-eb7e98bf4784}</UniqueIdentifier>
+    </Filter>
     <Filter Include="06. Item\Disposable\ThrowingWeapon">
       <UniqueIdentifier>{aac593d5-611d-48bc-b6cf-c127ea4ae0c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. Object\Player\Inventory">
-      <UniqueIdentifier>{bae16bb7-cdb8-4097-8fc1-4dc184c273be}</UniqueIdentifier>
+    <Filter Include="06. Item\Equipable\Staff">
+      <UniqueIdentifier>{e822790a-fc4a-4383-a20a-65847dc235ec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -129,17 +135,29 @@
     <ClCompile Include="CHealthPotion.cpp">
       <Filter>06. Item\Disposable\HealthPotion</Filter>
     </ClCompile>
-    <ClCompile Include="CThrow.cpp">
+    <ClCompile Include="CThrowVenom.cpp">
       <Filter>06. Item\Disposable\ThrowingWeapon</Filter>
-    </ClCompile>
-    <ClCompile Include="CInventory.cpp">
-      <Filter>04. Object\Player\Inventory</Filter>
     </ClCompile>
     <ClCompile Include="CItem.cpp">
       <Filter>06. Item</Filter>
     </ClCompile>
     <ClCompile Include="CSlot.cpp">
       <Filter>04. Object\Player\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="CEquipable.cpp">
+      <Filter>06. Item\Equipable</Filter>
+    </ClCompile>
+    <ClCompile Include="CSword.cpp">
+      <Filter>06. Item\Equipable\Sword</Filter>
+    </ClCompile>
+    <ClCompile Include="CInventory.cpp">
+      <Filter>04. Object\Player\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="CThrowBurn.cpp">
+      <Filter>06. Item\Disposable\ThrowingWeapon</Filter>
+    </ClCompile>
+    <ClCompile Include="CStaff.cpp">
+      <Filter>06. Item\Equipable\Staff</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -200,7 +218,7 @@
     <ClInclude Include="CHealthPotion.h">
       <Filter>06. Item\Disposable\HealthPotion</Filter>
     </ClInclude>
-    <ClInclude Include="CThrow.h">
+    <ClInclude Include="CThrowVenom.h">
       <Filter>06. Item\Disposable\ThrowingWeapon</Filter>
     </ClInclude>
     <ClInclude Include="Items.h">
@@ -209,11 +227,23 @@
     <ClInclude Include="CItem.h">
       <Filter>06. Item</Filter>
     </ClInclude>
+    <ClInclude Include="CSlot.h">
+      <Filter>04. Object\Player\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="CEquipable.h">
+      <Filter>06. Item\Equipable</Filter>
+    </ClInclude>
+    <ClInclude Include="CSword.h">
+      <Filter>06. Item\Equipable\Sword</Filter>
+    </ClInclude>
     <ClInclude Include="CInventory.h">
       <Filter>04. Object\Player\Inventory</Filter>
     </ClInclude>
-    <ClInclude Include="CSlot.h">
-      <Filter>04. Object\Player\Inventory</Filter>
+    <ClInclude Include="CThrowBurn.h">
+      <Filter>06. Item\Disposable\ThrowingWeapon</Filter>
+    </ClInclude>
+    <ClInclude Include="CStaff.h">
+      <Filter>06. Item\Equipable\Staff</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

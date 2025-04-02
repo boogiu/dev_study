@@ -12,18 +12,21 @@ public:
 	void Initialize();
 	void Render();
 	void Release();
-	
-	void ActiveItem(CObject* obj);
-	
-	void PushItem(CItem* item);
+
+public:
+	bool PushItem(CItem* item);
 	void PopItem();
-	
-	CItem* GetItem(){ return m_Item; }
+	void ActiveItem();
+	void DeActiveItem();
+	ITEM_TYPE GetItemType();
+	bool Equipable();
+	void SwapEquip(CSlot& slot);
+	int GetCount() { return m_Count; }
 public :
 	bool m_Empty;
 
 private :
-	CItem* m_Item;
+	CItem* m_Item; //데이터 베이스에서 삭제
 	int m_Count;
 };
 

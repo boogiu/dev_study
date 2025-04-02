@@ -34,8 +34,15 @@ enum class KEY
 	ESC
 };
 
-
-
+enum class ITEM_TYPE {
+	NONE,
+	DISPOSABLE,
+	RIGHT,
+	LEFT,
+	TWOHAND,
+	HELMET,
+	ARMOR
+};
 struct  tagStatus
 {
 	int iMaxHp;
@@ -54,16 +61,22 @@ struct tagItem
 {
 	int m_Cost;
 	int m_Point;
+	int m_subPoint;
 	std::wstring m_Name;
 	std::wstring m_Desc;
 	std::wstring m_Level;
 };
 
 
-//AtkType
+//Type
 constexpr int NormalAtk = 1<< 0;
 constexpr int MagicalAtk = 1 << 1;
 constexpr int BurnAtk = 1 << 2;
 constexpr int PoisonAtk = 1 << 3;
 
 //StateType
+enum class STATE_KEY {
+	NONE = 0,
+	BURN = BurnAtk,
+	POISON = PoisonAtk
+};

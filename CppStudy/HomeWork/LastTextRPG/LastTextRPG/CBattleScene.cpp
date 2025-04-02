@@ -29,6 +29,7 @@ void CBattleScene::Update()
 
 	//monster Pool 중 1개
 	if (Fight(m_pPlayer, vecMonster[dis(gen)])) {
+
 		CSceneMgr::GetInstance().ChangeScene(SCENE::MAZE);
 	}
 }
@@ -46,12 +47,13 @@ bool CBattleScene::Fight(CPlayer* player, CObject* compete)
 {
 	wcout << L"전투가 시작되었다." << endl;
 	compete->Initialize();
+	player->SetCompete(compete);
 
 	while (true)
 	{
 		compete->Render();
 		player->Render();
-		
+
 		wcout << endl;
 		wcout << L"1. 공격\t2. 가방 \t3. 스킬 \n\n4. 나의 정보 \t5. 도망" << endl;
 
@@ -59,27 +61,28 @@ bool CBattleScene::Fight(CPlayer* player, CObject* compete)
 		system("cls");
 
 		if (iSelect == 5) return true;
-
+		
 		else if (iSelect == 4) {
 			player->ShowStatus();
+			continue;
 		}
 
 		else if (iSelect == 3) {
 			player->ShowSkill();
 		}
 		else if (iSelect == 2) {
-			player->ShowInventory(compete);
+			player->ShowInventory();
 		}
-		player->GetDamage(compete);
-		if (iSelect == 1) {
+
+		else if (iSelect ==1) {
+			player->GetDamage(compete);
 			compete->GetDamage(player);
 		}
 
-		compete->Update();
-		player->Update();
-
 		if (player->CheckDead()) {
 			wcout << L"플레이어의 사망..." << endl;
+			player->SetCompete(nullptr);
+
 			system("pause");
 			CSceneMgr::GetInstance().ChangeScene(SCENE::END);
 			return false;
@@ -87,9 +90,12 @@ bool CBattleScene::Fight(CPlayer* player, CObject* compete)
 
 		if (compete->CheckDead()) {
 			wcout << L"플레이어의 승리!" << endl;
+			player->SetCompete(nullptr);
+
 			system("pause");
 			player->GetProps(compete);
 			return true;
 		}
+
 	}
 }

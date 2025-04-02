@@ -1,16 +1,15 @@
 #pragma once
 #include "CDispoable.h"
-class CHealthPotion : public CDispoable
+class CThrowBurn : public CDispoable
 {
 public:
-	CHealthPotion(tagItem item);
-	~CHealthPotion() override;
+	CThrowBurn(tagItem item);
+	~CThrowBurn() override;
 
 public:
 	void Initialize() override;
 	void Release() override;
 	void Active() override;
 	void DeActive()override;
-
 };
 

@@ -47,19 +47,19 @@ KEY CInput::GetKey()
 		return KEY::LEFT;
 	case 27:
 		return KEY::ESC;
+	case 13:
+		return KEY::ENTER;
 	default:
 		return KEY::NONE;
 	}
 }
 
 int CInput::getCommand() {
-	while (!_kbhit()) {
-	}
-	while (true)
-	{
-		int iKey = _getch();
-		if (iKey == 72 || iKey == 77 || iKey == 80 || iKey == 75 || iKey==27) {
-			return iKey;
-		}
-	}
+	while (!_kbhit());  // 입력 대기
+	int iKey;
+	do {
+		iKey = _getch();
+	} while (!(iKey == 72 || iKey == 77 || iKey == 80 || iKey == 75 || iKey == 27 || iKey==13));
+
+	return iKey;
 }

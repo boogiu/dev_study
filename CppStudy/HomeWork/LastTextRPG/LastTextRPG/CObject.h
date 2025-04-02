@@ -14,23 +14,28 @@ public :
 	virtual int GetAtkType();
 
 public:
-	tagStatus GetInfo() { return m_Stat;};
+	tagStatus& GetInfo() { return m_Stat;};
 	void GetDamage(CObject* obj);
-	void GetDebuff(int _AtkType);
-	void CheckState();
+	void GetDebuff(int _AtkType, int turn =3, int damage=2);
 	bool CheckDead() { return 0 >= nowHp; }
 	
 	void Heal(int point);
+	void StateRestore(STATE_KEY key);
+
 	const wstring& GetName();
 	wstring RenderState();
 
+private:
+	void CheckState();
+
 protected:
-	wstring m_Sname;
-	tagStatus m_Stat;
+	void StateRestore();
 
 	int nowHp;
 	int m_AtkType; // 공격 타입
 	int m_State; //현재 상태
-	unordered_map<wstring, vector<int>> m_stateContainer;
+	wstring m_Sname;
+	tagStatus m_Stat;
+	unordered_map<STATE_KEY, vector<int>> m_stateContainer;
 };
 

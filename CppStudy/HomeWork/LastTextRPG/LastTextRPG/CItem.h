@@ -1,4 +1,5 @@
 #pragma once
+
 class CObject;
 
 class CItem
@@ -10,12 +11,13 @@ public:
 public:
 	virtual void Initialize();
 	virtual void Release();
+
+public:
 	void Render();
 	void RenderSummary();
 	int GetCost() { return m_item.m_Cost; }
-	wstring& GetName() { return m_item.m_Name; }
-	virtual void Active(CObject* obj) = 0;
-	virtual void DeActive(CObject* obj) = 0 ;
+	std::wstring& GetName() { return m_item.m_Name; }
+	ITEM_TYPE type;
 private:
 
 protected:

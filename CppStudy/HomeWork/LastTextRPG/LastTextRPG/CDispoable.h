@@ -9,8 +9,8 @@ public:
 public:
 	virtual void Initialize();
 	virtual void Release();
-	virtual void Active(CObject* obj) = 0;
-	virtual void DeActive(CObject* obj) = 0;
+	virtual void Active() = 0;
+	virtual void DeActive() = 0;
 private:
 
 
