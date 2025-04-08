@@ -6,48 +6,47 @@
 
 using namespace std;
 
+
+void Highlight(int i) {
+    cout << "초당 프레임 : " << i << endl;
+}
+
 int main() {
-    LARGE_INTEGER GAP, counter, currTime;
-    LARGE_INTEGER prevTime;
+    LARGE_INTEGER Gap, Frequency, CurrTime;
+    LARGE_INTEGER PrevTime;
+    
+    QueryPerformanceFrequency(&Frequency); //컴퓨터 진동수 (고정값)
+    double SecondPerFrequency = (double)1.0 / Frequency.QuadPart; //프레임 1회에 걸리는 초(1 진동에 몇초?)
 
-    QueryPerformanceCounter(&prevTime);  // 프로그램 시작 당시 타이머 값 얻기
-    QueryPerformanceFrequency(&counter); //컴퓨터 진동수
-
-    double secondpercount=(double) 1.0 / counter.QuadPart; //프레임 1회에 걸리는 초(1 진동에 몇초?)
+    QueryPerformanceCounter(&PrevTime);  // 프로그램 시작 당시 타이머 값 얻기
 
     double elapsedTime = 0.0; // 시간 측정 시작!
     int frameCount = 0; //프레임 몇개인지 수집!
+
     while (true) {
+        QueryPerformanceCounter(&CurrTime);  // 현재 타이머 값 얻기
 
-        QueryPerformanceCounter(&currTime);  // 현재 타이머 값 얻기
+        //cout << "지난 타이머 값: " << PrevTime.QuadPart << endl;
+        //cout << "이번 타이머 값: " << CurrTime.QuadPart << endl;
 
-        //cout << "지난 타이머 값: " << prevTime.QuadPart << endl;
-        //cout << "이번 타이머 값: " << currTime.QuadPart << endl;
-
-        GAP.QuadPart =currTime.QuadPart -prevTime.QuadPart;
-        //cout << "진동수 갭 :: " << GAP.QuadPart << endl;
+        Gap.QuadPart = CurrTime.QuadPart -PrevTime.QuadPart;
+        //cout << "진동수 갭 :: " << Gap.QuadPart << " 차이" << endl;
         
-        //cout << "프레임 1회당 : " << GAP.QuadPart * secondpercount<<"초" << endl;
+        //cout << "프레임 1회당 : " << Gap.QuadPart * SecondPerFrequency <<"초" << endl;
         //GAP.QuadPart* secondpercount 프레임 1번 돌 때 걸리는 시간
-        elapsedTime += GAP.QuadPart * secondpercount; //시간 누적
+        elapsedTime += Gap.QuadPart * SecondPerFrequency; //시간 누적
         
         //cout << "누적 시간 : " << elapsedTime << "초" << endl;
+        ++frameCount;
 
         if (elapsedTime >= 1.0) {
+            system("cls");
             Highlight(frameCount);
             elapsedTime = 0;
             frameCount = 0;
         }
-        else {
-            ++frameCount;
-        }
-        //cout << "초당 프레임 : " << frameCount << endl;
-        prevTime = currTime;
+        PrevTime = CurrTime;
     }
 
     return 0;
-}
-
-void Highlight(int i) {
-    cout << i << endl;
 }

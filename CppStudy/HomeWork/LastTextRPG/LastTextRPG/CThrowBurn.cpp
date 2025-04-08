@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CThrowBurn.h"
+
 #include "CGameMgr.h"
 #include "CObject.h"
 #include "CPlayer.h"

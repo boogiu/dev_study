@@ -11,3 +11,6 @@
 #include "Define.h"
 
 using namespace std;
+
+
+#define SINGLETON(p)
