@@ -158,8 +158,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		Rectangle(hdc, 0, 10, 800,15);
-		RenderPlayer(hdc);    // 플레이어의 출력
-		RenderElipse(hdc);		//원의 출력(플레이어 위치 정보 기반)
+		RenderPlayer(hdc);   
+		RenderElipse(hdc);
 		EndPaint(hWnd, &ps);
 	}
 	break;
@@ -168,7 +168,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (wParam == VK_ESCAPE) {
 			DestroyWindow(hWnd);
 		}
-		MovePlayer(wParam); //플레이어의 이동(키다운)
+		MovePlayer(wParam);
 	}
 	break;
 	case WM_DESTROY:
@@ -180,12 +180,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-
+// 플레이어의 출력
 void RenderPlayer(HDC hdc)
 {
 	Rectangle(hdc, RPlayer.left, RPlayer.top, RPlayer.right, RPlayer.bottom);
 }
 
+ //플레이어의 이동(키다운)
 void MovePlayer(WPARAM wParam)
 {
 	switch (wParam)
@@ -236,7 +237,7 @@ void MakeElipse(tagSize bulletSize)
 		});
 }
 
-// 원의 출력 : 리스트 순회
+// 원의 출력 : 리스트 순회(좌표 기반 렌더링)
 void RenderElipse(HDC hdc)
 {
 	auto iter = BulletList.begin();

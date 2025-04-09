@@ -103,8 +103,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_COMMAND:
         {
-            int wmId = LOWORD(wParam);
-            // 메뉴 선택을 구문 분석합니다:
+            int wmId = LOWORD(wParam); 
+            // 메뉴 선택을 구문 분석합니다
             switch (wmId)
             {
             case IDM_ABOUT:
@@ -192,6 +192,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             Ellipse(hdc, 470, 50, 480, 60);
 
             Ellipse(hdc, 400, 50, 500, 150); // 450 100 Face Round
+            //Ellipse(hdc, 410, 80, 490, 150); // 450 100 Face Round
+
             
             Ellipse(hdc, 420, 75, 445, 100);  // 432,87 
             Ellipse(hdc, 426, 81, 438, 94); 
