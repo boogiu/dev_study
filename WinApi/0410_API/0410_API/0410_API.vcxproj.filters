@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="00. Main">
+      <UniqueIdentifier>{869d80df-9a71-4c44-93ae-7b28c79a06d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Common">
+      <UniqueIdentifier>{514f6e0f-d8ad-43a4-a3db-a98167df69e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Manager">
+      <UniqueIdentifier>{43b3c6dd-426c-42b6-82a9-3b7d6181b49c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Common\FrameWorks">
+      <UniqueIdentifier>{41804674-fe62-4a77-8cbc-96d01cc9ad85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Common\FrameWorks\BaseHeader">
+      <UniqueIdentifier>{611b883f-ea79-40d5-bf01-189cdf4f910c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Scene">
+      <UniqueIdentifier>{73bc99c5-6d9e-4aed-af83-f5246ffb3659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Object">
+      <UniqueIdentifier>{0330b78a-55c7-4d08-b753-56d9d71d0a6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Scene\MainScene">
+      <UniqueIdentifier>{4c194a8f-9405-4eca-9649-1f7829298607}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Manager\MainGame">
+      <UniqueIdentifier>{7eba2e32-2c33-42ba-abb0-68b99bfc2933}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Manager\SceneManager">
+      <UniqueIdentifier>{6da1d5e3-6813-4744-84c2-e986325a7740}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Common\Headers">
+      <UniqueIdentifier>{80087699-2897-41b7-9655-1ba66e2219f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Manager\InputManager">
+      <UniqueIdentifier>{d5fd22df-0ad7-44c2-8447-da2bb62b9c89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05. UI">
+      <UniqueIdentifier>{6b6bda20-4d4a-4189-bc86-594f2b830256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05. UI\Button">
+      <UniqueIdentifier>{3ba98558-55a9-4837-9bf4-ac1150835667}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Scene\StageScene">
+      <UniqueIdentifier>{6780cef3-9c95-454d-9f86-383fbc61493e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Object\Monster">
+      <UniqueIdentifier>{4d6a6763-ee46-4836-bca7-2861924dd61e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Common\Random">
+      <UniqueIdentifier>{c74972be-fb88-4b35-9cb1-7b6d2831e3f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Object\Player">
+      <UniqueIdentifier>{e757be4d-d05a-4ae5-b38f-203f051862bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Manager\ObjectManager">
+      <UniqueIdentifier>{9910d25b-f1e3-4d2b-88e8-d90e6ab59e1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. Physics">
+      <UniqueIdentifier>{c2f76e33-70a5-4966-8763-89b91cf93b84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. Physics\Collision">
+      <UniqueIdentifier>{dd482442-b699-41be-9645-0478cc6ab29e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. BackGround">
+      <UniqueIdentifier>{a03835ae-be6f-40b0-9b8c-7018834f9a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. BackGround\Border">
+      <UniqueIdentifier>{65f9015f-3c9d-4c24-96af-79d343b0d9c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. BackGround\Tile">
+      <UniqueIdentifier>{880d5e10-f3ef-455b-be40-2fbeda347c72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. BackGround\Tile\Platform">
+      <UniqueIdentifier>{425e817f-3031-4735-b69a-edcd315984bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. Physics\Gravity">
+      <UniqueIdentifier>{9d3ab667-3067-4448-b1a0-ce79122c6e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. Physics\Velocity">
+      <UniqueIdentifier>{413eba07-38fb-4bca-b49a-bb388a93a1d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Manager\PhysicsManager">
+      <UniqueIdentifier>{74a56634-26a6-4d88-94c8-722ffec8fbee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Item">
+      <UniqueIdentifier>{ff611f63-09ef-402d-b6fc-e802d9d0d686}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Object\Bullet">
+      <UniqueIdentifier>{879987e5-ca94-4313-921c-bdacae121212}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Object\Player\Radar">
+      <UniqueIdentifier>{d828630f-b2b2-4ff5-a3ca-2c0c43a3491c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="0410_API.h">
+      <Filter>00. Main</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>01. Common\FrameWorks</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>01. Common\FrameWorks</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>01. Common\FrameWorks\BaseHeader</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>01. Common\FrameWorks\BaseHeader</Filter>
+    </ClInclude>
+    <ClInclude Include="CMainGame.h">
+      <Filter>02. Manager\MainGame</Filter>
+    </ClInclude>
+    <ClInclude Include="CSceneMgr.h">
+      <Filter>02. Manager\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers.h">
+      <Filter>01. Common\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes.h">
+      <Filter>01. Common\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CScene.h">
+      <Filter>03. Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CMainScene.h">
+      <Filter>03. Scene\MainScene</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>01. Common\FrameWorks\BaseHeader</Filter>
+    </ClInclude>
+    <ClInclude Include="CInputMgr.h">
+      <Filter>02. Manager\InputManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CCollision.h">
+      <Filter>07. Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CButton.h">
+      <Filter>05. UI\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="CStageScene.h">
+      <Filter>03. Scene\StageScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CObject.h">
+      <Filter>04. Object</Filter>
+    </ClInclude>
+    <ClInclude Include="CRandom.h">
+      <Filter>01. Common\Random</Filter>
+    </ClInclude>
+    <ClInclude Include="CMonster.h">
+      <Filter>04. Object\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>04. Object\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CTile.h">
+      <Filter>06. BackGround\Tile</Filter>
+    </ClInclude>
+    <ClInclude Include="CBorder.h">
+      <Filter>06. BackGround\Border</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects.h">
+      <Filter>01. Common\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="BackGrounds.h">
+      <Filter>01. Common\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CObjMgr.h">
+      <Filter>02. Manager\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CGravity.h">
+      <Filter>07. Physics\Gravity</Filter>
+    </ClInclude>
+    <ClInclude Include="CVelocity.h">
+      <Filter>07. Physics\Velocity</Filter>
+    </ClInclude>
+    <ClInclude Include="CPhysicsMgr.h">
+      <Filter>02. Manager\PhysicsManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>01. Common\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CBullet.h">
+      <Filter>04. Object\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="CRadar.h">
+      <Filter>04. Object\Player\Radar</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="0410_API.cpp">
+      <Filter>00. Main</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>01. Common\FrameWorks</Filter>
+    </ClCompile>
+    <ClCompile Include="CMainGame.cpp">
+      <Filter>02. Manager\MainGame</Filter>
+    </ClCompile>
+    <ClCompile Include="CSceneMgr.cpp">
+      <Filter>02. Manager\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CScene.cpp">
+      <Filter>03. Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="CMainScene.cpp">
+      <Filter>03. Scene\MainScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CInputMgr.cpp">
+      <Filter>02. Manager\InputManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CCollision.cpp">
+      <Filter>07. Physics\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CButton.cpp">
+      <Filter>05. UI\Button</Filter>
+    </ClCompile>
+    <ClCompile Include="CStageScene.cpp">
+      <Filter>03. Scene\StageScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CObject.cpp">
+      <Filter>04. Object</Filter>
+    </ClCompile>
+    <ClCompile Include="CRandom.cpp">
+      <Filter>01. Common\Random</Filter>
+    </ClCompile>
+    <ClCompile Include="CMonster.cpp">
+      <Filter>04. Object\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>04. Object\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CTile.cpp">
+      <Filter>06. BackGround\Tile</Filter>
+    </ClCompile>
+    <ClCompile Include="CBorder.cpp">
+      <Filter>06. BackGround\Border</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjMgr.cpp">
+      <Filter>02. Manager\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CGravity.cpp">
+      <Filter>07. Physics\Gravity</Filter>
+    </ClCompile>
+    <ClCompile Include="CVelocity.cpp">
+      <Filter>07. Physics\Velocity</Filter>
+    </ClCompile>
+    <ClCompile Include="CPhysicsMgr.cpp">
+      <Filter>02. Manager\PhysicsManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CBullet.cpp">
+      <Filter>04. Object\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="CRadar.cpp">
+      <Filter>04. Object\Player\Radar</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="0410_API.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="0410_API.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

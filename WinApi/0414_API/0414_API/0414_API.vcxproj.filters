@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="03 Manager">
+      <UniqueIdentifier>{9258f69c-d684-49f1-baa1-450c8e8f4138}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\InputManager">
+      <UniqueIdentifier>{c84e83b9-389e-49d1-9690-194358704875}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\SceneManager">
+      <UniqueIdentifier>{73005605-d36f-40cc-b804-4b72ec1e815b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00 FrameWorks">
+      <UniqueIdentifier>{8928c43d-8980-45f3-b967-8c890adc8b20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01 Client">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>
+      </Extensions>
+    </Filter>
+    <Filter Include="02 MainGame">
+      <UniqueIdentifier>{240de0ca-0c2f-41f0-924c-435bed6a4e57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object">
+      <UniqueIdentifier>{0d04dcb8-844a-44db-8e92-b5c8cf4d696e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Monster">
+      <UniqueIdentifier>{4c101e15-49d5-4334-ab24-f5f5da2e5f25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Player">
+      <UniqueIdentifier>{81092f91-6950-4ffe-a676-cf23b6fc71b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 Factory">
+      <UniqueIdentifier>{8dd8cb7c-2d6c-49a9-aafb-1820662d7e55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 Factory\ObjectFactory">
+      <UniqueIdentifier>{24bd886d-ab57-473c-9434-bfc89d9bacfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene">
+      <UniqueIdentifier>{ee45d246-f41e-415d-8efc-5b7473c88eeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 Factory\SceneFactory">
+      <UniqueIdentifier>{bab0cddc-8c6a-47ef-9e6a-711bde3bdf0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\StageScene">
+      <UniqueIdentifier>{675cddda-00e3-49da-8f4d-b14bbc8fcea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. Physics">
+      <UniqueIdentifier>{17dfbf98-3be9-4348-88b1-9cb05c0efd29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Components">
+      <UniqueIdentifier>{1c42d685-31a3-4ab2-8266-99adcc989520}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Components\Collider">
+      <UniqueIdentifier>{30a02978-8b08-46b0-b12c-2c2146752849}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\ObjectManager">
+      <UniqueIdentifier>{ce475e27-2ab2-4dbb-b0ba-470ce747b50e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00 FrameWorks\Headers">
+      <UniqueIdentifier>{04b99a0b-9e34-4c63-8640-634f809e28ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Components\RigidBody">
+      <UniqueIdentifier>{e4a8d76e-ea38-4623-a29c-c219a26fe202}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Components\TransForm">
+      <UniqueIdentifier>{90306836-d677-40d5-9672-6c3d21f2710a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Bullet">
+      <UniqueIdentifier>{fb1de7e1-1f47-4dec-9849-8689c07a4edd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CMainGame.h">
+      <Filter>02 MainGame</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>04 Object\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CObjectFactory.h">
+      <Filter>06 Factory\ObjectFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="CInputMgr.h">
+      <Filter>03 Manager\InputManager</Filter>
+    </ClInclude>
+    <ClInclude Include="define.h">
+      <Filter>00 FrameWorks</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>00 FrameWorks</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>00 FrameWorks</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>00 FrameWorks</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>00 FrameWorks</Filter>
+    </ClInclude>
+    <ClInclude Include="0414_API.h">
+      <Filter>01 Client</Filter>
+    </ClInclude>
+    <ClInclude Include="CSceneMgr.h">
+      <Filter>03 Manager\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CScene.h">
+      <Filter>05 Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CSceneFactory.h">
+      <Filter>06 Factory\SceneFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="CStageScene.h">
+      <Filter>05 Scene\StageScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CComponent.h">
+      <Filter>08. Components</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameObject.h">
+      <Filter>04 Object</Filter>
+    </ClInclude>
+    <ClInclude Include="CCollider.h">
+      <Filter>08. Components\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.h">
+      <Filter>00 FrameWorks\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CRigidBody.h">
+      <Filter>08. Components\RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="CTransform.h">
+      <Filter>08. Components\TransForm</Filter>
+    </ClInclude>
+    <ClInclude Include="CBullet.h">
+      <Filter>04 Object\Bullet</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CMainGame.cpp">
+      <Filter>02 MainGame</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>04 Object\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CInputMgr.cpp">
+      <Filter>03 Manager\InputManager</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>00 FrameWorks</Filter>
+    </ClCompile>
+    <ClCompile Include="0414_API.cpp">
+      <Filter>01 Client</Filter>
+    </ClCompile>
+    <ClCompile Include="CSceneMgr.cpp">
+      <Filter>03 Manager\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CScene.cpp">
+      <Filter>05 Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="CStageScene.cpp">
+      <Filter>05 Scene\StageScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CComponent.cpp">
+      <Filter>08. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameObject.cpp">
+      <Filter>04 Object</Filter>
+    </ClCompile>
+    <ClCompile Include="CCollider.cpp">
+      <Filter>08. Components\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="CRigidBody.cpp">
+      <Filter>08. Components\RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="CTransform.cpp">
+      <Filter>08. Components\TransForm</Filter>
+    </ClCompile>
+    <ClCompile Include="CBullet.cpp">
+      <Filter>04 Object\Bullet</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="0414_API.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="0414_API.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
