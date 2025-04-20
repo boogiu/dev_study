@@ -24,5 +24,6 @@ public:
 private:
     VECTOR2 m_vPos;
     VECTOR2 m_vScale;
+    vector<CGameObject*> m_vecCollision;
 };
 

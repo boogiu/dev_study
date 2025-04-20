@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="00 Client">
+      <UniqueIdentifier>{a3f127e1-f727-487c-9af9-34839253ab11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01 Common">
+      <UniqueIdentifier>{44ef07c5-1f02-4d1a-8b84-8913612d9101}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02 MainGame">
+      <UniqueIdentifier>{dae5a4c4-b3fa-48a0-9d60-378156de3523}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager">
+      <UniqueIdentifier>{a1868f88-9f95-4fb7-a4b6-ae6227a2e732}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\SceneMgr">
+      <UniqueIdentifier>{e041ce40-382a-46e8-88d8-638fc47804e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\InputMgr">
+      <UniqueIdentifier>{d8af1618-b329-443d-b3d5-f1a747603b79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\ObjMgr">
+      <UniqueIdentifier>{48e00b85-ca79-4dfc-8670-73a583f89c61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 CScene">
+      <UniqueIdentifier>{67f49c59-510c-4c8c-ad6f-30223610077e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 CScene\MainScene">
+      <UniqueIdentifier>{649a3323-d6d2-4cb9-b8de-ff67f7f13b31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 AbstractFactory">
+      <UniqueIdentifier>{185b8c47-2330-41fc-8703-8bfe9f6c2648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 GameObject">
+      <UniqueIdentifier>{36d3ad53-4cc3-4b61-aa04-ca108610cde1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 GameObject\Player">
+      <UniqueIdentifier>{b48d1e02-a4da-48b0-be2e-416bad6cb0a3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="0418_API.h">
+      <Filter>00 Client</Filter>
+    </ClInclude>
+    <ClInclude Include="define.h">
+      <Filter>01 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>01 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>01 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>01 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>01 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="CMainGame.h">
+      <Filter>02 MainGame</Filter>
+    </ClInclude>
+    <ClInclude Include="CSceneMgr.h">
+      <Filter>03 Manager\SceneMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CObjMgr.h">
+      <Filter>03 Manager\ObjMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers.h">
+      <Filter>03 Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CInputMgr.h">
+      <Filter>03 Manager\InputMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CScene.h">
+      <Filter>05 CScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CMainScene.h">
+      <Filter>05 CScene\MainScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes.h">
+      <Filter>05 CScene</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneFactory.h">
+      <Filter>04 AbstractFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameObject.h">
+      <Filter>06 GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>06 GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjects.h">
+      <Filter>06 GameObject</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="0418_API.cpp">
+      <Filter>00 Client</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>01 Common</Filter>
+    </ClCompile>
+    <ClCompile Include="CMainGame.cpp">
+      <Filter>02 MainGame</Filter>
+    </ClCompile>
+    <ClCompile Include="CSceneMgr.cpp">
+      <Filter>03 Manager\SceneMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjMgr.cpp">
+      <Filter>03 Manager\ObjMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CInputMgr.cpp">
+      <Filter>03 Manager\InputMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CScene.cpp">
+      <Filter>05 CScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CMainScene.cpp">
+      <Filter>05 CScene\MainScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameObject.cpp">
+      <Filter>06 GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>06 GameObject\Player</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="0418_API.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="0418_API.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

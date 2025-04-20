@@ -4,6 +4,7 @@
 #include "Components.h"
 #include "CBullet.h"
 CPlayer::CPlayer()
+	:m_bJump(false)
 {
 }
 
@@ -18,6 +19,8 @@ void CPlayer::Initialize()
 	this->AddComponent(new CRigidBody);
 	this->GetComponent<CTransform>()->SetPos({ 50.f,50.f });
 	this->GetComponent<CTransform>()->SetScale({ 50.f,50.f });
+	this->GetComponent<CRigidBody>()->SetGravity(true);
+
 }
 
 void CPlayer::Update()
@@ -66,6 +69,15 @@ void CPlayer::KeyUpdate()
 		this->GetComponent<CRigidBody>()->ImPulse({ 1.f,0.f });
 	}
 	if (CInputMgr::GetInstance().GetKeyDown(VK_SPACE)) {
+		if (m_bJump) {
+
+		}
+		else {
+			this->GetComponent<CRigidBody>()->ImPulse({ 0.f,-4.f });
+			m_bJump = true;
+		}
+	}
+	if (CInputMgr::GetInstance().GetKeyDown(VK_CONTROL)) {
 		FireBullet();
 	}
 }

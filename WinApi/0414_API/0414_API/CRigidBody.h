@@ -18,8 +18,9 @@ public:
     VECTOR2& GetVelocity() { return m_vVelocity; }
     void SetVelocity(VECTOR2 _velocity) { m_vVelocity = _velocity; }
     void ImPulse(VECTOR2 _velocity);
-
+    void SetGravity(bool _gravity) { m_bGravity = _gravity; }
 private:
     VECTOR2 m_vVelocity;
+    bool m_bGravity;
 };
 

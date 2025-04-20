@@ -73,6 +73,9 @@
     <Filter Include="04 Object\Bullet">
       <UniqueIdentifier>{fb1de7e1-1f47-4dec-9849-8689c07a4edd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04 Object\Platform">
+      <UniqueIdentifier>{b29f4528-8ab8-4a50-9ee5-210d427ced6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMainGame.h">
@@ -138,6 +141,8 @@
     <ClInclude Include="CBullet.h">
       <Filter>04 Object\Bullet</Filter>
     </ClInclude>
+    <ClInclude Include="CPlatform.h" />
+    <ClInclude Include="CObjectMgr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CMainGame.cpp">
@@ -182,6 +187,8 @@
     <ClCompile Include="CBullet.cpp">
       <Filter>04 Object\Bullet</Filter>
     </ClCompile>
+    <ClCompile Include="CPlatform.cpp" />
+    <ClCompile Include="CObjectMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="0414_API.rc">

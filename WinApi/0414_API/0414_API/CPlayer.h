@@ -20,6 +20,7 @@ private:
     void FireBullet();
     
 private:
+    bool m_bJump;
     vector<CGameObject*> m_list;
 };
 

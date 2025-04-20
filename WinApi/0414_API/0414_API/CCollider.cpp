@@ -15,6 +15,7 @@ void CCollider::Initialize()
 
 void CCollider::Update()
 {
+		
 }
 
 void CCollider::Late_Update()

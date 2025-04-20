@@ -17,6 +17,7 @@ void CStageScene::Initialize()
 {
 	m_pPlayer = CObjectFactory<CPlayer>::CreateObject();
 	m_pPlayer->Initialize();
+
 }
 
 void CStageScene::Update()
