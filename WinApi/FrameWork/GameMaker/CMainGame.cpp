@@ -21,7 +21,7 @@ void CMainGame::Initialize()
 	CKeyMgr::Get_Instance()->Initialize();
 	CScrollMgr::Get_Instance()->Initialize();
 	CSceneMgr::Get_Instance()->Initialize();
-	CResourceMgr::Get_Instance()->Insert_Bmp(L"../Image/Back.bmp", L"Back");
+	CResourceMgr::Get_Instance()->Insert_Bmp(L"../Image/Ground.bmp", L"Back");
 }
 
 void CMainGame::Update()

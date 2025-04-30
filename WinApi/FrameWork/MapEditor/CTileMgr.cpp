@@ -22,7 +22,7 @@ void CTileMgr::Initialize()
 	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Image/Tile/tile_32_4.bmp", L"Tile");
 
 
-	INFO StartPoint = { 30,30 , CL_CELLSIZE,CL_CELLSIZE };
+	INFO StartPoint = { 30,30 , CL_CELLSIZE>>1,CL_CELLSIZE>>1 };
 	INFO DrawPoint = StartPoint;
 
 	for (int i = 0; i < 20; ++i) { //타일 타입 같은 행
@@ -33,7 +33,13 @@ void CTileMgr::Initialize()
 			m_tileUIContainer.push_back(tmpTile);
 			DrawPoint.fX += DrawPoint.fCX + 2;
 		}
-		DrawPoint.fY += DrawPoint.fCY + 2;
+		if (DrawPoint.fY > WINCY -30) {
+			DrawPoint.fY = 30;
+			StartPoint.fX += 230;
+		}
+		else {
+			DrawPoint.fY += DrawPoint.fCY + 2;
+		}
 		DrawPoint.fX = StartPoint.fX;
 	}
 	INFO m_nowTileRect = { 0,0 , CL_CELLSIZE>>2,CL_CELLSIZE>>2 };
@@ -78,12 +84,7 @@ void CTileMgr::Late_Update()
 
 void CTileMgr::Render(HDC _hDC)
 {
-
-	LONG x = (LONG)CScrollMgr::Get_Instance()->Get_ScrollX();
-	LONG y = (LONG)CScrollMgr::Get_Instance()->Get_ScrollY();
-
 	HDC hGroundDC = CBmpMgr::Get_Instance()->Find_Image(L"Ground");
-	//BitBlt(_hDC, 0, 0, WINCX, WINCY, hGroundDC, WINCX+x, WINCY+y, SRCCOPY);
 	BitBlt(_hDC, 0, 0, WINCX, WINCY, hGroundDC, 0, 0, SRCCOPY);
 
 	if (m_bGrid) {

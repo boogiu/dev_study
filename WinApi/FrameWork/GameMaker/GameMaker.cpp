@@ -96,7 +96,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, FALSE);
 
-	g_hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+	g_hWnd = CreateWindowW(szWindowClass, szTitle, WS_POPUP,  // 전체 화면 스타일,
 		CW_USEDEFAULT, 0,
 		winRect.right - winRect.left, winRect.bottom - winRect.top,
 		nullptr, nullptr, hInstance, nullptr);

@@ -12,7 +12,7 @@ CTestStage::~CTestStage()
 
 void CTestStage::Initialize()
 {
-	CResourceMgr::Get_Instance()->Insert_Bmp(L"../Image/Stage_back.bmp", L"Ground");
+	CResourceMgr::Get_Instance()->Insert_Bmp(L"../Image/Ground.bmp", L"Ground");
 	CResourceMgr::Get_Instance()->Insert_Bmp(L"../Image/Tile/Platform.bmp", L"Platform");
 	__super::Load_Map(L"../TileData/Tile.dat");
 }
@@ -28,7 +28,7 @@ void CTestStage::Late_Update()
 void CTestStage::Render(HDC _hDC)
 {
 
-	HDC hGroundDC = CResourceMgr::Get_Instance()->Find_Image(L"Ground");;
+	HDC hGroundDC = CResourceMgr::Get_Instance()->Find_Image(L"Back");;
 	BitBlt(_hDC, 0, 0, WINCX, WINCY, hGroundDC, 0, 0, SRCCOPY);
 	__super::Render_Tile(_hDC);
 }

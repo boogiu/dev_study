@@ -59,7 +59,7 @@ void CStage::Load_Map(const TCHAR* pFilePath)
 		m_TileList.push_back(tTile);
 	}
 	CloseHandle(hFile);
-	MessageBox(g_hWnd, L"Load 완료", L"Success", MB_OK);
+	//MessageBox(g_hWnd, L"Load 완료", L"Success", MB_OK);
 }
 
 void CStage::Render_Tile(HDC _hDC)
@@ -74,16 +74,6 @@ void CStage::Render_Tile(HDC _hDC)
 
 		int srcX = (int)info.m_Col * CELLSIZE;
 		int srcY = (int)info.m_Row * CELLSIZE;
-
-		GdiTransparentBlt(
-			_hDC,
-			info.m_tSpriteRect.left + x, info.m_tSpriteRect.top + y,
-			(int)info.m_tInfo.fCX, (int)info.m_tInfo.fCY,
-			memDC,
-			srcX, srcY,
-			CELLSIZE, CELLSIZE,
-			HOLLOW
-		);
 
 		Rectangle(_hDC, info.m_tSpriteRect.left, info.m_tSpriteRect.top, info.m_tSpriteRect.right, info.m_tSpriteRect.bottom);
 	}
