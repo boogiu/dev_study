@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="GameMaker.cpp">
+      <Filter>01 Client</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>00 Common\myDefine</Filter>
+    </ClCompile>
+    <ClCompile Include="CBmp.cpp">
+      <Filter>03 Manager\00 ResourceMgr\BmpMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CBmpMgr.cpp">
+      <Filter>03 Manager\00 ResourceMgr\BmpMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CResourceMgr.cpp">
+      <Filter>03 Manager\00 ResourceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CKeyMgr.cpp">
+      <Filter>03 Manager\02 KeyMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CMainGame.cpp">
+      <Filter>02 MainGame</Filter>
+    </ClCompile>
+    <ClCompile Include="CScrollMgr.cpp">
+      <Filter>03 Manager\03 ScrollMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CTimeMgr.cpp">
+      <Filter>03 Manager\01 TimeMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CObject.cpp">
+      <Filter>04 Object</Filter>
+    </ClCompile>
+    <ClCompile Include="CScene.cpp">
+      <Filter>05 Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="CSceneMgr.cpp">
+      <Filter>03 Manager\05 SceneMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>04 Object\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CState.cpp">
+      <Filter>FSM\State</Filter>
+    </ClCompile>
+    <ClCompile Include="CStage.cpp">
+      <Filter>05 Scene\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="CTestStage.cpp">
+      <Filter>05 Scene\Stage\TestStage</Filter>
+    </ClCompile>
+    <ClCompile Include="CTestScene.cpp">
+      <Filter>05 Scene\TestScene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameMaker.h">
+      <Filter>01 Client</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>00 Common\myDefine</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures.h">
+      <Filter>00 Common\myDefine</Filter>
+    </ClInclude>
+    <ClInclude Include="Templates.h">
+      <Filter>00 Common\myDefine</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>00 Common\baseFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>00 Common\baseFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="CBmp.h">
+      <Filter>03 Manager\00 ResourceMgr\BmpMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CBmpMgr.h">
+      <Filter>03 Manager\00 ResourceMgr\BmpMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CResourceMgr.h">
+      <Filter>03 Manager\00 ResourceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CKeyMgr.h">
+      <Filter>03 Manager\02 KeyMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CMainGame.h">
+      <Filter>02 MainGame</Filter>
+    </ClInclude>
+    <ClInclude Include="CScrollMgr.h">
+      <Filter>03 Manager\03 ScrollMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CTimeMgr.h">
+      <Filter>03 Manager\01 TimeMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>00 Common\myDefine</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumDefs.h">
+      <Filter>00 Common\myDefine</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>00 Common\baseFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers.h">
+      <Filter>03 Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CObject.h">
+      <Filter>04 Object</Filter>
+    </ClInclude>
+    <ClInclude Include="CScene.h">
+      <Filter>05 Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CSceneMgr.h">
+      <Filter>03 Manager\05 SceneMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>04 Object\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CState.h">
+      <Filter>FSM\State</Filter>
+    </ClInclude>
+    <ClInclude Include="CStage.h">
+      <Filter>05 Scene\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="CTestStage.h">
+      <Filter>05 Scene\Stage\TestStage</Filter>
+    </ClInclude>
+    <ClInclude Include="CTestScene.h">
+      <Filter>05 Scene\TestScene</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>00 Common\baseFrame</Filter>
+    </Image>
+    <Image Include="BitMapRenderer.ico">
+      <Filter>00 Common\baseFrame</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="00 Common">
+      <UniqueIdentifier>{0c59facb-3334-4baa-b330-7f48ed74d290}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01 Client">
+      <UniqueIdentifier>{589de1a4-5d32-4770-b95c-ec48a8aff7d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00 Common\myDefine">
+      <UniqueIdentifier>{3ff0414a-cde7-445f-b54d-29b1aa8c6994}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00 Common\baseFrame">
+      <UniqueIdentifier>{3defd31a-e16b-45da-9792-8b29cab4d8c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02 MainGame">
+      <UniqueIdentifier>{77864396-6474-4499-b001-8d483ee6b0a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager">
+      <UniqueIdentifier>{7aa69235-4170-4fe3-ad9e-cc0f067a33b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\00 ResourceMgr">
+      <UniqueIdentifier>{2d7cea87-89cc-44ae-b6e3-d5258169e0ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\01 TimeMgr">
+      <UniqueIdentifier>{dc2fc843-32e9-4c2c-8677-55aa8f78050b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\00 ResourceMgr\BmpMgr">
+      <UniqueIdentifier>{d30b455e-d2e7-4884-82e0-854fef5d98b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\02 KeyMgr">
+      <UniqueIdentifier>{f6cc9b1f-32e4-4510-97d6-5e5ed1352474}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\03 ScrollMgr">
+      <UniqueIdentifier>{1b7f271d-6219-428b-abec-989e0fed9e68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object">
+      <UniqueIdentifier>{2e8f3a1f-5df7-42cf-86b3-1203982f3c48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Player">
+      <UniqueIdentifier>{d27c021e-0dfe-4ea3-b20c-396fc4a1c214}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene">
+      <UniqueIdentifier>{c3b439c6-9748-40ed-b126-487abff2eb12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\05 SceneMgr">
+      <UniqueIdentifier>{00dd0492-f7db-4555-a44b-139b34e1e460}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\04 ObjectMgr">
+      <UniqueIdentifier>{34cec6ae-eea4-489c-b1f8-85eefb9f7bd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM">
+      <UniqueIdentifier>{4d4d86e6-c7dd-4af9-ba86-3b17729f8704}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\State">
+      <UniqueIdentifier>{c4abae90-4a93-4186-9edd-1c11f8ba7eb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\Stage">
+      <UniqueIdentifier>{33dc01fe-5870-4b0e-9563-275c8686ceaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\Stage\TestStage">
+      <UniqueIdentifier>{e2709ffb-1745-4e85-b13e-641e1fc4482f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\TestScene">
+      <UniqueIdentifier>{283a8c66-2963-4c57-9ff5-03df5af948ca}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BitMapRenderer.rc">
+      <Filter>00 Common\baseFrame</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
