@@ -34,4 +34,5 @@ void CObjectManager::Late_Update()
 
 void CObjectManager::Release()
 {
+	//컨테이너 데이터 삭제(근데 유니크 포인터라서 ㄱㅊ)
 }

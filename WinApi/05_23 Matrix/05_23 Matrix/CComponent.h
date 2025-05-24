@@ -1,4 +1,6 @@
 #pragma once
+#include"CRenderer.h"
+#include "CRenderManager.h"
 
 class CObject;
 
@@ -32,7 +34,12 @@ void ReleaseOnSystem(T* component) {
 }
 //특수화 해둘 것
 
-//template<>
-//void RegisterOnSystem<CRenderer>(CRenderer* renderer) {
-//
-//}
+template<>
+void RegisterOnSystem<CRenderer>(CRenderer* renderer) {
+
+}
+
+template<>
+void ReleaseOnSystem<CRenderer>(CRenderer* renderer) {
+
+}

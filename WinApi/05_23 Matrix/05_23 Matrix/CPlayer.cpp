@@ -12,7 +12,12 @@ CPlayer::~CPlayer()
 
 void CPlayer::Initialize()
 {
-	AddComponent<CTransform>();
+	CTransform* transform = AddComponent<CTransform>();
+	transform->Set_Scale(10.f,10.f,10.f);
+	transform->Set_Position(10.f,10.f,10.f);
+	transform->Set_Rotation(0.f, 0.f,0.f);
+
+
 }
 
 void CPlayer::Update(float dt)

@@ -35,6 +35,12 @@
     <Filter Include="03 Manager\TimeManager">
       <UniqueIdentifier>{b53c50e1-6480-4f0c-9cb7-38dd8f3b4b1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="05 Component\Renderer">
+      <UniqueIdentifier>{85b5b26b-59cc-4028-9179-cd76d66e981c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\RenderManager">
+      <UniqueIdentifier>{37b1db91-e1f4-4af8-a9da-af47ecbad786}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -79,6 +85,12 @@
     <ClInclude Include="CPlayer.h">
       <Filter>04 GameObject\Player</Filter>
     </ClInclude>
+    <ClInclude Include="CRenderer.h">
+      <Filter>05 Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="CRenderManager.h">
+      <Filter>03 Manager\RenderManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -107,6 +119,12 @@
     </ClCompile>
     <ClCompile Include="CPlayer.cpp">
       <Filter>04 GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CRenderer.cpp">
+      <Filter>05 Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="CRenderManager.cpp">
+      <Filter>03 Manager\RenderManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

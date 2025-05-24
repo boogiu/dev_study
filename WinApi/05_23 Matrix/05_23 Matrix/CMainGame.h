@@ -1,4 +1,6 @@
 #pragma once
+class CObject;
+
 class CMainGame
 {
 public:
@@ -16,5 +18,7 @@ private:
 	HDC m_hBackDC = nullptr;
 	HBITMAP m_hBackBitmap = nullptr;
 	HBITMAP m_hOldBitmap = nullptr;
+
+	CObject* m_pPlayer;
 };
 

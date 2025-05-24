@@ -76,7 +76,7 @@ protected:
 
 private:
 	bool m_bActive;
-	std::vector<std::unique_ptr<CComponent>> components; //객체 생성 & 해제 용도
+	std::vector<std::unique_ptr<CComponent>> components;								//객체 생성 & 해제 용도
 	std::unordered_map<ComponentType, CComponent*> componentMap; //객체 접근 용도
 };
 
