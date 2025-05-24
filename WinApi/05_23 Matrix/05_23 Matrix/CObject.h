@@ -3,6 +3,7 @@
 
 enum class ObjectType {
 	PLAYER,
+	END
 };
 
 class CObject

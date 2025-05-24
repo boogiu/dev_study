@@ -1,5 +1,5 @@
 #pragma once
-class CObject;
+#include "CObject.h"
 
 class CObjectManager
 {
@@ -34,9 +34,9 @@ public:
 			}
 		}
 
-		auto obj = std::make_unique<T>(<Args>(args)...);
+		auto obj = std::make_unique<T>(std::forward<Args>(args)...);
 		T* raw = obj.get();
-		m_ActiveObjects.push_back(std::move(obj));
+		m_ActiveContainer.push_back(std::move(obj));
 		return raw;
 	}
 
@@ -47,16 +47,17 @@ public:
 		obj->SetActive(false); // 비활성화
 		ObjectType type = T::StaticType();
 
-		auto iter = std::find_if(m_ActiveObjects.begin(), m_ActiveObjects.end(),
+		auto iter = std::find_if(m_ActiveContainer.begin(), m_ActiveContainer.end(),
 			[obj](const std::unique_ptr<CObject>& ptr) {
 				return ptr.get() == obj;
-			});
+			}
+		);
 
 		if (iter == m_ActiveContainer.end()) return;
 		std::unique_ptr<CObject> extracted = std::move(*iter);
-		m_PoolContainer[type].push_back(std::move(extracted);
+		m_PoolContainer[type].push_back(std::move(extracted));
 
-		m_ActiveObjects.erase(iter);
+		m_ActiveContainer.erase(iter);
 	}
 
 private:
