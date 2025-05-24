@@ -47,3 +47,8 @@
 /.vs/DevStudy/FileContentIndex
 /.vs
 /DataStructure/.vs/DataStructure
+
+#Image File
+/.vs/Image
+*.png
+*.bmp
