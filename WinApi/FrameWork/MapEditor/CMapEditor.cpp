@@ -22,8 +22,8 @@ void CMapEditor::Initialize()
 	CKeyMgr::Get_Instance()->Initialize();
 	CScrollMgr::Get_Instance()->Initialize();
 	CTileMgr::Get_Instance()->Initialize();
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Image/Stage_back.bmp", L"Back");
-	CBmpMgr::Get_Instance()->Insert_Bmp(L"../Image/Stage_back.bmp", L"Ground");
+	
+
 }
 
 void CMapEditor::Update()
@@ -48,7 +48,6 @@ void CMapEditor::Render()
 	CTileMgr::Get_Instance()->Render(hBackDC);
 
 	BitBlt(m_hDC, 0, 0, WINCX, WINCY, hBackDC, 0, 0, SRCCOPY);
-
 }
 
 void CMapEditor::Release()

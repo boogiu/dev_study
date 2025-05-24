@@ -1,0 +1,17 @@
+#pragma once
+#include "CMonsterState.h"
+class CMonster;
+class CSoldierIdle :
+    public CMonsterState
+{
+public:
+    CSoldierIdle();
+    ~CSoldierIdle();
+public:
+    // CMonsterState을(를) 통해 상속됨
+    void Enter(CMonster* monster) override;
+    void Update(CMonster* monster) override;
+    bool Exit(CMonster* monster) override;
+
+};
+

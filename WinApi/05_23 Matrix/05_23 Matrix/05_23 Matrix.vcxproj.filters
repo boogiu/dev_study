@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="00 Common">
+      <UniqueIdentifier>{7b081eb1-839d-4eea-b1e1-cee0a674f8e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01 Client">
+      <UniqueIdentifier>{91093ad5-ea89-46f1-acde-147bdfa5632c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02 MainGame">
+      <UniqueIdentifier>{b118fb86-ccc3-47d9-82ba-90ebd72dd176}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager">
+      <UniqueIdentifier>{dfa82810-d14a-405d-9007-c2de709b34ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 GameObject">
+      <UniqueIdentifier>{72ea752c-0d6f-4cf4-b29d-2c3ef3b99378}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Component">
+      <UniqueIdentifier>{5d298a46-e1c4-45a1-9161-bb8c560f2e88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Component\Transform">
+      <UniqueIdentifier>{105ff8d4-f603-4e71-a12a-9dabc46566aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 GameObject\Player">
+      <UniqueIdentifier>{83df5387-4c35-4087-913f-2721ef82cfa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\ObjectManager">
+      <UniqueIdentifier>{52039080-e7b1-4623-bee7-d0134155534d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\TimeManager">
+      <UniqueIdentifier>{b53c50e1-6480-4f0c-9cb7-38dd8f3b4b1d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h">
+      <Filter>00 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>00 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>00 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>00 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>00 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="05_23 Matrix.h">
+      <Filter>01 Client</Filter>
+    </ClInclude>
+    <ClInclude Include="CMainGame.h">
+      <Filter>02 MainGame</Filter>
+    </ClInclude>
+    <ClInclude Include="CTimeManager.h">
+      <Filter>03 Manager\TimeManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CComponent.h">
+      <Filter>05 Component</Filter>
+    </ClInclude>
+    <ClInclude Include="CObject.h">
+      <Filter>04 GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CTransform.h">
+      <Filter>05 Component\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.h">
+      <Filter>05 Component</Filter>
+    </ClInclude>
+    <ClInclude Include="CObjectManager.h">
+      <Filter>03 Manager\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>04 GameObject\Player</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>00 Common</Filter>
+    </ClCompile>
+    <ClCompile Include="05_23 Matrix.cpp">
+      <Filter>01 Client</Filter>
+    </ClCompile>
+    <ClCompile Include="CMainGame.cpp">
+      <Filter>02 MainGame</Filter>
+    </ClCompile>
+    <ClCompile Include="CTimeManager.cpp">
+      <Filter>03 Manager\TimeManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CComponent.cpp">
+      <Filter>05 Component</Filter>
+    </ClCompile>
+    <ClCompile Include="CObject.cpp">
+      <Filter>04 GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CTransform.cpp">
+      <Filter>05 Component\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjectManager.cpp">
+      <Filter>03 Manager\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>04 GameObject\Player</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="05_23 Matrix.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="05_23 Matrix.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

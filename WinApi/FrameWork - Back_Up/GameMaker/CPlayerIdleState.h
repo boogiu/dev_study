@@ -1,0 +1,15 @@
+#pragma once
+#include "CPlayerState.h"
+class CPlayerIdleState :
+    public CPlayerState
+{
+public:
+    CPlayerIdleState();
+    ~CPlayerIdleState();
+
+    // CPlayerState을(를) 통해 상속됨
+    void Enter(CPlayer* player) override;
+    void Update(CPlayer* player) override;
+    bool Exit(CPlayer* player) override;
+};
+

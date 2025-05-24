@@ -16,6 +16,8 @@ public:
 	void Late_Update();
 	void Render(HDC _hDC);
 	void Release();
+public:
+	void Change_Scene(SCENE_TAG nextScene);
 
 public:
 	static CSceneMgr* Get_Instance() {
@@ -33,7 +35,8 @@ public:
 
 private:
 	static CSceneMgr* m_pInstance;
-	CScene* m_NowScene;
+	unordered_map<SCENE_TAG, CScene*> m_SceneContainer;
+	SCENE_TAG m_NowScene;
 };
 
 

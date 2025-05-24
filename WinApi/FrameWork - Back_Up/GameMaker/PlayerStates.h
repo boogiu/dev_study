@@ -1,0 +1,12 @@
+#pragma once
+#include "CPlayerState.h"
+#include "CPlayerIdleState.h"
+#include "CPlayerMoveState.h"
+#include "CPlayerJumpState.h"
+#include "CPlayerFallState.h"
+#include "CPlayerDashState.h"
+#include "CPlayerAttckState.h"
+#include "CPlayerJumpAtkState.h"
+#include "CPlayerSkillAState.h"
+#include "CPlayerSkillBState.h"
+#include "CPlayerSwitchState.h"

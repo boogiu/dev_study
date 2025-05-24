@@ -1,0 +1,46 @@
+#pragma once
+enum class KEY_STATE {
+	NONE,
+	TAP,
+	HOLD,
+	AWAY
+};
+
+enum TILE_DIRECTION {
+	UP,
+	UP_RIGHT,
+	RIGHT,
+	RIGHT_DOWN,
+	DOWN,
+	LEFT_DOWN,
+	LEFT,
+	LEFT_UP,
+	MIDDLE,
+	END_DIR
+};
+
+enum TILE_TYPE {
+	GRASS,
+	ROCK,
+	END_TILE
+};
+
+enum TILE_ROLE {
+	WALL,
+	FLOOR,
+	CEIL,
+	END_TILEROLE
+};
+
+enum OBJ_TAG {
+	PLAYER,
+	MONSTER,
+	PROJECTILE,
+	PLATFORM,
+	MAX_OBJECT
+};
+
+enum SCENE_TAG {
+	MAIN,
+	STAGE,
+};

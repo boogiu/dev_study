@@ -13,5 +13,6 @@ public:
 
 private:
 	HDC m_hDC;
+	INFO_EX BackBuff;
 };
 

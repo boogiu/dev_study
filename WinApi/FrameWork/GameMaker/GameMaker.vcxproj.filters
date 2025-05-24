@@ -22,14 +22,8 @@
     <ClCompile Include="CMainGame.cpp">
       <Filter>02 MainGame</Filter>
     </ClCompile>
-    <ClCompile Include="CScrollMgr.cpp">
-      <Filter>03 Manager\03 ScrollMgr</Filter>
-    </ClCompile>
     <ClCompile Include="CTimeMgr.cpp">
       <Filter>03 Manager\01 TimeMgr</Filter>
-    </ClCompile>
-    <ClCompile Include="CObject.cpp">
-      <Filter>04 Object</Filter>
     </ClCompile>
     <ClCompile Include="CScene.cpp">
       <Filter>05 Scene</Filter>
@@ -40,17 +34,335 @@
     <ClCompile Include="CPlayer.cpp">
       <Filter>04 Object\Player</Filter>
     </ClCompile>
-    <ClCompile Include="CState.cpp">
-      <Filter>FSM\State</Filter>
-    </ClCompile>
     <ClCompile Include="CStage.cpp">
-      <Filter>05 Scene\Stage</Filter>
+      <Filter>05 Scene\BattleScene\Stage</Filter>
     </ClCompile>
     <ClCompile Include="CTestStage.cpp">
-      <Filter>05 Scene\Stage\TestStage</Filter>
+      <Filter>05 Scene\BattleScene\Stage\TestStage</Filter>
     </ClCompile>
     <ClCompile Include="CTestScene.cpp">
       <Filter>05 Scene\TestScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjMgr.cpp">
+      <Filter>03 Manager\04 ObjectMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerState.cpp">
+      <Filter>06 FSM\State\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerIdleState.cpp">
+      <Filter>06 FSM\State\PlayerState\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerMoveState.cpp">
+      <Filter>06 FSM\State\PlayerState\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerJumpState.cpp">
+      <Filter>06 FSM\State\PlayerState\Jump</Filter>
+    </ClCompile>
+    <ClCompile Include="CSkul.cpp">
+      <Filter>08 Skul</Filter>
+    </ClCompile>
+    <ClCompile Include="CBaseSkul.cpp">
+      <Filter>08 Skul\BaseSkul</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerFallState.cpp">
+      <Filter>06 FSM\State\PlayerState\Fall</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerDashState.cpp">
+      <Filter>06 FSM\State\PlayerState\Dash</Filter>
+    </ClCompile>
+    <ClCompile Include="CAnim.cpp">
+      <Filter>07 Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerAttckState.cpp">
+      <Filter>06 FSM\State\PlayerState\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerJumpAtkState.cpp">
+      <Filter>06 FSM\State\PlayerState\JumpAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerSkillAState.cpp">
+      <Filter>06 FSM\State\PlayerState\SkillA</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerSkillBState.cpp">
+      <Filter>06 FSM\State\PlayerState\SkillB</Filter>
+    </ClCompile>
+    <ClCompile Include="CProjectile.cpp">
+      <Filter>04 Object\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="CSkulHead.cpp">
+      <Filter>04 Object\Projectile\SkulHead</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerSwitchState.cpp">
+      <Filter>06 FSM\State\PlayerState\Switch</Filter>
+    </ClCompile>
+    <ClCompile Include="CEntSkul.cpp">
+      <Filter>08 Skul\EntSkul</Filter>
+    </ClCompile>
+    <ClCompile Include="CCollisionMgr.cpp">
+      <Filter>03 Manager\06 CollisionMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CUIMgr.cpp">
+      <Filter>03 Manager\07 UIMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CBase_UI.cpp">
+      <Filter>03 Manager\07 UIMgr\UI_Object</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerFrame.cpp">
+      <Filter>03 Manager\07 UIMgr\UI_Object\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="CIcon.cpp">
+      <Filter>03 Manager\07 UIMgr\UI_Object\Icon</Filter>
+    </ClCompile>
+    <ClCompile Include="CCamera.cpp">
+      <Filter>03 Manager\03 Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="CSoundMgr.cpp">
+      <Filter>03 Manager\00 ResourceMgr\SoundMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CInfiniteObj.cpp">
+      <Filter>04 Object\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="CTile.cpp">
+      <Filter>04 Object\Tile</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossStage.cpp">
+      <Filter>05 Scene\BattleScene\Stage\BossStage</Filter>
+    </ClCompile>
+    <ClCompile Include="CBattleScene.cpp">
+      <Filter>05 Scene\BattleScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossState.cpp">
+      <Filter>06 FSM\State\BossState</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossBackGround.cpp">
+      <Filter>04 Object\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossIdle.cpp">
+      <Filter>06 FSM\State\BossState\Phase1\IDLE</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossWait.cpp">
+      <Filter>06 FSM\State\BossState\Phase1\WAIT</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossIntro.cpp">
+      <Filter>06 FSM\State\BossState\Phase1\INTRO</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossGround.cpp">
+      <Filter>06 FSM\State\BossState\Phase1\GroundAtk</Filter>
+    </ClCompile>
+    <ClCompile Include="CFunction.cpp">
+      <Filter>00 Common\Function</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossMeteor.cpp">
+      <Filter>06 FSM\State\BossState\Phase1\Meteor</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossHoming.cpp">
+      <Filter>06 FSM\State\BossState\Phase1\Homing</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossSlash.cpp">
+      <Filter>06 FSM\State\BossState\Phase1\Slash</Filter>
+    </ClCompile>
+    <ClCompile Include="CHomingPierce.cpp">
+      <Filter>04 Object\Projectile\HomingPierce</Filter>
+    </ClCompile>
+    <ClCompile Include="CSlashEffect.cpp">
+      <Filter>04 Object\Projectile\Slash</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossDead.cpp">
+      <Filter>06 FSM\State\BossState\Phase1\Dead1</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossEnHance.cpp">
+      <Filter>06 FSM\State\BossState\Phase1\Enhance</Filter>
+    </ClCompile>
+    <ClCompile Include="CEnhancedBossIDLE.cpp">
+      <Filter>06 FSM\State\BossState\Phase2\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="CEnhancedBossDead.cpp">
+      <Filter>06 FSM\State\BossState\Phase2\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="CEnhancedBossGround.cpp">
+      <Filter>06 FSM\State\BossState\Phase2\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="CEnhancedBossHoming.cpp">
+      <Filter>06 FSM\State\BossState\Phase2\Homing</Filter>
+    </ClCompile>
+    <ClCompile Include="CEnhancedBossMeteor.cpp">
+      <Filter>06 FSM\State\BossState\Phase2\Meteor</Filter>
+    </ClCompile>
+    <ClCompile Include="CEnhancedBossRush.cpp">
+      <Filter>06 FSM\State\BossState\Phase2\Rush</Filter>
+    </ClCompile>
+    <ClCompile Include="CEnhancedBossSlash.cpp">
+      <Filter>06 FSM\State\BossState\Phase2\Slash</Filter>
+    </ClCompile>
+    <ClCompile Include="CCollider.cpp">
+      <Filter>03 Manager\06 CollisionMgr\Collider\HitBox</Filter>
+    </ClCompile>
+    <ClCompile Include="CAttackBox.cpp">
+      <Filter>03 Manager\06 CollisionMgr\Collider\AtkBox</Filter>
+    </ClCompile>
+    <ClCompile Include="CEffectMgr.cpp">
+      <Filter>03 Manager\08 EffectMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CBaseEffect.cpp">
+      <Filter>09 Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="CDimensionPierce.cpp">
+      <Filter>04 Object\Projectile\DimensionPierce</Filter>
+    </ClCompile>
+    <ClCompile Include="CAttackLine.cpp">
+      <Filter>03 Manager\06 CollisionMgr\Collider\AtkLine</Filter>
+    </ClCompile>
+    <ClCompile Include="CMeteorBullet.cpp">
+      <Filter>04 Object\Projectile\MeteorBullet</Filter>
+    </ClCompile>
+    <ClCompile Include="CBossFrame.cpp">
+      <Filter>03 Manager\07 UIMgr\UI_Object\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="CFirstStage.cpp">
+      <Filter>05 Scene\BattleScene\Stage\FirstStage</Filter>
+    </ClCompile>
+    <ClCompile Include="CMapObj.cpp">
+      <Filter>04 Object\Tile\MapObj</Filter>
+    </ClCompile>
+    <ClCompile Include="CMonsterState.cpp">
+      <Filter>06 FSM\State\MonsterState</Filter>
+    </ClCompile>
+    <ClCompile Include="CSoldier.cpp">
+      <Filter>04 Object\Monster\Monsters\Soldier</Filter>
+    </ClCompile>
+    <ClCompile Include="CRader.cpp">
+      <Filter>04 Object\Monster\Monsters</Filter>
+    </ClCompile>
+    <ClCompile Include="CMonster.cpp">
+      <Filter>04 Object\Monster\Monsters</Filter>
+    </ClCompile>
+    <ClCompile Include="CSoldierIdle.cpp">
+      <Filter>06 FSM\State\MonsterState\SodierState</Filter>
+    </ClCompile>
+    <ClCompile Include="CSoldierMove.cpp">
+      <Filter>06 FSM\State\MonsterState\SodierState</Filter>
+    </ClCompile>
+    <ClCompile Include="CSoldierAttack.cpp">
+      <Filter>06 FSM\State\MonsterState\SodierState</Filter>
+    </ClCompile>
+    <ClCompile Include="CSoldierHit.cpp">
+      <Filter>06 FSM\State\MonsterState\SodierState</Filter>
+    </ClCompile>
+    <ClCompile Include="CMonsterAppear.cpp">
+      <Filter>06 FSM\State\MonsterState\BaseState</Filter>
+    </ClCompile>
+    <ClCompile Include="CMonsterDead.cpp">
+      <Filter>06 FSM\State\MonsterState\BaseState</Filter>
+    </ClCompile>
+    <ClCompile Include="CArchor.cpp">
+      <Filter>04 Object\Monster\Monsters\Archor</Filter>
+    </ClCompile>
+    <ClCompile Include="CArchorAttackA.cpp">
+      <Filter>06 FSM\State\MonsterState\ArchorState</Filter>
+    </ClCompile>
+    <ClCompile Include="CArchorAttackB.cpp">
+      <Filter>06 FSM\State\MonsterState\ArchorState</Filter>
+    </ClCompile>
+    <ClCompile Include="CArchorHit.cpp">
+      <Filter>06 FSM\State\MonsterState\ArchorState</Filter>
+    </ClCompile>
+    <ClCompile Include="CArchorIdle.cpp">
+      <Filter>06 FSM\State\MonsterState\ArchorState</Filter>
+    </ClCompile>
+    <ClCompile Include="CArchorMove.cpp">
+      <Filter>06 FSM\State\MonsterState\ArchorState</Filter>
+    </ClCompile>
+    <ClCompile Include="CArrow.cpp">
+      <Filter>04 Object\Projectile\Golden_Arrow</Filter>
+    </ClCompile>
+    <ClCompile Include="CGiantSoldier.cpp">
+      <Filter>04 Object\Monster\Monsters\GiantSoldier</Filter>
+    </ClCompile>
+    <ClCompile Include="CGiantAttackA.cpp">
+      <Filter>06 FSM\State\MonsterState\GiantSoldierState</Filter>
+    </ClCompile>
+    <ClCompile Include="CGiantAttackB.cpp">
+      <Filter>06 FSM\State\MonsterState\GiantSoldierState</Filter>
+    </ClCompile>
+    <ClCompile Include="CGiantIdle.cpp">
+      <Filter>06 FSM\State\MonsterState\GiantSoldierState</Filter>
+    </ClCompile>
+    <ClCompile Include="CGiantMoveState.cpp">
+      <Filter>06 FSM\State\MonsterState\GiantSoldierState</Filter>
+    </ClCompile>
+    <ClCompile Include="CMage.cpp">
+      <Filter>04 Object\Monster\Monsters\Mage</Filter>
+    </ClCompile>
+    <ClCompile Include="CMageIdle.cpp">
+      <Filter>06 FSM\State\MonsterState\MageState</Filter>
+    </ClCompile>
+    <ClCompile Include="CMageAttackA.cpp">
+      <Filter>06 FSM\State\MonsterState\MageState</Filter>
+    </ClCompile>
+    <ClCompile Include="CMageMove.cpp">
+      <Filter>06 FSM\State\MonsterState\MageState</Filter>
+    </ClCompile>
+    <ClCompile Include="CMageHit.cpp">
+      <Filter>06 FSM\State\MonsterState\MageState</Filter>
+    </ClCompile>
+    <ClCompile Include="CMageCore.cpp">
+      <Filter>04 Object\Projectile\MageCore</Filter>
+    </ClCompile>
+    <ClCompile Include="CLogoScene.cpp">
+      <Filter>05 Scene\LogoScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CObject.cpp">
+      <Filter>04 Object\Tile</Filter>
+    </ClCompile>
+    <ClCompile Include="CStartPoint.cpp">
+      <Filter>04 Object\Tile\StartPoint</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpawnPoint.cpp">
+      <Filter>04 Object\Tile\SpawnPoint</Filter>
+    </ClCompile>
+    <ClCompile Include="CStageDoor.cpp">
+      <Filter>04 Object\Tile\StageDoor</Filter>
+    </ClCompile>
+    <ClCompile Include="CRewardBox.cpp">
+      <Filter>04 Object\Tile\RewardBox</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerRader.cpp">
+      <Filter>04 Object\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CEntFiest.cpp">
+      <Filter>04 Object\Projectile\EntFiest</Filter>
+    </ClCompile>
+    <ClCompile Include="CParticle.cpp">
+      <Filter>04 Object\Item\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="CSkulItem.cpp">
+      <Filter>04 Object\Item\Skul</Filter>
+    </ClCompile>
+    <ClCompile Include="CWolfSkul.cpp">
+      <Filter>08 Skul\WolfSkul</Filter>
+    </ClCompile>
+    <ClCompile Include="CTutorialStage.cpp">
+      <Filter>05 Scene\BattleScene\Stage\TutorialStage</Filter>
+    </ClCompile>
+    <ClCompile Include="CBoss.cpp">
+      <Filter>04 Object\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="CDmgText.cpp">
+      <Filter>04 Object\Item\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="CStageBox.cpp">
+      <Filter>04 Object\Item\StageBox</Filter>
+    </ClCompile>
+    <ClCompile Include="CJusin.cpp">
+      <Filter>04 Object\Item\Jusin</Filter>
+    </ClCompile>
+    <ClCompile Include="CNpc.cpp">
+      <Filter>04 Object\NPC</Filter>
+    </ClCompile>
+    <ClCompile Include="CDialogueFrame.cpp">
+      <Filter>03 Manager\07 UIMgr\UI_Object\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="Key_Item.cpp">
+      <Filter>04 Object\Item\Key_Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +399,6 @@
     <ClInclude Include="CMainGame.h">
       <Filter>02 MainGame</Filter>
     </ClInclude>
-    <ClInclude Include="CScrollMgr.h">
-      <Filter>03 Manager\03 ScrollMgr</Filter>
-    </ClInclude>
     <ClInclude Include="CTimeMgr.h">
       <Filter>03 Manager\01 TimeMgr</Filter>
     </ClInclude>
@@ -117,17 +426,359 @@
     <ClInclude Include="CPlayer.h">
       <Filter>04 Object\Player</Filter>
     </ClInclude>
-    <ClInclude Include="CState.h">
-      <Filter>FSM\State</Filter>
-    </ClInclude>
     <ClInclude Include="CStage.h">
-      <Filter>05 Scene\Stage</Filter>
+      <Filter>05 Scene\BattleScene\Stage</Filter>
     </ClInclude>
     <ClInclude Include="CTestStage.h">
-      <Filter>05 Scene\Stage\TestStage</Filter>
+      <Filter>05 Scene\BattleScene\Stage\TestStage</Filter>
     </ClInclude>
     <ClInclude Include="CTestScene.h">
       <Filter>05 Scene\TestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerState.h">
+      <Filter>06 FSM\State\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerIdleState.h">
+      <Filter>06 FSM\State\PlayerState\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerStates.h">
+      <Filter>06 FSM\State\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerMoveState.h">
+      <Filter>06 FSM\State\PlayerState\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerJumpState.h">
+      <Filter>06 FSM\State\PlayerState\Jump</Filter>
+    </ClInclude>
+    <ClInclude Include="CSkul.h">
+      <Filter>08 Skul</Filter>
+    </ClInclude>
+    <ClInclude Include="CBaseSkul.h">
+      <Filter>08 Skul\BaseSkul</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerFallState.h">
+      <Filter>06 FSM\State\PlayerState\Fall</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerDashState.h">
+      <Filter>06 FSM\State\PlayerState\Dash</Filter>
+    </ClInclude>
+    <ClInclude Include="Skuls.h">
+      <Filter>08 Skul</Filter>
+    </ClInclude>
+    <ClInclude Include="CAnim.h">
+      <Filter>07 Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerAttckState.h">
+      <Filter>06 FSM\State\PlayerState\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerJumpAtkState.h">
+      <Filter>06 FSM\State\PlayerState\JumpAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerSkillAState.h">
+      <Filter>06 FSM\State\PlayerState\SkillA</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerSkillBState.h">
+      <Filter>06 FSM\State\PlayerState\SkillB</Filter>
+    </ClInclude>
+    <ClInclude Include="CProjectile.h">
+      <Filter>04 Object\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="CSkulHead.h">
+      <Filter>04 Object\Projectile\SkulHead</Filter>
+    </ClInclude>
+    <ClInclude Include="CObjMgr.h">
+      <Filter>03 Manager\04 ObjectMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects.h">
+      <Filter>04 Object</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerSwitchState.h">
+      <Filter>06 FSM\State\PlayerState\Switch</Filter>
+    </ClInclude>
+    <ClInclude Include="CEntSkul.h">
+      <Filter>08 Skul\EntSkul</Filter>
+    </ClInclude>
+    <ClInclude Include="CCollisionMgr.h">
+      <Filter>03 Manager\06 CollisionMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CUIMgr.h">
+      <Filter>03 Manager\07 UIMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CBase_UI.h">
+      <Filter>03 Manager\07 UIMgr\UI_Object</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerFrame.h">
+      <Filter>03 Manager\07 UIMgr\UI_Object\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="CIcon.h">
+      <Filter>03 Manager\07 UIMgr\UI_Object\Icon</Filter>
+    </ClInclude>
+    <ClInclude Include="CCamera.h">
+      <Filter>03 Manager\03 Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="CSoundMgr.h">
+      <Filter>03 Manager\00 ResourceMgr\SoundMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CInfiniteObj.h">
+      <Filter>04 Object\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="CTile.h">
+      <Filter>04 Object\Tile</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossStage.h">
+      <Filter>05 Scene\BattleScene\Stage\BossStage</Filter>
+    </ClInclude>
+    <ClInclude Include="CBattleScene.h">
+      <Filter>05 Scene\BattleScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Stages.h">
+      <Filter>05 Scene\BattleScene\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes.h">
+      <Filter>05 Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossState.h">
+      <Filter>06 FSM\State\BossState</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossBackGround.h">
+      <Filter>04 Object\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossIdle.h">
+      <Filter>06 FSM\State\BossState\Phase1\IDLE</Filter>
+    </ClInclude>
+    <ClInclude Include="BossStates.h">
+      <Filter>06 FSM\State\BossState</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossWait.h">
+      <Filter>06 FSM\State\BossState\Phase1\WAIT</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossIntro.h">
+      <Filter>06 FSM\State\BossState\Phase1\INTRO</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossGround.h">
+      <Filter>06 FSM\State\BossState\Phase1\GroundAtk</Filter>
+    </ClInclude>
+    <ClInclude Include="CFunction.h">
+      <Filter>00 Common\Function</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossMeteor.h">
+      <Filter>06 FSM\State\BossState\Phase1\Meteor</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossHoming.h">
+      <Filter>06 FSM\State\BossState\Phase1\Homing</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossSlash.h">
+      <Filter>06 FSM\State\BossState\Phase1\Slash</Filter>
+    </ClInclude>
+    <ClInclude Include="CHomingPierce.h">
+      <Filter>04 Object\Projectile\HomingPierce</Filter>
+    </ClInclude>
+    <ClInclude Include="CSlashEffect.h">
+      <Filter>04 Object\Projectile\Slash</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossDead.h">
+      <Filter>06 FSM\State\BossState\Phase1\Dead1</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossEnHance.h">
+      <Filter>06 FSM\State\BossState\Phase1\Enhance</Filter>
+    </ClInclude>
+    <ClInclude Include="CEnhancedBossIDLE.h">
+      <Filter>06 FSM\State\BossState\Phase2\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="CEnhancedBossDead.h">
+      <Filter>06 FSM\State\BossState\Phase2\Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="CEnhancedBossGround.h">
+      <Filter>06 FSM\State\BossState\Phase2\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="CEnhancedBossHoming.h">
+      <Filter>06 FSM\State\BossState\Phase2\Homing</Filter>
+    </ClInclude>
+    <ClInclude Include="CEnhancedBossMeteor.h">
+      <Filter>06 FSM\State\BossState\Phase2\Meteor</Filter>
+    </ClInclude>
+    <ClInclude Include="CEnhancedBossRush.h">
+      <Filter>06 FSM\State\BossState\Phase2\Rush</Filter>
+    </ClInclude>
+    <ClInclude Include="CEnhancedBossSlash.h">
+      <Filter>06 FSM\State\BossState\Phase2\Slash</Filter>
+    </ClInclude>
+    <ClInclude Include="CCollider.h">
+      <Filter>03 Manager\06 CollisionMgr\Collider\HitBox</Filter>
+    </ClInclude>
+    <ClInclude Include="CAttackBox.h">
+      <Filter>03 Manager\06 CollisionMgr\Collider\AtkBox</Filter>
+    </ClInclude>
+    <ClInclude Include="CEffectMgr.h">
+      <Filter>03 Manager\08 EffectMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="Effects.h">
+      <Filter>09 Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="CBaseEffect.h">
+      <Filter>09 Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="CDimensionPierce.h">
+      <Filter>04 Object\Projectile\DimensionPierce</Filter>
+    </ClInclude>
+    <ClInclude Include="CAttackLine.h">
+      <Filter>03 Manager\06 CollisionMgr\Collider\AtkLine</Filter>
+    </ClInclude>
+    <ClInclude Include="CMeteorBullet.h">
+      <Filter>04 Object\Projectile\MeteorBullet</Filter>
+    </ClInclude>
+    <ClInclude Include="CBossFrame.h">
+      <Filter>03 Manager\07 UIMgr\UI_Object\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Objects.h">
+      <Filter>03 Manager\07 UIMgr\UI_Object</Filter>
+    </ClInclude>
+    <ClInclude Include="CFirstStage.h">
+      <Filter>05 Scene\BattleScene\Stage\FirstStage</Filter>
+    </ClInclude>
+    <ClInclude Include="CMapObj.h">
+      <Filter>04 Object\Tile\MapObj</Filter>
+    </ClInclude>
+    <ClInclude Include="CMonsterState.h">
+      <Filter>06 FSM\State\MonsterState</Filter>
+    </ClInclude>
+    <ClInclude Include="CSoldier.h">
+      <Filter>04 Object\Monster\Monsters\Soldier</Filter>
+    </ClInclude>
+    <ClInclude Include="CRader.h">
+      <Filter>04 Object\Monster\Monsters</Filter>
+    </ClInclude>
+    <ClInclude Include="CMonster.h">
+      <Filter>04 Object\Monster\Monsters</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterStates.h">
+      <Filter>06 FSM\State\MonsterState</Filter>
+    </ClInclude>
+    <ClInclude Include="CSoldierIdle.h">
+      <Filter>06 FSM\State\MonsterState\SodierState</Filter>
+    </ClInclude>
+    <ClInclude Include="CSoldierMove.h">
+      <Filter>06 FSM\State\MonsterState\SodierState</Filter>
+    </ClInclude>
+    <ClInclude Include="CSoldierAttack.h">
+      <Filter>06 FSM\State\MonsterState\SodierState</Filter>
+    </ClInclude>
+    <ClInclude Include="CSoldierHit.h">
+      <Filter>06 FSM\State\MonsterState\SodierState</Filter>
+    </ClInclude>
+    <ClInclude Include="CMonsterAppear.h">
+      <Filter>06 FSM\State\MonsterState\BaseState</Filter>
+    </ClInclude>
+    <ClInclude Include="CMonsterDead.h">
+      <Filter>06 FSM\State\MonsterState\BaseState</Filter>
+    </ClInclude>
+    <ClInclude Include="CArchor.h">
+      <Filter>04 Object\Monster\Monsters\Archor</Filter>
+    </ClInclude>
+    <ClInclude Include="CArchorAttackA.h">
+      <Filter>06 FSM\State\MonsterState\ArchorState</Filter>
+    </ClInclude>
+    <ClInclude Include="CArchorAttackB.h">
+      <Filter>06 FSM\State\MonsterState\ArchorState</Filter>
+    </ClInclude>
+    <ClInclude Include="CArchorHit.h">
+      <Filter>06 FSM\State\MonsterState\ArchorState</Filter>
+    </ClInclude>
+    <ClInclude Include="CArchorIdle.h">
+      <Filter>06 FSM\State\MonsterState\ArchorState</Filter>
+    </ClInclude>
+    <ClInclude Include="CArchorMove.h">
+      <Filter>06 FSM\State\MonsterState\ArchorState</Filter>
+    </ClInclude>
+    <ClInclude Include="CArrow.h">
+      <Filter>04 Object\Projectile\Golden_Arrow</Filter>
+    </ClInclude>
+    <ClInclude Include="CGiantSoldier.h">
+      <Filter>04 Object\Monster\Monsters\GiantSoldier</Filter>
+    </ClInclude>
+    <ClInclude Include="CGiantAttackA.h">
+      <Filter>06 FSM\State\MonsterState\GiantSoldierState</Filter>
+    </ClInclude>
+    <ClInclude Include="CGiantAttackB.h">
+      <Filter>06 FSM\State\MonsterState\GiantSoldierState</Filter>
+    </ClInclude>
+    <ClInclude Include="CGiantIdle.h">
+      <Filter>06 FSM\State\MonsterState\GiantSoldierState</Filter>
+    </ClInclude>
+    <ClInclude Include="CGiantMoveState.h">
+      <Filter>06 FSM\State\MonsterState\GiantSoldierState</Filter>
+    </ClInclude>
+    <ClInclude Include="CMage.h">
+      <Filter>04 Object\Monster\Monsters\Mage</Filter>
+    </ClInclude>
+    <ClInclude Include="CMageIdle.h">
+      <Filter>06 FSM\State\MonsterState\MageState</Filter>
+    </ClInclude>
+    <ClInclude Include="CMageAttackA.h">
+      <Filter>06 FSM\State\MonsterState\MageState</Filter>
+    </ClInclude>
+    <ClInclude Include="CMageMove.h">
+      <Filter>06 FSM\State\MonsterState\MageState</Filter>
+    </ClInclude>
+    <ClInclude Include="CMageHit.h">
+      <Filter>06 FSM\State\MonsterState\MageState</Filter>
+    </ClInclude>
+    <ClInclude Include="CMageCore.h">
+      <Filter>04 Object\Projectile\MageCore</Filter>
+    </ClInclude>
+    <ClInclude Include="CLogoScene.h">
+      <Filter>05 Scene\LogoScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CStartPoint.h">
+      <Filter>04 Object\Tile\StartPoint</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpawnPoint.h">
+      <Filter>04 Object\Tile\SpawnPoint</Filter>
+    </ClInclude>
+    <ClInclude Include="CStageDoor.h">
+      <Filter>04 Object\Tile\StageDoor</Filter>
+    </ClInclude>
+    <ClInclude Include="CRewardBox.h">
+      <Filter>04 Object\Tile\RewardBox</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerRader.h">
+      <Filter>04 Object\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CEntFiest.h">
+      <Filter>04 Object\Projectile\EntFiest</Filter>
+    </ClInclude>
+    <ClInclude Include="CParticle.h">
+      <Filter>04 Object\Item\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="CSkulItem.h">
+      <Filter>04 Object\Item\Skul</Filter>
+    </ClInclude>
+    <ClInclude Include="CWolfSkul.h">
+      <Filter>08 Skul\WolfSkul</Filter>
+    </ClInclude>
+    <ClInclude Include="CTutorialStage.h">
+      <Filter>05 Scene\BattleScene\Stage\TutorialStage</Filter>
+    </ClInclude>
+    <ClInclude Include="CBoss.h">
+      <Filter>04 Object\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="CDmgText.h">
+      <Filter>04 Object\Item\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="CStageBox.h">
+      <Filter>04 Object\Item\StageBox</Filter>
+    </ClInclude>
+    <ClInclude Include="CJusin.h">
+      <Filter>04 Object\Item\Jusin</Filter>
+    </ClInclude>
+    <ClInclude Include="CNpc.h">
+      <Filter>04 Object\NPC</Filter>
+    </ClInclude>
+    <ClInclude Include="CDialogueFrame.h">
+      <Filter>03 Manager\07 UIMgr\UI_Object\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="Key_Item.h">
+      <Filter>04 Object\Item\Key_Item</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -169,9 +820,6 @@
     <Filter Include="03 Manager\02 KeyMgr">
       <UniqueIdentifier>{f6cc9b1f-32e4-4510-97d6-5e5ed1352474}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03 Manager\03 ScrollMgr">
-      <UniqueIdentifier>{1b7f271d-6219-428b-abec-989e0fed9e68}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04 Object">
       <UniqueIdentifier>{2e8f3a1f-5df7-42cf-86b3-1203982f3c48}</UniqueIdentifier>
     </Filter>
@@ -187,20 +835,290 @@
     <Filter Include="03 Manager\04 ObjectMgr">
       <UniqueIdentifier>{34cec6ae-eea4-489c-b1f8-85eefb9f7bd3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FSM">
-      <UniqueIdentifier>{4d4d86e6-c7dd-4af9-ba86-3b17729f8704}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FSM\State">
-      <UniqueIdentifier>{c4abae90-4a93-4186-9edd-1c11f8ba7eb0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="05 Scene\Stage">
-      <UniqueIdentifier>{33dc01fe-5870-4b0e-9563-275c8686ceaa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="05 Scene\Stage\TestStage">
-      <UniqueIdentifier>{e2709ffb-1745-4e85-b13e-641e1fc4482f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="05 Scene\TestScene">
       <UniqueIdentifier>{283a8c66-2963-4c57-9ff5-03df5af948ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Tile">
+      <UniqueIdentifier>{2dbba453-8879-4c58-9d90-77a8bd50e008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Projectile">
+      <UniqueIdentifier>{c5e68251-f140-4e9d-b9b3-7b788e13b367}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Projectile\SkulHead">
+      <UniqueIdentifier>{7c0e8230-4784-47b7-ab43-fef93c413035}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM">
+      <UniqueIdentifier>{4d4d86e6-c7dd-4af9-ba86-3b17729f8704}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State">
+      <UniqueIdentifier>{c4abae90-4a93-4186-9edd-1c11f8ba7eb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState">
+      <UniqueIdentifier>{d4cbe405-0913-48c2-8c1c-a1adad53786a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState\Idle">
+      <UniqueIdentifier>{d1e304f2-1083-49ff-bb10-1b9a240dff80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState\Move">
+      <UniqueIdentifier>{90b37c02-f5fd-4d6a-a5d9-895d420ca8ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState\Jump">
+      <UniqueIdentifier>{b8cdb762-0d37-4c33-af09-7ed32d22d3f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState\Fall">
+      <UniqueIdentifier>{c0dfc14b-2fc4-47b1-add9-effc929d5a43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState\Dash">
+      <UniqueIdentifier>{a5083672-9472-4d64-9589-4be112d038ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState\Attack">
+      <UniqueIdentifier>{78ed004a-8384-40d1-a836-58bc5b864402}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState\JumpAttack">
+      <UniqueIdentifier>{4f5ad4e6-9181-4f2f-bdf3-67923460e3ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState\SkillA">
+      <UniqueIdentifier>{73c7ea1e-347b-4e63-ab75-5a73d498d3d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState\SkillB">
+      <UniqueIdentifier>{c83608b6-d6e4-4e60-95e5-c06b505b7cfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07 Animation">
+      <UniqueIdentifier>{29a1e63f-7249-45ca-b3aa-7966aac76e51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\PlayerState\Switch">
+      <UniqueIdentifier>{e10cf087-2e7a-4dbd-a072-87f506de38ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\06 CollisionMgr">
+      <UniqueIdentifier>{23301d23-9b2f-49a1-9ad4-c93c84def4e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08 Skul">
+      <UniqueIdentifier>{a955dcbf-3809-47b2-a49c-84fbdcb7c194}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08 Skul\BaseSkul">
+      <UniqueIdentifier>{cf315a48-69e5-4575-a207-dbc8a427364b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08 Skul\EntSkul">
+      <UniqueIdentifier>{4a817001-848f-45d7-8c29-c4724a428d46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\06 CollisionMgr\Collider">
+      <UniqueIdentifier>{d1f88c00-1e59-44a6-8b5d-dda35adccd67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\07 UIMgr">
+      <UniqueIdentifier>{0e7425c8-0a58-4100-8952-7a1301b66fee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\07 UIMgr\UI_Object">
+      <UniqueIdentifier>{a19e4696-7519-4187-9e9d-5e8b4823fc52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\07 UIMgr\UI_Object\Frame">
+      <UniqueIdentifier>{bb37e8fc-27c7-4af6-83bb-c9c42fdca9a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\07 UIMgr\UI_Object\Icon">
+      <UniqueIdentifier>{4ed56ce8-791d-4c6b-af19-fdff8b7e0527}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\03 Camera">
+      <UniqueIdentifier>{4a1051ac-1543-4578-bc9d-981e37e055a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\00 ResourceMgr\SoundMgr">
+      <UniqueIdentifier>{cc4eef14-94a2-4bf8-80d2-ea3cc68f434f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Background">
+      <UniqueIdentifier>{be5ebc02-33c1-4f85-b178-1bfd46afccd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\BattleScene">
+      <UniqueIdentifier>{1374936d-34c2-4915-934b-be9c92bceb81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\BattleScene\Stage">
+      <UniqueIdentifier>{33dc01fe-5870-4b0e-9563-275c8686ceaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\BattleScene\Stage\TestStage">
+      <UniqueIdentifier>{e2709ffb-1745-4e85-b13e-641e1fc4482f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\BattleScene\Stage\BossStage">
+      <UniqueIdentifier>{5d78b2a0-7987-4768-9c03-140a15e8b44d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Monster">
+      <UniqueIdentifier>{cc8b4071-bb48-4ea0-95f7-fe5737eb63cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState">
+      <UniqueIdentifier>{fd41fb89-c644-4282-9def-16a14eb2766f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00 Common\Function">
+      <UniqueIdentifier>{6bf74385-f75a-42a1-ba68-a724bcd70e47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Projectile\HomingPierce">
+      <UniqueIdentifier>{87a24a49-3643-4fdb-9b44-de6167a23abf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Projectile\Slash">
+      <UniqueIdentifier>{c01f3cbe-b6f7-49be-b2aa-f3c625ca4e24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase1">
+      <UniqueIdentifier>{e16cadd5-8ac2-4280-8427-d139051b62a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase1\Enhance">
+      <UniqueIdentifier>{60ce6ebc-3d77-4801-8982-d46c2c5d23e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase1\IDLE">
+      <UniqueIdentifier>{ac7fc210-6cfa-4c38-a896-4b74f33b1183}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase1\INTRO">
+      <UniqueIdentifier>{145a5856-ff82-4b40-a9ab-3cae39d54851}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase1\GroundAtk">
+      <UniqueIdentifier>{9f93944c-0543-4484-bb49-4f4e3367940a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase1\Meteor">
+      <UniqueIdentifier>{50eba7f6-62c0-4dfa-ab7c-f48abdb85e7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase1\Homing">
+      <UniqueIdentifier>{4552ae5d-4b9a-4d50-a221-953a997a8ecf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase1\Dead1">
+      <UniqueIdentifier>{1b3bc5dd-5314-4446-b3bf-c1c5bc6cdcd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase1\Slash">
+      <UniqueIdentifier>{e4e42026-e8ad-4812-842d-130d4a44b713}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase1\WAIT">
+      <UniqueIdentifier>{6f1353a8-978c-4724-a954-5945615ad679}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase2">
+      <UniqueIdentifier>{24067ab1-030b-4a9b-89c5-c67d3754e775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase2\Idle">
+      <UniqueIdentifier>{071401f4-d2b1-402e-a405-ba995fd9956e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase2\Homing">
+      <UniqueIdentifier>{016a69bc-99fb-4faf-94b8-8a01f3c5b84e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase2\Ground">
+      <UniqueIdentifier>{27d5f066-a9fb-4343-9de8-4d1fc9287b94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase2\Rush">
+      <UniqueIdentifier>{ee76b6b6-2db4-42a8-82be-ecb51347cbd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase2\Slash">
+      <UniqueIdentifier>{699b45cc-5e35-4e54-9cf6-1dc263a2dc3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase2\Meteor">
+      <UniqueIdentifier>{b07d89eb-c672-4313-8033-346df8a176fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\BossState\Phase2\Dead">
+      <UniqueIdentifier>{4cd0784a-309e-499b-bc65-4b002ac9587f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\06 CollisionMgr\Collider\HitBox">
+      <UniqueIdentifier>{38d49fa7-14a2-4cab-9a92-b3565d3d570d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\06 CollisionMgr\Collider\AtkBox">
+      <UniqueIdentifier>{be172bde-fde8-401b-b773-05e15d189db9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\06 CollisionMgr\Collider\AtkLine">
+      <UniqueIdentifier>{2b164512-6a28-4595-a831-b5f4b097a915}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 Manager\08 EffectMgr">
+      <UniqueIdentifier>{782b4afc-a9c7-463e-9883-33872a21ca04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Projectile\DimensionPierce">
+      <UniqueIdentifier>{918fc6aa-2af2-4a5d-90c4-f9975f1ba142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Projectile\MeteorBullet">
+      <UniqueIdentifier>{93b70afa-7127-42e1-a176-4bd48bc9c618}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\BattleScene\Stage\FirstStage">
+      <UniqueIdentifier>{0b503287-68b6-4043-8c2f-439402c1f753}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Tile\MapObj">
+      <UniqueIdentifier>{c1de62be-0694-4454-878d-7001b7cfe0d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Monster\Monsters">
+      <UniqueIdentifier>{a37ede03-9247-4118-bd8b-ffcee9194c57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\MonsterState">
+      <UniqueIdentifier>{eca06686-9798-454e-b0a6-e20d8d84df02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\MonsterState\SodierState">
+      <UniqueIdentifier>{666b769d-8a3d-4264-b737-c2469671f425}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Monster\Monsters\Soldier">
+      <UniqueIdentifier>{55d05e88-2dd1-4f23-89af-5b24c51bb710}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="09 Effect">
+      <UniqueIdentifier>{ed66d3c5-2842-476b-b2f4-c7d425391bac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\MonsterState\BaseState">
+      <UniqueIdentifier>{8ae749e6-35f1-4b16-8a3e-210312d6aaaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Monster\Monsters\Archor">
+      <UniqueIdentifier>{9d3ed231-0d59-44f0-b661-98318c14e495}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\MonsterState\ArchorState">
+      <UniqueIdentifier>{3d99db15-4015-4fe0-aec9-db2afa64e384}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Projectile\Golden_Arrow">
+      <UniqueIdentifier>{a61e953d-fb31-4176-9936-57f9c3131143}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Monster\Monsters\GiantSoldier">
+      <UniqueIdentifier>{041705bc-254d-4c7c-9a15-78f1dd0d678e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\MonsterState\GiantSoldierState">
+      <UniqueIdentifier>{defc2d0a-d170-490a-bd10-58c7eccd2d11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Monster\Monsters\Mage">
+      <UniqueIdentifier>{beeacc62-ab01-43ff-a3d5-f5c0ff0b8324}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 FSM\State\MonsterState\MageState">
+      <UniqueIdentifier>{8db0e083-a722-4e2a-bf79-3a1ab890a1e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Projectile\MageCore">
+      <UniqueIdentifier>{6977cda3-07ae-47d1-bfa5-0a40ce77e61a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\LogoScene">
+      <UniqueIdentifier>{13e18025-707d-4aa4-9a2b-5062b30bb257}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Tile\StartPoint">
+      <UniqueIdentifier>{48839b2e-f216-46ca-9138-65ae17eb4d35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Tile\SpawnPoint">
+      <UniqueIdentifier>{96ead5ff-3608-4d66-88b9-07ba9fbc3483}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Tile\StageDoor">
+      <UniqueIdentifier>{b55746d7-eeae-4106-aef3-7445d4ff4a14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Scene\BattleScene\Stage\TutorialStage">
+      <UniqueIdentifier>{8f99fee1-e378-495d-b3b3-3e2b2de36802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Tile\RewardBox">
+      <UniqueIdentifier>{3ec8a17d-cce5-4c0e-b5d1-e499ba93798a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Projectile\EntFiest">
+      <UniqueIdentifier>{608641f2-0856-4add-ae3d-c3c7912658da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Item">
+      <UniqueIdentifier>{9ed15a26-fde2-49c8-b981-0fab4ef12133}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Item\Particle">
+      <UniqueIdentifier>{143a528f-e617-4617-ae6c-4d3f69d833dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Item\Skul">
+      <UniqueIdentifier>{2187a2d4-61d6-44cf-8346-6be4dfdd433c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Item\Gold">
+      <UniqueIdentifier>{14f27df0-2475-4c7c-a31f-6ee2d3776f51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08 Skul\WolfSkul">
+      <UniqueIdentifier>{ec837f9c-5e04-48a5-8ffd-c56d259fec48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Item\StageBox">
+      <UniqueIdentifier>{ff21569f-d820-4cf4-b3cf-a851439b1d53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Item\Jusin">
+      <UniqueIdentifier>{8e8b5d77-3897-42b2-beb1-c19cf2a594b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\NPC">
+      <UniqueIdentifier>{cd90dc0b-cee2-4206-bcc2-768e1dc22e96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Object\Item\Key_Item">
+      <UniqueIdentifier>{eddfb8aa-b6fe-4a1f-87c5-d0c63e5b043e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

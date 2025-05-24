@@ -1,0 +1,9 @@
+#pragma once
+#include "CResourceMgr.h"
+#include "CTimeMgr.h"
+#include "CKeyMgr.h"
+#include "CSceneMgr.h"
+#include "CObjMgr.h"
+#include "CCollisionMgr.h"
+#include "CUIMgr.h"
+#include "CCamera.h"

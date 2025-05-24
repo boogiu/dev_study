@@ -1,5 +1,6 @@
 #pragma once
 class CBmpMgr;
+class CSoundMgr;
 
 class CResourceMgr
 {
@@ -34,8 +35,18 @@ public:
 	HDC Find_Image(const TCHAR* pImageKey);
 	void Insert_Bmp(const TCHAR* pFilePath, const TCHAR* pImageKey);
 
+	void PlaySound(const wstring& pSoundKey, float fVolume, int* ID, bool Loop =false);
+	void PlaySound(const wstring& pSoundKey, float fVolume, bool Loop =false);
+	void PlayBGM(const wstring& pSoundKey, float fVolume);
+	void StopSound(CHANNELID eID);
+	void StopSound(int eID);
+	void StopAll();
+	void SetChannelVolume(CHANNELID eID, float fVolume);
+private:
+	void Load_Resource();
 private:
 	static CResourceMgr* m_pInstance;
 	CBmpMgr* m_BmpMgr;
+	CSoundMgr* m_SoundMgr;
 };
 

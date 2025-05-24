@@ -1,42 +1,62 @@
-﻿// pch.h: 미리 컴파일된 헤더 파일입니다.
-// 아래 나열된 파일은 한 번만 컴파일되었으며, 향후 빌드에 대한 빌드 성능을 향상합니다.
-// 코드 컴파일 및 여러 코드 검색 기능을 포함하여 IntelliSense 성능에도 영향을 미칩니다.
-// 그러나 여기에 나열된 파일은 빌드 간 업데이트되는 경우 모두 다시 컴파일됩니다.
-// 여기에 자주 업데이트할 파일을 추가하지 마세요. 그러면 성능이 저하됩니다.
-
-#ifndef PCH_H
+﻿#ifndef PCH_H
 #define PCH_H
 
-// 여기에 미리 컴파일하려는 헤더 추가
+// 윈도우 & GDI 관련
+#pragma comment(lib, "User32.lib")
+#pragma comment(lib, "Gdi32.lib")
+#pragma comment(lib, "Msimg32.lib")
+#include <Windows.h>
+#include <objidl.h>
+#include <gdiplus.h>
+#pragma comment(lib, "gdiplus.lib")
+using namespace Gdiplus;
+
+//공용 프로젝트 헤더
 #include "framework.h"
 #include "EnumDefs.h"
 #include "Define.h"
 #include "Structures.h"
 #include "Templates.h"
 
-
-#include <list>
+// STL
+#include <string>
 #include <vector>
+#include <list>
 #include <map>
 #include <unordered_map>
 #include <algorithm>
+#include <iostream>
+#include <io.h>
+#include <cmath>    
+#include <math.h>
+ using namespace std;
 
-using namespace std;
+//  FMOD
+#include "./inc/fmod.hpp"
+#include "./inc/fmod_errors.h"
 
+// 디버그 / 릴리즈 분기 처리
+#ifdef _DEBUG
+#pragma comment(lib, "./lib/x64/fmod_vc.lib")   // 디버그용 라이브러리
+#else
+#pragma comment(lib, "./lib/x64/fmod_vc.lib")    // 릴리즈용 라이브러리
+#endif
+
+using namespace FMOD;
+
+// ★ 전역 윈도우 핸들
 extern HWND g_hWnd;
 
+// ★ CRT 메모리 누수 추적 (디버그 전용)
 #ifdef _DEBUG
-
 #define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
+#include <cstdlib>
 #include <crtdbg.h>
 
 #ifndef DBG_NEW 
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
-#define new DBG_NEW 
-
+#define DBG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DBG_NEW
 #endif
 #endif
 
-
-#endif //PCH_H
+#endif // PCH_H

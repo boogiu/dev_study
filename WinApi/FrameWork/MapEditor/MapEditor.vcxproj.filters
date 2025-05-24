@@ -32,6 +32,15 @@
     <Filter Include="03 Manager\04 BmpMgr">
       <UniqueIdentifier>{fe4bf45f-ba4e-470f-8228-2627177ecbdd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04 Tile\MapObj">
+      <UniqueIdentifier>{ed7a8e50-be38-450e-b6c9-213b91914ee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Tile\PlatForms">
+      <UniqueIdentifier>{65c39079-3cb6-428a-ba2d-e42cb56cda75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Tile\Ornament">
+      <UniqueIdentifier>{6e342e76-5bdf-4708-a4ff-9cc426a0ec2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -64,14 +73,23 @@
     <ClInclude Include="CScrollMgr.h">
       <Filter>03 Manager\02 ScrollMgr</Filter>
     </ClInclude>
-    <ClInclude Include="CTile.h">
-      <Filter>04 Tile</Filter>
-    </ClInclude>
     <ClInclude Include="CBmpMgr.h">
       <Filter>03 Manager\04 BmpMgr</Filter>
     </ClInclude>
     <ClInclude Include="CBmp.h">
       <Filter>03 Manager\04 BmpMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CTile.h">
+      <Filter>04 Tile</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlatforms.h">
+      <Filter>04 Tile\PlatForms</Filter>
+    </ClInclude>
+    <ClInclude Include="COrnament.h">
+      <Filter>04 Tile\Ornament</Filter>
+    </ClInclude>
+    <ClInclude Include="CMapObj.h">
+      <Filter>04 Tile\MapObj</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -93,14 +111,23 @@
     <ClCompile Include="CScrollMgr.cpp">
       <Filter>03 Manager\02 ScrollMgr</Filter>
     </ClCompile>
-    <ClCompile Include="CTile.cpp">
-      <Filter>04 Tile</Filter>
-    </ClCompile>
     <ClCompile Include="CBmp.cpp">
       <Filter>03 Manager\04 BmpMgr</Filter>
     </ClCompile>
     <ClCompile Include="CBmpMgr.cpp">
       <Filter>03 Manager\04 BmpMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CTile.cpp">
+      <Filter>04 Tile</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlatforms.cpp">
+      <Filter>04 Tile\PlatForms</Filter>
+    </ClCompile>
+    <ClCompile Include="COrnament.cpp">
+      <Filter>04 Tile\Ornament</Filter>
+    </ClCompile>
+    <ClCompile Include="CMapObj.cpp">
+      <Filter>04 Tile\MapObj</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

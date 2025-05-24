@@ -1,6 +1,7 @@
 #pragma once
 #include "CScene.h"
 class CStage;
+class CObject;
 
 class CTestScene :
     public CScene
@@ -17,5 +18,8 @@ public:
 
 private:
     CStage* m_NowStage;
+
+    // CScene을(를) 통해 상속됨
+    void CloseScene() override;
 };
 

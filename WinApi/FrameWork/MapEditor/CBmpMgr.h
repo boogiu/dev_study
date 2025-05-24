@@ -23,6 +23,7 @@ public:
 			m_pInstance = new CBmpMgr;
 		}
 		return m_pInstance;
+
 	}
 	static void Destroy_Instance() {
 		if (m_pInstance) {

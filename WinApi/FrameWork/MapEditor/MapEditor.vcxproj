@@ -139,6 +139,9 @@
     <ClInclude Include="CBmpMgr.h" />
     <ClInclude Include="CKeyMgr.h" />
     <ClInclude Include="CMapEditor.h" />
+    <ClInclude Include="CMapObj.h" />
+    <ClInclude Include="COrnament.h" />
+    <ClInclude Include="CPlatforms.h" />
     <ClInclude Include="CScrollMgr.h" />
     <ClInclude Include="CTile.h" />
     <ClInclude Include="CTileMgr.h" />
@@ -154,6 +157,9 @@
     <ClCompile Include="CBmpMgr.cpp" />
     <ClCompile Include="CKeyMgr.cpp" />
     <ClCompile Include="CMapEditor.cpp" />
+    <ClCompile Include="CMapObj.cpp" />
+    <ClCompile Include="COrnament.cpp" />
+    <ClCompile Include="CPlatforms.cpp" />
     <ClCompile Include="CScrollMgr.cpp" />
     <ClCompile Include="CTile.cpp" />
     <ClCompile Include="CTileMgr.cpp" />

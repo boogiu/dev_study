@@ -35,16 +35,20 @@ void CScrollMgr::Release()
 
 void CScrollMgr::Scroll_Lock()
 {
-	if (0.f < m_fScrollX)
-		m_fScrollX = 0.f;
-
-	if (0.f < m_fScrollY)
-		m_fScrollY = 0.f;
-
-	if (WINCX - 1920 > m_fScrollX)
-		m_fScrollX = WINCX - 1920;
-
-	if (WINCY - 1280 > m_fScrollY)
-		m_fScrollY = WINCY - 1080;
-
+	if (m_fScrollX > 100)
+	{
+		m_fScrollX = 100;
+	}
+	if (m_fScrollX < -(MAP_CX + 100))
+	{
+		m_fScrollX = -(MAP_CX + 100);
+	}
+	if (m_fScrollY > 0)
+	{
+		m_fScrollY = 0;
+	}
+	if (m_fScrollY < -MAP_CY)
+	{
+		m_fScrollY =-MAP_CY;
+	}
 }
