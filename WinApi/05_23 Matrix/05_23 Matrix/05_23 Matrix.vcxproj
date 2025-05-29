@@ -114,6 +114,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -130,6 +131,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,7 +142,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="05_23 Matrix.h" />
+    <ClInclude Include="CBarrel.h" />
     <ClInclude Include="CComponent.h" />
+    <ClInclude Include="CKeyManager.h" />
     <ClInclude Include="CMainGame.h" />
     <ClInclude Include="CObject.h" />
     <ClInclude Include="CObjectManager.h" />
@@ -148,23 +152,29 @@
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CRenderer.h" />
     <ClInclude Include="CRenderManager.h" />
+    <ClInclude Include="CRigidBody.h" />
     <ClInclude Include="CTimeManager.h" />
     <ClInclude Include="CTransform.h" />
     <ClInclude Include="Define.h" />
+    <ClInclude Include="EnumDef.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Struct.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="05_23 Matrix.cpp" />
+    <ClCompile Include="CBarrel.cpp" />
     <ClCompile Include="CComponent.cpp" />
+    <ClCompile Include="CKeyManager.cpp" />
     <ClCompile Include="CMainGame.cpp" />
     <ClCompile Include="CObject.cpp" />
     <ClCompile Include="CObjectManager.cpp" />
     <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="CRenderer.cpp" />
     <ClCompile Include="CRenderManager.cpp" />
+    <ClCompile Include="CRigidBody.cpp" />
     <ClCompile Include="CTimeManager.cpp" />
     <ClCompile Include="CTransform.cpp" />
     <ClCompile Include="pch.cpp" />

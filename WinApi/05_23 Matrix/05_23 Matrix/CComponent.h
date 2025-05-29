@@ -1,14 +1,6 @@
 #pragma once
-#include"CRenderer.h"
-#include "CRenderManager.h"
-
 class CObject;
-
-enum class ComponentType {
-	Transform,
-	Renderer,
-	Collider,
-};
+class CRenderer;
 
 class CComponent
 {
@@ -18,6 +10,7 @@ public:
 public:
 	virtual void Initialize() PURE;
 	virtual void Update(float dt) PURE;
+	virtual void Late_Update(float dt) PURE;
 	virtual ComponentType GetType() const PURE;
 
 public:
@@ -25,21 +18,16 @@ public:
 };
 
 template<typename T>
-void RegisterOnSystem(T* component) {
+void RegisterOnSystem(T* component) {}
 
-}
 template<typename T>
-void ReleaseOnSystem(T* component) {
+void ReleaseOnSystem(T* component) {}
 
-}
-//특수화 해둘 것
-
-template<>
-void RegisterOnSystem<CRenderer>(CRenderer* renderer) {
-
-}
+// 특수화는 선언만 남김
 
 template<>
-void ReleaseOnSystem<CRenderer>(CRenderer* renderer) {
+void RegisterOnSystem<CRenderer>(CRenderer* renderer);
 
-}
+template<>
+void ReleaseOnSystem<CRenderer>(CRenderer* renderer);
+

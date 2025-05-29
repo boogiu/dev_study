@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="00. Common">
+      <UniqueIdentifier>{e55b5531-3005-4e9d-8afe-a646d8e05d65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Client">
+      <UniqueIdentifier>{9cb1f0fa-14f9-4470-ab67-e69e47a9061a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. MainApp">
+      <UniqueIdentifier>{6263270e-b44d-4f89-ad85-b54c15ef725f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h">
+      <Filter>00. Common</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>00. Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>00. Common</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>00. Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>01. Client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CMainApp.h">
+      <Filter>02. MainApp</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>00. Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>01. Client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CMainApp.cpp">
+      <Filter>02. MainApp</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Client.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

@@ -15,3 +15,10 @@ void CObject::Update_Component(float dt)
 		comp->Update(dt);
 	}
 }
+
+void CObject::Late_Update_Component(float dt)
+{
+	for (auto& comp : components) {
+		comp->Late_Update(dt);
+	}
+}

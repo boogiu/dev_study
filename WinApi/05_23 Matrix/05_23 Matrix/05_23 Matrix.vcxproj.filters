@@ -41,6 +41,18 @@
     <Filter Include="03 Manager\RenderManager">
       <UniqueIdentifier>{37b1db91-e1f4-4af8-a9da-af47ecbad786}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03 Manager\KeyManager">
+      <UniqueIdentifier>{1d0515d0-3330-4b0f-9319-e2eb4e7b8fe4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Component\RigidBody">
+      <UniqueIdentifier>{fef30cac-ccc6-4b6b-b39c-106bf7eec789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 GameObject\Weapon">
+      <UniqueIdentifier>{821e9d2d-f1f9-4437-8c1e-cfa302812552}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 GameObject\Weapon\Barrel">
+      <UniqueIdentifier>{ad7db2e2-63c0-4ba5-a512-f9b798c840f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -91,6 +103,21 @@
     <ClInclude Include="CRenderManager.h">
       <Filter>03 Manager\RenderManager</Filter>
     </ClInclude>
+    <ClInclude Include="EnumDef.h">
+      <Filter>00 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Struct.h">
+      <Filter>00 Common</Filter>
+    </ClInclude>
+    <ClInclude Include="CRigidBody.h">
+      <Filter>05 Component\RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="CKeyManager.h">
+      <Filter>03 Manager\KeyManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CBarrel.h">
+      <Filter>04 GameObject\Weapon\Barrel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -125,6 +152,15 @@
     </ClCompile>
     <ClCompile Include="CRenderManager.cpp">
       <Filter>03 Manager\RenderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CRigidBody.cpp">
+      <Filter>05 Component\RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="CKeyManager.cpp">
+      <Filter>03 Manager\KeyManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CBarrel.cpp">
+      <Filter>04 GameObject\Weapon\Barrel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

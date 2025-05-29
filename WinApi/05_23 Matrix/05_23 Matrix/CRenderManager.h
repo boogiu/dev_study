@@ -1,6 +1,5 @@
 #pragma once
-
-#include "CRenderer.h"
+class CRenderer;
 
 class CRenderManager
 {
@@ -20,6 +19,12 @@ public:
 	void Late_Update();
 	void Render(HDC _hDC);
 	void Release();
+
+public:
+	void RegisterRenderer(CRenderer* comp);
+	void ReleaseRenderer(CRenderer* comp);
+
 private:
+	std::unordered_map<RenderLayer, std::vector<CRenderer*>> m_RenderContainer;
 };
 

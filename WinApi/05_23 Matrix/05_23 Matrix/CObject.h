@@ -1,10 +1,6 @@
 #pragma once
 #include "CComponent.h"
 
-enum class ObjectType {
-	PLAYER,
-	END
-};
 
 class CObject
 {
@@ -27,9 +23,10 @@ public:
 
 protected:
 	void Update_Component(float dt);
+	void Late_Update_Component(float dt);
 
 // 컴포넌트 가져오는 템플릿들
-protected:
+public:
 	template<typename T, typename... Args>
 	T* AddComponent(Args&&... args) {
 		if (GetComponent<T>())
