@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="..\Header\CTimer.h">
-      <Filter>01.TimeMgr\Timer</Filter>
+      <Filter>01. Manager\01.TimeMgr\Timer</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\Engine_Define.h">
       <Filter>99.Header</Filter>
@@ -23,53 +23,116 @@
       <Filter>99.Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CTimeMgr.h">
-      <Filter>01.TimeMgr</Filter>
+      <Filter>01. Manager\01.TimeMgr</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CFrameMgr.h">
-      <Filter>02. FrameMgr</Filter>
+      <Filter>01. Manager\02. FrameMgr</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CGraphicDev.h">
       <Filter>00. GraphicDev</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CFrame.h">
-      <Filter>02. FrameMgr\Frame</Filter>
+      <Filter>01. Manager\02. FrameMgr\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CGameObject.h">
+      <Filter>02. GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CComponent.h">
+      <Filter>03. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CTransform.h">
+      <Filter>03. Component\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CCameraMgr.h">
+      <Filter>01. Manager\03. CameraMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CCamera.h">
+      <Filter>03. Component\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CCameraActor.h">
+      <Filter>02. GameObject\CameraActor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Header">
       <UniqueIdentifier>{33d0fa38-8d9a-438d-aded-b5beb36275b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.TimeMgr">
-      <UniqueIdentifier>{a103eb7e-65af-4603-b52d-b2f198276d5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.TimeMgr\Timer">
-      <UniqueIdentifier>{151b7e24-feda-450f-b75a-41eac8598887}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. FrameMgr">
-      <UniqueIdentifier>{c1313643-2232-44f9-b615-9edf509d4909}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. FrameMgr\Frame">
-      <UniqueIdentifier>{5e0f33ce-002b-417e-8c51-7188738b38bd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00. GraphicDev">
       <UniqueIdentifier>{1ec31b58-b94e-4da0-9aae-a64978fed99d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager">
+      <UniqueIdentifier>{f73300f6-7446-4c3a-a75b-31658ca4f6b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\01.TimeMgr">
+      <UniqueIdentifier>{a103eb7e-65af-4603-b52d-b2f198276d5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\01.TimeMgr\Timer">
+      <UniqueIdentifier>{151b7e24-feda-450f-b75a-41eac8598887}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\02. FrameMgr">
+      <UniqueIdentifier>{c1313643-2232-44f9-b615-9edf509d4909}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\02. FrameMgr\Frame">
+      <UniqueIdentifier>{5e0f33ce-002b-417e-8c51-7188738b38bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject">
+      <UniqueIdentifier>{ce4428a5-176d-4a37-b920-422312e450e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component">
+      <UniqueIdentifier>{1b619c36-8563-4b8e-b4b7-75ce98c8a75c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Transform">
+      <UniqueIdentifier>{8b3caab7-cd3a-4089-9321-eb29fa718735}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Renderer">
+      <UniqueIdentifier>{a9e55978-3d8e-4165-a755-28e42bee64d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\03. CameraMgr">
+      <UniqueIdentifier>{ab610555-198a-45c6-88e6-4a32483aefd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Mesh">
+      <UniqueIdentifier>{8ac40829-6dbb-40d5-923d-a325e5d9fb7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Camera">
+      <UniqueIdentifier>{e4d64264-0a53-4477-92d5-45be3949ec3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObject\CameraActor">
+      <UniqueIdentifier>{9630ae68-b081-436f-8d5e-81d43c05195d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\CTimer.cpp">
-      <Filter>01.TimeMgr\Timer</Filter>
+      <Filter>01. Manager\01.TimeMgr\Timer</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CTimeMgr.cpp">
-      <Filter>01.TimeMgr</Filter>
+      <Filter>01. Manager\01.TimeMgr</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CFrameMgr.cpp">
-      <Filter>02. FrameMgr</Filter>
+      <Filter>01. Manager\02. FrameMgr</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CGraphicDev.cpp">
       <Filter>00. GraphicDev</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CFrame.cpp">
-      <Filter>02. FrameMgr\Frame</Filter>
+      <Filter>01. Manager\02. FrameMgr\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CGameObject.cpp">
+      <Filter>02. GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CComponent.cpp">
+      <Filter>03. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CTransform.cpp">
+      <Filter>03. Component\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CCameraMgr.cpp">
+      <Filter>01. Manager\03. CameraMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CCamera.cpp">
+      <Filter>03. Component\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CCameraActor.cpp">
+      <Filter>02. GameObject\CameraActor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
