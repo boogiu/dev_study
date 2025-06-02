@@ -52,6 +52,15 @@
     <ClInclude Include="..\Header\CCameraActor.h">
       <Filter>02. GameObject\CameraActor</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\CMesh.h">
+      <Filter>03. Component\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CRenderer.h">
+      <Filter>03. Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CRenderMgr.h">
+      <Filter>01. Manager\04. RenderMgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Header">
@@ -99,6 +108,9 @@
     <Filter Include="02. GameObject\CameraActor">
       <UniqueIdentifier>{9630ae68-b081-436f-8d5e-81d43c05195d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Manager\04. RenderMgr">
+      <UniqueIdentifier>{0a4fc6d0-8d44-4f86-b20d-9637e577af17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\CTimer.cpp">
@@ -133,6 +145,15 @@
     </ClCompile>
     <ClCompile Include="..\Code\CCameraActor.cpp">
       <Filter>02. GameObject\CameraActor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CMesh.cpp">
+      <Filter>03. Component\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CRenderer.cpp">
+      <Filter>03. Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CRenderMgr.cpp">
+      <Filter>01. Manager\04. RenderMgr</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

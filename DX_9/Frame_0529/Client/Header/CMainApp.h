@@ -3,6 +3,11 @@
 #include "Engine_Define.h"
 #include "CGraphicDev.h"
 
+namespace Engine {
+	class CGameObject;
+	class CCameraActor;
+}
+
 class CMainApp : public CBase
 {
 private:
@@ -17,6 +22,8 @@ public:
 private:
 	Engine::CGraphicDev* m_pDeviceClass;
 	LPDIRECT3DDEVICE9		m_pGraphicDev;
+	Engine::CGameObject* pTest=nullptr;
+	Engine::CCameraActor* pCam=nullptr;
 
 public:
 	static CMainApp* Create();

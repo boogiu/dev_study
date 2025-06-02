@@ -2,6 +2,8 @@
 #include "Engine_Typedef.h"
 
 namespace Engine {
+
+	
 	typedef struct tagVertexColor
 	{
 		_vec3 vPosition;

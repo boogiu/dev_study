@@ -13,8 +13,11 @@ CTransform* CTransform::Create()
 {
 	CTransform* instance = new CTransform;
 
-	if (FAILED(instance->Ready_Component()))
+	if (FAILED(instance->Ready_Component())) {
+		Safe_Release(instance);
 		return nullptr;
+	}
+
 
 	return instance;
 }
@@ -24,11 +27,13 @@ HRESULT CTransform::Ready_Component()
 	D3DXMatrixIdentity(&m_WorldMat);
 	m_vPos = { 0.f,0.f,0.f };
 	m_vRotate = { 0.f,0.f,0.f };
-	m_vScale = { 0.f,0.f,0.f };
+	m_vScale = { 1.f,1.f,1.f };
 	m_vPivot = { 0.f,0.f,0.f };
 	m_vOrbit = { 0.f,0.f,0.f };
+	m_vLook = { 0.f,0.f,1.f };
+	//룩벡터 조금더 이해 필요함
 	m_pParent = nullptr;
-	
+
 	return S_OK;
 }
 
@@ -43,7 +48,7 @@ void CTransform::Update_Component(float dt)
 	D3DXMatrixRotationZ(&matRotateZ, D3DXToRadian(m_vRotate.z));
 	//이동
 	D3DXMatrixTranslation(&matTrans, m_vPos.x, m_vPos.y, m_vPos.z);
-	
+
 	m_WorldMat = matScale * matRotateX * matRotateY * matRotateZ * matTrans;
 
 	//-----------------------------------------------------------//
@@ -67,10 +72,6 @@ void CTransform::LateUpdate_Component(float dt)
 {
 }
 
-void CTransform::Render()
-{
-}
-
 CComponent* CTransform::Clone() const
 {
 	return nullptr;
@@ -79,6 +80,21 @@ CComponent* CTransform::Clone() const
 void CTransform::Set_Parent(CTransform* transform)
 {
 	m_pParent = transform;
+}
+
+void CTransform::Set_Pos(_vec3 pos)
+{
+	m_vPos = pos;
+}
+
+void CTransform::Set_Scale(_vec3 scale)
+{
+	m_vScale = scale;
+}
+
+void CTransform::Set_Rotate(_vec3 rot)
+{
+	m_vRotate = rot;
 }
 
 void CTransform::Free()

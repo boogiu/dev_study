@@ -15,6 +15,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <memory>
 
 //--Define Çì´õ--//
 #include "Engine_Enum.h"

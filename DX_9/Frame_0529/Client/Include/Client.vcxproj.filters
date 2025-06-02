@@ -34,6 +34,7 @@
     <ClInclude Include="..\Header\CMainApp.h">
       <Filter>02. MainApp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\CTestObj.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -45,6 +46,7 @@
     <ClCompile Include="..\Code\CMainApp.cpp">
       <Filter>02. MainApp</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\CTestObj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">

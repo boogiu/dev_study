@@ -41,7 +41,6 @@ private:
     _vec3 m_vRotate;
     _vec3 m_vPivot;
     _vec3 m_vOrbit;
-    _vec3 m_vLook;
     
     _matrix m_WorldMat;
     CTransform* m_pParent;

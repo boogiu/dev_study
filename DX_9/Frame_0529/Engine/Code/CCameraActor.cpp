@@ -14,10 +14,17 @@ CCameraActor::~CCameraActor()
 
 CCameraActor* CCameraActor::Create()
 {
-	return nullptr;
+	CCameraActor* instance = new CCameraActor;
+
+	if(FAILED(instance->Ready_GameObject())) {
+		Safe_Release(instance);
+		return nullptr;
+	}
+
+	return instance;
 }
 
-HRESULT CCameraActor::Ready_CameraActor()
+HRESULT CCameraActor::Ready_GameObject()
 {
 	m_pCamera = Add_Component<CCamera>();
 	if (m_pCamera == nullptr)
@@ -30,14 +37,17 @@ HRESULT CCameraActor::Ready_CameraActor()
 	return S_OK;
 }
 
-void CCameraActor::Update_Camera(float dt)
+void CCameraActor::Update_GameObject(float dt)
 {
+	__super::Update_Component(dt);
 }
 
-void CCameraActor::LateUpdate_Camera(float dt)
+void CCameraActor::LateUpdate_GameObject(float dt)
 {
+	__super::LateUpdate_Component(dt);
 }
 
 void CCameraActor::Free()
 {
+
 }
