@@ -1,6 +1,9 @@
 #include"pch.h"
 #include "Engine_Define.h"
 #include "CTestObj.h"
+#include "CCameraMgr.h"
+#include "CCameraActor.h"
+#include "CCamera.h"
 
 CTestObj::CTestObj()
 	:m_pTransform(nullptr),m_pRenderer(nullptr), m_pMesh(nullptr)
@@ -37,7 +40,7 @@ HRESULT CTestObj::Ready_GameObject()
 		return E_FAIL;
 
 	m_pRenderer->Set_Mesh();
-	m_pTransform->Set_Pos({1.f,1.f,1.f});
+	m_pTransform->Set_Pos({0.f,0.f,1.f});
 	m_pTransform->Set_Scale({1.f,1.f,1.f});
 
 	return S_OK;
@@ -52,6 +55,7 @@ void CTestObj::Update_GameObject(float dt)
 void CTestObj::LateUpdate_GameObject(float dt)
 {
 	__super::LateUpdate_Component(dt);
+
 }
 void CTestObj::Key_Check(float dt)
 {

@@ -5,8 +5,8 @@
 
 namespace Engine {
 	class CGameObject;
-	class CCameraActor;
 }
+class CTestCam;
 
 class CMainApp : public CBase
 {
@@ -22,8 +22,9 @@ public:
 private:
 	Engine::CGraphicDev* m_pDeviceClass;
 	LPDIRECT3DDEVICE9		m_pGraphicDev;
-	Engine::CGameObject* pTest=nullptr;
-	Engine::CCameraActor* pCam=nullptr;
+	CGameObject* pTest=nullptr;
+	CGameObject* pLight=nullptr;
+	CTestCam* pCam=nullptr;
 
 public:
 	static CMainApp* Create();

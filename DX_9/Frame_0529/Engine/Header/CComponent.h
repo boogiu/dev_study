@@ -1,6 +1,7 @@
 #pragma once
 #include "CBase.h"
 #include "CRenderMgr.h"
+#include "CLightMgr.h"
 
 BEGIN(Engine)
 
@@ -39,10 +40,21 @@ inline  void RegisterOnSystem<CRenderer>(CRenderer* renderer)
 }
 
 template<>
+inline  void RegisterOnSystem<CLight>(CLight* light)
+{
+    CLightMgr::GetInstance()->Add_Light(light);
+}
+
+template<>
 inline void ReleaseOnSystem<CRenderer>(CRenderer* renderer)
 {
     CRenderMgr::GetInstance()->Remove_Renderer(renderer);
 }
 
+template<>
+inline void ReleaseOnSystem<CLight>(CLight* light)
+{
+    CLightMgr::GetInstance()->Remove_Light(light);
+}
 END
 

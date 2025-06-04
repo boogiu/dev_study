@@ -13,6 +13,11 @@ CRenderMgr::~CRenderMgr()
 {
 }
 
+HRESULT CRenderMgr::Ready_RenderMgr(LPDIRECT3DDEVICE9 pDevice)
+{
+	return S_OK;
+}
+
 void CRenderMgr::Add_Renderer(CRenderer* renderer)
 {
 	auto iter = find_if(m_Renderers.begin(), m_Renderers.end(),

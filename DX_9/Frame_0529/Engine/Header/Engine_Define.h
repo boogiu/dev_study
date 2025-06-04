@@ -6,6 +6,8 @@
 #include <d3dx9.h>
 
 //--STL--//
+#include <stdio.h>
+#include <tchar.h>
 #include <vector>
 #include <list>
 #include <map>

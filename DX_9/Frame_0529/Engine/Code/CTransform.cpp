@@ -18,7 +18,6 @@ CTransform* CTransform::Create()
 		return nullptr;
 	}
 
-
 	return instance;
 }
 
@@ -70,6 +69,8 @@ void CTransform::Update_Component(float dt)
 
 void CTransform::LateUpdate_Component(float dt)
 {
+
+
 }
 
 CComponent* CTransform::Clone() const
@@ -95,6 +96,21 @@ void CTransform::Set_Scale(_vec3 scale)
 void CTransform::Set_Rotate(_vec3 rot)
 {
 	m_vRotate = rot;
+}
+
+void CTransform::Set_Pivot(_vec3 pivot)
+{
+	m_vPivot = pivot;
+}
+
+void CTransform::Set_Orbit(_vec3 orbit)
+{
+	m_vOrbit = orbit;
+}
+
+void CTransform::Set_Look(_vec3 look)
+{
+	m_vLook = look;
 }
 
 void CTransform::Free()

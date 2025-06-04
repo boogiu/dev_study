@@ -1,4 +1,4 @@
-#include "Engine_Define.h"
+﻿#include "Engine_Define.h"
 #include "CCamera.h"
 #include "CGameObject.h"
 #include "CTransform.h"
@@ -28,26 +28,50 @@ HRESULT CCamera::Ready_Component()
 	D3DXMatrixIdentity(&m_matView);
 	D3DXMatrixIdentity(&m_matProj);
 
-	m_vEye = { 0.f,0.f,-10.f };
+	m_vEye = { 0.f,0.f,-20.f };
 	m_vAt = { 0.f,0.f,0.f };
 	m_vUp = { 0.f,1.f,0.f };
 	m_fFOV = 60.f;
-	m_fAspect = WINCX/WINCY;
-	m_fNear = 0.1f;
-	m_fFar = 100.f;
+	m_fAspect = (float)WINCX / WINCY;
+	m_fNear = 1.f;
+	m_fFar = 500.f;
 	return S_OK;
 }
 
 void CCamera::Update_Component(float dt)
 {
-	m_vEye = m_pOwner->Get_Component<CTransform>()->Get_Pos();
-	_vec3 At = m_pOwner->Get_Component<CTransform>()->Get_Rotate();
-	D3DXVec3Normalize(&m_vAt,&At);
+	// Transform 기준 위치 계산 (공전 삭제)
+	_vec3 tmp(0.f, 0.f, 0.f);
 
+	D3DXVec3TransformCoord(
+		&m_vEye,
+		&tmp,
+		&m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix());
+	//주인의 몸체와 동일
+	
+	// 카메라가 보는 지점: 피벗 (일반적으로 타겟의 위치)
+	m_vAt = m_pOwner->Get_Component<CTransform>()->Get_Look();
+
+	// Look 방향 벡터
+	_vec3 Look = m_vAt - m_vEye;
+	D3DXVec3Normalize(&Look, &Look);
+
+	// 오른쪽 벡터: Up(이전 프레임 기준) × Look
+	_vec3 right;
+
+	D3DXVec3Cross(&right, &m_vUp, &Look);
+	D3DXVec3Normalize(&right, &right);
+
+	// 위쪽 벡터: Look × Right
+	D3DXVec3Cross(&m_vUp, &Look, &right);
+	D3DXVec3Normalize(&m_vUp, &m_vUp);
+
+	// 뷰 행렬 생성
 	D3DXMatrixLookAtLH(&m_matView, &m_vEye, &m_vAt, &m_vUp);
+
+	// 투영 행렬 생성
 	D3DXMatrixPerspectiveFovLH(&m_matProj, D3DXToRadian(m_fFOV), m_fAspect, m_fNear, m_fFar);
 }
-
 void CCamera::LateUpdate_Component(float dt)
 {
 }

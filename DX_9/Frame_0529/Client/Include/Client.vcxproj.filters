@@ -14,6 +14,9 @@
     <Filter Include="02. MainApp">
       <UniqueIdentifier>{6263270e-b44d-4f89-ad85-b54c15ef725f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TestObjects">
+      <UniqueIdentifier>{028585d0-c8ec-40c5-a39c-30ede64bda75}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -34,7 +37,15 @@
     <ClInclude Include="..\Header\CMainApp.h">
       <Filter>02. MainApp</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\CTestObj.h" />
+    <ClInclude Include="..\Header\CTestObj.h">
+      <Filter>TestObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CTestCam.h">
+      <Filter>TestObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CTestLigh.h">
+      <Filter>TestObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -46,7 +57,15 @@
     <ClCompile Include="..\Code\CMainApp.cpp">
       <Filter>02. MainApp</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\CTestObj.cpp" />
+    <ClCompile Include="..\Code\CTestCam.cpp">
+      <Filter>TestObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CTestObj.cpp">
+      <Filter>TestObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CTestLigh.cpp">
+      <Filter>TestObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">

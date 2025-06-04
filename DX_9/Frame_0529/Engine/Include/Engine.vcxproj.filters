@@ -49,9 +49,6 @@
     <ClInclude Include="..\Header\CCamera.h">
       <Filter>03. Component\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\Header\CCameraActor.h">
-      <Filter>02. GameObject\CameraActor</Filter>
-    </ClInclude>
     <ClInclude Include="..\Header\CMesh.h">
       <Filter>03. Component\Mesh</Filter>
     </ClInclude>
@@ -60,6 +57,15 @@
     </ClInclude>
     <ClInclude Include="..\Header\CRenderMgr.h">
       <Filter>01. Manager\04. RenderMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLightMgr.h">
+      <Filter>01. Manager\05. LightMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLight.h">
+      <Filter>03. Component\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CTextureMgr.h">
+      <Filter>01. Manager\06. TextureMgr</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -105,11 +111,17 @@
     <Filter Include="03. Component\Camera">
       <UniqueIdentifier>{e4d64264-0a53-4477-92d5-45be3949ec3a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObject\CameraActor">
-      <UniqueIdentifier>{9630ae68-b081-436f-8d5e-81d43c05195d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Manager\04. RenderMgr">
       <UniqueIdentifier>{0a4fc6d0-8d44-4f86-b20d-9637e577af17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Light">
+      <UniqueIdentifier>{aa314e21-9da4-40b3-8ab1-d272630b81e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\05. LightMgr">
+      <UniqueIdentifier>{48c45f73-122d-4ee5-98ea-706eaaabd5f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\06. TextureMgr">
+      <UniqueIdentifier>{78d5eaca-0303-4b67-a5b1-045e940ee838}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -143,9 +155,6 @@
     <ClCompile Include="..\Code\CCamera.cpp">
       <Filter>03. Component\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\CCameraActor.cpp">
-      <Filter>02. GameObject\CameraActor</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\CMesh.cpp">
       <Filter>03. Component\Mesh</Filter>
     </ClCompile>
@@ -154,6 +163,15 @@
     </ClCompile>
     <ClCompile Include="..\Code\CRenderMgr.cpp">
       <Filter>01. Manager\04. RenderMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLightMgr.cpp">
+      <Filter>01. Manager\05. LightMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLight.cpp">
+      <Filter>03. Component\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CTextureMgr.cpp">
+      <Filter>01. Manager\06. TextureMgr</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,6 +1,5 @@
 #include "Engine_Define.h"
 #include "CCameraMgr.h"
-#include "CCameraActor.h"
 #include "CCamera.h"
 
 IMPLEMENT_SINGLETON(CCameraMgr)
@@ -15,9 +14,9 @@ CCameraMgr::~CCameraMgr()
 }
 
 
-void CCameraMgr::Set_ViewTarget(CCameraActor* pCamActor)
+void CCameraMgr::Set_ViewTarget(CCamera* pCam)
 {
-	m_pCurCam = pCamActor;
+	m_pCurCam = pCam;
 }
 
 void CCameraMgr::Apply_Camera(LPDIRECT3DDEVICE9 pDevice)
@@ -26,17 +25,11 @@ void CCameraMgr::Apply_Camera(LPDIRECT3DDEVICE9 pDevice)
 	if (m_pCurCam == nullptr)
 		return;
 
-	CCamera* pCam = m_pCurCam->Get_Component<CCamera>();
-	
-	if (pCam == nullptr)
-		return;
-
-	const _matrix& matView = pCam->Get_ViewMatrix();
-	const _matrix& matProj = pCam->Get_ProjMatrix();
+	const _matrix& matView = m_pCurCam->Get_ViewMatrix();
+	const _matrix& matProj = m_pCurCam->Get_ProjMatrix();
 
 	pDevice->SetTransform(D3DTS_VIEW ,&matView);
 	pDevice->SetTransform(D3DTS_PROJECTION ,&matProj);
-
 }
 
 void CCameraMgr::Free()

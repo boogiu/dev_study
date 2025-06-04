@@ -3,7 +3,6 @@
 
 namespace Engine {
 
-	
 	typedef struct tagVertexColor
 	{
 		_vec3 vPosition;
@@ -44,4 +43,26 @@ namespace Engine {
 		_ulong	_2;
 
 	}INDEX32;
+
+
+	//boogi
+	typedef struct tagVertexLight
+	{
+		_vec3 vPosition;   // D3DFVF_XYZ
+		_vec3 vNorm;       // D3DFVF_NORMAL
+		_ulong dwColor;    // D3DFVF_DIFFUSE
+
+	} VTXLIGHT;
+
+#define FVF_LIGHT (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE)
+	typedef struct tagVertexLightTex
+	{
+		_vec3 vPosition;
+		_vec3 vNorm;
+		_vec2 vTexUV = {0,0};
+
+	} VTXLIGHTTEX;
+
+#define FVF_LIGHTTEX (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1)
+
 }
