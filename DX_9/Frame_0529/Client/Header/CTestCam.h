@@ -21,7 +21,6 @@ public:
     void LateUpdate_GameObject(float dt) override;
 public:
     Engine::CCamera* Get_Camera() { return m_pCamera; }
-    void Set_Target(CGameObject* obj);
 private:
     void Key_Check(float dt);
 

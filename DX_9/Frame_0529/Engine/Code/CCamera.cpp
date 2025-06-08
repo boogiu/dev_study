@@ -4,6 +4,7 @@
 #include "CTransform.h"
 
 CCamera::CCamera()
+	:m_pTransform(nullptr)
 {
 }
 
@@ -29,8 +30,9 @@ HRESULT CCamera::Ready_Component()
 	D3DXMatrixIdentity(&m_matProj);
 
 	m_vEye = { 0.f,0.f,-20.f };
-	m_vAt = { 0.f,0.f,0.f };
 	m_vUp = { 0.f,1.f,0.f };
+	m_vLookDir = { 0.f, 0.f, 1.f }; 
+
 	m_fFOV = 60.f;
 	m_fAspect = (float)WINCX / WINCY;
 	m_fNear = 1.f;
@@ -40,36 +42,26 @@ HRESULT CCamera::Ready_Component()
 
 void CCamera::Update_Component(float dt)
 {
-	// Transform 기준 위치 계산 (공전 삭제)
-	_vec3 tmp(0.f, 0.f, 0.f);
+	if (!m_pTransform)
+		m_pTransform = m_pOwner->Get_Component<CTransform>();
 
-	D3DXVec3TransformCoord(
-		&m_vEye,
-		&tmp,
-		&m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix());
-	//주인의 몸체와 동일
-	
-	// 카메라가 보는 지점: 피벗 (일반적으로 타겟의 위치)
-	m_vAt = m_pOwner->Get_Component<CTransform>()->Get_Look();
+	// 소유자 위치를 Eye로 설정
+	m_vEye = m_pTransform->Get_Pos();
 
-	// Look 방향 벡터
-	_vec3 Look = m_vAt - m_vEye;
-	D3DXVec3Normalize(&Look, &Look);
+	// At은 Eye + Look 방향
+	_vec3 vAt = m_vEye + m_vLookDir;
 
-	// 오른쪽 벡터: Up(이전 프레임 기준) × Look
-	_vec3 right;
+	// 오른쪽 벡터 계산
+	_vec3 vRight;
+	D3DXVec3Cross(&vRight, &m_vUp, &m_vLookDir);
+	D3DXVec3Normalize(&vRight, &vRight);
 
-	D3DXVec3Cross(&right, &m_vUp, &Look);
-	D3DXVec3Normalize(&right, &right);
-
-	// 위쪽 벡터: Look × Right
-	D3DXVec3Cross(&m_vUp, &Look, &right);
+	// Up 벡터 다시 계산
+	D3DXVec3Cross(&m_vUp, &m_vLookDir, &vRight);
 	D3DXVec3Normalize(&m_vUp, &m_vUp);
 
 	// 뷰 행렬 생성
-	D3DXMatrixLookAtLH(&m_matView, &m_vEye, &m_vAt, &m_vUp);
-
-	// 투영 행렬 생성
+	D3DXMatrixLookAtLH(&m_matView, &m_vEye, &vAt, &m_vUp);
 	D3DXMatrixPerspectiveFovLH(&m_matProj, D3DXToRadian(m_fFOV), m_fAspect, m_fNear, m_fFar);
 }
 void CCamera::LateUpdate_Component(float dt)
@@ -85,7 +77,6 @@ CComponent* CCamera::Clone() const
 void CCamera::Set_View(_vec3 _vEye, _vec3 _vAt, _vec3 _vUP)
 {
 	m_vEye = _vEye;
-	m_vAt = _vAt;
 	m_vUp = _vUP;
 }
 
@@ -95,6 +86,29 @@ void CCamera::Set_Proj(float _FOV, float _aspect, float _near, float _far)
 	m_fAspect = _aspect;
 	m_fNear = _near;
 	m_fFar = _far;
+}
+void CCamera::Add_Yaw(float angle)
+{
+	_matrix rot;
+	D3DXMatrixRotationAxis(&rot, &m_vUp, D3DXToRadian(angle));
+	D3DXVec3TransformNormal(&m_vLookDir, &m_vLookDir, &rot);
+}
+
+void CCamera::Add_Pitch(float angle)
+{
+	_vec3 vRight;
+	D3DXVec3Cross(&vRight, &m_vUp, &m_vLookDir);
+	D3DXVec3Normalize(&vRight, &vRight);
+
+	_matrix rot;
+	D3DXMatrixRotationAxis(&rot, &vRight, D3DXToRadian(angle));
+	D3DXVec3TransformNormal(&m_vLookDir, &m_vLookDir, &rot);
+	D3DXVec3TransformNormal(&m_vUp, &m_vUp, &rot); // Up 벡터도 회전
+}
+
+
+void CCamera::Add_Roll(float angle)
+{
 }
 
 void CCamera::Free()

@@ -27,9 +27,14 @@ public:
     _matrix& Get_ViewMatrix() { return m_matView; }
     _matrix& Get_ProjMatrix() { return m_matProj; }
 
+    void Add_Yaw(float angle);
+    void Add_Pitch(float angle);
+    void Add_Roll(float angle);
+
 private:
+    CTransform* m_pTransform;
     _vec3 m_vEye;
-    _vec3 m_vAt;
+    _vec3 m_vLookDir;
     _vec3 m_vUp;
     _matrix m_matView;
 
@@ -37,6 +42,7 @@ private:
     float m_fAspect;
     float m_fNear;
     float m_fFar;
+
     _matrix m_matProj;
 
 private:

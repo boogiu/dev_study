@@ -47,7 +47,6 @@ HRESULT CMainApp::Ready_MainApp()
 	pTest = CTestObj::Create();
 	//pLight = CTestLigh::Create();
 
-	pCam->Set_Target(pTest);
 	CCameraMgr::GetInstance()->Set_ViewTarget(pCam->Get_Component<CCamera>());
 	return S_OK;
 }

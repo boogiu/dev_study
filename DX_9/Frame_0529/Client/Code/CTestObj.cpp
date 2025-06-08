@@ -49,7 +49,7 @@ HRESULT CTestObj::Ready_GameObject()
 void CTestObj::Update_GameObject(float dt)
 {
 	__super::Update_Component(dt);
-	Key_Check(dt);
+	//Key_Check(dt);
 }
 
 void CTestObj::LateUpdate_GameObject(float dt)

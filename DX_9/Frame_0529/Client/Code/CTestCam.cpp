@@ -77,63 +77,35 @@ void CTestCam::LateUpdate_GameObject(float dt)
 	__super::LateUpdate_Component(dt);
 }
 
-void CTestCam::Set_Target(CGameObject* obj)
-{
-	//m_pTarget = obj;
-	//CTransform* myTransform = Get_Component<CTransform>();
-	//CTransform* targetTrans = m_pTarget->Get_Component<CTransform>();
-	//_vec3 worldPos;
-	//_vec3 targetPos = targetTrans->Get_Pos();
-	//
-	//D3DXVec3TransformCoord(&worldPos, &targetPos, &targetTrans->Get_WorldMatrix());
-	//myTransform->Set_Pivot(worldPos);
-}
-
 void CTestCam::Key_Check(float dt)
 {
 	CTransform* transform = Get_Component<CTransform>();
+	CCamera* camera = Get_Component<CCamera>();
 	_vec3 pos = transform->Get_Pos();
-	_vec3 look = transform->Get_Look();
-	const float speed = 120.f;
-	//
-	//if (GetAsyncKeyState(VK_UP) & 0x8000) {
-	//	pos.y += dt * speed;
-	//	look.y = dt * speed;
-	//}
-	//if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
-	//	pos.y -= dt * speed;
-	//	look.y -= dt * speed;
-	//}
-	//
-	//if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
-	//	pos.x -= dt * speed;
-	//	look.x -= dt * speed;
-	//}
-	//
-	//if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
-	//	pos.x += dt * speed;
-	//	look.x += dt * speed;
-	//}
-	//
-	//if (GetAsyncKeyState(VK_LSHIFT) & 0x8000) {
-	//	pos.z-= dt * speed;
-	//	look.z -= dt * speed;
-	//}
-	//
-	//if (GetAsyncKeyState(VK_RSHIFT) & 0x8000) {
-	//	pos.z  += dt * speed;
-	//	look.z += dt * speed;
-	//}
-	//
-	//if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
-	//	pos.x += dt * speed;
-	//	look.x += dt * speed;
-	//}
 
-	//D3DXVec3Normalize(&look, &look);
+	const float rotSpeed = 90.f; // deg/sec
+	const float unit = 100.f;
+	if (GetAsyncKeyState('Q') & 0x8000) {
+		camera->Add_Yaw(-rotSpeed * dt);
+	}
+	if (GetAsyncKeyState('E') & 0x8000) {
+		camera->Add_Yaw(rotSpeed * dt);
+	}
+	if (GetAsyncKeyState(VK_UP) & 0x8000) {
+		camera->Add_Pitch(-rotSpeed * dt);
+	}
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+		camera->Add_Pitch(rotSpeed * dt);
+	}
+
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+		pos.x -= unit * dt;
+	}
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+		pos.x += unit * dt;
+	}
 
 	transform->Set_Pos(pos);
-	transform->Set_Look(look);
 }
 
 
