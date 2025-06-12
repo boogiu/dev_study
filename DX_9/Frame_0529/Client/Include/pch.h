@@ -19,6 +19,7 @@ extern HWND g_hWnd;
 #include <map>
 #include <unordered_map>
 #include <algorithm>
+using namespace std;
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -33,5 +34,3 @@ extern HWND g_hWnd;
 
 #endif // _DEBUG
 #endif //PCH_H
-
-using namespace std;

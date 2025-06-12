@@ -224,7 +224,7 @@ void CResourceMgr::LoadAllTexture()
 
 	if (handle == -1)
 	{
-		::MessageBoxA(0, "LoadAllTexture() - FAILED", "Error", MB_OK);
+		//::MessageBoxA(0, "LoadAllTexture() - FAILED", "Error", MB_OK);
 		return;
 	}
 

@@ -1,4 +1,4 @@
-#include "Engine_Define.h"
+Ôªø#include "Engine_Define.h"
 #include "CSkyBoxRenderer.h"
 #include "CCubeMesh.h"
 #include "CResourceMgr.h"
@@ -32,10 +32,8 @@ CSkyBoxRenderer* CSkyBoxRenderer::Create()
 
 HRESULT CSkyBoxRenderer::Ready_Component()
 {
-
 	m_pDevice = CGraphicDev::GetInstance()->Get_GraphicDev();
 	HRESULT hr = Set_Buffer();
-
 	if (m_pDevice && !FAILED(hr)) {
 		m_pDevice->AddRef();
 		return S_OK;
@@ -48,51 +46,38 @@ void CSkyBoxRenderer::Render(LPDIRECT3DDEVICE9 pDevice)
 	if (!m_pTransform || !m_pVB || !m_pIB || !m_pTexture || !pDevice)
 		return;
 
-
-	// 2. ø˘µÂ «‡∑ƒ¿∫ ƒ´∏ﬁ∂Û ¿ßƒ°∑Œ∏∏ ±∏º∫µ» ∫Ø»Ø «‡∑ƒ
+	// 2. ÏõîÎìú ÌñâÎ†¨ÏùÄ Ïπ¥Î©îÎùº ÏúÑÏπòÎ°úÎßå Íµ¨ÏÑ±Îêú Î≥ÄÌôò ÌñâÎ†¨
 	pDevice->SetTransform(D3DTS_WORLD, &m_pTransform->Get_WorldMatrix());
 
-	// 3. ∑ª¥ı ªÛ≈¬ º≥¡§ (Ω∫ƒ´¿Ãπ⁄Ω∫øÎ)
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);           // æ»¬  ∏È ∫∏¿Ã∞‘
-	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);                 // Z-∫Ò»∞º∫»≠
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);           // Z-æ≤±‚ ∫Ò»∞º∫»≠
+	// 3. Î†åÎçî ÏÉÅÌÉú ÏÑ§Ï†ï (Ïä§Ïπ¥Ïù¥Î∞ïÏä§Ïö©)
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 	pDevice->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
 
-	// 4. ≈ÿΩ∫√≥ ª˘«√∏µ ªÛ≈¬ º≥¡§
-	//pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-	//pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	// ≈ÿΩ∫√≥ ¡¬«•∏¶ ƒ´∏ﬁ∂Û ±‚¡ÿ π›ªÁ ∫§≈Õ∑Œ ∞£¡÷«œ∞‘ º≥¡§
-	//pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	// 4. ÌÖçÏä§Ï≤ò ÏÉòÌîåÎßÅ ÏÉÅÌÉú ÏÑ§Ï†ï
+	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-	// 5. ¡§¡°/¿Œµ¶Ω∫/≈ÿΩ∫√≥ º≥¡§
-	pDevice->SetStreamSource(0, m_pVB, 0, sizeof(VTXSKY));
-	pDevice->SetFVF(FVF_SKY);
-	pDevice->SetIndices(m_pIB);
+	// 5. Ï†ïÏ†ê/Ïù∏Îç±Ïä§/ÌÖçÏä§Ï≤ò ÏÑ§Ï†ï
 	pDevice->SetTexture(0, m_pTexture);
+	pDevice->SetStreamSource(0, m_pVB, 0, sizeof(VTXTEX));
+	pDevice->SetFVF(FVF_TEX);
+	pDevice->SetIndices(m_pIB);
 
-	// 6. µÂ∑ŒøÏ »£√‚
-	HRESULT hr = pDevice->DrawIndexedPrimitive(
-		D3DPT_TRIANGLELIST,
-		0,
-		0,
-		8,
-		0,
-		12);
+	// 6. ÎìúÎ°úÏö∞ Ìò∏Ï∂ú
+	HRESULT hr = pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 8, 0, 12);
 
-	// 7. ªÛ≈¬ ∫π±∏
+	// 7. ÏÉÅÌÉú Î≥µÍµ¨
 	pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 	pDevice->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);           // ±‚∫ª ƒ√∏µ ∫π±∏
-	//// ∫π±∏ (±‚∫ª ªÛ≈¬)
-	//pDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
-	//pDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 
 	if (FAILED(hr))
 	{
-		MessageBoxA(nullptr, "Ω∫ƒ´¿Ãπ⁄Ω∫ ∑ª¥ı∏µ Ω«∆–", "Draw Error", MB_OK);
+		MessageBoxA(nullptr, "Ïä§Ïπ¥Ïù¥Î∞ïÏä§ Î†åÎçîÎßÅ Ïã§Ìå®", "Draw Error", MB_OK);
 	}
 }
 
@@ -105,65 +90,13 @@ void CSkyBoxRenderer::Set_Texture(const string& _key)
 {
 	string path = "../Bin/Resource/SkyBox.dds";
 	//wstring path = L"../Resource/SkyBox.dds";
-
-	HRESULT hr = D3DXCreateCubeTextureFromFile(m_pDevice, path.c_str(), &m_pTexture);
+	HRESULT hr = D3DXCreateTextureFromFile(m_pDevice, path.c_str(), &m_pTexture);
+	//HRESULT hr = D3DXCreateCubeTextureFromFile(m_pDevice, path.c_str(), &m_pTexture);
 	if (FAILED(hr))
 	{
-		MessageBoxA(0, "≈•∫Í ≈ÿΩ∫√≥∏¶ √£¡ˆ ∏¯«ﬂΩ¿¥œ¥Ÿ", _key.c_str(), MB_OK);
+		MessageBoxA(0, "ÌÅêÎ∏å ÌÖçÏä§Ï≤òÎ•º Ï∞æÏßÄ Î™ªÌñàÏäµÎãàÎã§", _key.c_str(), MB_OK);
 		m_pTexture = nullptr;
 		return;
-	}
-}
-
-void CSkyBoxRenderer::Set_TestCubeTexture()
-{
-	const UINT texSize = 64;
-
-	HRESULT hr = D3DXCreateCubeTexture(
-		m_pDevice,
-		texSize,
-		1,
-		0,
-		D3DFMT_A8R8G8B8,
-		D3DPOOL_MANAGED,
-		&m_pTexture);
-
-	if (FAILED(hr) || m_pTexture == nullptr) {
-		MessageBoxA(0, "¿”Ω√ ≈•∫Í∏  ª˝º∫ Ω«∆–", "Error", MB_OK);
-		return;
-	}
-
-	D3DLOCKED_RECT lockedRect;
-	D3DCUBEMAP_FACES faces[] = {
-		D3DCUBEMAP_FACE_POSITIVE_X, D3DCUBEMAP_FACE_NEGATIVE_X,
-		D3DCUBEMAP_FACE_POSITIVE_Y, D3DCUBEMAP_FACE_NEGATIVE_Y,
-		D3DCUBEMAP_FACE_POSITIVE_Z, D3DCUBEMAP_FACE_NEGATIVE_Z
-	};
-
-	// ∞¢ ∏Èø° ¥Ÿ∏• ªˆ¿ª ≥÷¥¬¥Ÿ
-	DWORD colors[] = {
-		D3DCOLOR_XRGB(255, 0, 0),   // +X = ª°∞≠
-		D3DCOLOR_XRGB(0, 255, 0),   // -X = √ ∑œ
-		D3DCOLOR_XRGB(0, 0, 255),   // +Y = ∆ƒ∂˚
-		D3DCOLOR_XRGB(255, 255, 0), // -Y = ≥Î∂˚
-		D3DCOLOR_XRGB(0, 255, 255), // +Z = Ω√æ»
-		D3DCOLOR_XRGB(255, 0, 255)  // -Z = ∏∂¡®≈∏
-	};
-
-	for (int face = 0; face < 6; ++face)
-	{
-		if (SUCCEEDED(m_pTexture->LockRect(faces[face], 0, &lockedRect, nullptr, 0)))
-		{
-			DWORD* pixels = static_cast<DWORD*>(lockedRect.pBits);
-			for (UINT y = 0; y < texSize; ++y)
-			{
-				for (UINT x = 0; x < texSize; ++x)
-				{
-					pixels[y * (lockedRect.Pitch / 4) + x] = colors[face];
-				}
-			}
-			m_pTexture->UnlockRect(faces[face], 0);
-		}
 	}
 }
 
@@ -172,42 +105,29 @@ HRESULT CSkyBoxRenderer::Set_Buffer()
 	const DWORD numIndices = 36;
 	const DWORD numVertices = 8;
 
-	HRESULT hr = m_pDevice->CreateVertexBuffer(sizeof(VTXSKY) * numVertices,
-		0, FVF_SKY, D3DPOOL_MANAGED, &m_pVB, 0);
-	
-	// ¿Œµ¶Ω∫ πˆ∆€ ª˝º∫
+	HRESULT hr = m_pDevice->CreateVertexBuffer(sizeof(VTXTEX) * numVertices,
+		0, FVF_TEX, D3DPOOL_MANAGED, &m_pVB, 0);
+
+	// Ïù∏Îç±Ïä§ Î≤ÑÌçº ÏÉùÏÑ±
 	HRESULT hr2 = m_pDevice->CreateIndexBuffer(sizeof(DWORD) * numIndices,
 		0, D3DFMT_INDEX32, D3DPOOL_MANAGED, &m_pIB, 0);
-	
+
 	if (FAILED(hr) || FAILED(hr2))
 		return E_FAIL;
 
-	//VTXSKY cube[] = {
-	//{{-1,  1, -1}, {1,-1,1}},
-	//{{  1, -1, -1}, { -1,1,1}},
-	//{{ 1, -1, -1}, {-1, 1,1}},
-	//{{-1, -1, -1}, {1, 1,1}},
-	//
-	//{{-1,  1,  1}, {1,-1,-1}},
-	//{{ 1, -1,  1}, { -1,1,-1}},
-	//{{ 1, -1,  1}, {-1, 1,-1}},
-	//{{-1, -1,  1}, {1, 1,-1}}
-	//};
+	VTXTEX cubeVertices[] = {
+		{{-1,  1, -1}, {-1,  1}},
+		{{ 1, -1, -1}, { 1, -1}},
+		{{ 1, -1, -1}, { 1, -1}},
+		{{-1, -1, -1}, {-1, -1}},
 
-	VTXSKY cube[] = {
-	{{-1,  1, -1}, {-1,  1, -1}},
-	{{ 1, -1, -1}, { 1, -1, -1}},
-	{{ 1, -1, -1}, { 1, -1, -1}},
-	{{-1, -1, -1}, {-1, -1, -1}},
-	
-	{{-1,  1,  1}, {-1,  1,  1}},
-	{{ 1, -1,  1}, { 1, -1,  1}},
-	{{ 1, -1,  1}, { 1, -1,  1}},
-	{{-1, -1,  1}, {-1, -1,  1}},
+		{{-1,  1,  1}, {-1,  1}},
+		{{ 1, -1,  1}, { 1, -1}},
+		{{ 1, -1,  1}, { 1, -1}},
+		{{-1, -1,  1}, {-1, -1}},
 	};
 
-	DWORD indices[] =
-	{
+	WORD cubeIndices[] = {
 		3,0,1, 3,1,2,
 		6,5,4, 6,4,7,
 		2,1,5,2,5,6,
@@ -216,16 +136,16 @@ HRESULT CSkyBoxRenderer::Set_Buffer()
 		7,3,2,7,2,6
 	};
 
-	// 3. ¡§¡° πˆ∆€ø° ∫πªÁ
+	// 3. Ï†ïÏ†ê Î≤ÑÌçºÏóê Î≥µÏÇ¨
 	void* pVertices = nullptr;
 	m_pVB->Lock(0, 0, &pVertices, 0);
-	memcpy(pVertices, cube, sizeof(cube));
+	memcpy(pVertices, cubeVertices, sizeof(cubeVertices));
 	m_pVB->Unlock();
 
-	// 6. ¿Œµ¶Ω∫ πˆ∆€ø° ∫πªÁ
+	// 6. Ïù∏Îç±Ïä§ Î≤ÑÌçºÏóê Î≥µÏÇ¨
 	void* pIndices = nullptr;
 	m_pIB->Lock(0, 0, &pIndices, 0);
-	memcpy(pIndices, indices, sizeof(indices));
+	memcpy(pIndices, cubeIndices, sizeof(cubeIndices));
 	m_pIB->Unlock();
 
 	return S_OK;

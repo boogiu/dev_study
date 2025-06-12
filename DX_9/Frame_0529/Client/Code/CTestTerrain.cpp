@@ -32,7 +32,7 @@ HRESULT CTestTerrain::Ready_GameObject()
 	m_pRenderer = static_cast<CTerrainRenderer*>(Add_Component<CRenderer>(CRenderer::RENDERER_TYPE::Terrain));
 	m_pRenderer->Set_Mesh("coastMountain64");
 	m_pRenderer->Set_Transform();
-	m_pRenderer->Set_Terrain(512, 512, 15, 0.9f);
+	m_pRenderer->Set_Terrain(256, 256, 15, 0.9f);
 	return S_OK;
 }
 

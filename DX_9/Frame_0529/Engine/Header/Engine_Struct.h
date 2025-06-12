@@ -5,9 +5,9 @@ namespace Engine {
 	struct VTXSKY
 	{
 		D3DXVECTOR3 vPosition;
-		D3DXVECTOR3 vTexCoord; // ← 이게 방향벡터 역할
+		D3DXVECTOR3 vTexCoord; 
 	};
-#define FVF_SKY (D3DFVF_XYZ | D3DFVF_TEXCOORDSIZE3(0) | D3DFVF_TEX1)
+	const _ulong FVF_SKY = D3DFVF_XYZ | D3DFVF_TEX1;
 
 	typedef struct tagVertexColor
 	{
@@ -28,7 +28,7 @@ namespace Engine {
 	typedef struct tagVertexCubeTexture
 	{
 		_vec3		vPosition;
-		_vec3		vTexUV;
+		_vec2		vTexUV;
 
 	}VTXCUBE;
 
