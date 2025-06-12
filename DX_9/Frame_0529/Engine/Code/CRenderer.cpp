@@ -4,6 +4,7 @@
 #include "CMeshRenderer.h"
 #include "CTerrainRenderer.h"
 #include "CGameObject.h"
+#include "CSkyBoxRenderer.h"
 
 CRenderer::CRenderer()
 	:m_pTransform(nullptr)
@@ -26,6 +27,9 @@ CRenderer* CRenderer::Create(RENDERER_TYPE eType)
 		break;
 	case Engine::CRenderer::RENDERER_TYPE::Terrain:
 		instance = CTerrainRenderer::Create();
+		break;	
+	case Engine::CRenderer::RENDERER_TYPE::SkyBox:
+		instance = CSkyBoxRenderer::Create();
 		break;
 	default:
 		break;

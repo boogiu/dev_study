@@ -3,6 +3,7 @@
 #include "CGraphicDev.h"
 #include "IMesh.h"
 #include "CMesh.h"
+#include "CCubeMesh.h"
 #include "CMaterial.h"
 #include "CTerrain.h"
 #include <fstream>
@@ -70,11 +71,19 @@ const LPDIRECT3DTEXTURE9& CResourceMgr::Find_Texture(const string& key)
 HRESULT CResourceMgr::Load_All()
 {
 	LoadAllTexture();
+	LoadDeafultMesh();
 	LoadStaticMeshByX("tiger");
 	LoadTerrainMeshByRaw("coastMountain64", 64, 64);
 	LoadTerrainMeshByRaw("terrain", 512, 512);
 
 	return S_OK;
+}
+
+void CResourceMgr::LoadDeafultMesh()
+{
+	CCubeMesh* mesh = CCubeMesh::Create();
+	mesh->SetKey("Deafult_Cube");
+	m_MeshContainer.insert({ "Deafult_Cube" ,mesh });
 }
 
 void CResourceMgr::LoadStaticMeshByX(const string& key)

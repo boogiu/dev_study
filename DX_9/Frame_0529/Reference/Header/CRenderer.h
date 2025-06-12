@@ -9,7 +9,7 @@ class ENGINE_DLL CRenderer :
 	public CComponent
 {
 public:
-	enum class RENDERER_TYPE {Mesh, Terrain};
+	enum class RENDERER_TYPE {Mesh, Terrain,SkyBox};
 
 protected:
 	explicit CRenderer();

@@ -23,13 +23,11 @@ public:
 
 public:
     void Set_Mesh(const string& key);
-    void Set_Transform();
     void  Set_Terrain(int xSize, int zSize, int CellSize, float scale);
 
 private:
     LPDIRECT3DDEVICE9 m_pDevice;
     CTerrain* m_pMesh;
-  
 private:
     void Free() override;
 };

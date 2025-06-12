@@ -28,7 +28,7 @@ CTestTerrain* CTestTerrain::Create()
 HRESULT CTestTerrain::Ready_GameObject()
 {
 	m_pTransform = Add_Component<CTransform>();
-	m_pTransform->Set_Pos({ 0.f,0.f,0.f });
+	m_pTransform->Set_Pos({ 0.f,-100.f,0.f });
 	m_pRenderer = static_cast<CTerrainRenderer*>(Add_Component<CRenderer>(CRenderer::RENDERER_TYPE::Terrain));
 	m_pRenderer->Set_Mesh("coastMountain64");
 	m_pRenderer->Set_Transform();

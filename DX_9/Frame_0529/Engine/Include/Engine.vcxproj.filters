@@ -85,6 +85,12 @@
     <ClInclude Include="..\Header\CRigidBody.h">
       <Filter>03. Component\Dynamic\RigidBody</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\CCubeMesh.h">
+      <Filter>04. Resource\Mesh\DefaultCube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CSkyBoxRenderer.h">
+      <Filter>03. Component\Dynamic\Renderer\SKyBoxRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Header">
@@ -165,6 +171,12 @@
     <Filter Include="03. Component\Dynamic\RigidBody">
       <UniqueIdentifier>{19ee1dc5-c1ac-4ccf-aca2-e7dcb4d2acb2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. Component\Dynamic\Renderer\SKyBoxRenderer">
+      <UniqueIdentifier>{4a6e23e4-5d50-476f-ac99-b30ee07ef906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Resource\Mesh\DefaultCube">
+      <UniqueIdentifier>{3ca110ef-fd95-44e0-9903-4ee2be423c66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\CTimer.cpp">
@@ -232,6 +244,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\CRigidBody.cpp">
       <Filter>03. Component\Dynamic\RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CCubeMesh.cpp">
+      <Filter>04. Resource\Mesh\DefaultCube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CSkyBoxRenderer.cpp">
+      <Filter>03. Component\Dynamic\Renderer\SKyBoxRenderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

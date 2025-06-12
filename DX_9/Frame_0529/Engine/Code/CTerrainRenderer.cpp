@@ -82,14 +82,6 @@ void CTerrainRenderer::Set_Mesh(const string& key)
 	m_pMesh = dynamic_cast<CTerrain*>(CResourceMgr::GetInstance()->Find_Mesh(key))->Clone();
 }
 
-void CTerrainRenderer::Set_Transform()
-{
-	m_pTransform = m_pOwner->Get_Component<CTransform>();
-	
-	if (!m_pTransform) return;
-
-	m_pTransform->AddRef();
-}
 
 void CTerrainRenderer::Set_Terrain(int xSize, int zSize, int CellSize, float scale)
 {
@@ -184,6 +176,51 @@ void CTerrainRenderer::Set_Terrain(int xSize, int zSize, int CellSize, float sca
 
 	m_pMesh->SetIDX_Buffer(pIB);
 	pIB->Release();
+
+
+	//----------------------------------//
+	hr = 0;
+	LPDIRECT3DTEXTURE9 _tex = CResourceMgr::GetInstance()->Find_Texture("grass.bmp");
+
+	D3DSURFACE_DESC textureDesc;
+	_tex->GetLevelDesc(0 /*level*/, &textureDesc);
+
+	// make sure we got the requested format because our code that fills the
+	// texture is hard coded to a 32 bit pixel depth.
+	if (textureDesc.Format != D3DFMT_X8R8G8B8)
+		return;
+
+	D3DLOCKED_RECT lockedRect;
+	_tex->LockRect(
+		0,          // lock top surface level in mipmap chain
+		&lockedRect,// pointer to receive locked data
+		0,          // lock entire texture image
+		0);         // no lock flags specified
+
+	DWORD* imageData = (DWORD*)lockedRect.pBits;
+
+	for (int i = 0; i < textureDesc.Height; i++)
+	{
+		for (int j = 0; j < textureDesc.Width; j++)
+		{
+			// index into texture, note we use the pitch and divide by 
+			// four since the pitch is given in bytes and there are 
+			// 4 bytes per DWORD.
+			int index = i * lockedRect.Pitch / 4 + j;
+
+			// get current color of quad
+			D3DXCOLOR c(imageData[index]);
+
+			// shade current quad
+			//c *= computeShade(i, j, directionToLight);;
+
+			// save shaded color
+			imageData[index] = (D3DCOLOR)c;
+		}
+	}
+
+	_tex->UnlockRect(0);
+
 }
 
 void CTerrainRenderer::Free()

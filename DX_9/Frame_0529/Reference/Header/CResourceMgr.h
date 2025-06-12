@@ -22,6 +22,7 @@ public:
     const LPDIRECT3DTEXTURE9& Find_Texture(const string& key);
 
     HRESULT Load_All();
+    void LoadDeafultMesh();
     void LoadStaticMeshByX(const string& key);
     void LoadTerrainMeshByRaw(const string& key, int x, int z);
     void LoadAllTexture();

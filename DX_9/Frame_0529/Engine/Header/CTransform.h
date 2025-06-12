@@ -22,6 +22,7 @@ public:
 public:
     void Set_Parent(CTransform* transform);
     const _matrix& Get_WorldMatrix() const { return m_WorldMat; }
+    const _matrix& Get_WorldPosMatrix() const { return m_WorldPosMat; }
 
     static COM_TYPE Get_StaticType() { return COM_TYPE::TRANSFORM; }
     COM_TYPE Get_Type() { return Get_StaticType(); };
@@ -54,6 +55,7 @@ private:
     _vec3 m_vScreenPos;
     
     _matrix m_WorldMat;
+    _matrix m_WorldPosMat;
     CTransform* m_pParent;
 };
 

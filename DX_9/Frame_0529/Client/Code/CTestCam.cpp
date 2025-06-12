@@ -5,6 +5,8 @@
 #include "CCamera.h"
 #include "CTransform.h"
 #include "CLight.h"
+#include "CRenderer.h"
+#include "CSkyBoxRenderer.h"
 
 CTestCam::CTestCam()
 	: m_pCamera(nullptr), m_pTransform(nullptr)
@@ -51,6 +53,12 @@ HRESULT CTestCam::Ready_GameObject()
 	);
 
 	m_pLight->Set_Angle(30,60);
+
+	m_pRenderer = static_cast<CSkyBoxRenderer*>(Add_Component<CRenderer>(CRenderer::RENDERER_TYPE::SkyBox));
+	m_pRenderer->Set_Transform();
+	m_pRenderer->Set_Texture("SkyBox.png");
+	m_pTransform->Set_Scale({ 100.f, 100.f, 100.f });
+
 	return S_OK;
 }
 

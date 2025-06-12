@@ -50,7 +50,7 @@ void CTransform::Update_Component(float& dt)
 	D3DXMatrixTranslation(&matTrans, m_vPos.x, m_vPos.y, m_vPos.z);
 
 	m_WorldMat = matScale * matRotateX * matRotateY * matRotateZ * matTrans;
-
+	m_WorldPosMat = matScale *  matTrans;
 	//-----------------------------------------------------------//
 	//°øÀü 
 	D3DXMATRIX matToPivot, matFromPivot, matOrbitX, matOrbitY, matOrbitZ;
