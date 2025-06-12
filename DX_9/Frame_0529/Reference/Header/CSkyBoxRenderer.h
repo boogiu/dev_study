@@ -1,7 +1,7 @@
 #pragma once
 #include "CRenderer.h"
 BEGIN(Engine)
-class CCubeMesh;
+class IMesh;
 
 class  ENGINE_DLL CSkyBoxRenderer :
     public CRenderer
@@ -20,10 +20,8 @@ private:
     HRESULT Set_Buffer();
 private:
     LPDIRECT3DDEVICE9 m_pDevice;
-    //LPDIRECT3DCUBETEXTURE9  m_pTexture;
-    LPDIRECT3DTEXTURE9  m_pTexture;
-    LPDIRECT3DVERTEXBUFFER9 m_pVB;
-    LPDIRECT3DINDEXBUFFER9 m_pIB;
+    LPDIRECT3DTEXTURE9 m_pTexture;
+    IMesh* m_pMesh;
 private:
     void Free() override;
 };
