@@ -3,6 +3,7 @@
 
 CTransform::CTransform()
 {
+	m_eUpdate = COM_UPDATE::DYNAMIC;
 }
 
 CTransform::~CTransform()
@@ -36,7 +37,7 @@ HRESULT CTransform::Ready_Component()
 	return S_OK;
 }
 
-void CTransform::Update_Component(float dt)
+void CTransform::Update_Component(float& dt)
 {
 	D3DXMATRIX matScale, matRotateX, matRotateY, matRotateZ, matTrans;
 	//Å©±â
@@ -67,7 +68,7 @@ void CTransform::Update_Component(float dt)
 	}
 }
 
-void CTransform::LateUpdate_Component(float dt)
+void CTransform::LateUpdate_Component(float& dt)
 {
 
 

@@ -4,6 +4,7 @@
 namespace Engine {
     class CCamera;
     class CTransform;
+    class CLight;
 }
 
 class CTestCam :
@@ -17,17 +18,18 @@ public:
     static CTestCam* Create();
 public:
     HRESULT Ready_GameObject() override;
-    void Update_GameObject(float dt) override;
-    void LateUpdate_GameObject(float dt) override;
+    void Update_GameObject(_float&dt) override;
+    void LateUpdate_GameObject(_float&dt) override;
 public:
     Engine::CCamera* Get_Camera() { return m_pCamera; }
 private:
-    void Key_Check(float dt);
+    void Key_Check(_float&dt);
 
 private:
-    Engine::CTransform* m_pTransform;
-    Engine::CCamera* m_pCamera;
-    Engine::CGameObject* m_pTarget;
+    CTransform* m_pTransform;
+    CCamera* m_pCamera;
+    CLight* m_pLight;
+
 private:
     virtual void Free();
 };

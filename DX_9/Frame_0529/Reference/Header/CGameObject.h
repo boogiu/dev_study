@@ -16,12 +16,14 @@ public:
 
 public:
 	virtual HRESULT Ready_GameObject() = 0;
-	virtual void Update_GameObject(float dt) = 0;
-	virtual void LateUpdate_GameObject(float dt) = 0;
+	virtual void Update_GameObject(float& dt) = 0;
+	virtual void LateUpdate_GameObject(float& dt) = 0;
 
 protected:
-	void Update_Component(float dt);
-	void LateUpdate_Component(float dt);
+	void Update_Component(float& dt);
+	void LateUpdate_Component(float& dt);
+	void Release_Component();
+
 public:
 	template<typename T, typename ...Args>
 	T* Add_Component(Args&& ...args);
@@ -33,7 +35,7 @@ public:
 	void Remove_Component();
 
 private:
-	vector<unique_ptr<CComponent>> m_Component;
+	vector<CComponent*> m_DynamicComponent;
 	unordered_map<COM_TYPE, CComponent*> m_ComponentMap;
 private:
 	virtual void Free() = 0;
@@ -42,21 +44,21 @@ private:
 template<typename T, typename ...Args>
 inline T* CGameObject::Add_Component(Args && ...args)
 {
-	if (Get_Component<T>() != nullptr)
+	if (Get_Component<T>() != nullptr) //우선 가진 컴포넌트 검색
 		return nullptr;
 
 	COM_TYPE Type = T::Get_StaticType();
 
-	T* rawPtr = T::Create(forward<Args>(args)...);
-	rawPtr->m_pOwner = this;
-	RegisterOnSystem<T>(rawPtr);
+	T* comPtr = T::Create(forward<Args>(args)...);
 
-	unique_ptr<T> comp(rawPtr);
+	comPtr->m_pOwner = this;
+	RegisterOnSystem<T>(comPtr);
 
-	m_Component.push_back(move(comp));
-	m_ComponentMap.insert({ Type,rawPtr });
+	if (comPtr->m_eUpdate == COM_UPDATE::DYNAMIC)
+		m_DynamicComponent.push_back(comPtr);
 
-	return rawPtr;
+	m_ComponentMap.insert({ Type,comPtr });
+	return comPtr;
 }
 
 template<typename T>
@@ -81,14 +83,20 @@ inline void CGameObject::Remove_Component()
 	T* target = iter->second;
 	ReleaseOnSystem<T>(target);
 
-	auto vecIter = remove_if(m_Component.begin(), m_Component.end(),
-		[&target](auto unique)->bool {
-			return target == unique.get();
-		});
+	if (target->m_eUpdate == COM_UPDATE::DYNAMIC) {
 
-	if (vecIter != m_Component.end())
-		m_Component.erase(vecIter, m_Component.end());
+		auto vecIter = remove_if(m_DynamicComponent.begin(), m_DynamicComponent.end(),
+			[&target](auto unique)->bool {
+				return target == unique.get();
+			});
+
+		if (vecIter != m_DynamicComponent.end())
+			m_DynamicComponent.erase(vecIter, m_DynamicComponent.end());
+	}
 
 	m_ComponentMap.erase(iter);
+
+	Safe_Release(target);
 }
+
 END

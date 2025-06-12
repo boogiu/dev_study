@@ -10,21 +10,21 @@ class CGameObject;
 class ENGINE_DLL CComponent :
     public CBase
 {
-public:
+protected:
     explicit CComponent() = default;
     virtual ~CComponent() =default;
 
 public: 
     virtual HRESULT Ready_Component() = 0;
-    virtual void Update_Component(float dt) = 0;
-    virtual void LateUpdate_Component(float dt) = 0;
+    virtual void Update_Component(float& dt);
+    virtual void LateUpdate_Component(float& dt);
     virtual CComponent* Clone() const = 0;
 
 public :
     virtual COM_TYPE Get_Type() = 0;
 public:
     CGameObject* m_pOwner = nullptr;
-
+    COM_UPDATE m_eUpdate;
 };
 
 template<typename T>

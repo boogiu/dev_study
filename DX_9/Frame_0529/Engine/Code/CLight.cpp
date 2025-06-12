@@ -6,6 +6,8 @@
 CLight::CLight()
 {
 	ZeroMemory(&m_tLight, sizeof(D3DLIGHT9));
+	m_eUpdate = COM_UPDATE::DYNAMIC;
+
 }
 
 CLight::~CLight()
@@ -30,7 +32,7 @@ HRESULT CLight::Ready_Component()
 	return S_OK;
 }
 
-void CLight::Update_Component(float dt)
+void CLight::Update_Component(float& dt)
 {
 	CTransform* ownerTrans = m_pOwner->Get_Component<CTransform>();
 	
@@ -44,7 +46,7 @@ void CLight::Update_Component(float dt)
 	m_tLight.Position = worldPos; 
 }
 
-void CLight::LateUpdate_Component(float dt)
+void CLight::LateUpdate_Component(float& dt)
 {
 }
 
@@ -82,6 +84,18 @@ void CLight::Set_LightDesc(D3DXCOLOR ambient, D3DXCOLOR diffuse, D3DXCOLOR specu
 		m_tLight.Attenuation1 = att1;
 		m_tLight.Attenuation2 = att2;
 }
+
+void CLight::Set_Angle(float theta, float phi)
+{
+	m_tLight.Theta = D3DXToRadian(theta);
+	m_tLight.Phi = D3DXToRadian(phi);
+}
+
+void CLight::Set_Dir(_vec3 dir)
+{
+	m_tLight.Direction = dir;
+}
+
 
 void CLight::Free()
 {

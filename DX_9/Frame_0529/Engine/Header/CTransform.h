@@ -5,7 +5,7 @@ BEGIN(Engine)
 class ENGINE_DLL  CTransform :
     public CComponent
 {
-public:
+private:
     explicit CTransform();
     virtual ~CTransform();
 
@@ -14,8 +14,8 @@ public:
 
 public:
     HRESULT Ready_Component() override;
-    void Update_Component(float dt) override;
-    void LateUpdate_Component(float dt) override;
+    void Update_Component(float& dt) override;
+    void LateUpdate_Component(float&  dt) override;
 
     CComponent* Clone() const override;
 
@@ -23,8 +23,9 @@ public:
     void Set_Parent(CTransform* transform);
     const _matrix& Get_WorldMatrix() const { return m_WorldMat; }
 
-    static COM_TYPE Get_StaticType() { return COM_TYPE::TRANSFROM; }
+    static COM_TYPE Get_StaticType() { return COM_TYPE::TRANSFORM; }
     COM_TYPE Get_Type() { return Get_StaticType(); };
+
     void Set_Pos(_vec3 pos);
     void Set_Scale(_vec3 scale);
     void Set_Rotate(_vec3 rot);
@@ -32,12 +33,12 @@ public:
     void Set_Orbit(_vec3 orbit);
     void Set_Look(_vec3 look);
 
-    _vec3 Get_Pos()       {return m_vPos;}
-    _vec3 Get_Scale()   {return m_vScale;}
-    _vec3 Get_Rotate() {return m_vRotate;}
-    _vec3 Get_Pivot() {return m_vPivot;}
-    _vec3 Get_Orbit() {return m_vOrbit;}
-    _vec3 Get_Look() {return m_vLook;}
+    _vec3 Get_Pos()         {return m_vPos;}
+    _vec3 Get_Scale()     {return m_vScale;}
+    _vec3 Get_Rotate()   {return m_vRotate;}
+    _vec3 Get_Pivot()      {return m_vPivot;}
+    _vec3 Get_Orbit()      {return m_vOrbit;}
+    _vec3 Get_Look()       {return m_vLook;}
 
 private:
     void Free() override;

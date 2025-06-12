@@ -59,10 +59,15 @@ namespace Engine {
 	{
 		_vec3 vPosition;
 		_vec3 vNorm;
-		_vec2 vTexUV = {0,0};
+		_vec2 vTexUV = { 0,0 };
 
 	} VTXLIGHTTEX;
 
 #define FVF_LIGHTTEX (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1)
 
+	typedef struct tagMaterialTexture
+	{
+		D3DMATERIAL9 material;
+		LPDIRECT3DTEXTURE9 texture;
+	} MATTEX;
 }

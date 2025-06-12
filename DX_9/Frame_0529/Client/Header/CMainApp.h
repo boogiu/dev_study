@@ -7,6 +7,7 @@ namespace Engine {
 	class CGameObject;
 }
 class CTestCam;
+class CTestTerrain;
 
 class CMainApp : public CBase
 {
@@ -16,8 +17,8 @@ private:
 
 public: 
 	HRESULT Ready_MainApp();
-	int Update_MainApp(const float& fTimeDelta);
-	void LateUpdate_MainApp(const float& fTimeDelta);
+	int Update_MainApp(_float&fTimeDelta);
+	void LateUpdate_MainApp(_float&fTimeDelta);
 	void Render_MainApp();
 private:
 	Engine::CGraphicDev* m_pDeviceClass;
@@ -25,6 +26,7 @@ private:
 	CGameObject* pTest=nullptr;
 	CGameObject* pLight=nullptr;
 	CTestCam* pCam=nullptr;
+	CTestTerrain* pTerrain=nullptr;
 
 public:
 	static CMainApp* Create();

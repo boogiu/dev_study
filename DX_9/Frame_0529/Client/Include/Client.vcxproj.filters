@@ -46,6 +46,9 @@
     <ClInclude Include="..\Header\CTestLigh.h">
       <Filter>TestObjects</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\CTestTerrain.h">
+      <Filter>TestObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -64,6 +67,9 @@
       <Filter>TestObjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CTestLigh.cpp">
+      <Filter>TestObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CTestTerrain.cpp">
       <Filter>TestObjects</Filter>
     </ClCompile>
   </ItemGroup>

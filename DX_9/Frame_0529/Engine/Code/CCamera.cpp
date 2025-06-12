@@ -6,6 +6,7 @@
 CCamera::CCamera()
 	:m_pTransform(nullptr)
 {
+	m_eUpdate = COM_UPDATE::DYNAMIC;
 }
 
 CCamera::~CCamera()
@@ -40,7 +41,7 @@ HRESULT CCamera::Ready_Component()
 	return S_OK;
 }
 
-void CCamera::Update_Component(float dt)
+void CCamera::Update_Component(float& dt)
 {
 	if (!m_pTransform)
 		m_pTransform = m_pOwner->Get_Component<CTransform>();
@@ -64,7 +65,7 @@ void CCamera::Update_Component(float dt)
 	D3DXMatrixLookAtLH(&m_matView, &m_vEye, &vAt, &m_vUp);
 	D3DXMatrixPerspectiveFovLH(&m_matProj, D3DXToRadian(m_fFOV), m_fAspect, m_fNear, m_fFar);
 }
-void CCamera::LateUpdate_Component(float dt)
+void CCamera::LateUpdate_Component(float& dt)
 {
 }
 

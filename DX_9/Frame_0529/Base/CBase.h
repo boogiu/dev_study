@@ -2,8 +2,7 @@
 
 class _declspec(dllexport) CBase 
 {
-//protected:
-public:
+protected:
 	inline explicit CBase();
 	inline virtual ~CBase();
 

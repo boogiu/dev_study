@@ -13,8 +13,8 @@ public:
 
 public:
     HRESULT Ready_GameObject() override;
-    void Update_GameObject(float dt) override;
-    void LateUpdate_GameObject(float dt) override;
+    void Update_GameObject(_float&dt) override;
+    void LateUpdate_GameObject(_float&dt) override;
 
 private:
     void Key_Check(float dt);

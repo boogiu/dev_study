@@ -28,10 +28,15 @@
     <ClInclude Include="..\Header\CGraphicDev.h" />
     <ClInclude Include="..\Header\CLight.h" />
     <ClInclude Include="..\Header\CLightMgr.h" />
+    <ClInclude Include="..\Header\CMaterial.h" />
     <ClInclude Include="..\Header\CMesh.h" />
+    <ClInclude Include="..\Header\CMeshRenderer.h" />
     <ClInclude Include="..\Header\CRenderer.h" />
     <ClInclude Include="..\Header\CRenderMgr.h" />
-    <ClInclude Include="..\Header\CTextureMgr.h" />
+    <ClInclude Include="..\Header\CResourceMgr.h" />
+    <ClInclude Include="..\Header\CRigidBody.h" />
+    <ClInclude Include="..\Header\CTerrain.h" />
+    <ClInclude Include="..\Header\CTerrainRenderer.h" />
     <ClInclude Include="..\Header\CTimeMgr.h" />
     <ClInclude Include="..\Header\CTimer.h" />
     <ClInclude Include="..\Header\CTransform.h" />
@@ -41,6 +46,7 @@
     <ClInclude Include="..\Header\Engine_Macro.h" />
     <ClInclude Include="..\Header\Engine_Struct.h" />
     <ClInclude Include="..\Header\Engine_Typedef.h" />
+    <ClInclude Include="..\Header\IMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\CCamera.cpp" />
@@ -52,13 +58,19 @@
     <ClCompile Include="..\Code\CGraphicDev.cpp" />
     <ClCompile Include="..\Code\CLight.cpp" />
     <ClCompile Include="..\Code\CLightMgr.cpp" />
+    <ClCompile Include="..\Code\CMaterial.cpp" />
     <ClCompile Include="..\Code\CMesh.cpp" />
+    <ClCompile Include="..\Code\CMeshRenderer.cpp" />
     <ClCompile Include="..\Code\CRenderer.cpp" />
     <ClCompile Include="..\Code\CRenderMgr.cpp" />
-    <ClCompile Include="..\Code\CTextureMgr.cpp" />
+    <ClCompile Include="..\Code\CResourceMgr.cpp" />
+    <ClCompile Include="..\Code\CRigidBody.cpp" />
+    <ClCompile Include="..\Code\CTerrain.cpp" />
+    <ClCompile Include="..\Code\CTerrainRenderer.cpp" />
     <ClCompile Include="..\Code\CTimeMgr.cpp" />
     <ClCompile Include="..\Code\CTimer.cpp" />
     <ClCompile Include="..\Code\CTransform.cpp" />
+    <ClCompile Include="..\Code\IMesh.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

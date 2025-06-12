@@ -6,7 +6,7 @@ BEGIN(Engine)
 class ENGINE_DLL CLight :
 	public CComponent
 {
-public:
+private:
 	explicit CLight();
 	virtual ~CLight() override;
 
@@ -15,8 +15,8 @@ public:
 
 public:
 	HRESULT Ready_Component() override;
-	void Update_Component(float dt) override;
-	void LateUpdate_Component(float dt) override;
+	void Update_Component(float& dt) override;
+	void LateUpdate_Component(float& dt) override;
 	CComponent* Clone() const override;
 	static COM_TYPE Get_StaticType() { return COM_TYPE::LIGHT; };
 	COM_TYPE Get_Type() override { return Get_StaticType(); };
@@ -33,7 +33,8 @@ public:
 		float range = 0.f,											// 라이트 범위
 		float att0 = 0.f, float att1 = 0.f, float att2=0.f		// 감쇠 계수
 	);
-
+	void Set_Angle(float theta, float phi);
+	void Set_Dir(_vec3 dir);
 private:
 	bool m_bLight;
 	int m_ID;

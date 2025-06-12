@@ -24,6 +24,7 @@ private:
     D3DLIGHT9 m_baseLight;
     vector<CLight*> m_LightContainer;
     vector<bool> m_ActivedLight;
+
 private:
     void Free() override;
 };

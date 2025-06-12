@@ -6,15 +6,15 @@ class CTransform;
 class ENGINE_DLL CCamera :
     public CComponent
 {
-public:
+private:
     explicit CCamera();
     virtual ~CCamera() override;
 
 public:
     static CCamera* Create();
     HRESULT Ready_Component() override;
-    void Update_Component(float dt) override;
-    void LateUpdate_Component(float dt) override;
+    void Update_Component(float& dt) override;
+    void LateUpdate_Component(float& dt) override;
     CComponent* Clone() const override;
 
 public:
@@ -31,6 +31,7 @@ public:
     void Add_Pitch(float angle);
     void Add_Roll(float angle);
 
+    _vec3 Get_Dir() { return m_vLookDir; };
 private:
     CTransform* m_pTransform;
     _vec3 m_vEye;

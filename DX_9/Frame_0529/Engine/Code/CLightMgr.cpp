@@ -10,20 +10,17 @@ CLightMgr::CLightMgr()
 
 CLightMgr::~CLightMgr()
 {
+	Free();
 }
 
 HRESULT CLightMgr::Ready_Light(LPDIRECT3DDEVICE9 pDevice)
 {
-	// 방향성 광원(Directional Light) 설정
+
 	m_baseLight.Type = D3DLIGHT_DIRECTIONAL;
-	m_baseLight.Diffuse = D3DXCOLOR(0.1f, 0.1f, 0.1f, 0.0f);
-	m_baseLight.Specular = D3DXCOLOR(0.1f, 0.1f, 0.1f, 0.0f); 
-	m_baseLight.Ambient = D3DXCOLOR(0.1f, 0.1f, 0.1f, 0.0f);
-	
-	// 빛의 방향 설정 (카메라 정면으로 쏘는 형태)
-	_vec3 Dir = { 0.f, 0.f, -1.f }; // Z+ 방향으로
-	D3DXVec3Normalize(&Dir, &Dir);
-	m_baseLight.Direction = Dir;
+	m_baseLight.Diffuse = { 1.f, 1.f, 1.f, 1.f };
+	m_baseLight.Ambient = { 0.3f, 0.3f, 0.3f, 1.f };
+	m_baseLight.Specular = { 0.2f, 0.2f, 0.2f, 1.f };
+	m_baseLight.Direction = { -1.f, -1.f, -1.f }; // 일반적으로 위쪽에서 아래로 비추는 방향
 
 	pDevice->SetLight(0, &m_baseLight);
 	pDevice->LightEnable(0, true);
@@ -69,6 +66,8 @@ void CLightMgr::Add_Light(CLight* light)
 	if (iter != m_LightContainer.end()) 
 		return;
 
+	light->AddRef();
+
 	m_LightContainer.push_back(light);
 	m_ActivedLight.push_back(true);
 
@@ -100,4 +99,10 @@ void CLightMgr::Remove_Light(CLight* light)
 
 void CLightMgr::Free()
 {
+	for_each(m_LightContainer.begin(), m_LightContainer.end(),
+		[](auto& light) {
+			Safe_Release(light);
+		});
+
+	m_LightContainer.clear();
 }

@@ -1,32 +1,32 @@
 #pragma once
 #include "CGameObject.h"
-#include "CComponent.h"
-#include "CMesh.h"
-#include "CTransform.h"
-#include "CRenderer.h"
+
+namespace Engine {
+	class CTransform;
+	class CMeshRenderer;
+}
 
 class CTestObj :
-    public Engine::CGameObject
+	public Engine::CGameObject
 {
 
 private:
-    explicit CTestObj();
-    virtual ~CTestObj();
+	explicit CTestObj();
+	virtual ~CTestObj();
 public:
-    static CTestObj* Create();
+	static CTestObj* Create();
 
 public:
-    HRESULT Ready_GameObject() override;
-    void Update_GameObject(float dt) override;
-    void LateUpdate_GameObject(float dt) override;
+	HRESULT Ready_GameObject() override;
+	void Update_GameObject(_float&dt) override;
+	void LateUpdate_GameObject(_float&dt) override;
 private:
-    void Key_Check(float dt);
+	void Key_Check(float dt);
 private:
-    void Free() override;
+	void Free() override;
 
 private:
-    CTransform* m_pTransform;
-    CMesh* m_pMesh;
-    CRenderer* m_pRenderer;
+	CTransform* m_pTransform;
+	CMeshRenderer* m_pRenderer;
 };
 

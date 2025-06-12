@@ -1,9 +1,14 @@
-#include "Engine_Define.h"
+Ôªø#include "Engine_Define.h"
 #include "CMesh.h"
+#include "CGraphicDev.h"
 
 CMesh::CMesh()
-{
-}
+	:m_dwSubsetCnt(0), 
+	m_FVF(FVF_LIGHTTEX),
+	m_pMesh(nullptr),
+	m_Key{},
+	m_pDevice(nullptr)
+{}
 
 CMesh::~CMesh()
 {
@@ -13,417 +18,97 @@ CMesh* CMesh::Create()
 {
 	CMesh* instance = new CMesh;
 
-	if (FAILED(instance->Ready_Component())) {
+	if (FAILED(instance->Ready_Mesh())) {
 		Safe_Release(instance);
-		return nullptr;
+		instance = nullptr;
 	}
 
 	return instance;
 }
 
-HRESULT CMesh::Ready_Component()
+HRESULT CMesh::Ready_Mesh()
 {
-	// »Ø∞Ê±§(Ambient): æ¿ ¿¸√ºø° ∆€¡ˆ¥¬ ∫∏∂Ûªˆ ∞Ëø≠¿« æ‡«— ¡∂∏Ì
-	m_Material.Ambient = D3DXCOLOR(0.1f, 0.1f, 0.1f, 0.0f);  
+	m_pDevice = CGraphicDev::GetInstance()->Get_GraphicDev();
+	
+	if (!m_pDevice)
+		return E_FAIL;
 
-	// ≥≠π›ªÁ(Diffuse): ¡∂∏Ìø° ¿««ÿ ∆€¡ˆ¥¬ Ω«¡¶ ∫∏∂Ûªˆ
-	m_Material.Diffuse = D3DXCOLOR(0.1f, 0.1f, 0.1f, 0.0f);  
+	m_pDevice->AddRef();
+	
+	return S_OK;
+}
+void CMesh::SetMesh(LPD3DXMESH mesh)
+{
+	if (m_pMesh) //Í∏∞Ï°¥ Î©îÏãú Ìï¥Ï†ú
+		m_pMesh->Release();
 
-	// ¡§π›ªÁ(Specular): ∫∏∂Ûªˆ «œ¿Ã∂Û¿Ã∆Æ »ø∞˙
-	m_Material.Specular = D3DXCOLOR(1.f, 1.f, 1.f, 0.0f); 
+	if (!mesh)
+	{
+		m_pMesh = nullptr;
+		return;
+	}
 
-	// ¿⁄√ºπﬂ±§(Emissive): æ‡∞£¿« ∫∏∂Ûªˆ πﬂ±§ »ø∞˙ √ﬂ∞°
-	m_Material.Emissive = D3DXCOLOR(0.1f, 0.1f, 0.1f, 0.0f);
+	// ÏõêÌïòÎäî FVF: ÌÖçÏä§Ï≤ò Ï¢åÌëú Ìè¨Ìï®
+	m_pMesh = mesh;
+	m_pMesh->AddRef();
+	m_FVF = mesh->GetFVF();
 
-	// ¡§π›ªÁ ∞≠µµ(Power): «œ¿Ã∂Û¿Ã∆Æ∞° ∆€¡ˆ¥¬ ¡§µµ (≥Ù¿ªºˆ∑œ ªœ¡∑«‘)
-	m_Material.Power = 52.f;
+	// ÏÑúÎ∏åÏÖã Ï†ïÎ≥¥ Í∞±Ïã†
+	if (m_pMesh)
+	{
+		m_pMesh->GetAttributeTable(nullptr, &m_dwSubsetCnt);
+		m_Subset.resize(m_dwSubsetCnt);
+		m_pMesh->GetAttributeTable(m_Subset.data(), &m_dwSubsetCnt);
+	}
+}
+
+
+HRESULT CMesh::Load(const string pFile)
+{
 	return S_OK;
 }
 
-
-void CMesh::Update_Component(float dt)
-{
-
-}
-
-void CMesh::LateUpdate_Component(float dt)
-{
-}
-
-
-CComponent* CMesh::Clone() const
-{
-	return nullptr;
-}
-
-void CMesh::Set_MeshType(MeshType type)
-{
-	switch (type)
-	{
-	case Engine::CMesh::MeshType::CUBE:
-
-		m_VtxBuffer = {
-			//	{ { -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{0.f,0.f}		}, // 0
-			//{ { 1.f,  1.f, -1.f},		{0.f,0.f,0.f},			{1.f,0.f}		}, // 1
-			//{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{1.f,1.f}		}, // 2
-			//{ {-1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,1.f}		}, // 3
-			//{{-1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 4
-			//{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{0.f,1.f}		},	 // 5
-			//{ {1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 6
-			//{{-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{1.f,0.f}		},	 // 7
-
-			//æ’∏È
-			{ {-1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,1.f}		}, // 3
-			{ { -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{0.f,0.f}		}, // 0
-			{ { 1.f,  1.f, -1.f},		{0.f,0.f,0.f},			{1.f,0.f}		}, // 1
-			{ {-1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,1.f}		}, // 3
-			{ { 1.f,  1.f, -1.f},		{0.f,0.f,0.f},			{1.f,0.f}		}, // 1
-			{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{1.f,1.f}		}, // 2
-
-			//µﬁ∏È
-			{ {1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 6
-			{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{0.f,1.f}		},	 // 5
-			{{-1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 4
-			{ {1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 6
-			{{-1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 4
-			{{-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{1.f,0.f}		},	 // 7
-
-			//ø¿∏•¬ ∏È
-			{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,0.f}		}, // 2
-			{ { 1.f,  1.f, -1.f},		{0.f,0.f,0.f},			{0.f,1.f}		}, // 1
-			{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 5
-			{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,0.f}		}, // 2
-			{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 5
-			{ {1.f,-1.f,1.f},			{0.f,0.f,0.f},			{1.f,0.f}		},	 // 6
-
-			//øﬁ¬ ∏È
-			{{-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 7
-			{{-1.f,1.f,1.f},				{0.f,0.f,0.f},			{0.f,1.f}		},	 // 4
-			{ { -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{1.f,1.f}		}, // 0
-			{{-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 7
-			{ { -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{1.f,1.f}		}, // 0
-			{ {-1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{1.f,0.f}		}, // 3
-
-			//¿≠∏È
-			{ { -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{0.f,0.f}		}, // 0
-			{{-1.f,1.f,1.f},				{0.f,0.f,0.f},			{0.f,1.f}		},	 // 4
-			{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 5
-			{{ -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{0.f,0.f}		}, // 0
-			{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 5
-			{ { 1.f,  1.f, -1.f},		{0.f,0.f,0.f},			{1.f,0.f}		}, // 1
-
-			//æ∆∑ß∏È
-			{{-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 7
-			{ {-1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,1.f}		}, // 3
-			{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{1.f,1.f}	 	}, // 2
-			{ {-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 7
-			{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{1.f,1.f}		}, // 2
-			{ {1.f,-1.f,1.f},			{0.f,0.f,0.f},			{1.f,0.f}		}	 // 6
-		};
-
-		m_IndexBuffer = {
-			{0,4,5 },{0,5,1}, //¿≠∏È
-			{7,3,2},{7,2,6 },//æ∆∑ß∏È
-			{3,0,1 },{3,1,2 }, //æ’∏È
-			{6,5,4 },{6,4,7 }, //µﬁ∏È
-			{2,1,5 },{2,5,6}, //ø¿∏•¬ 
-			{7,4,0 },{7,0,3 },//øﬁ¬ 
-		};
-		TextureKey = "crate";
-		break;
-	case Engine::CMesh::MeshType::SPHERE:
-		Generate_Sphere(1, 15, 15);
-		break;
-	case Engine::CMesh::MeshType::SKYBOX:
-		Generate_Sky();
-		TextureKey = "SkyBox";
-		break;
-	default:
-		break;
-	}
-	Compute_Normal();
-}
-
-
-void CMesh::Compute_Normal()
-{
-	//π˝º±
-	for (VTXLIGHTTEX& vtx : m_VtxBuffer) {
-		vtx.vNorm = { 0.f,0.f,0.f };
-	}
-
-	for (INDEX16 idx : m_IndexBuffer) {
-		_vec3 v1 = m_VtxBuffer[idx._0].vPosition;
-		_vec3 v2 = m_VtxBuffer[idx._1].vPosition;
-		_vec3 v3 = m_VtxBuffer[idx._2].vPosition;
-
-		_vec3 edge1 = v2 - v1;
-		_vec3 edge2 = v3 - v1;
-		_vec3 crResult;
-		D3DXVec3Cross(&crResult, &edge1, &edge2);
-
-		m_VtxBuffer[idx._0].vNorm += crResult;
-		m_VtxBuffer[idx._1].vNorm += crResult;
-		m_VtxBuffer[idx._2].vNorm += crResult;
-	}
-
-	for (VTXLIGHTTEX& vtx : m_VtxBuffer) {
-		D3DXVec3Normalize(&vtx.vNorm, &vtx.vNorm);
-	}
-}
-
-void CMesh::Generate_Sphere(float radius, int stacks, int slices)
-{
-	m_VtxBuffer.clear();
-	m_IndexBuffer.clear();
-
-	// ¡§¡° ª˝º∫
-	for (int i = 0; i <= stacks; ++i)
-	{
-		// ¿ßµµ ( ∫œ~≥≤)
-		float theta = D3DX_PI * i / stacks;
-		//n∞≥¿« ¿ßµµ∑Œ ≥™¥©∞Ì
-
-		for (int j = 0; j <= slices; ++j)
-		{
-			// ∞Êµµ ( µø~º≠)
-			float phi = 2.0f * D3DX_PI * j / slices;
-			//k∞≥¿« ∞Êµµ∑Œ ≥™¥´¥Ÿ.
-
-			//«ÿ¥Á ªÁ«◊¿∫ ∞¯Ωƒ¿Ã∂ı¥Ÿ.
-			float x = radius * sinf(theta) * cosf(phi);
-			float y = radius * cosf(theta);
-			float z = radius * sinf(theta) * sinf(phi);
-
-			_vec3 pos = { x, y, z };
-			_vec3 norm = pos;
-			//±∏√º ∏ﬁΩ√¥¬ ¡§¡°¿« ¿ßƒ° ∫§≈Õ∏¶ π›¡ˆ∏ß¿∏∑Œ ≥™¥©∏È π˝º±∞˙ ∞∞¥Ÿ.
-			//ø÷≥ƒ∏È, ø¯¡° ±‚¡ÿ¿∏∑Œ ∞∞¿∫ ∞≈∏Æø° ¿÷¥¬ ¡§¡°µÈ¿« ¡˝«’¿Ã±‚ ∂ßπÆø°. 
-
-			D3DXVec3Normalize(&norm, &norm);
-
-			m_VtxBuffer.push_back({ pos, norm, {0.f,0.f} });
-		}
-	}
-
-	// ¿Œµ¶Ω∫ ª˝º∫
-	for (int i = 0; i < stacks; ++i)
-	{
-		for (int j = 0; j < slices; ++j)
-		{
-			int a = i * (slices + 1) + j;
-			int b = (i + 1) * (slices + 1) + j;
-
-			m_IndexBuffer.push_back({ (unsigned short)a, (unsigned short)b, (unsigned short)(a + 1) });
-			m_IndexBuffer.push_back({ (unsigned short)b, (unsigned short)(b + 1), (unsigned short)(a + 1) });
-		}
-	}
-}
-
-void CMesh::Generate_Sky()
-{
-	m_bSky = true;
-	m_VtxBuffer = {
-		//æ’∏È
-		{ {-1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,1.f}		}, // 3
-		{ { -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{0.f,0.f}		}, // 0
-		{ { 1.f,  1.f, -1.f},		{0.f,0.f,0.f},			{1.f,0.f}		}, // 1
-		{ {-1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,1.f}		}, // 3
-		{ { 1.f,  1.f, -1.f},		{0.f,0.f,0.f},			{1.f,0.f}		}, // 1
-		{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{1.f,1.f}		}, // 2
-
-		//µﬁ∏È
-		{ {1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 6
-		{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{0.f,1.f}		},	 // 5
-		{{-1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 4
-		{ {1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 6
-		{{-1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 4
-		{{-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{1.f,0.f}		},	 // 7
-
-		//ø¿∏•¬ ∏È
-		{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,0.f}		}, // 2
-		{ { 1.f,  1.f, -1.f},		{0.f,0.f,0.f},			{0.f,1.f}		}, // 1
-		{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 5
-		{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,0.f}		}, // 2
-		{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 5
-		{ {1.f,-1.f,1.f},			{0.f,0.f,0.f},			{1.f,0.f}		},	 // 6
-
-		//øﬁ¬ ∏È
-		{{-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 7
-		{{-1.f,1.f,1.f},				{0.f,0.f,0.f},			{0.f,1.f}		},	 // 4
-		{ { -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{1.f,1.f}		}, // 0
-		{{-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 7
-		{ { -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{1.f,1.f}		}, // 0
-		{ {-1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{1.f,0.f}		}, // 3
-
-		//¿≠∏È
-		{ { -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{0.f,0.f}		}, // 0
-		{{-1.f,1.f,1.f},				{0.f,0.f,0.f},			{0.f,1.f}		},	 // 4
-		{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 5
-		{{ -1.f, 1.f, -1.f },		{ 0.f,0.f,0.f},		{0.f,0.f}		}, // 0
-		{{1.f,1.f,1.f},				{0.f,0.f,0.f},			{1.f,1.f}		},	 // 5
-		{ { 1.f,  1.f, -1.f},		{0.f,0.f,0.f},			{1.f,0.f}		}, // 1
-
-		//æ∆∑ß∏È
-		{{-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 7
-		{ {-1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{0.f,1.f}		}, // 3
-		{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{1.f,1.f}	 	}, // 2
-		{ {-1.f,-1.f,1.f},			{0.f,0.f,0.f},			{0.f,0.f}		},	 // 7
-		{ { 1.f, -1.f, -1.f},		{0.f,0.f,0.f},			{1.f,1.f}		}, // 2
-		{ {1.f,-1.f,1.f},			{0.f,0.f,0.f},			{1.f,0.f}		}	 // 6
-	};
-
-}
-
-#pragma region ¥Ÿ∏• ∏ﬁΩ¨ ª˝º∫
-//void CMesh::Generate_Cylinder(float radius, float height, int slices, D3DCOLOR color)
-//{
-//	m_VtxBuffer.clear();
-//	m_IndexBuffer.clear();
-//
-//	for (int i = 0; i <= (int)height; ++i) {
-//
-//		for (int j = 0; j <= slices; ++j)
-//		{
-//			// ∞Êµµ ( µø~º≠)
-//			float phi = 2.0f * D3DX_PI * j / slices;
-//			//k∞≥¿« ∞Êµµ∑Œ ≥™¥´¥Ÿ.
-//
-//			//«ÿ¥Á ªÁ«◊¿∫ ∞¯Ωƒ¿Ã∂ı¥Ÿ.
-//			float x = radius * cosf(phi);
-//			float y = i;
-//			float z = radius * sinf(phi);
-//
-//			_vec3 pos = { x, y, z };
-//			_vec3 norm = pos;
-//			//±∏√º ∏ﬁΩ√¥¬ ¡§¡°¿« ¿ßƒ° ∫§≈Õ∏¶ π›¡ˆ∏ß¿∏∑Œ ≥™¥©∏È π˝º±∞˙ ∞∞¥Ÿ.
-//			//ø÷≥ƒ∏È, ø¯¡° ±‚¡ÿ¿∏∑Œ ∞∞¿∫ ∞≈∏Æø° ¿÷¥¬ ¡§¡°µÈ¿« ¡˝«’¿Ã±‚ ∂ßπÆø°. 
-//
-//			D3DXVec3Normalize(&norm, &norm);
-//
-//			m_VtxBuffer.push_back({ pos, norm, color });
-//		}
-//	}
-//	//∂—≤±
-//	for (int i = 0; i <= (int)height;i += height) {
-//		for (int j = 0; j <= slices; j++) {
-//			float phi = 2.0f * D3DX_PI * j / slices;
-//
-//			float x = radius * cosf(phi);
-//			float z = radius * sinf(phi);
-//			float y = i;
-//			_vec3 pos = { x, y, z };
-//			_vec3 norm = pos;
-//
-//			D3DXVec3Normalize(&norm, &norm);
-//			m_VtxBuffer.push_back({ pos, norm, color });
-//		}
-//	}
-//
-//	// ¿Œµ¶Ω∫ ª˝º∫
-//	for (int i = 0; i < height; ++i)
-//	{
-//		for (int j = 0; j < slices; ++j)
-//		{
-//			int a = i * (slices + 1) + j;
-//			int b = (i + 1) * (slices + 1) + j;
-//
-//			m_IndexBuffer.push_back({ (unsigned short)a, (unsigned short)b, (unsigned short)(a + 1) });
-//			m_IndexBuffer.push_back({ (unsigned short)b, (unsigned short)(b + 1), (unsigned short)(a + 1) });
-//		}
-//	}
-//}
-//
-//void CMesh::Generate_Capsule(float radius, float height, int stacks, int slices, D3DCOLOR color)
-//{
-//	m_VtxBuffer.clear();
-//	m_IndexBuffer.clear();
-//
-//	int hemiStacks = stacks / 2;
-//	float bodyHeight = height - 2 * radius; // ø¯±‚µ’ ±Ê¿Ã
-//	float yOffset = bodyHeight / 2.f;
-//
-//	// ===== ªÛ¥‹ π›±∏ =====
-//	for (int i = 0; i <= hemiStacks; ++i)
-//	{
-//		float theta = D3DX_PI / 2.f * i / hemiStacks;  // 0 ~ •/2
-//		float y = radius * cosf(theta) + yOffset;
-//		float r = radius * sinf(theta);
-//
-//		for (int j = 0; j <= slices; ++j)
-//		{
-//			float phi = 2.f * D3DX_PI * j / slices;
-//			float x = r * cosf(phi);
-//			float z = r * sinf(phi);
-//
-//			_vec3 pos = { x, y, z };
-//			_vec3 norm = pos;
-//			D3DXVec3Normalize(&norm, &norm);
-//
-//			m_VtxBuffer.push_back({ pos, norm, color });
-//		}
-//	}
-//
-//	// ===== ø¯±‚µ’ πŸµ =====
-//	for (int i = 1; i < stacks - 1; ++i)
-//	{
-//		float y = yOffset - (bodyHeight * i / (stacks - 1));
-//
-//		for (int j = 0; j <= slices; ++j)
-//		{
-//			float phi = 2.f * D3DX_PI * j / slices;
-//			float x = radius * cosf(phi);
-//			float z = radius * sinf(phi);
-//
-//			_vec3 pos = { x, y, z };
-//			_vec3 norm = { x, 0.f, z };
-//			D3DXVec3Normalize(&norm, &norm);
-//
-//			m_VtxBuffer.push_back({ pos, norm, color });
-//		}
-//	}
-//
-//	// ===== «œ¥‹ π›±∏ =====
-//	for (int i = hemiStacks; i <= stacks; ++i)
-//	{
-//		float theta = D3DX_PI / 2.f * i / hemiStacks;
-//		float y = -radius * cosf(theta) - yOffset;
-//		float r = radius * sinf(theta);
-//
-//		for (int j = 0; j <= slices; ++j)
-//		{
-//			float phi = 2.f * D3DX_PI * j / slices;
-//			float x = r * cosf(phi);
-//			float z = r * sinf(phi);
-//
-//			_vec3 pos = { x, y, z };
-//			_vec3 norm = pos;
-//			D3DXVec3Normalize(&norm, &norm);
-//
-//			m_VtxBuffer.push_back({ pos, norm, color });
-//		}
-//	}
-//
-//	// ===== ¿Œµ¶Ω∫ ª˝º∫ =====
-//	int ringCount = stacks + 1; // ¿ßµµ ∫–«“ + æÁ ≥° π›±∏
-//	int ringVertexCount = slices + 1;
-//
-//	for (int i = 0; i < ringCount; ++i)
-//	{
-//		for (int j = 0; j < slices; ++j)
-//		{
-//			int curr = i * ringVertexCount + j;
-//			int next = (i + 1) * ringVertexCount + j;
-//
-//			m_IndexBuffer.push_back({ (WORD)curr, (WORD)next, (WORD)(curr + 1) });
-//			m_IndexBuffer.push_back({ (WORD)next, (WORD)(next + 1), (WORD)(curr + 1) });
-//		}
-//	}
-//}
-//
-
-#pragma endregion
-
 void CMesh::Free()
 {
+	if (m_pDevice) m_pDevice->Release();
+	if (m_pMesh) m_pMesh->Release();
+}
+
+void CMesh::Debug_VertexUV()
+{
+	if (!m_pMesh)
+		return;
+
+	DWORD fvf = m_pMesh->GetFVF();
+	if ((fvf & D3DFVF_TEX1) == 0)
+	{
+		OutputDebugStringA("‚ùå UV Ï¢åÌëú ÏóÜÏùå (D3DFVF_TEX1 ÎØ∏Ìè¨Ìï®)\n");
+		return;
+	}
+
+	DWORD vertexCount = m_pMesh->GetNumVertices();
+	DWORD vertexSize = D3DXGetFVFVertexSize(fvf);
+
+	void* pVertices = nullptr;
+	if (FAILED(m_pMesh->LockVertexBuffer(D3DLOCK_READONLY, &pVertices)))
+	{
+		OutputDebugStringA("‚ùå Î≤ÑÌÖçÏä§ Î≤ÑÌçº Ïû†Í∏à Ïã§Ìå®\n");
+		return;
+	}
+
+	// Ï†ïÏ†ê Îç∞Ïù¥ÌÑ∞ Ìï¥ÏÑù
+	for (DWORD i = 0; i < vertexCount; ++i)
+	{
+		BYTE* pVtx = (BYTE*)pVertices + i * vertexSize;
+		D3DXVECTOR3* pos = (D3DXVECTOR3*)pVtx;
+		D3DXVECTOR3* normal = (D3DXVECTOR3*)(pVtx + sizeof(D3DXVECTOR3));
+		float* uv = (float*)(pVtx + sizeof(D3DXVECTOR3) * 2);
+
+		char buf[128];
+		sprintf_s(buf, "[%d] Pos(%.2f, %.2f, %.2f)  UV(%.2f, %.2f)\n",
+			i, pos->x, pos->y, pos->z, uv[0], uv[1]);
+		OutputDebugStringA(buf);
+	}
+
+	m_pMesh->UnlockVertexBuffer();
 }

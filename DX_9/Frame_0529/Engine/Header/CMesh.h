@@ -1,55 +1,45 @@
 #pragma once
-#include "CComponent.h"
+#include "IMesh.h"
 
 BEGIN(Engine)
 class ENGINE_DLL CMesh :
-	public CComponent
-{
-public:
-	enum class MeshType {
-		CUBE,
-		SPHERE,
-		CYLINDER,
-		CAPSULE,
-		SKYBOX
-	};
-public:
+	public IMesh
+{//해당 메시는 스태틱 메시임
+private:
 	explicit CMesh();
-	virtual  ~CMesh() override;
-
+	virtual ~CMesh() override;
 public:
 	static CMesh* Create();
+	HRESULT Ready_Mesh();
 
+public: //Getter
+	const LPD3DXMESH& GetMesh() const override { return m_pMesh; };
+	DWORD GetFVF() const override { return m_FVF; };
+	DWORD GetSubsetCount() const override { return m_dwSubsetCnt; };
+	const LPDIRECT3DVERTEXBUFFER9& GetVertexBuffer() const override { return LPDIRECT3DVERTEXBUFFER9(); };
+	const LPDIRECT3DINDEXBUFFER9& GetIndexBuffer() const override { return LPDIRECT3DINDEXBUFFER9(); };
+	const string& GetKey() const override { return m_Key; }
+
+public://Setter
+	void SetKey(const string& _key) { m_Key = _key; }
+	void SetMesh(LPD3DXMESH mesh);
 public:
-	HRESULT Ready_Component() override;
-	void Update_Component(float dt) override;
-	void LateUpdate_Component(float dt) override;
-	CComponent* Clone() const override;
-
-public:
-	static COM_TYPE Get_StaticType() { return COM_TYPE::MESH; }
-	COM_TYPE Get_Type() override { return Get_StaticType(); };
-	void Set_MeshType(MeshType type);
-	const vector<VTXLIGHTTEX>& Get_VertexBuffer() const { return m_VtxBuffer; }
-	const vector<INDEX16>& Get_IndexBuffer() const { return m_IndexBuffer; }
-	const D3DMATERIAL9& Get_Material() const { return m_Material; }
-	const string& Get_Key() { return TextureKey; }
-	bool isSky() { return m_bSky; }
-private:
-	void Compute_Normal();
-	void Generate_Sphere(float radius, int stacks, int slices);
-	void Generate_Sky();
-	//void Generate_Cylinder(float radius, float height,int slices, D3DCOLOR color);
-	//void Generate_Capsule(float radius, float height, int stacks, int slices, D3DCOLOR color);
-private:
-	virtual void Free() override;
+	HRESULT Load(const string pFile);
+	void Debug_VertexUV();
 
 private:
-	bool m_bSky = false;
-	string TextureKey;
-	D3DMATERIAL9 m_Material;
-	vector<VTXLIGHTTEX> m_VtxBuffer;
-	vector<INDEX16> m_IndexBuffer;
+	//서브셋 개수 확인
+	DWORD m_dwSubsetCnt;
+	DWORD m_FVF;
+	LPD3DXMESH m_pMesh;
+	LPDIRECT3DDEVICE9 m_pDevice;
+	vector<D3DXATTRIBUTERANGE> m_Subset;
+
+	string m_Key;
+
+private:
+	void Free() override;
+
 };
 
 END

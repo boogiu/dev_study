@@ -5,7 +5,7 @@
 #include "CCameraMgr.h"
 #include "CRenderMgr.h"
 #include "CLightMgr.h"
-#include "CTextureMgr.h"
+#include "CResourceMgr.h"
 
 #include "CGameObject.h"
 #include "CCamera.h"
@@ -13,6 +13,7 @@
 #include "CTestObj.h"
 #include "CTestCam.h"
 #include "CTestLigh.h"
+#include "CTestTerrain.h"
 
 CMainApp::CMainApp()
 	:m_pDeviceClass(nullptr)
@@ -40,37 +41,39 @@ HRESULT CMainApp::Ready_MainApp()
 	if (FAILED(CLightMgr::GetInstance()->Ready_Light(m_pGraphicDev)))
 		return E_FAIL;
 	
-	if (FAILED(CTextureMgr::GetInstance()->Ready_Texture(m_pGraphicDev,"../../Images")))
+	if (FAILED(CResourceMgr::GetInstance()->Ready_Resoource()))
 		return E_FAIL;
 
 	pCam = CTestCam::Create();
 	pTest = CTestObj::Create();
-	//pLight = CTestLigh::Create();
+	pLight = CTestLigh::Create();
+	pTerrain = CTestTerrain::Create();
 
 	CCameraMgr::GetInstance()->Set_ViewTarget(pCam->Get_Component<CCamera>());
 	return S_OK;
 }
 
-int CMainApp::Update_MainApp(const float& fTimeDelta)
+int CMainApp::Update_MainApp( _float&fTimeDelta)
 {
 	if (pTest) pTest->Update_GameObject(fTimeDelta);
 	if (pCam) pCam->Update_GameObject(fTimeDelta);
-	//if (pLight) pLight->Update_GameObject(fTimeDelta);
+	if (pLight) pLight->Update_GameObject(fTimeDelta);
+	if (pTerrain) pTerrain->Update_GameObject(fTimeDelta);
 
 	return 0;
 }
 
-void CMainApp::LateUpdate_MainApp(const float& fTimeDelta)
+void CMainApp::LateUpdate_MainApp( _float&fTimeDelta)
 {
 	if (pTest) pTest->LateUpdate_GameObject(fTimeDelta);
 	if (pCam) pCam->LateUpdate_GameObject(fTimeDelta);
-	//if (pLight) pLight->LateUpdate_GameObject(fTimeDelta);
+	if (pLight) pLight->LateUpdate_GameObject(fTimeDelta);
+	if (pTerrain) pTerrain->LateUpdate_GameObject(fTimeDelta);
 }
 
 void CMainApp::Render_MainApp()
 {
 	m_pDeviceClass->Render_Begin(D3DXCOLOR(0.f, 0.f, 1.f, 1.f));
-	//m_pGraphicDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	CLightMgr::GetInstance()->Set_Light(m_pGraphicDev);
 	CCameraMgr::GetInstance()->Apply_Camera(m_pGraphicDev);
 	CRenderMgr::GetInstance()->Render(m_pGraphicDev);
@@ -95,8 +98,14 @@ void CMainApp::Free()
 
 	Safe_Release(pTest);
 	Safe_Release(pCam);
+	Safe_Release(pLight);
+	Safe_Release(pTerrain);
 
 	CGraphicDev::GetInstance()->DestroyInstance();
 	CTimeMgr::GetInstance()->DestroyInstance();
 	CFrameMgr::GetInstance()->DestroyInstance();
+	CRenderMgr::GetInstance()->DestroyInstance();
+	CCameraMgr::GetInstance()->DestroyInstance();
+	CLightMgr::GetInstance()->DestroyInstance();
+	CResourceMgr::GetInstance()->DestroyInstance();
 }
