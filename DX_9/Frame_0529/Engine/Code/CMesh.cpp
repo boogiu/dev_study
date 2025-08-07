@@ -62,12 +62,6 @@ void CMesh::SetMesh(LPD3DXMESH mesh)
 	}
 }
 
-
-HRESULT CMesh::Load(const string pFile)
-{
-	return S_OK;
-}
-
 void CMesh::Free()
 {
 	if (m_pDevice) m_pDevice->Release();

@@ -1,19 +1,19 @@
 #include "pch.h"
 #include "CMainApp.h"
+
 #include "CTimeMgr.h"
 #include "CFrameMgr.h"
 #include "CCameraMgr.h"
 #include "CRenderMgr.h"
 #include "CLightMgr.h"
 #include "CResourceMgr.h"
+#include "CInputMgr.h"
+#include "CSceneMgr.h"
+#include "CThreadMgr.h"
 
-#include "CGameObject.h"
-#include "CCamera.h"
+#include "CScene.h"
+#include "CTestScene.h"
 
-#include "CTestObj.h"
-#include "CTestCam.h"
-#include "CTestLigh.h"
-#include "CTestTerrain.h"
 
 CMainApp::CMainApp()
 	:m_pDeviceClass(nullptr)
@@ -35,47 +35,69 @@ HRESULT CMainApp::Ready_MainApp()
 	m_pGraphicDev = m_pDeviceClass->Get_GraphicDev();
 	m_pGraphicDev->AddRef();
 
+	Ready_Manager();
+	Ready_Scene();
+
+	return S_OK;
+}
+
+HRESULT CMainApp::Ready_Manager()
+{
 	if (FAILED(CRenderMgr::GetInstance()->Ready_RenderMgr(m_pGraphicDev)))
 		return E_FAIL;
 
 	if (FAILED(CLightMgr::GetInstance()->Ready_Light(m_pGraphicDev)))
 		return E_FAIL;
-	
+
 	if (FAILED(CResourceMgr::GetInstance()->Ready_Resoource()))
 		return E_FAIL;
 
-	pCam = CTestCam::Create();
-	pTest = CTestObj::Create();
-	pLight = CTestLigh::Create();
-	pTerrain = CTestTerrain::Create();
+	if (FAILED(CInputMgr::GetInstance()->Ready_InputDev(g_HInst, g_hWnd)))
+		return E_FAIL;
 
-	CCameraMgr::GetInstance()->Set_ViewTarget(pCam->Get_Component<CCamera>());
+	if (FAILED(CSceneMgr::GetInstance()->Ready_Scene()))
+		return E_FAIL;
+
+	if (FAILED(CThreadMgr::GetInstance()->Ready_Thread()))
+		return E_FAIL;
+
 	return S_OK;
+}
+
+void CMainApp::Ready_Scene()
+{
+	CScene* tmp;
+
+	tmp = CTestScene::Create();
+
+	if (FAILED(CSceneMgr::GetInstance()->Add_Scene(L"Test_Scene", tmp))) 
+			MessageBoxW(0, L"테스트씬 로드 실패", L"error", MB_OK);
+
+
+	CSceneMgr::GetInstance()->Change_Scene(L"Test_Scene");
 }
 
 int CMainApp::Update_MainApp( _float&fTimeDelta)
 {
-	if (pTest) pTest->Update_GameObject(fTimeDelta);
-	if (pCam) pCam->Update_GameObject(fTimeDelta);
-	if (pLight) pLight->Update_GameObject(fTimeDelta);
-	if (pTerrain) pTerrain->Update_GameObject(fTimeDelta);
+	CInputMgr::GetInstance()->Update_InputDev();
+	CLightMgr::GetInstance()->Update_Light(fTimeDelta);
+	CSceneMgr::GetInstance()->Update_Scene(fTimeDelta);
 
 	return 0;
 }
 
 void CMainApp::LateUpdate_MainApp( _float&fTimeDelta)
 {
-	if (pTest) pTest->LateUpdate_GameObject(fTimeDelta);
-	if (pCam) pCam->LateUpdate_GameObject(fTimeDelta);
-	if (pLight) pLight->LateUpdate_GameObject(fTimeDelta);
-	if (pTerrain) pTerrain->LateUpdate_GameObject(fTimeDelta);
+	CInputMgr::GetInstance()->LateUpdate_InputDev();
+	CCameraMgr::GetInstance()->Apply_Camera(m_pGraphicDev);
+	CSceneMgr::GetInstance()->LateUpdate_Scene(fTimeDelta);
+
 }
 
 void CMainApp::Render_MainApp()
 {
 	m_pDeviceClass->Render_Begin(D3DXCOLOR(0.f, 0.f, 1.f, 1.f));
-	CLightMgr::GetInstance()->Set_Light(m_pGraphicDev);
-	CCameraMgr::GetInstance()->Apply_Camera(m_pGraphicDev);
+
 	CRenderMgr::GetInstance()->Render(m_pGraphicDev);
 
 	m_pDeviceClass->Render_End();
@@ -96,16 +118,14 @@ void CMainApp::Free()
 	Safe_Release(m_pGraphicDev);
 	Safe_Release(m_pDeviceClass);
 
-	Safe_Release(pTest);
-	Safe_Release(pCam);
-	Safe_Release(pLight);
-	Safe_Release(pTerrain);
-
-	CGraphicDev::GetInstance()->DestroyInstance();
 	CTimeMgr::GetInstance()->DestroyInstance();
 	CFrameMgr::GetInstance()->DestroyInstance();
 	CRenderMgr::GetInstance()->DestroyInstance();
 	CCameraMgr::GetInstance()->DestroyInstance();
 	CLightMgr::GetInstance()->DestroyInstance();
+	CSceneMgr::GetInstance()->DestroyInstance();
 	CResourceMgr::GetInstance()->DestroyInstance();
+	CInputMgr::GetInstance()->DestroyInstance();
+	CThreadMgr::GetInstance()->DestroyInstance();
+	CGraphicDev::GetInstance()->DestroyInstance(); 
 }

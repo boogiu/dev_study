@@ -19,8 +19,8 @@ public:
 	DWORD GetSubsetCount() const override { return 0; };
 	const LPDIRECT3DVERTEXBUFFER9& GetVertexBuffer() const override { return m_pVB; };
 	const LPDIRECT3DINDEXBUFFER9& GetIndexBuffer() const override { return m_pIB; };
-	const string& GetKey() const override { return m_key; };
-	vector<int>& GetHeightMap()  { return m_heightMap; };
+	const wstring& GetKey() const override { return m_key; };
+	vector<float>& GetHeightMap()  { return m_heightMap; };
 	int Get_Row() { return m_iRow; }
 	int Get_Col() { return m_iCol; }
 
@@ -28,17 +28,17 @@ public:
 	void SetFVF(DWORD fvf) { m_FVF = fvf; }
 	void SetVTX_Buffer(const LPDIRECT3DVERTEXBUFFER9& vb);
 	void SetIDX_Buffer(const LPDIRECT3DINDEXBUFFER9& ib);
-	void SetKey(const string& key) { m_key = key; }
-	void SetKey(vector<int> map) { m_heightMap = map; }
+	void SetKey(const wstring& key) { m_key = key; }
+	void SetKey(vector<float> map) { m_heightMap = map; }
 	void SetVTX_Num(int row, int col) { m_iCol = col; m_iRow = row; }
 	void ComputeIDX();
 	CTerrain* Clone();
 
 private:
-	string m_key;
+	wstring m_key;
 	DWORD m_FVF;
 	LPDIRECT3DDEVICE9 m_pDevice;
-	vector<int> m_heightMap;
+	vector<float> m_heightMap;
 	LPDIRECT3DVERTEXBUFFER9 m_pVB;
 	LPDIRECT3DINDEXBUFFER9 m_pIB;
 	

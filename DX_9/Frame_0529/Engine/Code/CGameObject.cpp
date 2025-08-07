@@ -11,15 +11,17 @@ CGameObject::~CGameObject()
 
 void CGameObject::Update_Component(float& dt)
 {
-	for (auto& comp : m_DynamicComponent) {
-		comp->Update_Component(dt);
+	for (auto& comp : m_ComponentMap) {
+		if (comp.second->Get_ComponentActive())
+			comp.second->Update_Component(dt);
 	}
 }
 
 void CGameObject::LateUpdate_Component(float& dt)
 {
-	for (auto& comp : m_DynamicComponent) {
-		comp->LateUpdate_Component(dt);
+	for (auto& comp : m_ComponentMap) {
+		if (comp.second->Get_ComponentActive())
+			comp.second->LateUpdate_Component(dt);
 	}
 }
 
@@ -31,10 +33,9 @@ void CGameObject::Release_Component()
 		});
 
 	m_ComponentMap.clear();
-	m_DynamicComponent.clear();
 }
 
 void CGameObject::Free()
 {
-	
+
 }

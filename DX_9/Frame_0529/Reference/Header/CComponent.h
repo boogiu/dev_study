@@ -19,42 +19,15 @@ public:
     virtual void Update_Component(float& dt);
     virtual void LateUpdate_Component(float& dt);
     virtual CComponent* Clone() const = 0;
-
-public :
-    virtual COM_TYPE Get_Type() = 0;
+public:
+    bool Get_ComponentActive() { return m_bActive; }
+    void Set_ComponentActive(bool active) { m_bActive = active; }
+protected:
+    bool m_bActive = true;
 public:
     CGameObject* m_pOwner = nullptr;
-    COM_UPDATE m_eUpdate;
 };
 
-template<typename T>
-void RegisterOnSystem(T* component) {}
 
-template<typename T>
-void ReleaseOnSystem(T* component) {}
-
-template<>
-inline  void RegisterOnSystem<CRenderer>(CRenderer* renderer)
-{
-    CRenderMgr::GetInstance()->Add_Renderer(renderer);
-}
-
-template<>
-inline  void RegisterOnSystem<CLight>(CLight* light)
-{
-    CLightMgr::GetInstance()->Add_Light(light);
-}
-
-template<>
-inline void ReleaseOnSystem<CRenderer>(CRenderer* renderer)
-{
-    CRenderMgr::GetInstance()->Remove_Renderer(renderer);
-}
-
-template<>
-inline void ReleaseOnSystem<CLight>(CLight* light)
-{
-    CLightMgr::GetInstance()->Remove_Light(light);
-}
 END
 

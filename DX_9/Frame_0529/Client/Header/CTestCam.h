@@ -6,6 +6,7 @@ namespace Engine {
     class CTransform;
     class CLight;
     class CSkyBoxRenderer;
+    class CMeshRenderer;
 }
 
 class CTestCam :
@@ -31,7 +32,10 @@ private:
     CCamera* m_pCamera;
     CLight* m_pLight;
     CSkyBoxRenderer* m_pRenderer;
+    POINT m_tPivot;
 
+    _long xMove;
+    _long yMove;
 private:
     virtual void Free();
 };

@@ -5,8 +5,10 @@
 #include "CTerrain.h"
 #include "CGameObject.h"
 #include "CTransform.h"
+#include "CStateCache.h"
 
 CTerrainRenderer::CTerrainRenderer()
+	:m_pTex(nullptr)
 {
 }
 
@@ -38,27 +40,32 @@ HRESULT CTerrainRenderer::Ready_Component()
 	return E_FAIL;
 }
 
+void CTerrainRenderer::Update_Component(float& dt)
+{
+}
+
+void CTerrainRenderer::LateUpdate_Component(float& dt)
+{
+	if (m_bActive)
+		CRenderMgr::GetInstance()->Add_Renderer(this);
+}
+
 void CTerrainRenderer::Render(LPDIRECT3DDEVICE9 pDevice)
 {
 	if (!m_pDevice || !m_pTransform || !m_pMesh) return;
 
+	m_pCache->SetFVF(m_pMesh->GetFVF());
+
 	m_pDevice->SetTransform(D3DTS_WORLD, &m_pTransform->Get_WorldMatrix());
 	m_pDevice->SetStreamSource(0, m_pMesh->GetVertexBuffer(), 0, sizeof(VTXTEX));
-	m_pDevice->SetFVF(m_pMesh->GetFVF());
 	m_pDevice->SetIndices(m_pMesh->GetIndexBuffer());
 
-	LPDIRECT3DTEXTURE9 _tex =	CResourceMgr::GetInstance()->Find_Texture("grass.bmp");
 
-	if (_tex)
-		m_pDevice->SetTexture(0, _tex);
-	else
-		m_pDevice->SetTexture(0, nullptr);
-
+	m_pDevice->SetTexture(0, m_pTex);
 
 	int vtxNum = m_pMesh->Get_Col() * m_pMesh->Get_Row();
-	int numTri = (m_pMesh->Get_Col() - 1) * (m_pMesh->Get_Row()-1)*2;
+	int numTri = (m_pMesh->Get_Col() - 1) * (m_pMesh->Get_Row() - 1) * 2;
 
-	//m_pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	HRESULT hr;
 	hr = m_pDevice->DrawIndexedPrimitive(
 		D3DPT_TRIANGLELIST,
@@ -77,30 +84,34 @@ CComponent* CTerrainRenderer::Clone() const
 	return nullptr;
 }
 
-void CTerrainRenderer::Set_Mesh(const string& key)
+void CTerrainRenderer::Set_Mesh(const wstring& key)
 {
-	m_pMesh = dynamic_cast<CTerrain*>(CResourceMgr::GetInstance()->Find_Mesh(key))->Clone();
+	//m_pMesh = dynamic_cast<CTerrain*>(CResourceMgr::GetInstance()->Find_Mesh(key))->Clone();
+	m_pMesh = dynamic_cast<CTerrain*>(CResourceMgr::GetInstance()->Find_Mesh(key));
+	if (m_pMesh)
+		m_pMesh->AddRef();
+}
+
+void CTerrainRenderer::Set_Texture(const wstring& key)
+{
+	m_pTex = CResourceMgr::GetInstance()->Find_Texture(key);
 }
 
 
-void CTerrainRenderer::Set_Terrain(int xSize, int zSize, int CellSize, float scale)
+void CTerrainRenderer::Set_Terrain(int CellSize, float scale)
 {
 	if (!m_pMesh) return;
-
-	int startX = -xSize / 2;
-	int endX = +xSize / 2;
-
-	int startZ = +zSize / 2;
-	int endZ = -zSize / 2;
 	//가로 세로
-	int _numVertsPerRow = m_pMesh->Get_Row(); 
+	int _numVertsPerRow = m_pMesh->Get_Row();
 	int _numVertsPerCol = m_pMesh->Get_Col();
 
-	vector<int>& _heightmap = m_pMesh->GetHeightMap();
+	int startX = -(_numVertsPerCol - 1) / 2;
+	int endX = +(_numVertsPerCol - 1) / 2;
 
-	//버텍스 개수 비율, 즉 UV좌표에서 몇분의 몇만큼 가져갈건가?
-	float uCoordIncrementSize = 1.0f / (float)_numVertsPerRow; //버텍스 개수
-	float vCoordIncrementSize = 1.0f / (float)_numVertsPerCol;
+	int startZ = -(_numVertsPerRow - 1) / 2;
+	int endZ = +(_numVertsPerRow - 1) / 2;
+
+	vector<float>& _heightmap = m_pMesh->GetHeightMap();
 
 	VTXTEX* vtxArr = nullptr;
 	auto& _vb = m_pMesh->GetVertexBuffer();
@@ -108,19 +119,20 @@ void CTerrainRenderer::Set_Terrain(int xSize, int zSize, int CellSize, float sca
 	_vb->Lock(0, 0, (void**)&vtxArr, 0);
 
 	int i = 0;
-	for (int z = startZ; z >= endZ; z -= CellSize)
+	for (int z = startZ; z <= endZ; z += 1) //g행
 	{
 		int j = 0;
-		for (int x = startX; x <= endX; x += CellSize)
+		for (int x = startX; x <= endX; x += 1) //열
 		{
-			int index = i * _numVertsPerRow + j;
+			int index = i * _numVertsPerRow + j;//0행 1열 등
 			VTXTEX vtx;
 			//z행 x열
-			vtx.vPosition = { (float)x, (float)_heightmap[index] * scale, (float)z };
-			vtx.vTexUV = { (float)j * uCoordIncrementSize, (float)i * vCoordIncrementSize };
+			vtx.vPosition = { (float)x * CellSize, (float)_heightmap[index] * scale, (float)z * CellSize };
+			vtx.vTexUV = {
+				(float)(z % 2),(float)(x % 2),
+			};
 
 			vtxArr[index] = vtx;
-
 			j++; // next column
 		}
 		i++; // next row
@@ -155,72 +167,25 @@ void CTerrainRenderer::Set_Terrain(int xSize, int zSize, int CellSize, float sca
 		for (int j = 0; j < _numCellPerRow; j++)
 		{
 			//왼쪽위(0)
-			indices[baseIndex] = i * _numVertsPerRow + j;
+			indices[baseIndex] = (i + 1) * _numVertsPerRow + j;
 			//오른쪽위(1)
-			indices[baseIndex + 1] = i * _numVertsPerRow + (j + 1);
+			indices[baseIndex + 1] = (i + 1) * _numVertsPerRow + (j + 1);
 			//왼쪽아래(3)
-			indices[baseIndex + 2] = (i + 1) * _numVertsPerRow + j;
+			indices[baseIndex + 2] = (i)*_numVertsPerRow + j;
 
 			//왼쪽 아래(3)
-			indices[baseIndex + 3] = (i + 1) * _numVertsPerRow + j;
+			indices[baseIndex + 3] = (i)*_numVertsPerRow + j;
 			//오른쪽 위(1)
-			indices[baseIndex + 4] = i * _numVertsPerRow + (j + 1);
+			indices[baseIndex + 4] = (i + 1) * _numVertsPerRow + (j + 1);
 			//오른쪽 아래(2)
-			indices[baseIndex + 5] = (i + 1) * _numVertsPerRow + (j + 1);
+			indices[baseIndex + 5] = (i)*_numVertsPerRow + (j + 1);
 			// 다음 셀
 			baseIndex += 6;
 		}
 	}
-
 	pIB->Unlock();
-
 	m_pMesh->SetIDX_Buffer(pIB);
 	pIB->Release();
-
-
-	//----------------------------------//
-	hr = 0;
-	LPDIRECT3DTEXTURE9 _tex = CResourceMgr::GetInstance()->Find_Texture("grass.bmp");
-
-	//D3DSURFACE_DESC textureDesc;
-	//_tex->GetLevelDesc(0 /*level*/, &textureDesc);
-	//
-	//// make sure we got the requested format because our code that fills the
-	//// texture is hard coded to a 32 bit pixel depth.
-	//if (textureDesc.Format != D3DFMT_X8R8G8B8)
-	//	return;
-	//
-	//D3DLOCKED_RECT lockedRect;
-	//_tex->LockRect(
-	//	0,          // lock top surface level in mipmap chain
-	//	&lockedRect,// pointer to receive locked data
-	//	0,          // lock entire texture image
-	//	0);         // no lock flags specified
-	//
-	//DWORD* imageData = (DWORD*)lockedRect.pBits;
-	//
-	//for (int i = 0; i < textureDesc.Height; i++)
-	//{
-	//	for (int j = 0; j < textureDesc.Width; j++)
-	//	{
-	//		// index into texture, note we use the pitch and divide by 
-	//		// four since the pitch is given in bytes and there are 
-	//		// 4 bytes per DWORD.
-	//		int index = i * lockedRect.Pitch / 4 + j;
-	//
-	//		// get current color of quad
-	//		D3DXCOLOR c(imageData[index]);
-	//
-	//		// shade current quad
-	//		//c *= computeShade(i, j, directionToLight);;
-	//
-	//		// save shaded color
-	//		imageData[index] = (D3DCOLOR)c;
-	//	}
-	//}
-
-	//_tex->UnlockRect(0);
-
 }
 
 void CTerrainRenderer::Free()

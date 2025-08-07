@@ -3,7 +3,6 @@
 
 CTransform::CTransform()
 {
-	m_eUpdate = COM_UPDATE::DYNAMIC;
 }
 
 CTransform::~CTransform()
@@ -112,6 +111,31 @@ void CTransform::Set_Orbit(_vec3 orbit)
 void CTransform::Set_Look(_vec3 look)
 {
 	m_vLook = look;
+}
+
+void CTransform::Add_Pos(_vec3 pos)
+{
+	m_vPos += pos;
+}
+
+void CTransform::Add_Scale(_vec3 scale)
+{
+	m_vScale += scale;
+}
+
+void CTransform::Add_Rotate(_vec3 rot)
+{
+	m_vRotate += rot;
+}
+
+void CTransform::Add_Pivot(_vec3 pivot)
+{
+	m_vPivot += pivot;
+}
+
+void CTransform::Add_Orbit(_vec3 orbit)
+{
+	m_vOrbit += orbit;
 }
 
 void CTransform::Free()

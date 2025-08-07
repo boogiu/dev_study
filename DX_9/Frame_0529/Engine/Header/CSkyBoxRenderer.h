@@ -13,15 +13,19 @@ public:
     static CSkyBoxRenderer* Create();
 public:
     HRESULT Ready_Component() override;
+    void Update_Component(float& dt) override;
+    void LateUpdate_Component(float& dt) override;
     void Render(LPDIRECT3DDEVICE9 pDevice) override;
     CComponent* Clone() const override;
-    void Set_Texture(const string& _key);
-private:
-    HRESULT Set_Buffer();
+
+    void Set_SkyBox(const wstring& _key);
+    RENDER_PASS Get_RenderPass() override { return RENDER_PASS::RP_SKYBOX; };
+
 private:
     LPDIRECT3DDEVICE9 m_pDevice;
-    LPDIRECT3DTEXTURE9 m_pTexture;
-    IMesh* m_pMesh;
+    LPDIRECT3DCUBETEXTURE9 m_cubeTexture;
+    IMesh*  m_pCube;
+
 private:
     void Free() override;
 };

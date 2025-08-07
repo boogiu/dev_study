@@ -18,12 +18,10 @@ public:
 	void Update_Component(float& dt) override;
 	void LateUpdate_Component(float& dt) override;
 	CComponent* Clone() const override;
-	static COM_TYPE Get_StaticType() { return COM_TYPE::LIGHT; };
-	COM_TYPE Get_Type() override { return Get_StaticType(); };
 
 public:
 	void Set_Type(LIGHT_TYPE light);
-	void Set_ID(int ID) { m_ID = ID; }
+	void Set_Priority(int ID) { m_NowPriority = ID; }
 	const _D3DLIGHT9& Get_Light() { return m_tLight; }
 
 	void Set_LightDesc(
@@ -35,9 +33,10 @@ public:
 	);
 	void Set_Angle(float theta, float phi);
 	void Set_Dir(_vec3 dir);
+
 private:
 	bool m_bLight;
-	int m_ID;
+	int m_NowPriority;
 	_D3DLIGHT9 m_tLight;
 
 private:

@@ -1,9 +1,10 @@
 #include"pch.h"
 #include "Engine_Define.h"
 #include "CTestObj.h"
-
 #include "CTransform.h"
 #include "CMeshRenderer.h"
+#include "CRigidBody.h"
+#include "CInputMgr.h"
 
 CTestObj::CTestObj()
 	:m_pTransform(nullptr),m_pRenderer(nullptr)
@@ -30,16 +31,18 @@ HRESULT CTestObj::Ready_GameObject()
 	if (m_pTransform == nullptr)
 		return E_FAIL;
 
-	m_pRenderer = static_cast<CMeshRenderer*>(Add_Component<CRenderer>(CRenderer::RENDERER_TYPE::Mesh));
+	m_pRenderer = Add_Component<CMeshRenderer>();
 	if (m_pRenderer == nullptr)
 		return E_FAIL;
 
 	m_pRenderer->Set_Transform();
-	m_pRenderer->Set_Mesh("tiger");
+	m_pRenderer->Set_Mesh(L"tiger");
 
 	m_pTransform->Set_Pos({0.f,0.f,1.f});
 	m_pTransform->Set_Scale({2.f,2.f,2.f});
 
+	m_pRigid = Add_Component<CRigidBody>(CRigidBody::Rigid_State::KINEMATIC);
+	m_pRigid->Set_Transform();
 	return S_OK;
 }
 
@@ -56,23 +59,17 @@ void CTestObj::LateUpdate_GameObject(_float&dt)
 }
 void CTestObj::Key_Check(float dt)
 {
-	CTransform* transform = Get_Component<CTransform>();
-	_vec3 rot = transform->Get_Rotate();
-	_vec3 pos = transform->Get_Pos();
 
-	const float speed = 50.f;
+	const float speed = 20.f;
 
-	//if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-	//	rot.x -= dt * speed;
-	//if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-	//	rot.x += dt * speed;
-	//if (GetAsyncKeyState(VK_UP) & 0x8000)
-	//	rot.y += dt * speed;
-	//if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-	//	rot.y -= dt * speed;
+	if (CInputMgr::GetInstance()->Key_Down(DIK_R))
+		m_pRigid->Set_State(CRigidBody::Rigid_State::DYNAMIC);
+	
+	if (CInputMgr::GetInstance()->Key_Down(DIK_UP))
+		m_pTransform->Add_Pos({ 0.f, 0.f, dt * speed });
 
-	transform->Set_Rotate(rot);
-	transform->Set_Pos(pos);
+	if (CInputMgr::GetInstance()->Key_Down(DIK_DOWN))
+		m_pTransform->Add_Pos({ 0.f, 0.f, -dt * speed });
 }
 
 void CTestObj::Free()

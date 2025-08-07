@@ -6,8 +6,6 @@
 CLight::CLight()
 {
 	ZeroMemory(&m_tLight, sizeof(D3DLIGHT9));
-	m_eUpdate = COM_UPDATE::DYNAMIC;
-
 }
 
 CLight::~CLight()
@@ -22,6 +20,7 @@ CLight* CLight::Create(LIGHT_TYPE type)
 		Safe_Release(instance);
 		instance = nullptr;
 	}
+
 	instance->Set_Type(type);
 	return instance;
 }
@@ -48,6 +47,7 @@ void CLight::Update_Component(float& dt)
 
 void CLight::LateUpdate_Component(float& dt)
 {
+	CLightMgr::GetInstance()->Add_Light(this);
 }
 
 CComponent* CLight::Clone() const

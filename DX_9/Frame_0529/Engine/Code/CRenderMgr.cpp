@@ -3,10 +3,14 @@
 #include "CCameraMgr.h"
 #include "CRenderer.h"
 #include "CMeshRenderer.h"
+#include "CResourceMgr.h"
+#include "CStateCache.h"
+#include "CFont.h"
 
 IMPLEMENT_SINGLETON(CRenderMgr)
 
 CRenderMgr::CRenderMgr()
+	:m_StateCache(nullptr)
 {
 }
 
@@ -17,56 +21,92 @@ CRenderMgr::~CRenderMgr()
 
 HRESULT CRenderMgr::Ready_RenderMgr(LPDIRECT3DDEVICE9 pDevice)
 {
-	return S_OK;
+	m_StateCache = CStateCache::Create(pDevice);
+
+	if (m_StateCache)
+		return S_OK;
+
+	return E_FAIL;
 }
 
 void CRenderMgr::Add_Renderer(CRenderer* renderer)
 {
-	auto iter = find_if(m_Renderers.begin(), m_Renderers.end(),
+	RENDER_PASS pass = renderer->Get_RenderPass();
+
+	auto iter = find_if(m_Renderers[pass].begin(), m_Renderers[pass].end(),
 		[&renderer](CRenderer* data)->bool {
 			return data == renderer;
 		});
 
-	if(iter == m_Renderers.end())
-		m_Renderers.push_back(renderer);
+	if (iter == m_Renderers[pass].end())
+		m_Renderers[pass].push_back(renderer);
 }
 
 void CRenderMgr::Remove_Renderer(CRenderer* renderer)
 {
-	auto iter = remove_if(m_Renderers.begin(), m_Renderers.end(),
+	RENDER_PASS pass = renderer->Get_RenderPass();
+
+	auto iter = remove_if(m_Renderers[pass].begin(), m_Renderers[pass].end(),
 		[&renderer](CRenderer* data)->bool {
 			return data == renderer;
 		});
-	
-	if (iter != m_Renderers.end()) {
-		m_Renderers.erase(iter, m_Renderers.end());
+
+	if (iter != m_Renderers[pass].end()) {
+		m_Renderers[pass].erase(iter, m_Renderers[pass].end());
 	}
 }
 
-void CRenderMgr::Render(LPDIRECT3DDEVICE9 pDevice)
+void CRenderMgr::Render(LPDIRECT3DDEVICE9 pDevice) //<- 렌더러의 통합을 고려 해보기! 
 {
-
 	//렌더 스테이트 설정
-	pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	m_StateCache->SetRenderState(D3DRS_ZENABLE, TRUE);
+	m_StateCache->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	m_StateCache->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+	m_StateCache->SetRenderState(D3DRS_LIGHTING, TRUE);
+	m_StateCache->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);		// 정규화된 노멀 사용
+	m_StateCache->SetRenderState(D3DRS_SPECULARENABLE, TRUE);			// 스페큘러 하이라이트
 
 	//텍스쳐 설정
 	pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 	pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-	pDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
+	pDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 
 	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
 	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+	//pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-	for (auto& renderer : m_Renderers)
+	for (auto& renderer : m_Renderers[RENDER_PASS::RP_SKYBOX]) 
 		renderer->Render(pDevice);
+
+	for (auto& renderer : m_Renderers[RENDER_PASS::RP_SHADOW]) 
+		renderer->Render(pDevice);
+
+	for (auto& renderer : m_Renderers[RENDER_PASS::RP_OPAQUE])
+		renderer->Render(pDevice);
+
+	for (auto& renderer : m_Renderers[RENDER_PASS::RP_STENCIL])
+		renderer->Render(pDevice);
+
+	for (auto& renderer : m_Renderers[RENDER_PASS::RP_TRANSPARENT]) 
+		renderer->Render(pDevice);
+
+	for (auto& renderer : m_Renderers[RENDER_PASS::RP_UI]) 
+		renderer->Render(pDevice);
+
+	for (auto& renderer : m_Renderers[RENDER_PASS::RP_POSTPROCESS]) 
+		renderer->Render(pDevice);
+
+	Clear();
+	//m_StateCache->Clear();
 }
 
 void CRenderMgr::Clear()
 {
+	m_Renderers.clear();
 }
 
 void CRenderMgr::Free()
 {
+	Safe_Release(m_StateCache);
 }

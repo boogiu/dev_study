@@ -4,6 +4,7 @@
 #include "CMesh.h"
 #include "CMaterial.h"
 #include "CTransform.h"
+#include "CStateCache.h"
 
 CMeshRenderer::CMeshRenderer()
 	:m_pMesh(nullptr), m_pMaterial(nullptr)
@@ -31,6 +32,17 @@ HRESULT CMeshRenderer::Ready_Component()
 	return S_OK;
 }
 
+void CMeshRenderer::Update_Component(float& dt)
+{
+	
+}
+
+void CMeshRenderer::LateUpdate_Component(float& dt)
+{
+	if (m_bActive)
+		CRenderMgr::GetInstance()->Add_Renderer(this);
+}
+
 void CMeshRenderer::Render(LPDIRECT3DDEVICE9 pDevice)
 {
 	if (!m_pTransform || !m_pMesh)
@@ -45,7 +57,7 @@ void CMeshRenderer::Render(LPDIRECT3DDEVICE9 pDevice)
 	const auto& materials = m_pMaterial ? m_pMaterial->Get_Material() : vector<MATTEX>();
 
 	DWORD subsetCount = m_pMesh->GetSubsetCount();
-	pDevice->SetFVF(m_pMesh->GetFVF());
+	m_pCache->SetFVF(m_pMesh->GetFVF());
 
 	for (DWORD i = 0; i < subsetCount; ++i)
 	{
@@ -66,7 +78,7 @@ CComponent* CMeshRenderer::Clone() const
 	return nullptr;
 }
 
-void CMeshRenderer::Set_Mesh(const string& key)
+void CMeshRenderer::Set_Mesh(const wstring& key)
 {
 	m_pMesh = static_cast<CMesh*>(CResourceMgr::GetInstance()->Find_Mesh(key));
 

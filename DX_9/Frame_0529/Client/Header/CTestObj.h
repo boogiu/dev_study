@@ -4,6 +4,7 @@
 namespace Engine {
 	class CTransform;
 	class CMeshRenderer;
+	class CRigidBody;
 }
 
 class CTestObj :
@@ -28,5 +29,6 @@ private:
 private:
 	CTransform* m_pTransform;
 	CMeshRenderer* m_pRenderer;
+	CRigidBody* m_pRigid;
 };
 

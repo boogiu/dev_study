@@ -21,7 +21,7 @@ public:
     virtual const LPDIRECT3DINDEXBUFFER9& GetIndexBuffer() const = 0;
 
     // °æ·Î
-    virtual const std::string& GetKey() const = 0;
+    virtual const std::wstring& GetKey() const = 0;
 };
 
 END

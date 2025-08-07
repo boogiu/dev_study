@@ -1,10 +1,10 @@
-#include "Engine_Define.h"
+ï»¿#include "Engine_Define.h"
 #include "CCubeMesh.h"
 #include "CGraphicDev.h"
 #include "CResourceMgr.h"
 
 CCubeMesh::CCubeMesh()
-	:m_FVF(FVF_LIGHTTEX),m_pVB(nullptr),m_pIB(nullptr),m_pDevice(nullptr)
+	:m_FVF(FVF_CUBE),m_pVB(nullptr),m_pIB(nullptr),m_pDevice(nullptr)
 {
 }
 
@@ -47,17 +47,17 @@ void CCubeMesh::Free()
  
 void CCubeMesh::Create_CubeMesh(LPDIRECT3DDEVICE9 pDevice)
 {
-
     const DWORD numIndices = 36;
     const DWORD numVertices = 8;
 
-    // Á¤Á¡ ¹öÆÛ »ı¼º
-    HRESULT hr = m_pDevice->CreateVertexBuffer(sizeof(VTXLIGHTTEX) * numVertices,
+    // ì •ì  ë²„í¼ ìƒì„±
+    HRESULT hr = m_pDevice->CreateVertexBuffer(sizeof(VTXCUBE) * numVertices,
         0, m_FVF, D3DPOOL_MANAGED, &m_pVB, 0);
     if (FAILED(hr)) {
         return;
     }
-    // ÀÎµ¦½º ¹öÆÛ »ı¼º
+
+    // ì¸ë±ìŠ¤ ë²„í¼ ìƒì„±
     hr= m_pDevice->CreateIndexBuffer(sizeof(DWORD) * numIndices,
         0, D3DFMT_INDEX32, D3DPOOL_MANAGED, &m_pIB, 0);
     if (FAILED(hr)) {
@@ -66,39 +66,77 @@ void CCubeMesh::Create_CubeMesh(LPDIRECT3DDEVICE9 pDevice)
 
     float s = 1.f;
 
-    VTXLIGHTTEX cube[] = {
-        // µŞ¸é (-Z)
-        { {-s,+s,-s}, { 0,  0, -1 }, {0, 1} },      // 0
-        { {+s,-s,-s}, { 0,  0, -1 }, {0, 0} },  // 1
-        { {+s,-s,-s}, { 0,  0, -1 }, {1, 0} },      // 2
-        { {-s,-s,-s}, { 0,  0, -1 }, {1, 1} },      // 3
+    VTXCUBE cube[8] = {};
 
-        // ¾Õ¸é (+Z)
-        { {-s,+s,+s}, { 0,  0,  1 }, {0, 0} }, // 4
-        { {+s,+s,+s}, { 0,  0,  1 }, {0, 0} }, // 5
-        { {+s,-s,+s}, { 0,  0,  1 }, {0, 0} },  // 6
-        { {-s,-s,+s}, { 0,  0,  1 }, {0, 0} },  // 7
-    };
+    // ì „ë©´
+    cube[0].vPosition = { -1.f, 1.f, -1.f };
+    cube[0].vTexUV = cube[0].vPosition;
 
-    DWORD indices[] =
-    {
-        3,0,1, 3,1,2,
-        6,5,4, 6,4,7,
-        2,1,5,2,5,6,
-        7,4,0,7,0,3,
-        0,4,5,0,5,1,
-        7,3,2,7,2,6
-    };
+    cube[1].vPosition = { 1.f, 1.f, -1.f };
+    cube[1].vTexUV = cube[1].vPosition;
 
-    Compute_Normals(cube, indices, numVertices, numIndices);
+    cube[2].vPosition = { 1.f, -1.f, -1.f };
+    cube[2].vTexUV = cube[2].vPosition;
 
-    // Á¤Á¡ Á¤ÀÇ
+    cube[3].vPosition = { -1.f, -1.f, -1.f };
+    cube[3].vTexUV = cube[3].vPosition;
+
+    cube[4].vPosition = { -1.f, 1.f, 1.f };
+    cube[4].vTexUV = cube[4].vPosition;
+
+    cube[5].vPosition = { 1.f, 1.f, 1.f };
+    cube[5].vTexUV = cube[5].vPosition;
+
+    cube[6].vPosition = { 1.f, -1.f, 1.f };
+    cube[6].vTexUV = cube[6].vPosition;
+
+    cube[7].vPosition = { -1.f, -1.f, 1.f };
+    cube[7].vTexUV = cube[7].vPosition;
+
+    INDEX32 indices[12] = {};
+    // X+
+    // ì˜¤ë¥¸ìª½ ìœ„                    // ì™¼ìª½ ì•„ë˜
+    indices[0]._0 = 1;        indices[1]._0 = 1;
+    indices[0]._1 = 5;        indices[1]._1 = 6;;
+    indices[0]._2 = 6;        indices[1]._2 = 2;
+                                      
+    // X-
+    // ì˜¤ë¥¸ìª½ ìœ„                    // ì™¼ìª½ ì•„ë˜
+    indices[2]._0 = 4;       indices[3]._0 = 4;
+    indices[2]._1 = 0;        indices[3]._1 = 3;
+    indices[2]._2 = 3;       indices[3]._2 = 7;
+
+    // Y+
+    // ì˜¤ë¥¸ìª½ ìœ„                      // ì™¼ìª½ ì•„ë˜
+    indices[4]._0 = 4;       indices[5]._0 = 4;
+    indices[4]._1 = 5;         indices[5]._1 = 1;
+    indices[4]._2 = 1;         indices[5]._2 = 0;
+
+    // Y-
+    // ì˜¤ë¥¸ìª½ ìœ„                          // ì™¼ìª½ ì•„ë˜
+    indices[6]._0 = 3;            indices[7]._0 = 3;
+    indices[6]._1 = 2;             indices[7]._1 = 6;
+    indices[6]._2 = 6;            indices[7]._2 = 7;
+
+    // Z+
+    // ì˜¤ë¥¸ìª½ ìœ„                        // ì™¼ìª½ ì•„ë˜
+    indices[8]._0 = 7;          indices[9]._0 = 7;
+    indices[8]._1 = 6;           indices[9]._1 = 5;
+    indices[8]._2 = 5;          indices[9]._2 = 4;
+
+    // Z-
+    // ì˜¤ë¥¸ìª½ ìœ„                        // ì™¼ìª½ ì•„ë˜
+    indices[10]._0 = 0;            indices[11]._0 = 0;
+    indices[10]._1 = 1;              indices[11]._1 = 2;
+    indices[10]._2 = 2;            indices[11]._2 = 3;
+
+    // ì •ì  ì •ì˜
     void* pVertices = nullptr;
     m_pVB->Lock(0, 0, &pVertices, m_FVF);
     memcpy(pVertices, cube, sizeof(cube));
     m_pVB->Unlock();
 
-    // ÀÎµ¦½º Á¤ÀÇ
+    // ì¸ë±ìŠ¤ ì •ì˜
     void* pIndices = nullptr;
     m_pIB->Lock(0, 0, &pIndices, D3DFMT_INDEX32);
     memcpy(pIndices, indices, sizeof(indices));
@@ -107,12 +145,12 @@ void CCubeMesh::Create_CubeMesh(LPDIRECT3DDEVICE9 pDevice)
 
 void CCubeMesh::Compute_Normals(VTXLIGHTTEX* vertices, DWORD* indices, size_t vertexCount, size_t indexCount)
 {
-    // 1. ¸ğµç Á¤Á¡ÀÇ ¹ı¼±À» ÃÊ±âÈ­
+    // 1. ëª¨ë“  ì •ì ì˜ ë²•ì„ ì„ ì´ˆê¸°í™”
     for (size_t i = 0; i < vertexCount; ++i) {
         vertices[i].vNorm = { 0.f, 0.f, 0.f };
     }
 
-    // 2. »ï°¢Çü ´ÜÀ§·Î ¼øÈ¸ÇÏ¸ç ¸é ¹ı¼±À» °¢ Á¤Á¡¿¡ ´©Àû
+    // 2. ì‚¼ê°í˜• ë‹¨ìœ„ë¡œ ìˆœíšŒí•˜ë©° ë©´ ë²•ì„ ì„ ê° ì •ì ì— ëˆ„ì 
     for (size_t i = 0; i < indexCount; i += 3)
     {
         DWORD i0 = indices[i];
@@ -134,7 +172,7 @@ void CCubeMesh::Compute_Normals(VTXLIGHTTEX* vertices, DWORD* indices, size_t ve
         vertices[i1].vNorm += faceNormal;
         vertices[i2].vNorm += faceNormal;
     }
-    // 3. ´©ÀûµÈ Á¤Á¡ ¹ı¼± Á¤±ÔÈ­
+    // 3. ëˆ„ì ëœ ì •ì  ë²•ì„  ì •ê·œí™”
     for (size_t i = 0; i < vertexCount; ++i) {
         D3DXVec3Normalize(&vertices[i].vNorm, &vertices[i].vNorm);
     }

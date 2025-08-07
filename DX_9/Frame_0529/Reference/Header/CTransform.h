@@ -24,9 +24,6 @@ public:
     const _matrix& Get_WorldMatrix() const { return m_WorldMat; }
     const _matrix& Get_WorldPosMatrix() const { return m_WorldPosMat; }
 
-    static COM_TYPE Get_StaticType() { return COM_TYPE::TRANSFORM; }
-    COM_TYPE Get_Type() { return Get_StaticType(); };
-
     void Set_Pos(_vec3 pos);
     void Set_Scale(_vec3 scale);
     void Set_Rotate(_vec3 rot);
@@ -41,9 +38,14 @@ public:
     _vec3 Get_Orbit()      {return m_vOrbit;}
     _vec3 Get_Look()       {return m_vLook;}
 
+    void Add_Pos(_vec3 pos);
+    void Add_Scale(_vec3 scale);
+    void Add_Rotate(_vec3 rot);
+    void Add_Pivot(_vec3 pivot);
+    void Add_Orbit(_vec3 orbit);
+
 private:
     void Free() override;
-
 
 private:
     _vec3 m_vPos;

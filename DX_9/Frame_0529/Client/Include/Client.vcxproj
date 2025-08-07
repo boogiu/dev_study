@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -156,7 +156,9 @@
     <ClInclude Include="..\Header\CMainApp.h" />
     <ClInclude Include="..\Header\CTestCam.h" />
     <ClInclude Include="..\Header\CTestLigh.h" />
+    <ClInclude Include="..\Header\CTestMirror.h" />
     <ClInclude Include="..\Header\CTestObj.h" />
+    <ClInclude Include="..\Header\CTestScene.h" />
     <ClInclude Include="..\Header\CTestTerrain.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
@@ -168,7 +170,9 @@
     <ClCompile Include="..\Code\CMainApp.cpp" />
     <ClCompile Include="..\Code\CTestCam.cpp" />
     <ClCompile Include="..\Code\CTestLigh.cpp" />
+    <ClCompile Include="..\Code\CTestMirror.cpp" />
     <ClCompile Include="..\Code\CTestObj.cpp" />
+    <ClCompile Include="..\Code\CTestScene.cpp" />
     <ClCompile Include="..\Code\CTestTerrain.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="pch.cpp">

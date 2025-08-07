@@ -35,8 +35,7 @@ public:
 	void Remove_Component();
 
 private:
-	vector<CComponent*> m_DynamicComponent;
-	unordered_map<COM_TYPE, CComponent*> m_ComponentMap;
+	unordered_map<type_index, CComponent*> m_ComponentMap;
 private:
 	virtual void Free() = 0;
 };
@@ -47,24 +46,18 @@ inline T* CGameObject::Add_Component(Args && ...args)
 	if (Get_Component<T>() != nullptr) //우선 가진 컴포넌트 검색
 		return nullptr;
 
-	COM_TYPE Type = T::Get_StaticType();
-
 	T* comPtr = T::Create(forward<Args>(args)...);
-
 	comPtr->m_pOwner = this;
-	RegisterOnSystem<T>(comPtr);
+	m_ComponentMap.insert({ type_index(typeid(T)),comPtr });
 
-	if (comPtr->m_eUpdate == COM_UPDATE::DYNAMIC)
-		m_DynamicComponent.push_back(comPtr);
-
-	m_ComponentMap.insert({ Type,comPtr });
 	return comPtr;
+
 }
 
 template<typename T>
 inline T* CGameObject::Get_Component()
 {
-	auto iter = m_ComponentMap.find(T::Get_StaticType());
+	auto iter = m_ComponentMap.find(type_index(typeid(T)));
 
 	if (iter == m_ComponentMap.end())
 		return nullptr;
@@ -75,28 +68,17 @@ inline T* CGameObject::Get_Component()
 template<typename T>
 inline void CGameObject::Remove_Component()
 {
-	auto iter = m_ComponentMap.find(T::Get_StaticType());
+	// 일반 단일 컴포넌트 처리
+	auto iter = m_ComponentMap.find(type_index(typeid(T)));
 
 	if (iter == m_ComponentMap.end())
 		return;
 
-	T* target = iter->second;
-	ReleaseOnSystem<T>(target);
-
-	if (target->m_eUpdate == COM_UPDATE::DYNAMIC) {
-
-		auto vecIter = remove_if(m_DynamicComponent.begin(), m_DynamicComponent.end(),
-			[&target](auto unique)->bool {
-				return target == unique.get();
-			});
-
-		if (vecIter != m_DynamicComponent.end())
-			m_DynamicComponent.erase(vecIter, m_DynamicComponent.end());
-	}
+	T* target = static_cast<T*>(iter->second);
 
 	m_ComponentMap.erase(iter);
-
 	Safe_Release(target);
 }
+
 
 END

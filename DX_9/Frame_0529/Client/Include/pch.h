@@ -11,6 +11,7 @@
 #include "framework.h"
 
 extern HWND g_hWnd;
+extern HINSTANCE g_HInst;
 
 #include <d3d9.h>
 #include <d3dx9.h>

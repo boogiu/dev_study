@@ -17,11 +17,11 @@ public:
 
 public:
     void SetSize(int i);
-    void SetKey(const string& key) { m_key = key; };
+    void SetKey(const wstring& key) { m_key = key; };
     vector<MATTEX>& Get_Material() { return m_vecMaterial; };
 
 private:
-    string m_key;
+    wstring m_key;
     vector<MATTEX> m_vecMaterial;
 
 private:

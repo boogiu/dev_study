@@ -17,6 +17,7 @@ CObjMgr::~CObjMgr()
 
 void CObjMgr::Initialize()
 {
+	//매니저 시작할 때, 액티브와 풀 모두 이닛
 	for (int i = 0; i < (int)OBJ_TAG::MAX_OBJECT; ++i) {
 		m_activeObject.insert({ OBJ_TAG(i), vector<CObject*>()});
 		m_poolObject.insert({ OBJ_TAG(i), vector<CObject*>() });
@@ -25,55 +26,58 @@ void CObjMgr::Initialize()
 
 void CObjMgr::Update()
 {
-	if (!m_bAwake) return;
-	for (int i = 0; i < (int)OBJ_TAG::MAX_OBJECT; ++i) {
-		for (CObject* obj : m_activeObject[OBJ_TAG(i)]) {
-			obj->Update();
-		}
-	}
+	//현재 상황에서는 진행하지 않는 것
+	//if (!m_bAwake) return;
+	//for (int i = 0; i < (int)OBJ_TAG::MAX_OBJECT; ++i) {
+	//	for (CObject* obj : m_activeObject[OBJ_TAG(i)]) {
+	//		obj->Update();
+	//	}
+	//}
 }
 
 void CObjMgr::Late_Update()
 {
-	if (!m_bAwake) return;
-	for (int i = 0; i < (int)OBJ_TAG::MAX_OBJECT; ++i) {
-		auto iter = m_activeObject[(OBJ_TAG)i].begin();
-		for (; iter != m_activeObject[(OBJ_TAG)i].end(); ) {
-			if (!(*iter)) { ++iter; continue; };
-			if (!(*iter)->Is_Activate()) {
-				m_poolObject[(OBJ_TAG)i].push_back(*iter);
-				iter = m_activeObject[(OBJ_TAG)i].erase(iter);
-			}
-			else {
-				(*iter)->Late_Update();
-				++iter;
-			}
-		}
-	}
+	//현재 상황에서는 진행하지 않는 것
+	//if (!m_bAwake) return;
+	//for (int i = 0; i < (int)OBJ_TAG::MAX_OBJECT; ++i) {
+	//	auto iter = m_activeObject[(OBJ_TAG)i].begin();
+	//	for (; iter != m_activeObject[(OBJ_TAG)i].end(); ) {
+	//		if (!(*iter)) { ++iter; continue; };
+	//		if (!(*iter)->Is_Activate()) {
+	//			m_poolObject[(OBJ_TAG)i].push_back(*iter);
+	//			iter = m_activeObject[(OBJ_TAG)i].erase(iter);
+	//		}
+	//		else {
+	//			(*iter)->Late_Update();
+	//			++iter;
+	//		}
+	//	}
+	//}
 }
 
 void CObjMgr::Render(HDC _hDC)
 {
-	if (!m_bAwake) return;
-	for (CObject* obj : m_activeObject[OBJ_TAG::MONSTER]) {
-		obj->Render(_hDC);
-	}
-	for (CObject* obj : m_activeObject[OBJ_TAG::PARTICLE]) {
-		obj->Render(_hDC);
-	}
-	for (CObject* obj : m_activeObject[OBJ_TAG::PLAYER]) {
-		obj->Render(_hDC);
-	}
-	for (CObject* obj : m_activeObject[OBJ_TAG::PROJECTILE]) {
-		obj->Render(_hDC);
-	}
-	for (CObject* obj : m_activeObject[OBJ_TAG::ITEM]) {
-		obj->Render(_hDC);
-	}
+//if (!m_bAwake) return;
+//for (CObject* obj : m_activeObject[OBJ_TAG::MONSTER]) {
+//	obj->Render(_hDC);
+//}
+//for (CObject* obj : m_activeObject[OBJ_TAG::PARTICLE]) {
+//	obj->Render(_hDC);
+//}
+//for (CObject* obj : m_activeObject[OBJ_TAG::PLAYER]) {
+//	obj->Render(_hDC);
+//}
+//for (CObject* obj : m_activeObject[OBJ_TAG::PROJECTILE]) {
+//	obj->Render(_hDC);
+//}
+//for (CObject* obj : m_activeObject[OBJ_TAG::ITEM]) {
+//	obj->Render(_hDC);
+//}
 }
 
 void CObjMgr::Release()
 {
+	//게임이 끌날 때 액티브와 풀 모두 제거
 	for (int i = 0; i < (int)OBJ_TAG::MAX_OBJECT; ++i) {
 		for (auto& obj : m_activeObject[OBJ_TAG(i)]) {
 			Safe_Delete<CObject*>(obj);
@@ -88,6 +92,7 @@ void CObjMgr::Release()
 
 void CObjMgr::ClearObject()
 {
+	//원할 때 액티브에 있는 오브젝트와 풀에 있는 오브젝트 제거
 	for (int i = 1; i < (int)OBJ_TAG::MAX_OBJECT; ++i) { // PLAYER 제외
 		if ((OBJ_TAG)i == PLAYER) continue;
 

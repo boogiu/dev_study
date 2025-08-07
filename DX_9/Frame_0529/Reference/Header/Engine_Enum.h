@@ -12,34 +12,31 @@ namespace Engine {
 	
 	enum MOUSEKEYSTATE{DIM_LB,DIM_RB,DIM_MB,DIM_END};
 	enum MOUSEMOVESTATE{DIMS_X,DIMD_Y,DIMD_Z,DIMS_END};
-
-	enum class OBJ_TYPE{};
+	
 	enum class LIGHT_TYPE{DIRECTION, POINT,SPOTLIGHT};
+	enum class RENDER_PASS
+	{
+		RP_SKYBOX,        // // 스카이박스 (Z-write 꺼짐, 가장 먼저)
+		RP_SHADOW,        // 그림자 맵을 생성하는 패스 (예: Depth-Only 렌더링 → ShadowMap 생성용)
+		RP_OPAQUE,        // 불투명 오브젝트 렌더링 (Z-Buffer 사용, 일반적인 Mesh들)
+		RP_STENCIL,   // 반투명 오브젝트 렌더링 (Z-Buffer 정렬 필요, 알파 블렌딩 사용)
+		RP_TRANSPARENT,   // 반투명 오브젝트 렌더링 (Z-Buffer 정렬 필요, 알파 블렌딩 사용)
+		RP_UI,            // 2D UI 요소 렌더링 (HUD, 텍스트 등, 보통 정해진 순서대로 출력)
+		RP_POSTPROCESS,   // 후처리 단계 (Bloom, Blur, Color Correction 등 → FullScreen Quad 기반)
+		RP_DEBUG,   // 디버그용 출력 표시들
+		RP_END            // enum 끝 표시 (배열 크기 지정 등 루프 용도)
+	};
 
-	enum class COM_UPDATE{DYNAMIC,STATIC};
-    enum class COM_TYPE {
-        TRANSFORM,     // 위치, 회전, 스케일
-        RENDERER,      // 렌더링용
-        MESH,          // 정점/인덱스 버퍼
-        CAMERA,        // 뷰/프로젝션 계산
-        LIGHT,         // 광원
-        TERRAIN,       // 지형
-        RIGIDBODY,     // 물리 기반 움직임
+	enum class COLLIDER_LAYER {
+		DEFAULT,
+		GROUND,
+		WALL,
+		PLAYER,
+		END
+	};
 
-        COLLIDER,      // 충돌 영역 (AABB/Sphere 등)
-        ANIMATOR,      // 애니메이션 (스켈레톤 포함)
-        AUDIO_SOURCE,  // 사운드 재생
-        SCRIPT,        // 커스텀 로직, FSM
-        PARTICLE_SYSTEM, // 파티클 이펙트
-        SKYBOX,        // 하늘 배경
-        BILLBOARD,     // 카메라 빌보드
-        POST_PROCESSOR,// 블룸, DOF 등 후처리
-        NAV_AGENT,     // 내비게이션 에이전트
-        DECAL,         // 표면 이미지 투사
-        LIFETIME,      // 시간 지나면 파괴
-        TAG,           // 그룹 태그, 이름 등
-        // 마지막은 개수 확인용
-        END
-    };
+	enum class LIGHT_POLICY {
+		CAMERA_POS,
 
+	};
 }

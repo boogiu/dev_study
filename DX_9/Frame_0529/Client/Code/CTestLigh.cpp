@@ -43,8 +43,8 @@ HRESULT CTestLigh::Ready_GameObject()
 		D3DXCOLOR(1.f,1.f,1.f,1.0f),
 		D3DXCOLOR(1.f,1.f,1.f, 1.0f),
 		D3DXCOLOR(1.f,1.f,1.f, 1.0f),
-		80.f,
-		0.2f
+		10.f,
+		0.1f
 	);
 
 	return S_OK;

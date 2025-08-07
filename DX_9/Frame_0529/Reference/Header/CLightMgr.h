@@ -16,14 +16,14 @@ private:
 
 public :
     HRESULT Ready_Light(LPDIRECT3DDEVICE9 pDevice);
-    void Set_Light(LPDIRECT3DDEVICE9 pDevice);
+    void Update_Light(_float& dt);
+    void Set_Priority();
     void Add_Light(CLight* light);
-    void Remove_Light(CLight* light);
 
 private:
-    D3DLIGHT9 m_baseLight;
+    LPDIRECT3DDEVICE9 m_pDevice;
     vector<CLight*> m_LightContainer;
-    vector<bool> m_ActivedLight;
+    LIGHT_POLICY m_ePolicy;
 
 private:
     void Free() override;

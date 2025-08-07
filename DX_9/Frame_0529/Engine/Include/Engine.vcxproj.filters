@@ -41,16 +41,16 @@
       <Filter>03. Component</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CTransform.h">
-      <Filter>03. Component\Dynamic\Transform</Filter>
+      <Filter>03. Component\Transform</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CCameraMgr.h">
       <Filter>01. Manager\03. CameraMgr</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CCamera.h">
-      <Filter>03. Component\Dynamic\Camera</Filter>
+      <Filter>03. Component\Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CRenderer.h">
-      <Filter>03. Component\Dynamic\Renderer</Filter>
+      <Filter>03. Component\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CRenderMgr.h">
       <Filter>01. Manager\04. RenderMgr</Filter>
@@ -59,13 +59,13 @@
       <Filter>01. Manager\05. LightMgr</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CLight.h">
-      <Filter>03. Component\Dynamic\Light</Filter>
+      <Filter>03. Component\Light</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CTerrain.h">
       <Filter>04. Resource\Mesh\TerrainMesh</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CMeshRenderer.h">
-      <Filter>03. Component\Dynamic\Renderer\MeshRenderer</Filter>
+      <Filter>03. Component\Renderer\MeshRenderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\IMesh.h">
       <Filter>04. Resource\Mesh</Filter>
@@ -80,16 +80,55 @@
       <Filter>04. Resource\Material</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CTerrainRenderer.h">
-      <Filter>03. Component\Dynamic\Renderer\TerrainRenderer</Filter>
+      <Filter>03. Component\Renderer\TerrainRenderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CRigidBody.h">
-      <Filter>03. Component\Dynamic\RigidBody</Filter>
+      <Filter>03. Component\RigidBody</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CCubeMesh.h">
       <Filter>04. Resource\Mesh\DefaultCube</Filter>
     </ClInclude>
     <ClInclude Include="..\Header\CSkyBoxRenderer.h">
-      <Filter>03. Component\Dynamic\Renderer\SKyBoxRenderer</Filter>
+      <Filter>03. Component\Renderer\SkyBoxRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CReflectRenderer.h">
+      <Filter>03. Component\Renderer\ReflectRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CInputMgr.h">
+      <Filter>01. Manager\07. InputMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CFont.h">
+      <Filter>04. Resource\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CStateCache.h">
+      <Filter>01. Manager\04. RenderMgr\RenderCache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CThreadMgr.h">
+      <Filter>01. Manager\08. ThreadMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\JobQueue.h">
+      <Filter>01. Manager\08. ThreadMgr\JobQueue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CSceneMgr.h">
+      <Filter>01. Manager\09.SceneMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CScene.h">
+      <Filter>01. Manager\09.SceneMgr\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CLayer.h">
+      <Filter>01. Manager\09.SceneMgr\Layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\MyMath.h">
+      <Filter>98.Function</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CCollisionMgr.h">
+      <Filter>01. Manager\10. CollisionMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CCollider.h">
+      <Filter>03. Component\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CTerrainCollider.h">
+      <Filter>03. Component\Collider\TerrainCollider</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -132,24 +171,6 @@
     <Filter Include="01. Manager\06. ResourceMgr">
       <UniqueIdentifier>{5a7a4d39-348c-406d-a457-222da9340c10}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. Component\Dynamic">
-      <UniqueIdentifier>{36328c4b-e6fe-4e86-b55c-0d7717a24ad6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Component\Dynamic\Light">
-      <UniqueIdentifier>{aa314e21-9da4-40b3-8ab1-d272630b81e1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Component\Dynamic\Camera">
-      <UniqueIdentifier>{e4d64264-0a53-4477-92d5-45be3949ec3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Component\Dynamic\Renderer">
-      <UniqueIdentifier>{a9e55978-3d8e-4165-a755-28e42bee64d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Component\Dynamic\Renderer\MeshRenderer">
-      <UniqueIdentifier>{1d987be8-3dd2-4800-ad42-245b16d3ebbf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Component\Dynamic\Transform">
-      <UniqueIdentifier>{8b3caab7-cd3a-4089-9321-eb29fa718735}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. Resource">
       <UniqueIdentifier>{dc618306-6d85-4bb3-bb7c-4b71516c5822}</UniqueIdentifier>
     </Filter>
@@ -165,17 +186,71 @@
     <Filter Include="04. Resource\Mesh\TerrainMesh">
       <UniqueIdentifier>{4a81078f-3859-42be-a2a4-74db372d612e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. Component\Dynamic\Renderer\TerrainRenderer">
-      <UniqueIdentifier>{d42493bf-6d45-4d13-8e7b-4c8d6a1d5f66}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Component\Dynamic\RigidBody">
-      <UniqueIdentifier>{19ee1dc5-c1ac-4ccf-aca2-e7dcb4d2acb2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Component\Dynamic\Renderer\SKyBoxRenderer">
-      <UniqueIdentifier>{4a6e23e4-5d50-476f-ac99-b30ee07ef906}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. Resource\Mesh\DefaultCube">
       <UniqueIdentifier>{3ca110ef-fd95-44e0-9903-4ee2be423c66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\07. InputMgr">
+      <UniqueIdentifier>{00c647eb-adc6-428b-a6c8-6f622370b2bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Resource\Font">
+      <UniqueIdentifier>{eea9785b-f82f-466e-a543-f8c5561ce61f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\04. RenderMgr\RenderCache">
+      <UniqueIdentifier>{4e40a942-6eea-480e-8248-53cc19b6472b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\08. ThreadMgr">
+      <UniqueIdentifier>{fa234ee7-a600-4ca1-bd0b-624c9137c2e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\08. ThreadMgr\JobQueue">
+      <UniqueIdentifier>{5b58322b-ef6c-4fcc-9103-c986121dab3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\09.SceneMgr">
+      <UniqueIdentifier>{e7955c4b-154f-46b2-91e6-cd673bfc8c97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\09.SceneMgr\Scene">
+      <UniqueIdentifier>{748442fb-2523-4391-b7f9-d1654c8ffd83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\09.SceneMgr\Layer">
+      <UniqueIdentifier>{5ae07af5-fb1d-417b-ac80-ef5d32aca4fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98.Function">
+      <UniqueIdentifier>{0fddb5c4-cb81-4497-806d-467b06026692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Transform">
+      <UniqueIdentifier>{8b3caab7-cd3a-4089-9321-eb29fa718735}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Camera">
+      <UniqueIdentifier>{e4d64264-0a53-4477-92d5-45be3949ec3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Light">
+      <UniqueIdentifier>{aa314e21-9da4-40b3-8ab1-d272630b81e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Renderer">
+      <UniqueIdentifier>{a9e55978-3d8e-4165-a755-28e42bee64d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Renderer\MeshRenderer">
+      <UniqueIdentifier>{1d987be8-3dd2-4800-ad42-245b16d3ebbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Renderer\TerrainRenderer">
+      <UniqueIdentifier>{d42493bf-6d45-4d13-8e7b-4c8d6a1d5f66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Renderer\ReflectRenderer">
+      <UniqueIdentifier>{04b52e86-df15-4498-b8c4-9a3a04379503}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\RigidBody">
+      <UniqueIdentifier>{19ee1dc5-c1ac-4ccf-aca2-e7dcb4d2acb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Collider">
+      <UniqueIdentifier>{d44e6e76-7cb8-4348-b087-dd5e8d74f289}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Renderer\SkyBoxRenderer">
+      <UniqueIdentifier>{4a6e23e4-5d50-476f-ac99-b30ee07ef906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Manager\10. CollisionMgr">
+      <UniqueIdentifier>{24f89028-db6a-43c0-b6d5-bb1964c57e8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\Collider\TerrainCollider">
+      <UniqueIdentifier>{3ff13bb0-7c03-4d79-bd02-c6b619ee2c20}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -198,16 +273,16 @@
       <Filter>02. GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CTransform.cpp">
-      <Filter>03. Component\Dynamic\Transform</Filter>
+      <Filter>03. Component\Transform</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CCameraMgr.cpp">
       <Filter>01. Manager\03. CameraMgr</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CCamera.cpp">
-      <Filter>03. Component\Dynamic\Camera</Filter>
+      <Filter>03. Component\Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CRenderer.cpp">
-      <Filter>03. Component\Dynamic\Renderer</Filter>
+      <Filter>03. Component\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CRenderMgr.cpp">
       <Filter>01. Manager\04. RenderMgr</Filter>
@@ -216,13 +291,13 @@
       <Filter>01. Manager\05. LightMgr</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CLight.cpp">
-      <Filter>03. Component\Dynamic\Light</Filter>
+      <Filter>03. Component\Light</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CTerrain.cpp">
       <Filter>04. Resource\Mesh\TerrainMesh</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CMeshRenderer.cpp">
-      <Filter>03. Component\Dynamic\Renderer\MeshRenderer</Filter>
+      <Filter>03. Component\Renderer\MeshRenderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\IMesh.cpp">
       <Filter>04. Resource\Mesh</Filter>
@@ -240,16 +315,55 @@
       <Filter>04. Resource\Material</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CTerrainRenderer.cpp">
-      <Filter>03. Component\Dynamic\Renderer\TerrainRenderer</Filter>
+      <Filter>03. Component\Renderer\TerrainRenderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CRigidBody.cpp">
-      <Filter>03. Component\Dynamic\RigidBody</Filter>
+      <Filter>03. Component\RigidBody</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CCubeMesh.cpp">
       <Filter>04. Resource\Mesh\DefaultCube</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\CSkyBoxRenderer.cpp">
-      <Filter>03. Component\Dynamic\Renderer\SKyBoxRenderer</Filter>
+      <Filter>03. Component\Renderer\SkyBoxRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CReflectRenderer.cpp">
+      <Filter>03. Component\Renderer\ReflectRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CInputMgr.cpp">
+      <Filter>01. Manager\07. InputMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CFont.cpp">
+      <Filter>04. Resource\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CStateCache.cpp">
+      <Filter>01. Manager\04. RenderMgr\RenderCache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CThreadMgr.cpp">
+      <Filter>01. Manager\08. ThreadMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\JobQueue.cpp">
+      <Filter>01. Manager\08. ThreadMgr\JobQueue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CSceneMgr.cpp">
+      <Filter>01. Manager\09.SceneMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CScene.cpp">
+      <Filter>01. Manager\09.SceneMgr\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CLayer.cpp">
+      <Filter>01. Manager\09.SceneMgr\Layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\MyMath.cpp">
+      <Filter>98.Function</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CCollisionMgr.cpp">
+      <Filter>01. Manager\10. CollisionMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CCollider.cpp">
+      <Filter>03. Component\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CTerrainCollider.cpp">
+      <Filter>03. Component\Collider\TerrainCollider</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

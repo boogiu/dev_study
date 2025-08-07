@@ -1,13 +1,9 @@
-#pragma once
+﻿#pragma once
 #include "CBase.h"
 #include "Engine_Define.h"
 #include "CGraphicDev.h"
 
-namespace Engine {
-	class CGameObject;
-}
-class CTestCam;
-class CTestTerrain;
+
 
 class CMainApp : public CBase
 {
@@ -17,20 +13,17 @@ private:
 
 public: 
 	HRESULT Ready_MainApp();
+	HRESULT Ready_Manager();
+	void Ready_Scene();
 	int Update_MainApp(_float&fTimeDelta);
 	void LateUpdate_MainApp(_float&fTimeDelta);
 	void Render_MainApp();
 private:
 	Engine::CGraphicDev* m_pDeviceClass;
 	LPDIRECT3DDEVICE9		m_pGraphicDev;
-	CGameObject* pTest=nullptr;
-	CGameObject* pLight=nullptr;
-	CTestCam* pCam=nullptr;
-	CTestTerrain* pTerrain=nullptr;
 
 public:
 	static CMainApp* Create();
 private:
 	virtual void Free() override;
 };
-

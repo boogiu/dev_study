@@ -17,6 +17,12 @@
     <Filter Include="TestObjects">
       <UniqueIdentifier>{028585d0-c8ec-40c5-a39c-30ede64bda75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. Scene">
+      <UniqueIdentifier>{12e92f10-e9bf-43bf-bd13-22b51a7f60eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Scene\TestScene">
+      <UniqueIdentifier>{e5d5c855-ea1c-4993-84d2-22dbae7e24c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -49,6 +55,12 @@
     <ClInclude Include="..\Header\CTestTerrain.h">
       <Filter>TestObjects</Filter>
     </ClInclude>
+    <ClInclude Include="..\Header\CTestMirror.h">
+      <Filter>TestObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Header\CTestScene.h">
+      <Filter>03. Scene\TestScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -71,6 +83,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\CTestTerrain.cpp">
       <Filter>TestObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CTestMirror.cpp">
+      <Filter>TestObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CTestScene.cpp">
+      <Filter>03. Scene\TestScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

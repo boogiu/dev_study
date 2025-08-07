@@ -16,7 +16,6 @@ HRESULT CGraphicDev::Ready_GraphicDev(HWND hwnd, WINMODE eMode, const _uint& iSi
 {
 
 	m_pSDK = Direct3DCreate9(D3D_SDK_VERSION);
-
 	if (m_pSDK == nullptr)
 		return E_FAIL;
 
@@ -29,9 +28,9 @@ HRESULT CGraphicDev::Ready_GraphicDev(HWND hwnd, WINMODE eMode, const _uint& iSi
 	_ulong dwFlag(0);
 
 	if (DeviceCaps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)
-		dwFlag |= D3DCREATE_HARDWARE_VERTEXPROCESSING;
+		dwFlag |= D3DCREATE_HARDWARE_VERTEXPROCESSING| D3DCREATE_MULTITHREADED;
 	else
-		dwFlag |= D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+		dwFlag |= D3DCREATE_SOFTWARE_VERTEXPROCESSING| D3DCREATE_MULTITHREADED;
 
 	D3DPRESENT_PARAMETERS d3dpp;
 	ZeroMemory(&d3dpp, sizeof(D3DPRESENT_PARAMETERS));

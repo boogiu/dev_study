@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="99. Defines">
+      <UniqueIdentifier>{42199772-d93c-48d7-a0ec-85c2bd90418e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System">
+      <UniqueIdentifier>{e11c0087-d525-4f09-b5b8-91918454a0b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility">
+      <UniqueIdentifier>{29a3cde5-f714-4c1d-95e5-aeba6b951d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\99. SuperClass">
+      <UniqueIdentifier>{f0bd9b18-3270-44f0-ab1a-823e04754e8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. ManagerService">
+      <UniqueIdentifier>{0dc5db89-67c4-4ad6-a3ac-744b2081a1fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. ManagerService\00. BaseService">
+      <UniqueIdentifier>{94091f6a-3c11-4662-be5f-a663b66dfb2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. ManagerService\01. TimeService">
+      <UniqueIdentifier>{515e4e7a-e633-4554-9996-785e446d25d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. ManagerService\02. InputService">
+      <UniqueIdentifier>{d2f7c7ce-4cf7-45f3-a1d9-03c198170ec0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. ManagerService\03. SoundService">
+      <UniqueIdentifier>{79ece4c3-822d-4178-965d-adaf9ef4384d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System\01. Timer">
+      <UniqueIdentifier>{e71a6d0c-c81b-4dbd-a827-cd850ff1d37d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System\01. Timer\Timer">
+      <UniqueIdentifier>{154dc7b5-fcf4-40eb-86ff-36ecf259e2f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System\02. Device">
+      <UniqueIdentifier>{bc0adb92-3233-46d1-b690-3df193fea11d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System\02. Device\InputDevice">
+      <UniqueIdentifier>{306f5d37-59ea-48d2-95e9-ddb32320ec9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System\02. Device\SoundDevice">
+      <UniqueIdentifier>{760d9784-35f9-409e-b319-916503ac1101}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System\02. Device\GraphicDevice">
+      <UniqueIdentifier>{3fd28e63-936c-457c-86d8-0aa870a8faac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\00. GameInstance">
+      <UniqueIdentifier>{69257c24-cc39-4a6f-9a20-f41e444e6f25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\00. GameInstance\ServiceHub">
+      <UniqueIdentifier>{70342808-ceed-4ef6-a366-6be31aeca509}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. ManagerService\04. GraphicService">
+      <UniqueIdentifier>{33945551-22b0-4d99-a8c7-e298c7b7b93f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\01. Levels">
+      <UniqueIdentifier>{3fea6a8a-dde6-4f4d-ad81-c60ae8407222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\01. Levels\Manager">
+      <UniqueIdentifier>{a58d7878-28b5-491b-8b25-3e4d2d339ef8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components">
+      <UniqueIdentifier>{076337eb-1402-4d55-bbf0-1f6285fbf0cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. GameObject">
+      <UniqueIdentifier>{a18fdd22-d79f-4eb0-854d-9f7f974ce68e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\02. Prototype">
+      <UniqueIdentifier>{f694df16-205b-4185-bf7b-a409fa77f011}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\02. Prototype\Managers">
+      <UniqueIdentifier>{0d332acd-9df6-4efd-bf36-c5bf9900b76f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. ManagerService\05. LevelService">
+      <UniqueIdentifier>{55d2bdaa-952d-4aa2-88a1-49198a49ff2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. ManagerService\06. ProtoService">
+      <UniqueIdentifier>{bf23c448-3b54-4d22-b276-4e7ba65119d9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Private\Base.cpp">
+      <Filter>01. Utility\99. SuperClass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GameInstance.cpp">
+      <Filter>01. Utility\00. GameInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TimeMgr.cpp">
+      <Filter>00. System\01. Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InputMgr.cpp">
+      <Filter>00. System\02. Device\InputDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Timer.cpp">
+      <Filter>00. System\01. Timer\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IService.cpp">
+      <Filter>01. Utility\98. ManagerService\00. BaseService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ITimeService.cpp">
+      <Filter>01. Utility\98. ManagerService\01. TimeService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IInputService.cpp">
+      <Filter>01. Utility\98. ManagerService\02. InputService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ServiceHub.cpp">
+      <Filter>01. Utility\00. GameInstance\ServiceHub</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SoundMgr.cpp">
+      <Filter>00. System\02. Device\SoundDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ISoundService.cpp">
+      <Filter>01. Utility\98. ManagerService\03. SoundService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IGraphicService.cpp">
+      <Filter>01. Utility\98. ManagerService\04. GraphicService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GraphicDevice.cpp">
+      <Filter>00. System\02. Device\GraphicDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LevelMgr.cpp">
+      <Filter>01. Utility\01. Levels\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CPrototypeMgr.cpp">
+      <Filter>01. Utility\02. Prototype\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IProtoService.cpp">
+      <Filter>01. Utility\98. ManagerService\06. ProtoService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level.cpp">
+      <Filter>01. Utility\01. Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ILevelService.cpp">
+      <Filter>01. Utility\98. ManagerService\05. LevelService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GameObject.cpp">
+      <Filter>01. Utility\03. GameObject</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Public\Engine_Enum.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_Function.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_Macro.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_Struct.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_Typedef.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_Defines.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GameInstance.h">
+      <Filter>01. Utility\00. GameInstance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TimeMgr.h">
+      <Filter>00. System\01. Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InputMgr.h">
+      <Filter>00. System\02. Device\InputDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Base.h">
+      <Filter>01. Utility\99. SuperClass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Timer.h">
+      <Filter>00. System\01. Timer\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IService.h">
+      <Filter>01. Utility\98. ManagerService\00. BaseService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ITimeService.h">
+      <Filter>01. Utility\98. ManagerService\01. TimeService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IInputService.h">
+      <Filter>01. Utility\98. ManagerService\02. InputService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ServiceHub.h">
+      <Filter>01. Utility\00. GameInstance\ServiceHub</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SoundMgr.h">
+      <Filter>00. System\02. Device\SoundDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ISoundService.h">
+      <Filter>01. Utility\98. ManagerService\03. SoundService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IGraphicService.h">
+      <Filter>01. Utility\98. ManagerService\04. GraphicService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GraphicDevice.h">
+      <Filter>00. System\02. Device\GraphicDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_Service.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LevelMgr.h">
+      <Filter>01. Utility\01. Levels\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PrototypeMgr.h">
+      <Filter>01. Utility\02. Prototype\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IProtoService.h">
+      <Filter>01. Utility\98. ManagerService\06. ProtoService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level.h">
+      <Filter>01. Utility\01. Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ILevelService.h">
+      <Filter>01. Utility\98. ManagerService\05. LevelService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GameObject.h">
+      <Filter>01. Utility\03. GameObject</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

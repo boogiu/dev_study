@@ -2,12 +2,8 @@
 #include "Engine_Typedef.h"
 
 namespace Engine {
-	struct VTXSKY
-	{
-		D3DXVECTOR3 vPosition;
-		D3DXVECTOR3 vTexCoord; 
-	};
-	const _ulong FVF_SKY = D3DFVF_XYZ | D3DFVF_TEX1;
+	
+	const _ulong FVF_SKY = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;
 
 	typedef struct tagVertexColor
 	{
@@ -28,7 +24,7 @@ namespace Engine {
 	typedef struct tagVertexCubeTexture
 	{
 		_vec3		vPosition;
-		_vec2		vTexUV;
+		_vec3		vTexUV;
 
 	}VTXCUBE;
 
