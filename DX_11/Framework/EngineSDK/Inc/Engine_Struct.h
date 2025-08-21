@@ -21,6 +21,7 @@ namespace Engine
         HWND hWnd;
         WINMODE			eWinMode;
         unsigned int	iWinSizeX, iWinSizeY;
+        unsigned int iLevelCount;
     }ENGINE_DESC;
 
 }

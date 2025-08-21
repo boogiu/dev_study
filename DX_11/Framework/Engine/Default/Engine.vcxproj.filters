@@ -49,17 +49,11 @@
     <Filter Include="01. Utility\00. GameInstance">
       <UniqueIdentifier>{69257c24-cc39-4a6f-9a20-f41e444e6f25}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\00. GameInstance\ServiceHub">
-      <UniqueIdentifier>{70342808-ceed-4ef6-a366-6be31aeca509}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\98. ManagerService\04. GraphicService">
       <UniqueIdentifier>{33945551-22b0-4d99-a8c7-e298c7b7b93f}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Utility\01. Levels">
       <UniqueIdentifier>{3fea6a8a-dde6-4f4d-ad81-c60ae8407222}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\01. Levels\Manager">
-      <UniqueIdentifier>{a58d7878-28b5-491b-8b25-3e4d2d339ef8}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Utility\04. Components">
       <UniqueIdentifier>{076337eb-1402-4d55-bbf0-1f6285fbf0cd}</UniqueIdentifier>
@@ -70,14 +64,26 @@
     <Filter Include="01. Utility\02. Prototype">
       <UniqueIdentifier>{f694df16-205b-4185-bf7b-a409fa77f011}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\02. Prototype\Managers">
-      <UniqueIdentifier>{0d332acd-9df6-4efd-bf36-c5bf9900b76f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\98. ManagerService\05. LevelService">
       <UniqueIdentifier>{55d2bdaa-952d-4aa2-88a1-49198a49ff2b}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Utility\98. ManagerService\06. ProtoService">
       <UniqueIdentifier>{bf23c448-3b54-4d22-b276-4e7ba65119d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. GameObject\Object_Manager">
+      <UniqueIdentifier>{05de2779-c015-4fdc-a368-29845e97de6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\02. Prototype\Prototype_Manager">
+      <UniqueIdentifier>{0d332acd-9df6-4efd-bf36-c5bf9900b76f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. ManagerService\07. ObjectService">
+      <UniqueIdentifier>{d275c2a3-0d63-47b9-a740-e8cb753b0b42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. GameObject\Object_Manager\Layer">
+      <UniqueIdentifier>{6ff31651-a12d-4ee3-adaf-67c4ad4aeb72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\01. Levels\Level_Manager">
+      <UniqueIdentifier>{a58d7878-28b5-491b-8b25-3e4d2d339ef8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -105,9 +111,6 @@
     <ClCompile Include="..\Private\IInputService.cpp">
       <Filter>01. Utility\98. ManagerService\02. InputService</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\ServiceHub.cpp">
-      <Filter>01. Utility\00. GameInstance\ServiceHub</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\SoundMgr.cpp">
       <Filter>00. System\02. Device\SoundDevice</Filter>
     </ClCompile>
@@ -121,10 +124,10 @@
       <Filter>00. System\02. Device\GraphicDevice</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LevelMgr.cpp">
-      <Filter>01. Utility\01. Levels\Manager</Filter>
+      <Filter>01. Utility\01. Levels\Level_Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\CPrototypeMgr.cpp">
-      <Filter>01. Utility\02. Prototype\Managers</Filter>
+    <ClCompile Include="..\Private\PrototypeMgr.cpp">
+      <Filter>01. Utility\02. Prototype\Prototype_Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\IProtoService.cpp">
       <Filter>01. Utility\98. ManagerService\06. ProtoService</Filter>
@@ -137,6 +140,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\GameObject.cpp">
       <Filter>01. Utility\03. GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Component.cpp">
+      <Filter>01. Utility\04. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IObjectService.cpp">
+      <Filter>01. Utility\98. ManagerService\07. ObjectService</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ObjectMgr.cpp">
+      <Filter>01. Utility\03. GameObject\Object_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Layer.cpp">
+      <Filter>01. Utility\03. GameObject\Object_Manager\Layer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,9 +197,6 @@
     <ClInclude Include="..\Public\IInputService.h">
       <Filter>01. Utility\98. ManagerService\02. InputService</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\ServiceHub.h">
-      <Filter>01. Utility\00. GameInstance\ServiceHub</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\SoundMgr.h">
       <Filter>00. System\02. Device\SoundDevice</Filter>
     </ClInclude>
@@ -201,10 +213,10 @@
       <Filter>99. Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\LevelMgr.h">
-      <Filter>01. Utility\01. Levels\Manager</Filter>
+      <Filter>01. Utility\01. Levels\Level_Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PrototypeMgr.h">
-      <Filter>01. Utility\02. Prototype\Managers</Filter>
+      <Filter>01. Utility\02. Prototype\Prototype_Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\IProtoService.h">
       <Filter>01. Utility\98. ManagerService\06. ProtoService</Filter>
@@ -217,6 +229,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\GameObject.h">
       <Filter>01. Utility\03. GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Component.h">
+      <Filter>01. Utility\04. Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IObjectService.h">
+      <Filter>01. Utility\98. ManagerService\07. ObjectService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ObjectMgr.h">
+      <Filter>01. Utility\03. GameObject\Object_Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Layer.h">
+      <Filter>01. Utility\03. GameObject\Object_Manager\Layer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

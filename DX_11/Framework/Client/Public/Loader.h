@@ -12,7 +12,7 @@ private:
 public:
     HRESULT Initialize(const string& nextLV);
     HRESULT Loading();
-    static  _uint __stdcall LoadingThread(void* pArg);
+    static  _uint WINAPI  LoadingThread(void* pArg);
     _bool isFinished() const {return m_isFinished; }
 
 private:

@@ -58,10 +58,9 @@ HRESULT CMainApp::Render()
 
 void CMainApp::Set_Levels()
 {
-	m_pGameInstance->Get_Service<ILevelService>()->Register_Level("Loading_Level", []()->CLevel* {return CLoadingLevel::Create(); });
-	m_pGameInstance->Get_Service<ILevelService>()->Set_LoadingLevel("Loading_Level");
+	m_pGameInstance->Get_LevelMgr()->Register_Level("Loading_Level", []()->CLevel* {return CLoadingLevel::Create(); });
+	m_pGameInstance->Get_LevelMgr()->Set_LoadingLevel("Loading_Level");
 	/*이후로 계속*/
-
 }
 
 CMainApp* CMainApp::Create()

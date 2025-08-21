@@ -1,10 +1,7 @@
 #pragma once
 #include "Base.h"
-#include "ServiceHub.h"
-
 
 NS_BEGIN(Engine)
-class IGraphicService;
 class ENGINE_DLL CGameInstance :
 	public CBase
 {
@@ -24,28 +21,31 @@ public:
 	HRESULT Draw();
 	HRESULT Draw_End();
 
-public: 	
-	template<typename T>
-	T* Get_Service();
+public:
+	class IGraphicService* Get_GraphicDev() { return m_pGraphicDevice; }
+	class ITimeService* Get_TimeMgr() { return m_pTimeManager; }
+	class IInputService* Get_InputDev() { return m_pInputDevice; }
+	class ISoundService* Get_SoundDev() { return m_pSoundDevice; }
+	class ILevelService* Get_LevelMgr() { return m_pLevelManager; }
 
 public:
 	ID3D11Device* Get_Device() { return m_pDevice; };
 	ID3D11DeviceContext* Get_Context() { return m_pDeviceContext; };
 
 private:
-	CServiceHub m_ServiceHub;
-	IGraphicService* m_pGraphicService = { nullptr };
-	ID3D11Device* m_pDevice = {nullptr};
+	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pDeviceContext = { nullptr };
 
+#pragma region Game_Managers
+	class IGraphicService* m_pGraphicDevice = { nullptr };
+	class ITimeService* m_pTimeManager = { nullptr };
+	class IInputService* m_pInputDevice = { nullptr };
+	class ISoundService* m_pSoundDevice = {nullptr};
+	class ILevelService* m_pLevelManager = { nullptr };
+
+#pragma endregion
 public:
 	virtual void Free() override;
 };
 
 NS_END
-
-template<typename T>
-inline T* CGameInstance::Get_Service()
-{
-	return m_ServiceHub.Get_Service<T>();
-}

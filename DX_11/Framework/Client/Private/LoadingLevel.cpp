@@ -14,7 +14,7 @@ CLoadingLevel::~CLoadingLevel()
 
 HRESULT CLoadingLevel::Initialize()
 {
-	string key =CGameInstance::GetInstance()->Get_Service<ILevelService>()->Get_NextLevel();
+	string key =CGameInstance::GetInstance()->Get_LevelMgr()->Get_NextLevel();
 	m_pLoader = CLoader::Create(key);
 
 	if (!m_pLoader)
@@ -27,7 +27,7 @@ void CLoadingLevel::Update()
 {
 
 	if (m_pLoader->isFinished()) {
-		CGameInstance::GetInstance()->Get_Service<ILevelService>()->Notify_LoadComplete();
+		CGameInstance::GetInstance()->Get_LevelMgr()->Notify_LoadComplete();
 	}
 }
 

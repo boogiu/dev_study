@@ -44,7 +44,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	CGameInstance* gameInstance = CGameInstance::GetInstance();
 	Safe_AddRef(gameInstance);
-	ITimeService* timer = gameInstance->Get_Service<ITimeService>();
+	ITimeService* timer = gameInstance->Get_TimeMgr();
 	Safe_AddRef(timer);
 	timer->Add_Timer("Default_Timer");
 	timer->Add_Timer("Timer_Frame60");

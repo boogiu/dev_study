@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h" />
+    <ClInclude Include="..\Public\Component.h" />
     <ClInclude Include="..\Public\Engine_Service.h" />
     <ClInclude Include="..\Public\GameInstance.h" />
     <ClInclude Include="..\Public\GameObject.h" />
@@ -155,14 +156,16 @@
     <ClInclude Include="..\Public\IInputService.h" />
     <ClInclude Include="..\Public\ILevelService.h" />
     <ClInclude Include="..\Public\InputMgr.h" />
+    <ClInclude Include="..\Public\IObjectService.h" />
     <ClInclude Include="..\Public\IProtoService.h" />
     <ClInclude Include="..\Public\IService.h" />
     <ClInclude Include="..\Public\ISoundService.h" />
     <ClInclude Include="..\Public\ITimeService.h" />
+    <ClInclude Include="..\Public\Layer.h" />
     <ClInclude Include="..\Public\Level.h" />
     <ClInclude Include="..\Public\LevelMgr.h" />
+    <ClInclude Include="..\Public\ObjectMgr.h" />
     <ClInclude Include="..\Public\PrototypeMgr.h" />
-    <ClInclude Include="..\Public\ServiceHub.h" />
     <ClInclude Include="..\Public\SoundMgr.h" />
     <ClInclude Include="..\Public\TimeMgr.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
@@ -175,7 +178,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp" />
-    <ClCompile Include="..\Private\CPrototypeMgr.cpp" />
+    <ClCompile Include="..\Private\Component.cpp" />
+    <ClCompile Include="..\Private\IObjectService.cpp" />
+    <ClCompile Include="..\Private\Layer.cpp" />
+    <ClCompile Include="..\Private\ObjectMgr.cpp" />
+    <ClCompile Include="..\Private\PrototypeMgr.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />
     <ClCompile Include="..\Private\GraphicDevice.cpp" />
     <ClCompile Include="..\Private\IGraphicService.cpp" />
@@ -185,7 +192,6 @@
     <ClCompile Include="..\Private\LevelMgr.cpp" />
     <ClCompile Include="..\Private\SoundMgr.cpp" />
     <ClCompile Include="..\Private\ISoundService.cpp" />
-    <ClCompile Include="..\Private\ServiceHub.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\IInputService.cpp" />
     <ClCompile Include="..\Private\InputMgr.cpp" />

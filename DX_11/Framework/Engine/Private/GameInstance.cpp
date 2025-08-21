@@ -20,14 +20,20 @@ CGameInstance::~CGameInstance()
 
 _bool CGameInstance::InitSystems(const ENGINE_DESC& engine)
 {
-	m_pGraphicService = m_ServiceHub.Add_Service<IGraphicService, CGraphicDevice>(engine,&m_pDevice, &m_pDeviceContext);
-	Safe_AddRef(m_pGraphicService);
+	m_pGraphicDevice = CGraphicDevice::Create(engine, &m_pDevice, &m_pDeviceContext);
+	Safe_AddRef(m_pGraphicDevice);
 
-	m_ServiceHub.Add_Service<ITimeService, CTimeMgr>();
-	m_ServiceHub.Add_Service<IInputService, CInputMgr>(engine.hWnd);
-	m_ServiceHub.Add_Service<ISoundService, CSoundMgr>();
-	m_ServiceHub.Add_Service<ILevelService, CLevelMgr>();
+	m_pTimeManager = CTimeMgr::Create();
+	Safe_AddRef(m_pTimeManager);
 
+	m_pInputDevice= CInputMgr::Create(engine.hWnd);
+	Safe_AddRef(m_pInputDevice);
+
+	m_pSoundDevice = CSoundMgr::Create();
+	Safe_AddRef(m_pSoundDevice);
+
+	m_pLevelManager = CLevelMgr::Create();
+	Safe_AddRef(m_pLevelManager);
 	return TRUE;
 }
 
@@ -38,10 +44,9 @@ _bool CGameInstance::InitDirectX()
 
 void CGameInstance::Update_Engine(_float dt)
 {
-	m_ServiceHub.Get_Service<IInputService>()->Update();
-	m_ServiceHub.Get_Service<ISoundService>()->Update();
-	m_ServiceHub.Get_Service<ILevelService>()->Update(dt);
-
+	m_pInputDevice->Update();
+	m_pSoundDevice->Update();
+	m_pLevelManager->Update(dt);
 }
 
 _bool CGameInstance::HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -57,7 +62,7 @@ _bool CGameInstance::HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARA
 			PostQuitMessage(0);
 
 	case WM_INPUT:
-		Get_Service<IInputService>()->Process_Input(lParam);
+		m_pInputDevice->Process_Input(lParam);
 	}
 	
 	return false;
@@ -65,8 +70,8 @@ _bool CGameInstance::HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
 HRESULT CGameInstance::Draw_Begin(_float4* pColor)
 {
-	m_pGraphicService->Clear_BackBuffer_View(pColor);
-	m_pGraphicService->Clear_DepthStencil_View();
+	m_pGraphicDevice->Clear_BackBuffer_View(pColor);
+	m_pGraphicDevice->Clear_DepthStencil_View();
 	return S_OK;
 }
 
@@ -77,7 +82,7 @@ HRESULT CGameInstance::Draw()
 
 HRESULT CGameInstance::Draw_End()
 {
-	m_pGraphicService->Present();
+	m_pGraphicDevice->Present();
 	return S_OK;
 }
 
@@ -85,7 +90,11 @@ void CGameInstance::Free()
 {
 	__super::Free();
 	Safe_Release(m_pDevice);
+
 	Safe_Release(m_pDeviceContext);
-	Safe_Release(m_pGraphicService);
-	m_ServiceHub.Service_Free();
+	Safe_Release(m_pGraphicDevice);
+	Safe_Release(m_pTimeManager);
+	Safe_Release(m_pInputDevice);
+	Safe_Release(m_pSoundDevice);
+	Safe_Release(m_pLevelManager);
 }

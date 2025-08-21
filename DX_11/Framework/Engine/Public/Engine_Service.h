@@ -7,3 +7,4 @@
 #include "IGraphicService.h"
 #include "ILevelService.h"
 #include "IProtoService.h"
+#include "IObjectService.h"

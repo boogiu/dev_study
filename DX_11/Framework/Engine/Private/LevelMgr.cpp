@@ -14,7 +14,7 @@ HRESULT CLevelMgr::Request_ChangeLevel(string key)
     if (!m_LevelCreators.count(key))
         return E_FAIL;
 
-    m_NextLevel = key;
+    m_NextLevelTag = key;
     m_eState = LEVEL_STATE::REQUEST;
 
     return S_OK;
@@ -41,11 +41,11 @@ void CLevelMgr::Update(_float dt)
         break;
 
     case Engine::LEVEL_STATE::LOADED:
-        if (!m_NextLevel.empty() && m_LevelCreators.count(m_NextLevel)) {
+        if (!m_NextLevelTag.empty() && m_LevelCreators.count(m_NextLevelTag)) {
             Safe_Release(m_pCurrentLevel);
-            m_pCurrentLevel = m_LevelCreators[m_NextLevel]();
+            m_pCurrentLevel = m_LevelCreators[m_NextLevelTag]();
             m_eState = LEVEL_STATE::STABLE;
-            m_NextLevel.clear();
+            m_NextLevelTag.clear();
         }
         break;
     case Engine::LEVEL_STATE::STABLE:

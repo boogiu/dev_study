@@ -28,7 +28,7 @@ HRESULT CLoader::Loading()
     return S_OK;
 }
 
-_uint __stdcall CLoader::LoadingThread(void* pArg)
+_uint WINAPI  CLoader::LoadingThread(void* pArg)
 {
     CLoader* pLoader = static_cast<CLoader*>(pArg);
 
