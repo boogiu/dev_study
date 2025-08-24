@@ -9,6 +9,7 @@ HRESULT CTimer::Initialize()
 {
 	QueryPerformanceCounter(&m_LastTime);
 	QueryPerformanceCounter(&m_CurTime);
+	QueryPerformanceCounter(&m_FixTime);
 	QueryPerformanceFrequency(&m_TickCount);
 
 	return S_OK;

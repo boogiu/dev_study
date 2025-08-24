@@ -14,7 +14,6 @@ private:
 public:
 	HRESULT Initialize();
 	void Update(const float dt);
-	void Late_Update(const float dt);
 	HRESULT Render();
 
 public:

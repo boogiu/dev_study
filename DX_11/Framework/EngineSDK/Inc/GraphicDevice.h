@@ -29,7 +29,6 @@ private:
 	HRESULT Ready_DepthStencilView(_uint iWinCX, _uint iWinCY);
 
 public:
-	static  CGraphicDevice* Create(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, ID3D11Device** ppDevice, ID3D11DeviceContext** ppDeviceContextOut);
 	static  CGraphicDevice* Create(ENGINE_DESC engine, ID3D11Device** ppDevice, ID3D11DeviceContext** ppDeviceContextOut);
 	virtual void Free() override;
 };

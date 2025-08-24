@@ -7,6 +7,16 @@ class ENGINE_DLL IObjectService : public IService
 {
 protected :
 	~IObjectService() DEFAULT;
+public:
+	virtual void Priority_Update(_float fTimeDelta)PURE;
+	virtual void Update(_float fTimeDelta)PURE;
+	virtual void Late_Update(_float fTimeDelta)PURE;
+	virtual class CBuilder Create_Object(const CLONE_DESC clone)PURE;
+	virtual void Add_Object(class CGameObject* object, const LAYER_DESC* layer)PURE;
+
+	virtual void Clear(const string& LevelTag)PURE;
+	virtual HRESULT Sync_To_Level()PURE;
+
 
 };
 

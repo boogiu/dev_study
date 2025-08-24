@@ -7,6 +7,8 @@
 #include "SoundMgr.h"
 #include "LevelMgr.h"
 #include "GraphicDevice.h"
+#include "PrototypeMgr.h"
+#include "ObjectMgr.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -18,35 +20,51 @@ CGameInstance::~CGameInstance()
 {
 }
 
-_bool CGameInstance::InitSystems(const ENGINE_DESC& engine)
+_bool CGameInstance::Init_Engine(const ENGINE_DESC& engine)
 {
 	m_pGraphicDevice = CGraphicDevice::Create(engine, &m_pDevice, &m_pDeviceContext);
-	Safe_AddRef(m_pGraphicDevice);
-
 	m_pTimeManager = CTimeMgr::Create();
-	Safe_AddRef(m_pTimeManager);
-
 	m_pInputDevice= CInputMgr::Create(engine.hWnd);
-	Safe_AddRef(m_pInputDevice);
-
 	m_pSoundDevice = CSoundMgr::Create();
-	Safe_AddRef(m_pSoundDevice);
-
 	m_pLevelManager = CLevelMgr::Create();
-	Safe_AddRef(m_pLevelManager);
+	m_pPrototypeManager = CPrototypeMgr::Create();
+	m_pObjectManager = CObjectMgr::Create();
+
 	return TRUE;
 }
 
-_bool CGameInstance::InitDirectX()
+void CGameInstance::Notify_LevelSet()
 {
-	return TRUE;
+	m_pPrototypeManager->Sync_To_Level();
+	m_pObjectManager->Sync_To_Level();
 }
+
 
 void CGameInstance::Update_Engine(_float dt)
 {
+	m_pObjectManager->Priority_Update(dt);
+	
+	m_pObjectManager->Update(dt);
+
 	m_pInputDevice->Update();
 	m_pSoundDevice->Update();
 	m_pLevelManager->Update(dt);
+	
+	m_pObjectManager->Late_Update(dt);
+}
+
+void CGameInstance::Release_Engine()
+{
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pDeviceContext);
+	Safe_Release(m_pGraphicDevice);
+	Safe_Release(m_pTimeManager);
+	Safe_Release(m_pInputDevice);
+	Safe_Release(m_pSoundDevice);
+	Safe_Release(m_pLevelManager);
+	Safe_Release(m_pPrototypeManager);
+	Safe_Release(m_pObjectManager);
+	DestroyInstance();
 }
 
 _bool CGameInstance::HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -77,6 +95,7 @@ HRESULT CGameInstance::Draw_Begin(_float4* pColor)
 
 HRESULT CGameInstance::Draw()
 {
+	m_pLevelManager->Render();
 	return S_OK;
 }
 
@@ -89,12 +108,4 @@ HRESULT CGameInstance::Draw_End()
 void CGameInstance::Free()
 {
 	__super::Free();
-	Safe_Release(m_pDevice);
-
-	Safe_Release(m_pDeviceContext);
-	Safe_Release(m_pGraphicDevice);
-	Safe_Release(m_pTimeManager);
-	Safe_Release(m_pInputDevice);
-	Safe_Release(m_pSoundDevice);
-	Safe_Release(m_pLevelManager);
 }

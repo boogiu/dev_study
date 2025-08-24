@@ -28,6 +28,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
+#ifdef _DEBUG
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_CLIENT, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
@@ -38,12 +42,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return FALSE;
 	}
 
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
 	CMainApp* mainApp = CMainApp::Create();
-
 	CGameInstance* gameInstance = CGameInstance::GetInstance();
 	Safe_AddRef(gameInstance);
+
 	ITimeService* timer = gameInstance->Get_TimeMgr();
 	Safe_AddRef(timer);
 	timer->Add_Timer("Default_Timer");
@@ -72,7 +74,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			timer->Update_Timer("Timer_Frame60");
 			_float dt = timer->Get_DeltaTime("Timer_Frame60");
 			mainApp->Update(dt);
-			mainApp->Late_Update(dt);
 			mainApp->Render();
 			fTimeAcc = 0.f;
 		}

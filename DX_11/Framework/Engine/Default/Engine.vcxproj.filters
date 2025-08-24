@@ -85,6 +85,15 @@
     <Filter Include="01. Utility\01. Levels\Level_Manager">
       <UniqueIdentifier>{a58d7878-28b5-491b-8b25-3e4d2d339ef8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Components\Transform">
+      <UniqueIdentifier>{d1f9cf62-91ae-45ea-99fa-c5066cac8121}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\03. GameObject\Object_Manager\BuildSystem">
+      <UniqueIdentifier>{0dc49621-70dc-49a5-a5ef-89186ab5d597}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\Collider">
+      <UniqueIdentifier>{a2469abf-4361-4fc8-b4a0-c34e78243a99}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -152,6 +161,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Layer.cpp">
       <Filter>01. Utility\03. GameObject\Object_Manager\Layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Transform.cpp">
+      <Filter>01. Utility\04. Components\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Builder.cpp">
+      <Filter>01. Utility\03. GameObject\Object_Manager\BuildSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -241,6 +256,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\Layer.h">
       <Filter>01. Utility\03. GameObject\Object_Manager\Layer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Transform.h">
+      <Filter>01. Utility\04. Components\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Builder.h">
+      <Filter>01. Utility\03. GameObject\Object_Manager\BuildSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Build_Struct.h">
+      <Filter>99. Defines</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -56,7 +56,6 @@ CSoundMgr* CSoundMgr::Create()
 
 	if (FAILED(instance->Initialize())) {
 		Safe_Release(instance);
-		instance = nullptr;
 	}
 
 	return instance;
@@ -64,6 +63,8 @@ CSoundMgr* CSoundMgr::Create()
 
 void CSoundMgr::Free()
 {
+	__super::Free();
+
 	for (auto& Pair : m_Sounds)
 	{
 		if (Pair.second)

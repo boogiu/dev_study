@@ -6,6 +6,7 @@
 #include "GameInstance.h"
 
 #include "LoadingLevel.h"
+#include "LogoLevel.h"
 
 CMainApp::CMainApp()
 {
@@ -18,7 +19,7 @@ CMainApp::~CMainApp()
 HRESULT CMainApp::Initialize()
 {
 	m_pGameInstance = CGameInstance::GetInstance();
-	//Safe_AddRef(m_pGameInstance); ==> 수업 때에는 유지. 이후에 해결 예정
+	Safe_AddRef(m_pGameInstance);
 
 	ENGINE_DESC desc{};
 
@@ -27,15 +28,15 @@ HRESULT CMainApp::Initialize()
 	desc.iWinSizeX = g_iWinSizeX;
 	desc.iWinSizeY = g_iWinSizeY;
 
-	if (m_pGameInstance->InitSystems(desc)) {
+	if (m_pGameInstance->Init_Engine(desc)) {
 		m_pDevice = m_pGameInstance->Get_Device();
 		m_pDeviceContext = m_pGameInstance->Get_Context();
 	}
 	
 	Set_Levels();
 
+	m_pGameInstance->Get_LevelMgr()->Request_ChangeLevel("Logo_Level"); //로고 레벨로 시작!
 	return S_OK;
-
 }
 
 void CMainApp::Update(const float dt)
@@ -43,9 +44,6 @@ void CMainApp::Update(const float dt)
 	m_pGameInstance->Update_Engine(dt);
 }
 
-void CMainApp::Late_Update(const float dt)
-{
-}
 
 HRESULT CMainApp::Render()
 {
@@ -59,8 +57,13 @@ HRESULT CMainApp::Render()
 void CMainApp::Set_Levels()
 {
 	m_pGameInstance->Get_LevelMgr()->Register_Level("Loading_Level", []()->CLevel* {return CLoadingLevel::Create(); });
-	m_pGameInstance->Get_LevelMgr()->Set_LoadingLevel("Loading_Level");
+	m_pGameInstance->Get_LevelMgr()->Register_Level("Logo_Level", []()->CLevel* {return CLogoLevel::Create(); });
+	m_pGameInstance->Get_LevelMgr()->Register_Level("Global_Level", []()->CLevel* {return nullptr; }); /*글로벌 용 레벨 설정*/
+
 	/*이후로 계속*/
+
+	m_pGameInstance->Get_LevelMgr()->Set_LoadingLevel("Loading_Level"); //로딩 레벨을 설정함
+	m_pGameInstance->Notify_LevelSet(); //레벨 세팅 끝났음을 알림 (게임 인스턴스에게)
 }
 
 CMainApp* CMainApp::Create()
@@ -78,6 +81,7 @@ CMainApp* CMainApp::Create()
 void CMainApp::Free()
 {
 	__super::Free();
+	m_pGameInstance->Release_Engine();
 	m_pGameInstance->DestroyInstance();
 }
 

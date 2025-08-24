@@ -1,9 +1,12 @@
 #pragma once
 #include "Base.h"
-NS_BEGIN(Client)
 
-class CLoader :
-    public CBase
+NS_BEGIN(Engine)
+class CGameInstance;
+NS_END
+
+NS_BEGIN(Client)
+class CLoader final :  public CBase
 {
 private:
     CLoader();
@@ -16,6 +19,12 @@ public:
     _bool isFinished() const {return m_isFinished; }
 
 private:
+    void Load_LogoLevel();
+    void Set_Finished() { m_isFinished = true; };
+
+private:
+    CGameInstance* m_pGameInstance = { nullptr };
+
     _bool						m_isFinished = { false };
     string						m_sNextLevel;
     HANDLE						m_hThread = {};

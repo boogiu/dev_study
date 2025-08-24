@@ -11,7 +11,7 @@ namespace Engine
 
     typedef struct  tagMouseDesc
     {
-        KEY_DESC mouseKey[3] ;
+        KEY_DESC mouseKey[3] ; //0 L 1R 2M
         _float fDeltaX;
         _float fDeltaY;
         _float fWheelDelta;
@@ -21,7 +21,6 @@ namespace Engine
         HWND hWnd;
         WINMODE			eWinMode;
         unsigned int	iWinSizeX, iWinSizeY;
-        unsigned int iLevelCount;
     }ENGINE_DESC;
 
 }

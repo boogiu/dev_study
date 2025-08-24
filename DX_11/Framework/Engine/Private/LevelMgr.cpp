@@ -9,28 +9,29 @@ CLevelMgr::~CLevelMgr()
 {
 }
 
-HRESULT CLevelMgr::Request_ChangeLevel(string key)
+HRESULT CLevelMgr::Request_ChangeLevel(string key,_bool Load)
 {
     if (!m_LevelCreators.count(key))
         return E_FAIL;
 
     m_NextLevelTag = key;
-    m_eState = LEVEL_STATE::REQUEST;
+    if (Load)
+        m_eState = LEVEL_STATE::REQUEST;
+    else
+        m_eState = LEVEL_STATE::LOADED;
 
     return S_OK;
 }
 
 void CLevelMgr::Update(_float dt)
 {
-    if (nullptr == m_pCurrentLevel)
-        return;
-
     switch (m_eState)
     {
     case Engine::LEVEL_STATE::INITIAL:
         break;
     case Engine::LEVEL_STATE::REQUEST:
         if (!m_LoadingLevelKey.empty() && m_LevelCreators.count(m_LoadingLevelKey)) {
+            //로딩 레벨이 있다면.
             Safe_Release(m_pCurrentLevel);
             m_pCurrentLevel = m_LevelCreators[m_LoadingLevelKey]();
             m_eState = LEVEL_STATE::LOADING;
@@ -54,7 +55,7 @@ void CLevelMgr::Update(_float dt)
         break;
     }
 
-    m_pCurrentLevel->Update(dt);
+    m_pCurrentLevel->Update();
 }
 
 HRESULT CLevelMgr::Render()
@@ -70,11 +71,32 @@ void CLevelMgr::Register_Level(string key, LEVEL_CREATOR creator)
    auto iter =  m_LevelCreators.find(key);
 
    if (iter != m_LevelCreators.end()) {
+       MSG_BOX("Level Already Exist : CLevelMgr");
        return;
    }
 
    m_LevelCreators.insert({ key,creator });
 }
+
+#pragma region For_OtherManager
+
+const vector<string> CLevelMgr::Get_LevelList()
+{
+    vector<string> nameList;
+
+    for (auto& pair : m_LevelCreators) {
+        nameList.push_back(pair.first);
+    }
+
+    return nameList;
+}
+
+_bool CLevelMgr::Check_ValidateLevel(const string& LevelTag)
+{
+    return m_LevelCreators.count(LevelTag);
+}
+
+#pragma endregion
 
 #pragma region For_LoadingLevel
 

@@ -1,14 +1,18 @@
 #pragma once
 #include "Level.h"
 
+NS_BEGIN(Engine)
+class CGameInstance;
+NS_END
+
 NS_BEGIN(Client)
 
-class CLoadingLevel :
+class CLogoLevel final :
     public CLevel
 {
 private:
-    CLoadingLevel();
-    virtual ~CLoadingLevel() override;
+    CLogoLevel();
+    virtual ~CLogoLevel() DEFAULT;
 
 public:
     virtual HRESULT Initialize() override;
@@ -16,11 +20,11 @@ public:
     virtual HRESULT Render()override;
 
 private:
-    class CLoader* m_pLoader = { nullptr };
-
+    CGameInstance* m_pGameInstance = { nullptr };
 public:
-    static CLoadingLevel* Create();
+    static CLogoLevel* Create();
     virtual void Free() override;
+
 };
 
 NS_END

@@ -188,19 +188,6 @@ HRESULT CGraphicDevice::Ready_DepthStencilView(_uint iWinCX, _uint iWinCY)
 	return S_OK;
 }
 
-CGraphicDevice* CGraphicDevice::Create(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, ID3D11Device** ppDevice, ID3D11DeviceContext** ppDeviceContextOut)
-{
-	CGraphicDevice* instance = new CGraphicDevice();
-
-	if (FAILED(instance->Initialize(hWnd, isWindowed, iWinSizeX, iWinSizeY, ppDevice, ppDeviceContextOut)))
-	{
-		MSG_BOX("Failed to Created : CGraphic_Device");
-		Safe_Release(instance);
-	}
-
-	return instance;
-}
-
 CGraphicDevice* CGraphicDevice::Create(ENGINE_DESC engine, ID3D11Device** ppDevice, ID3D11DeviceContext** ppDeviceContextOut)
 {
 	CGraphicDevice* instance = new CGraphicDevice();
@@ -210,7 +197,8 @@ CGraphicDevice* CGraphicDevice::Create(ENGINE_DESC engine, ID3D11Device** ppDevi
 		MSG_BOX("Failed to Created : CGraphic_Device");
 		Safe_Release(instance);
 	}
-	return nullptr;
+
+	return instance;
 }
 
 void CGraphicDevice::Free()

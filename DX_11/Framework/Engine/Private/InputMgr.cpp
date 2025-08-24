@@ -157,7 +157,6 @@ CInputMgr* CInputMgr::Create(HWND hwnd)
 
 	if (FAILED(instance->Initialize(hwnd))) {
 		Safe_Release(instance);
-		instance= nullptr;
 	}
 
 	return instance;
@@ -165,4 +164,5 @@ CInputMgr* CInputMgr::Create(HWND hwnd)
 
 void CInputMgr::Free()
 {
+	__super::Free();
 }

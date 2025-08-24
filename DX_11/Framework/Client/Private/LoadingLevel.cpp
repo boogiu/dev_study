@@ -33,6 +33,8 @@ void CLoadingLevel::Update()
 
 HRESULT CLoadingLevel::Render()
 {
+	SetWindowText(g_hWnd, TEXT("로딩레벨입니다."));
+
 	return S_OK;
 }
 
@@ -40,7 +42,7 @@ CLoadingLevel* CLoadingLevel::Create()
 {
 	CLoadingLevel* instance = new CLoadingLevel();
 
-	if (FAILED(instance->Initiailze())) {
+	if (FAILED(instance->Initialize())) {
 		Safe_Release(instance);
 		instance = nullptr;
 	}

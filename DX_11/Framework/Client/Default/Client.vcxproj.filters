@@ -19,6 +19,15 @@
     <Filter Include="01. Levels\Loading\Loader">
       <UniqueIdentifier>{36658160-8782-4246-b69a-2749e756da4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Levels\Logo">
+      <UniqueIdentifier>{7f67d290-47ad-4648-bada-50e58a05b461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects">
+      <UniqueIdentifier>{82f19664-ac45-4ed0-b50c-c55fd98ac222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\BackGround">
+      <UniqueIdentifier>{78a54625-b9cd-4f3c-96cb-5744032ae8b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -45,6 +54,12 @@
     <ClInclude Include="..\Public\Loader.h">
       <Filter>01. Levels\Loading\Loader</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\LogoLevel.h">
+      <Filter>01. Levels\Logo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BackGround.h">
+      <Filter>02. GameObjects\BackGround</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -66,6 +81,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Loader.cpp">
       <Filter>01. Levels\Loading\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LogoLevel.cpp">
+      <Filter>01. Levels\Logo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BackGround.cpp">
+      <Filter>02. GameObjects\BackGround</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

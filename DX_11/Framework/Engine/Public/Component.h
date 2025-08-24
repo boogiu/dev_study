@@ -12,13 +12,16 @@ protected:
 
     virtual ~CComponent() override DEFAULT;
 public:
-    virtual void Priority_Update(_float dt) PURE;
-    virtual void Update(_float dt) PURE;
-    virtual void Late_Update(_float dt) PURE;
+    virtual HRESULT Initialize_Prototype() PURE;
+    virtual HRESULT Initialize(COMPONENT_DESC* pArg = nullptr)PURE;
 public:
     void Set_Owner(class CGameObject* owner) { m_pOwner = owner; }
 protected:
     class CGameObject* m_pOwner;
+
+public:
+    virtual CComponent* Clone() PURE;
+    virtual void Free();
 };
 
 NS_END

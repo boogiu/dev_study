@@ -11,12 +11,18 @@ private:
     virtual ~CLevelMgr();
 
 public: 
-    HRESULT Request_ChangeLevel(string key);
+    HRESULT Request_ChangeLevel(string key,_bool Load = true);
     void Update(_float dt);
     HRESULT Render();
 
 public :
     void Register_Level(string key, LEVEL_CREATOR creator); //레벨들의 생성을 매니저에게
+
+#pragma region For_OtherManager
+    _uint Get_LevelCount() { return m_LevelCreators.size(); }
+    const vector<string> Get_LevelList(); //레벨 키 모음
+    _bool Check_ValidateLevel(const string& LevelTag);
+#pragma endregion
 
 #pragma region For_LoadingLevel
     void Set_LoadingLevel(const string& LoadingKey); //로딩 역할을 하는 레벨이 있는지.

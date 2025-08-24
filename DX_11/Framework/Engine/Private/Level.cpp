@@ -4,12 +4,12 @@ CLevel::CLevel()
 {
 }
 
-HRESULT CLevel::Initiailze()
+HRESULT CLevel::Initialize()
 {
     return S_OK;
 }
 
-void CLevel::Update(_float dt)
+void CLevel::Update()
 {
 }
 

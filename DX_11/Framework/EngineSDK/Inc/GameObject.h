@@ -1,11 +1,21 @@
 #pragma once
 #include "Base.h"
+#include "Transform.h"
+#include "Builder.h"
 
 NS_BEGIN(Engine)
 
 class ENGINE_DLL CGameObject abstract:
     public CBase
 {
+public:
+    typedef struct tagGameObjectDesc : public INIT_DESC {
+        string InstanceName = "";
+        unordered_map<type_index, INIT_DESC*> m_CompDesc;
+
+        virtual ~tagGameObjectDesc() DEFAULT;
+    }GAMEOBJECT_DESC;
+
 protected:
    CGameObject();
    CGameObject(const CGameObject& rhs);
@@ -18,12 +28,20 @@ public:
     T* Get_Component();
 
 public:
+    virtual HRESULT Initialize_Prototype();
+    virtual HRESULT Initialize(INIT_DESC* pArg = nullptr);
     virtual void Priority_Update(_float dt) PURE;
     virtual void Update(_float dt) PURE;
     virtual void Late_Update(_float dt) PURE;
 
-private:
+protected:
+    string m_InstanceName;
+    CTransform* m_pTransform = { nullptr };
     unordered_map<type_index,class CComponent*> m_Components;
+
+public:
+    virtual CGameObject* Clone(INIT_DESC* pArg = nullptr)PURE;
+    virtual void Free() ;
 };
 
 NS_END
@@ -39,7 +57,7 @@ inline T* CGameObject::Add_Component(Args && ...args)
     comp->Set_Owner(this);
 
     if (comp)
-        m_Components.insert({ type_index(typeid(T), comp) });
+        m_Components.insert({ type_index(typeid(T)), comp });
 
     return comp;
 }
