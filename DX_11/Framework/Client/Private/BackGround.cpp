@@ -25,6 +25,8 @@ HRESULT CBackGround::Initialize_Prototype()
 
 HRESULT CBackGround::Initialize(INIT_DESC* pArg)
 {
+    //여기서 컴포넌트등 여러 초기화 설정 진행 ...//
+
     __super::Initialize(pArg);
     return S_OK;
 }

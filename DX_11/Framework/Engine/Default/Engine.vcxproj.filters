@@ -94,6 +94,9 @@
     <Filter Include="01. Utility\04. Components\Collider">
       <UniqueIdentifier>{a2469abf-4361-4fc8-b4a0-c34e78243a99}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Components\Camera">
+      <UniqueIdentifier>{d1079171-237b-4a64-9903-9ae57ea95eb5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -167,6 +170,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Builder.cpp">
       <Filter>01. Utility\03. GameObject\Object_Manager\BuildSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Engine_Struct.cpp">
+      <Filter>99. Defines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera.cpp">
+      <Filter>01. Utility\04. Components\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -264,7 +273,10 @@
       <Filter>01. Utility\03. GameObject\Object_Manager\BuildSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Build_Struct.h">
-      <Filter>99. Defines</Filter>
+      <Filter>01. Utility\03. GameObject\Object_Manager\BuildSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera.h">
+      <Filter>01. Utility\04. Components\Camera</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

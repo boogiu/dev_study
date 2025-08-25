@@ -29,6 +29,7 @@ HRESULT CGameObject::Initialize(INIT_DESC* pArg)
 {
 	if (pArg == nullptr)
 		return S_OK;
+
 	GAMEOBJECT_DESC* obj = static_cast<GAMEOBJECT_DESC*>(pArg);
 
 	for (auto& pair : obj->CompDesc) {

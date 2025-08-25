@@ -28,8 +28,19 @@ namespace Engine
 	typedef		XMFLOAT2					_float2;
 	typedef		XMFLOAT3					_float3;
 	typedef		XMFLOAT4					_float4;
+	typedef		XMFLOAT4X4			_float4x4;
 
-	typedef		XMFLOAT4X4					_float4x4;
+	/* SIMD 연산을 위한 데이터 선언 */
+	/* SIMD : 병렬적 연산, 안전한 메모리! 스택에 하는 것을 권장함 */
+	typedef		XMVECTOR				_vector;
+	typedef		FXMVECTOR				_fvector;
+	typedef		CXMVECTOR				_cvector;
+	typedef		GXMVECTOR				_gvector;
+	typedef		HXMVECTOR				_hvector;
+
+	typedef		XMMATRIX					_matrix;
+	typedef		FXMMATRIX				_fmatrix;
+	typedef		CXMMATRIX				_cmatrix;
 
 	using LEVEL_CREATOR = function<class CLevel* ()>;
 }

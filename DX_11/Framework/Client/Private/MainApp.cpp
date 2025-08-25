@@ -54,7 +54,7 @@ HRESULT CMainApp::Render()
 	return S_OK;
 }
 
-void CMainApp::Set_Levels()
+void CMainApp::Set_Levels() //레벨 등록 함수 ->등록 끝내면
 {
 	m_pGameInstance->Get_LevelMgr()->Register_Level("Loading_Level", []()->CLevel* {return CLoadingLevel::Create(); });
 	m_pGameInstance->Get_LevelMgr()->Register_Level("Logo_Level", []()->CLevel* {return CLogoLevel::Create(); });
@@ -64,7 +64,8 @@ void CMainApp::Set_Levels()
 
 	m_pGameInstance->Get_LevelMgr()->Set_LoadingLevel("Loading_Level"); //로딩 레벨을 설정함
 	m_pGameInstance->Notify_LevelSet(); //레벨 세팅 끝났음을 알림 (게임 인스턴스에게)
-}
+} //게임 진행되기 전에 레벨 모두 등록시켜두고. 로딩 레벨 있으면 설정해두고. 그다음에 레벨 설정 끝났다고 인스탄스한테 알려주면
+//얘가 레벨과 관련된 시스템 설정을 함께 돌리는거지.  난 로딩도 이렇게 해./ 노티파이는 클라이언트 단에서. 싱크 투는 엔진 단에서.
 
 CMainApp* CMainApp::Create()
 {

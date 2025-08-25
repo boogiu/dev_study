@@ -17,7 +17,6 @@ public:
 	virtual void Clear(const string& LevelTag)PURE;
 	virtual HRESULT Sync_To_Level()PURE;
 
-
 };
 
 NS_END

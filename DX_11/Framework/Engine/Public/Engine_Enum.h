@@ -12,5 +12,7 @@ namespace Engine
 
     enum class LEVEL_STATE{ INITIAL, REQUEST, LOADING, LOADED, STABLE };
 
+    enum class STATE { RIGHT, UP, LOOK, POSITION, END };
+
 }
 #endif // Engine_Enum_h__

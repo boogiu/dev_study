@@ -11,12 +11,12 @@ private:
     virtual ~CLevelMgr();
 
 public: 
-    HRESULT Request_ChangeLevel(string key,_bool Load = true);
+    HRESULT Request_ChangeLevel(string key,_bool Load = true);/*레벨 체인지 요청*/
     void Update(_float dt);
     HRESULT Render();
 
 public :
-    void Register_Level(string key, LEVEL_CREATOR creator); //레벨들의 생성을 매니저에게
+    void Register_Level(string key, LEVEL_CREATOR creator); /*레벨 생성자 등록*/
 
 #pragma region For_OtherManager
     _uint Get_LevelCount() { return m_LevelCreators.size(); }

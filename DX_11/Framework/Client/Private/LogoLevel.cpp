@@ -12,12 +12,19 @@ CLogoLevel::CLogoLevel()
 
 HRESULT CLogoLevel::Initialize()
 {
-	IObjectService* pObjMgr= m_pGameInstance->Get_ObjectMgr();
+	
+		IObjectService* pObjMgr= m_pGameInstance->Get_ObjectMgr();
+		CGameObject* obk = pObjMgr->Create_Object({ "Logo_Level","Proto_GameObject_Background" }) //어디서 꺼내냐
+		.Add_Layer({ "Logo_Level", "Layer_BackGround" }) //어디로 넣냐
+		.With_Transform() //뭘 채우냐
+		.Set_Position({0.f,0.f,0.f})
+		.Set_Rotate({10.f, 10.f,10.f})
+		.Build("Instance"); //객체명은 뭐로 할거냐.
 
-	pObjMgr->Create_Object({ "Logo_Level","Proto_GameObject_Background" })
-		.Add_Layer({ "Logo_Level", "Layer_BackGround" })
-		.With_Transform({ 10.f,10.f })
-		.Build("Instance");
+	CTransform* m_pTransform = obk->Get_Component<CTransform>();
+	m_pTransform->Translate(m_pTransform->Dir(STATE::UP)*10);
+
+	m_pTransform->Get_WorldMatrix();
 
 	return S_OK;
 }

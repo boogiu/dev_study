@@ -28,6 +28,9 @@
     <Filter Include="02. GameObjects\BackGround">
       <UniqueIdentifier>{78a54625-b9cd-4f3c-96cb-5744032ae8b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Levels\GamePlay">
+      <UniqueIdentifier>{4490dd11-7e81-4ce4-97e6-8eadd5785ae9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -60,6 +63,9 @@
     <ClInclude Include="..\Public\BackGround.h">
       <Filter>02. GameObjects\BackGround</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\GamePlayLevel.h">
+      <Filter>01. Levels\GamePlay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -87,6 +93,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BackGround.cpp">
       <Filter>02. GameObjects\BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GamePlayLevel.cpp">
+      <Filter>01. Levels\GamePlay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

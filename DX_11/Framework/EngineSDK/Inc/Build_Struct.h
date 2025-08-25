@@ -1,5 +1,5 @@
 #pragma once
-
+namespace Engine{
 typedef struct tagInitDesc {
 	virtual ~tagInitDesc() DEFAULT;
 }INIT_DESC;
@@ -28,12 +28,25 @@ typedef struct tagComponentDesc : public INIT_DESC {
 }COMPONENT_DESC;
 
 typedef struct TransformInitDesc : COMPONENT_DESC {
-	float SpeedPerSec = { };
-	float  RotatePerSec = {};
+	_float3 vInitialPosition = {};
+	_float3 vInitialEulerVector = {};
+	_float3 vInitialScale = {1.f,1.f, 1.f};
 
 	TransformInitDesc() DEFAULT;
-	TransformInitDesc(float _speedPesSec, float _roatatePerSec) :SpeedPerSec(_speedPesSec), RotatePerSec(_roatatePerSec) {};
 	virtual ~TransformInitDesc() DEFAULT;
 }TRANSFORM_DESC;
 
+typedef struct CameraInitDesc : COMPONENT_DESC {
+	
+	_float3 vEye;
 
+	CameraInitDesc() DEFAULT;
+	virtual ~CameraInitDesc() DEFAULT;
+}CAMERA_DESC;
+
+typedef struct ColliderInitDesc : COMPONENT_DESC {
+
+	ColliderInitDesc() DEFAULT;
+	virtual ~ColliderInitDesc() DEFAULT;
+}COLLIDER_DESC;
+}

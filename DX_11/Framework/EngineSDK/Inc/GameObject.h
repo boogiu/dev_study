@@ -11,7 +11,7 @@ class ENGINE_DLL CGameObject abstract:
 public:
     typedef struct tagGameObjectDesc : public INIT_DESC {
         string InstanceName = "";
-        unordered_map<type_index, INIT_DESC*> m_CompDesc;
+        unordered_map<type_index, COMPONENT_DESC*> CompDesc;
 
         virtual ~tagGameObjectDesc() DEFAULT;
     }GAMEOBJECT_DESC;
