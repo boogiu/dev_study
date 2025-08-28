@@ -16,7 +16,7 @@ public:
 	void Late_Update(_float dt);
 
 private:
-	list<class CGameObject*>			m_GameObjects;
+	vector<class CGameObject*>			m_GameObjects;
 
 public:
 	static CLayer* Create();

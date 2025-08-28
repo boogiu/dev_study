@@ -6,11 +6,23 @@ set BASE=%~dp0
 REM 생성될 때까지 기다리는 함수
 call :WaitForFile "%BASE%Engine\Bin\Engine.dll" 10
 call :WaitForFile "%BASE%Engine\Bin\Engine.lib" 10
+call :WaitForFile "%BASE%Engine\Bin\fmodL.dll" 10
+call :WaitForFile "%BASE%Engine\Bin\fmod.dll" 10
 
-REM 실제 복사
-xcopy /y "%BASE%Engine\Public\*.*"         "%BASE%EngineSDK\Inc\"
-xcopy /y "%BASE%Engine\Bin\Engine.dll"     "%BASE%Client\Bin\" 
-xcopy /y "%BASE%Engine\Bin\Engine.lib"     "%BASE%EngineSDK\Lib\"
+REM FMOD 라이브러리 함수
+call :WaitForFile "%BASE%Engine\ThirdPartyLib\fmod_vc.lib" 1
+call :WaitForFile "%BASE%Engine\ThirdPartyLib\fmodL_vc.lib" 1
+
+REM 실제 복사 
+xcopy /y "%BASE%Engine\Bin\Engine.dll"      "%BASE%Client\Bin\"
+xcopy /y "%BASE%Engine\Bin\fmodL.dll"      "%BASE%Client\Bin\"
+xcopy /y "%BASE%Engine\Bin\fmod.dll"      "%BASE%Client\Bin\"
+
+xcopy /y /s /e /i "%BASE%Engine\Public\"      "%BASE%EngineSDK\Inc\"
+xcopy /y "%BASE%Engine\Bin\Engine.lib"      "%BASE%EngineSDK\Lib\"
+xcopy /y "%BASE%Engine\ThirdPartyLib\fmod_vc.lib"       "%BASE%EngineSDK\Lib\"
+xcopy /y "%BASE%Engine\ThirdPartyLib\fmodL_vc.lib"      "%BASE%EngineSDK\Lib\"
+
 
 goto :eof
 

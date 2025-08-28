@@ -2,6 +2,8 @@
 #include "Base.h"
 
 NS_BEGIN(Engine)
+struct Engine_Implemet;
+
 class ENGINE_DLL CGameInstance :
 	public CBase
 {
@@ -25,7 +27,7 @@ public:
 public:
 	ID3D11Device* Get_Device() { return m_pDevice; };
 	ID3D11DeviceContext* Get_Context() { return m_pDeviceContext; };
-
+	
 #pragma region Game_Managers
 public:
 	class IGraphicService* Get_GraphicDev() { return m_pGraphicDevice; }
@@ -35,7 +37,8 @@ public:
 	class ILevelService* Get_LevelMgr() { return m_pLevelManager; }
 	class IProtoService* Get_PrototypeMgr() { return m_pPrototypeManager; }
 	class IObjectService* Get_ObjectMgr() { return m_pObjectManager; }
-
+	class IResourceService* Get_ResourceMgr() { return m_pResourceManager; }
+	class IGUIService* Get_GUISystem() { return m_pGuiSystem; }
 private:
 	class IGraphicService* m_pGraphicDevice = { nullptr };
 	class ITimeService* m_pTimeManager = { nullptr };
@@ -44,6 +47,8 @@ private:
 	class ILevelService* m_pLevelManager = { nullptr };
 	class IProtoService* m_pPrototypeManager = { nullptr };
 	class IObjectService* m_pObjectManager = { nullptr };
+	class IResourceService* m_pResourceManager = { nullptr };
+	class IGUIService* m_pGuiSystem = { nullptr };
 #pragma endregion
 
 private:

@@ -4,7 +4,8 @@
 #include "GameInstance.h"
 #include "ILevelService.h"
 
-CLoadingLevel::CLoadingLevel()
+CLoadingLevel::CLoadingLevel(const string& LevelKey)
+	: CLevel{ LevelKey }
 {
 }
 
@@ -38,9 +39,9 @@ HRESULT CLoadingLevel::Render()
 	return S_OK;
 }
 
-CLoadingLevel* CLoadingLevel::Create()
+CLoadingLevel* CLoadingLevel::Create(const string& LevelKey)
 {
-	CLoadingLevel* instance = new CLoadingLevel();
+	CLoadingLevel* instance = new CLoadingLevel(LevelKey);
 
 	if (FAILED(instance->Initialize())) {
 		Safe_Release(instance);

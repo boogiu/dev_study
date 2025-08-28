@@ -8,3 +8,4 @@
 #include "ILevelService.h"
 #include "IProtoService.h"
 #include "IObjectService.h"
+#include "IGUIService.h"

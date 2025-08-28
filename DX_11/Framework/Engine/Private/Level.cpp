@@ -1,21 +1,8 @@
 #include "Level.h"
 
-CLevel::CLevel()
+CLevel::CLevel(const string& LevelKey)
+	:m_LevelKey{ LevelKey }
 {
-}
-
-HRESULT CLevel::Initialize()
-{
-    return S_OK;
-}
-
-void CLevel::Update()
-{
-}
-
-HRESULT CLevel::Render()
-{
-    return S_OK;
 }
 
 void CLevel::Free()

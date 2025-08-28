@@ -8,7 +8,7 @@ namespace Engine
 	// 기능을 인스턴스화 하기 위하여 만들어두는 틀
 
 	template<typename T>
-	void	Safe_Delete(T& Pointer)
+	inline void	Safe_Delete(T& Pointer)
 	{
 		if (nullptr != Pointer)
 		{
@@ -18,7 +18,7 @@ namespace Engine
 	}
 
 	template<typename T>
-	void	Safe_Delete_Array(T& Pointer)
+	inline void	Safe_Delete_Array(T& Pointer)
 	{
 		if (nullptr != Pointer)
 		{
@@ -28,7 +28,7 @@ namespace Engine
 	}
 
 	template<typename T>
-	unsigned int Safe_AddRef(T& pInstance)
+	inline unsigned int Safe_AddRef(T& pInstance)
 	{
 		unsigned int		iRefCnt = 0;
 
@@ -39,13 +39,29 @@ namespace Engine
 	}
 
 	template<typename T>
-	unsigned int Safe_Release(T& pInstance)
+	inline  unsigned int Safe_Release(T& pInstance)
 	{
 		unsigned int		iRefCnt = 0;
 
 		if (nullptr != pInstance)
 		{
 			iRefCnt = pInstance->Release();
+
+			if (0 == iRefCnt)
+				pInstance = nullptr;
+		}
+
+		return iRefCnt;
+	}
+
+	template<>
+	inline  unsigned int Safe_Release(FMOD::Sound*& pInstance)
+	{
+		unsigned int		iRefCnt = 0;
+
+		if (nullptr != pInstance)
+		{
+			iRefCnt = pInstance->release();
 
 			if (0 == iRefCnt)
 				pInstance = nullptr;

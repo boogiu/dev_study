@@ -5,7 +5,11 @@
       <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\Engine.dll</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_TexPos.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>

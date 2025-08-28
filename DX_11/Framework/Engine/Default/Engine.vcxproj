@@ -107,21 +107,29 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;SOLUTION_DIR=R"($(SolutionDir))"
+
+;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../Public/;../../ThirdParty/FMOD/include/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>fmodL_vc.lib;d3d11.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../ThirdParty/FMOD/lib/x64/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>fmodL_vc.lib;d3d11.lib;dxguid.lib;Effects11d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../ThirdPartyLib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>call "$(SolutionDir)UpdateLib.bat"</Command>
     </PostBuildEvent>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -129,9 +137,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;SOLUTION_DIR=R"($(SolutionDir))"
+
+;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../Public/;../../ThirdParty/FMOD/include/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -140,12 +150,18 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>../../ThirdParty/FMOD/lib/x64/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>fmod_vc.lib;d3d11.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../ThirdPartyLib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>fmod_vc.lib;d3d11.lib;dxguid.lib;Effects11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>call "$(SolutionDir)UpdateLib.bat"</Command>
     </PostBuildEvent>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h" />
@@ -154,24 +170,36 @@
     <ClInclude Include="..\Public\Camera.h" />
     <ClInclude Include="..\Public\Component.h" />
     <ClInclude Include="..\Public\Engine_Service.h" />
+    <ClInclude Include="..\Public\Helper_Func.h" />
     <ClInclude Include="..\Public\GameInstance.h" />
     <ClInclude Include="..\Public\GameObject.h" />
     <ClInclude Include="..\Public\GraphicDevice.h" />
+    <ClInclude Include="..\Public\GUISystem.h" />
+    <ClInclude Include="..\Public\GUIWidget.h" />
+    <ClInclude Include="..\Public\GUI_Inc\backends\imgui_impl_dx11.h" />
+    <ClInclude Include="..\Public\GUI_Inc\backends\imgui_impl_win32.h" />
+    <ClInclude Include="..\Public\GUI_Inc\imgui.h" />
     <ClInclude Include="..\Public\IGraphicService.h" />
+    <ClInclude Include="..\Public\IGUIService.h" />
     <ClInclude Include="..\Public\IInputService.h" />
     <ClInclude Include="..\Public\ILevelService.h" />
     <ClInclude Include="..\Public\InputMgr.h" />
     <ClInclude Include="..\Public\IObjectService.h" />
     <ClInclude Include="..\Public\IProtoService.h" />
+    <ClInclude Include="..\Public\IResourceService.h" />
     <ClInclude Include="..\Public\IService.h" />
     <ClInclude Include="..\Public\ISoundService.h" />
     <ClInclude Include="..\Public\ITimeService.h" />
     <ClInclude Include="..\Public\Layer.h" />
     <ClInclude Include="..\Public\Level.h" />
     <ClInclude Include="..\Public\LevelMgr.h" />
+    <ClInclude Include="..\Public\NFD_Inc\nfd.h" />
     <ClInclude Include="..\Public\ObjectMgr.h" />
     <ClInclude Include="..\Public\PrototypeMgr.h" />
-    <ClInclude Include="..\Public\SoundMgr.h" />
+    <ClInclude Include="..\Public\ResourceMgr.h" />
+    <ClInclude Include="..\Public\ResourcePool.h" />
+    <ClInclude Include="..\Public\Shader.h" />
+    <ClInclude Include="..\Public\SoundDevice.h" />
     <ClInclude Include="..\Public\TimeMgr.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
     <ClInclude Include="..\Public\Engine_Enum.h" />
@@ -181,6 +209,8 @@
     <ClInclude Include="..\Public\Engine_Typedef.h" />
     <ClInclude Include="..\Public\Timer.h" />
     <ClInclude Include="..\Public\Transform.h" />
+    <ClInclude Include="..\Public\VIBuffer.h" />
+    <ClInclude Include="..\Public\VI_Rect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp" />
@@ -188,27 +218,37 @@
     <ClCompile Include="..\Private\Camera.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
     <ClCompile Include="..\Private\Engine_Struct.cpp" />
-    <ClCompile Include="..\Private\IObjectService.cpp" />
+    <ClCompile Include="..\Private\Helper_Func.cpp" />
+    <ClCompile Include="..\Private\GUISystem.cpp" />
+    <ClCompile Include="..\Private\GUIWidget.cpp" />
     <ClCompile Include="..\Private\Layer.cpp" />
     <ClCompile Include="..\Private\ObjectMgr.cpp" />
     <ClCompile Include="..\Private\PrototypeMgr.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />
     <ClCompile Include="..\Private\GraphicDevice.cpp" />
-    <ClCompile Include="..\Private\IGraphicService.cpp" />
-    <ClCompile Include="..\Private\ILevelService.cpp" />
-    <ClCompile Include="..\Private\IProtoService.cpp" />
     <ClCompile Include="..\Private\Level.cpp" />
     <ClCompile Include="..\Private\LevelMgr.cpp" />
-    <ClCompile Include="..\Private\SoundMgr.cpp" />
-    <ClCompile Include="..\Private\ISoundService.cpp" />
+    <ClCompile Include="..\Private\ResourceMgr.cpp" />
+    <ClCompile Include="..\Private\Shader.cpp" />
+    <ClCompile Include="..\Private\SoundDevice.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
-    <ClCompile Include="..\Private\IInputService.cpp" />
     <ClCompile Include="..\Private\InputMgr.cpp" />
-    <ClCompile Include="..\Private\IService.cpp" />
-    <ClCompile Include="..\Private\ITimeService.cpp" />
     <ClCompile Include="..\Private\TimeMgr.cpp" />
     <ClCompile Include="..\Private\Timer.cpp" />
     <ClCompile Include="..\Private\Transform.cpp" />
+    <ClCompile Include="..\Private\VIBuffer.cpp" />
+    <ClCompile Include="..\Private\VI_Rect.cpp" />
+    <ClCompile Include="..\Public\GUI_Inc\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\Public\GUI_Inc\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\Public\GUI_Inc\imgui.cpp" />
+    <ClCompile Include="..\Public\GUI_Inc\imgui_draw.cpp" />
+    <ClCompile Include="..\Public\GUI_Inc\imgui_tables.cpp" />
+    <ClCompile Include="..\Public\GUI_Inc\imgui_widgets.cpp" />
+    <ClCompile Include="..\Public\NFD_Inc\nfd_common.c" />
+    <ClCompile Include="..\Public\NFD_Inc\nfd_win.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Public\Engine_Shader\VTX_TexPos.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -43,6 +43,7 @@ namespace Engine
 	typedef		CXMMATRIX				_cmatrix;
 
 	using LEVEL_CREATOR = function<class CLevel* ()>;
+	static constexpr std::string_view G_GlobalLevelKey = "Global_Level";
 }
 
 #endif // Engine_Typedef_h__

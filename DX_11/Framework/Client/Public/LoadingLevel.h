@@ -7,7 +7,7 @@ class CLoadingLevel :
     public CLevel
 {
 private:
-    CLoadingLevel();
+    CLoadingLevel(const string& LevelKey);
     virtual ~CLoadingLevel() override;
 
 public:
@@ -19,7 +19,7 @@ private:
     class CLoader* m_pLoader = { nullptr };
 
 public:
-    static CLoadingLevel* Create();
+    static CLoadingLevel* Create(const string& LevelKey);
     virtual void Free() override;
 };
 

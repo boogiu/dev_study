@@ -23,8 +23,6 @@ private:
     void Set_Finished() { m_isFinished = true; };
 
 private:
-    CGameInstance* m_pGameInstance = { nullptr };
-
     _bool						m_isFinished = { false };
     string						m_sNextLevel;
     HANDLE						m_hThread = {};

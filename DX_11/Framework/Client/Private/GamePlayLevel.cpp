@@ -2,8 +2,9 @@
 #include "GamePlayLevel.h"
 #include "GameInstance.h"
 #include "ILevelService.h"
-CGamePlayLevel::CGamePlayLevel()
-    :m_pGameInstance(CGameInstance::GetInstance())
+CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
+    :CLevel{ LevelKey },
+    m_pGameInstance(CGameInstance::GetInstance())
 {
     Safe_AddRef(m_pGameInstance);
 }
@@ -23,9 +24,9 @@ HRESULT CGamePlayLevel::Render()
     return S_OK;
 }
 
-CGamePlayLevel* CGamePlayLevel::Create()
+CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)
 {
-    CGamePlayLevel* instance = new CGamePlayLevel();
+    CGamePlayLevel* instance = new CGamePlayLevel(LevelKey);
     if (FAILED(instance->Initialize())) {
         MSG_BOX("GamePlay level Create Failed");
         Safe_Release(instance);

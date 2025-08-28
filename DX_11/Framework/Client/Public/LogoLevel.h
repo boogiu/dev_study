@@ -11,7 +11,7 @@ class CLogoLevel final :
     public CLevel
 {
 private:
-    CLogoLevel();
+    CLogoLevel(const string& LevelKey);
     virtual ~CLogoLevel() DEFAULT;
 
 public:
@@ -19,12 +19,16 @@ public:
     virtual void Update() override;
     virtual HRESULT Render()override;
 
+public:
+    static void PreLoad_Level();
+
 private:
     CGameInstance* m_pGameInstance = { nullptr };
 public:
-    static CLogoLevel* Create();
+    static CLogoLevel* Create(const string& LevelKey);
     virtual void Free() override;
 
+ 
 };
 
 NS_END

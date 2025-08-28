@@ -1,0 +1,203 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.42.34436.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/private/component.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "beed035a240a9c4aa7f4b063c5df2997a85a38d6dc5dff18352acc27baa8582d"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/component.h"
+          },
+          "hashes": {
+            "sha-256": "8025acb2b8852efb010ae28b843d0aa3de6c26e6f44250b6aa74d411f3db7615"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/base.h"
+          },
+          "hashes": {
+            "sha-256": "98a296ec84b2c7638a53750bffa57b67fd2a5dbcff29cc4aca3311f38a5a7c67"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/engine_defines.h"
+          },
+          "hashes": {
+            "sha-256": "995a6faf3852dacd72d00f5a3616a1793bd23ea4a7fabd9e167c5aec7caebdb7"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/fmod_inc/fmod.hpp"
+          },
+          "hashes": {
+            "sha-256": "233a217af1ec75c1006809348967e5361e9c6e12cf5c5ddb7f5d2ae43946d909"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/fmod_inc/fmod_common.h"
+          },
+          "hashes": {
+            "sha-256": "1359fce666d300ed575fdb5717bfe13831effaa436bc1c6854bc76d6220703fc"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/fmod_inc/fmod_codec.h"
+          },
+          "hashes": {
+            "sha-256": "a169740cd35c476c7426d80c624e73e57f0a1b68c1882bebc4a2e6027031195c"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/fmod_inc/fmod_dsp.h"
+          },
+          "hashes": {
+            "sha-256": "efc57c7481060649584fc9b5c539e3f6c7a395d05fdeb47abb420bf4702a34d6"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/fmod_inc/fmod_dsp_effects.h"
+          },
+          "hashes": {
+            "sha-256": "c228c2188e28af39e1674ef80941a6f00cdf4d0a13c398196ad67321ffd223bf"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/fmod_inc/fmod_output.h"
+          },
+          "hashes": {
+            "sha-256": "89bab2579daccee16089d60c6d6cff5aa078766cc5789369cde4f0fc999b5d38"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/fmod_inc/fmod.h"
+          },
+          "hashes": {
+            "sha-256": "8620e5a04cffebd87ed1c0f53db5b08c0e782197a0abcb6fb700194be2c55909"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/gui_inc/imgui.h"
+          },
+          "hashes": {
+            "sha-256": "d8daf621dca52e598c4e054601f1f1cb599bc778532e2ed261b1003972389cbe"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/gui_inc/imconfig.h"
+          },
+          "hashes": {
+            "sha-256": "3199868d7f47b42752da5685d8fd3be59bea0814e9f3505cd26a9c20c3aff0a0"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/gui_inc/backends/imgui_impl_win32.h"
+          },
+          "hashes": {
+            "sha-256": "519e878d59b5a5d3fdc9b22290889ec951b31e8ef5ab4cadf9c7266848b08092"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/gui_inc/backends/imgui_impl_dx11.h"
+          },
+          "hashes": {
+            "sha-256": "7f1fc680a48f2d8a7c9d3205d69b89be05e511111c7c2c61845b0f76f4c1b50e"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/nfd_inc/nfd.h"
+          },
+          "hashes": {
+            "sha-256": "cf564bd0a00cd50195063196ead01ecb7bfa05fcbb93f642be2be68a0f917041"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/engine_enum.h"
+          },
+          "hashes": {
+            "sha-256": "4995463deb2f1d302cacc3e5955d9ad8c9fe2f9adb2c3a434634e1b49e3c49f0"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/engine_macro.h"
+          },
+          "hashes": {
+            "sha-256": "d6e1abb17a2fb87a2c79a2df99de5d79883d2a5f64a6f2be9b894ed30fe3ca22"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/engine_typedef.h"
+          },
+          "hashes": {
+            "sha-256": "5e8f5e6c2c1bee3e8bec61acbd84af3850c4cc1465c9293fa320bf10fe70ec42"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/engine_function.h"
+          },
+          "hashes": {
+            "sha-256": "2a36d6efcad90b47aa1b22d7ee24319f6171371b0ce7eb640e633f24065475c1"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/engine_struct.h"
+          },
+          "hashes": {
+            "sha-256": "964816842fcb1fbee4c4f4dcbb19e4933c59e4e1db287768378e5f2f42f318d5"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/devstudy/dx_11/framework/engine/public/build_struct.h"
+          },
+          "hashes": {
+            "sha-256": "695ff09a1bc79b1144959300482844a74cf2d197512ff3fe9358877886700328"
+          }
+        }
+      ]
+    }
+  ]
+}

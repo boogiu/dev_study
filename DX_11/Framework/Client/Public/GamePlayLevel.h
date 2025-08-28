@@ -10,7 +10,7 @@ class CGamePlayLevel :
     public CLevel
 {
     private:
-        CGamePlayLevel();
+        CGamePlayLevel(const string& LevelKey);
         virtual ~CGamePlayLevel() DEFAULT;
 
     public:
@@ -21,7 +21,7 @@ class CGamePlayLevel :
     private:
         CGameInstance* m_pGameInstance = { nullptr };
     public:
-        static CGamePlayLevel* Create();
+        static CGamePlayLevel* Create(const string& LevelKey);
         virtual void Free() override;
 
 };

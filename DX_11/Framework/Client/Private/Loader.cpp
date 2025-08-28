@@ -1,13 +1,9 @@
 #include "Client_Defines.h"
 #include "Loader.h"
-#include "GameInstance.h"
-#include "IProtoService.h"
-#include "BackGround.h"
+#include "LogoLevel.h"
 
 CLoader::CLoader()
-    : m_pGameInstance{ CGameInstance::GetInstance() }
 {
-    Safe_AddRef(m_pGameInstance);
 }
 
 CLoader::~CLoader()
@@ -41,7 +37,7 @@ HRESULT CLoader::Loading()
     EnterCriticalSection(&m_CriticalSection);
     /*로딩 로직*/
     if (m_sNextLevel == "Logo_Level")
-        Load_LogoLevel();
+        CLogoLevel::PreLoad_Level();
 
     LeaveCriticalSection(&m_CriticalSection);
 
@@ -50,9 +46,7 @@ HRESULT CLoader::Loading()
 
 void CLoader::Load_LogoLevel()
 {
-    IProtoService* pProtoMgr = m_pGameInstance->Get_PrototypeMgr();
 
-   pProtoMgr->Add_ProtoType("Logo_Level","Proto_GameObject_Background", CBackGround::Create());
 }
 
 CLoader* CLoader::Create(const string& nextLV)
@@ -73,6 +67,4 @@ void CLoader::Free()
     WaitForSingleObject(m_hThread, INFINITE);
     CloseHandle(m_hThread);
     DeleteCriticalSection(&m_CriticalSection);
-    m_pGameInstance->DestroyInstance();
-
 }

@@ -7,7 +7,6 @@
 
 #include "LoadingLevel.h"
 #include "LogoLevel.h"
-
 CMainApp::CMainApp()
 {
 }
@@ -56,9 +55,8 @@ HRESULT CMainApp::Render()
 
 void CMainApp::Set_Levels() //레벨 등록 함수 ->등록 끝내면
 {
-	m_pGameInstance->Get_LevelMgr()->Register_Level("Loading_Level", []()->CLevel* {return CLoadingLevel::Create(); });
-	m_pGameInstance->Get_LevelMgr()->Register_Level("Logo_Level", []()->CLevel* {return CLogoLevel::Create(); });
-	m_pGameInstance->Get_LevelMgr()->Register_Level("Global_Level", []()->CLevel* {return nullptr; }); /*글로벌 용 레벨 설정*/
+	m_pGameInstance->Get_LevelMgr()->Register_Level("Loading_Level", []()->CLevel* {return CLoadingLevel::Create("Loading_Level"); });
+	m_pGameInstance->Get_LevelMgr()->Register_Level("Logo_Level", []()->CLevel* {return CLogoLevel::Create("Logo_Level"); });
 
 	/*이후로 계속*/
 

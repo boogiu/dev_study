@@ -10,6 +10,7 @@ CGameObject::CGameObject(const CGameObject& rhs)
 {
 	for (auto& pair : rhs.m_Components) {
 		CComponent* comp = pair.second->Clone();
+		comp->Set_Owner(this);
 		m_Components.emplace(pair.first, comp);
 	}
 

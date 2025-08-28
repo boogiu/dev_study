@@ -6,7 +6,7 @@ class ENGINE_DLL CLevel abstract:
     public CBase
 {
 protected:
-    CLevel();
+    CLevel(const string& LevelKey);
     virtual ~CLevel() DEFAULT;
 
 public:
@@ -14,6 +14,8 @@ public:
     virtual void Update() PURE;
     virtual HRESULT Render() PURE;
 
+protected:
+    string m_LevelKey = {};
 public:
     virtual void Free() override;
 };

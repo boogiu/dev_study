@@ -1,6 +1,7 @@
 #include "LevelMgr.h"
 #include "Level.h"
 
+
 CLevelMgr::CLevelMgr()
 {
 }
@@ -9,6 +10,13 @@ CLevelMgr::~CLevelMgr()
 {
 }
 
+
+HRESULT CLevelMgr::Initialize()
+{
+    m_LevelCreators.emplace(G_GlobalLevelKey, []()->CLevel* {return nullptr; }); /*글로벌 용 레벨 설정*/
+
+    return S_OK;
+}
 
 HRESULT CLevelMgr::Request_ChangeLevel(string key,_bool Load)
 {
@@ -71,6 +79,11 @@ HRESULT CLevelMgr::Render()
 
 void CLevelMgr::Register_Level(string key, LEVEL_CREATOR creator)
 {
+    if (G_GlobalLevelKey == key ) {
+        MSG_BOX(" [Global_Level] is Reserved Register Another key : CLevelMgr");
+        return;
+    }
+
    auto iter =  m_LevelCreators.find(key);
 
    if (iter != m_LevelCreators.end()) {
@@ -116,7 +129,12 @@ void CLevelMgr::Notify_LoadComplete()
 
 CLevelMgr* CLevelMgr::Create()
 {
-    return new CLevelMgr();
+    CLevelMgr* instance = new CLevelMgr();
+
+    if (FAILED(instance->Initialize()))
+        Safe_Release(instance);
+
+    return instance;
 }
 
 void CLevelMgr::Free()

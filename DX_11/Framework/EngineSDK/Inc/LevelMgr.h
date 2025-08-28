@@ -11,6 +11,7 @@ private:
     virtual ~CLevelMgr();
 
 public: 
+    HRESULT Initialize();
     HRESULT Request_ChangeLevel(string key,_bool Load = true);/*레벨 체인지 요청*/
     void Update(_float dt);
     HRESULT Render();

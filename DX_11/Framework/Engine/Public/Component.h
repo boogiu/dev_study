@@ -17,7 +17,7 @@ public:
 public:
     void Set_Owner(class CGameObject* owner) { m_pOwner = owner; }
 protected:
-    class CGameObject* m_pOwner;
+    class CGameObject* m_pOwner = {nullptr};
 
 public:
     virtual CComponent* Clone() PURE;

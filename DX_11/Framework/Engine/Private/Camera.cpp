@@ -22,8 +22,8 @@ HRESULT CCamera::Initialize(COMPONENT_DESC* pArg)
 		return S_OK;
 
 	CAMERA_DESC* Camera = static_cast<CAMERA_DESC*>(pArg);
-	m_pTransform = m_pOwner->Get_Component<CTransform>();
-	Safe_AddRef(m_pTransform);
+	//m_pTransform = m_pOwner->Get_Component<CTransform>();
+	//Safe_AddRef(m_pTransform);
 
 	return S_OK;
 }
