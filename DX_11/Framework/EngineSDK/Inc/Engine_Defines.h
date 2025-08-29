@@ -16,6 +16,7 @@
 #include <process.h>
 #include <typeindex>
 #include <filesystem>
+#include <sstream>
 #include <DirectXMath.h>
 
 using namespace std; 

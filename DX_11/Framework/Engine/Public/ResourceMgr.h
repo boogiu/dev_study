@@ -11,13 +11,14 @@ private:
     ~CResourceMgr();
 
 public:
-    virtual HRESULT Initiallize();
-    virtual FMOD::Sound* Load_Sound(const string& levelTag, const string& key);
-    virtual class CVIBuffer* Load_VIBuffer(const string& levelTag, const string& key);
+     HRESULT Initiallize();
+    virtual FMOD::Sound* Load_Sound(const string& levelTag, const string& key) override;
+    virtual class CVIBuffer* Load_VIBuffer(const string& levelTag, const string& key, INIT_DESC* pArg) override;
+    virtual class CShader* Load_Shader(const string& levelTag, const string& key) override;
 
-    virtual void Clear_Resource(const string& levelTag);
-    virtual HRESULT Sync_To_Level();
-    virtual void Load_InitialResource();
+    virtual void Clear_Resource(const string& levelTag)override;
+    virtual HRESULT Sync_To_Level()override;
+    virtual void Load_InitialResource()override;
 
 private:
     ID3D11Device* m_pDevice = {nullptr};

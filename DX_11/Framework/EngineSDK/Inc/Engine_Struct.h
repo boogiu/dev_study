@@ -25,12 +25,15 @@ namespace Engine
         _float fWheelDelta;
     }MOUSE_DESC;
 
+    typedef struct tagInitDesc {
+        virtual ~tagInitDesc() DEFAULT;
+    }INIT_DESC;
+
     /* Input LayOut*/
     typedef struct tagVertexPosition {
         XMFLOAT3		vPosition;
         static constexpr unsigned int iElementCount = { 1 };
         static const D3D11_INPUT_ELEMENT_DESC		Elements[iElementCount];
-        unsigned int Get_Count() { return iElementCount; }
     }VTXPOS;
 
     typedef struct tagVertexPostionTexcoord

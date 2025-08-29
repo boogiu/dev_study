@@ -34,14 +34,20 @@ public:
     virtual void Update(_float dt) PURE;
     virtual void Late_Update(_float dt) PURE;
 
+    const string& Get_InstanceName() { return m_InstanceName; }
+    const _uint Get_ObjectID() { return m_ObjectID; }
+
 protected:
-    string m_InstanceName;
+    string m_InstanceName = {};
+    _uint m_ObjectID = {};
     CTransform* m_pTransform = { nullptr };
     unordered_map<type_index,class CComponent*> m_Components;
 
 public:
     virtual CGameObject* Clone(INIT_DESC* pArg = nullptr)PURE;
     virtual void Free() ;
+
+    static _uint s_NextID;
 };
 
 NS_END

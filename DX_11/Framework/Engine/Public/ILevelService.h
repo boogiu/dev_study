@@ -18,7 +18,7 @@ public:
     virtual _uint Get_LevelCount() PURE;
     virtual const vector<string> Get_LevelList() PURE; //레벨 키 모음
     virtual _bool Check_ValidateLevel(const string& LevelTag) PURE;
-
+    virtual const string& Get_NowLevelKey()PURE;
     virtual void Set_LoadingLevel(const string& LoadingKey)PURE;
     virtual const string& Get_NextLevel() PURE;
     virtual void Notify_LoadComplete() PURE;

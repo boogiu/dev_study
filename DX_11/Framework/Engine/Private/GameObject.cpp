@@ -2,11 +2,15 @@
 #include "GameInstance.h"
 #include "Builder.h"
 
+_uint CGameObject::s_NextID = 1;
+
 CGameObject::CGameObject()
+	:m_ObjectID(s_NextID++)
 {
 }
 
 CGameObject::CGameObject(const CGameObject& rhs)
+	:m_ObjectID(s_NextID++)
 {
 	for (auto& pair : rhs.m_Components) {
 		CComponent* comp = pair.second->Clone();
@@ -45,7 +49,6 @@ HRESULT CGameObject::Initialize(INIT_DESC* pArg)
 	m_InstanceName = obj->InstanceName;
 	return S_OK;
 }
-
 
 void CGameObject::Free()
 {

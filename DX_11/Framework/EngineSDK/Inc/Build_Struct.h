@@ -1,9 +1,5 @@
 #pragma once
 namespace Engine {
-	typedef struct tagInitDesc {
-		virtual ~tagInitDesc() DEFAULT;
-	}INIT_DESC;
-
 	/**/
 	typedef struct tagGameObjectCloneDesc : public INIT_DESC {
 		string OriginLevel;

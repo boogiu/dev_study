@@ -165,11 +165,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h" />
+    <ClInclude Include="..\Public\BasePanel.h" />
     <ClInclude Include="..\Public\Builder.h" />
     <ClInclude Include="..\Public\Build_Struct.h" />
     <ClInclude Include="..\Public\Camera.h" />
     <ClInclude Include="..\Public\Component.h" />
     <ClInclude Include="..\Public\Engine_Service.h" />
+    <ClInclude Include="..\Public\GUI_Context.h" />
     <ClInclude Include="..\Public\Helper_Func.h" />
     <ClInclude Include="..\Public\GameInstance.h" />
     <ClInclude Include="..\Public\GameObject.h" />
@@ -179,6 +181,7 @@
     <ClInclude Include="..\Public\GUI_Inc\backends\imgui_impl_dx11.h" />
     <ClInclude Include="..\Public\GUI_Inc\backends\imgui_impl_win32.h" />
     <ClInclude Include="..\Public\GUI_Inc\imgui.h" />
+    <ClInclude Include="..\Public\HierarchyPanel.h" />
     <ClInclude Include="..\Public\IGraphicService.h" />
     <ClInclude Include="..\Public\IGUIService.h" />
     <ClInclude Include="..\Public\IInputService.h" />
@@ -214,6 +217,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp" />
+    <ClCompile Include="..\Private\BasePanel.cpp" />
     <ClCompile Include="..\Private\Builder.cpp" />
     <ClCompile Include="..\Private\Camera.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
@@ -221,6 +225,7 @@
     <ClCompile Include="..\Private\Helper_Func.cpp" />
     <ClCompile Include="..\Private\GUISystem.cpp" />
     <ClCompile Include="..\Private\GUIWidget.cpp" />
+    <ClCompile Include="..\Private\HierarchyPanel.cpp" />
     <ClCompile Include="..\Private\Layer.cpp" />
     <ClCompile Include="..\Private\ObjectMgr.cpp" />
     <ClCompile Include="..\Private\PrototypeMgr.cpp" />

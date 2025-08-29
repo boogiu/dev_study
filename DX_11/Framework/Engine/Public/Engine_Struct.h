@@ -25,6 +25,10 @@ namespace Engine
         _float fWheelDelta;
     }MOUSE_DESC;
 
+    typedef struct tagInitDesc {
+        virtual ~tagInitDesc() DEFAULT;
+    }INIT_DESC;
+
     /* Input LayOut*/
     typedef struct tagVertexPosition {
         XMFLOAT3		vPosition;

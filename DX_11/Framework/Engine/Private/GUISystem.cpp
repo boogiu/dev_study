@@ -2,11 +2,17 @@
 #include "Helper_Func.h"
 #include "GameInstance.h"
 #include "ILevelService.h"
+#include "IObjectService.h"
+#include "IInputService.h"
+#include "BasePanel.h"
+#include "HierarchyPanel.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);                // Use ImGui::GetCurrentContext()
 
 CGUISystem::CGUISystem()
+	:m_pGameInstance(CGameInstance::GetInstance())
 {
+	Safe_AddRef(m_pGameInstance);
 }
 
 
@@ -24,6 +30,48 @@ HRESULT CGUISystem::Initialize(const ENGINE_DESC& engine, ID3D11Device* pDevice,
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     /*키보드 컨트롤*/
 	io.DisplaySize = ImVec2((float)engine.iWinSizeX, (float)engine.iWinSizeY);
 
+	m_tGuiContext.VPSize = { (LONG)engine.iWinSizeX ,(LONG)engine.iWinSizeY };
+	m_tGuiContext.pLevelManager = m_pGameInstance->Get_LevelMgr();
+	m_tGuiContext.pObjectManager = m_pGameInstance->Get_ObjectMgr();
+
+	Set_Theme();
+	Set_Panel();
+
+	if (!ImGui_ImplWin32_Init(engine.hWnd))
+		return E_FAIL;
+	if (!ImGui_ImplDX11_Init(pDevice, pContext))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+void CGUISystem::Update(_float& dt)
+{
+	if (m_pGameInstance->Get_InputDev()->Key_Tap(VK_F9))
+		m_bActiveGUI = !m_bActiveGUI;
+
+	_bool itemActive = ImGui::IsAnyItemActive();
+	_bool hoverWindow = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow); //마우스가 ㅇ올라가면
+
+	if (!itemActive && !hoverWindow)
+		m_bUsingUI = false;
+	else
+		m_bUsingUI = true;
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	float alpha = style.Alpha;
+
+	if (m_bUsingUI)
+		alpha += dt;
+	else
+		alpha -= dt * 0.4f;
+
+	alpha = clamp(alpha, 0.3f, 1.f);
+	style.Alpha = alpha;
+}
+
+void CGUISystem::Set_Theme()
+{
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.WindowMenuButtonPosition = ImGuiDir_Right;
 	style.WindowRounding = 4.0f;
@@ -46,35 +94,26 @@ HRESULT CGUISystem::Initialize(const ENGINE_DESC& engine, ID3D11Device* pDevice,
 
 	style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
 	style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
-
-	if (!ImGui_ImplWin32_Init(engine.hWnd))
-		return E_FAIL;
-	if (!ImGui_ImplDX11_Init(pDevice, pContext))
-		return E_FAIL;
-
-	return S_OK;
 }
 
-void CGUISystem::Update(_float& dt)
+void CGUISystem::Set_Panel()
 {
-	_bool itemActive = ImGui::IsAnyItemActive();
-	_bool hoverWindow = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow); //마우스가 ㅇ올라가면
+	m_Panels.push_back(CHierarchyPanel::Create());
+}
 
-	if (!itemActive && !hoverWindow)
-		m_bUsingUI = false;
-	else
-		m_bUsingUI = true;
-
-	ImGuiStyle& style = ImGui::GetStyle();
-	float alpha = style.Alpha;
-
-	if (m_bUsingUI)
-		alpha += dt;
-	else
-		alpha -= dt * 0.4f;
-
-	alpha = clamp(alpha, 0.3f, 1.f);
-	style.Alpha = alpha;
+void CGUISystem::Render_Frame()
+{
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui::SetNextWindowPos(ImVec2(500, 5), ImGuiCond_Always);
+	ImGui::Begin("FPSWindow", nullptr,
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoScrollbar |
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_AlwaysAutoResize);
+	ImGui::Text("FPS: %d", (int)ImGui::GetIO().Framerate);
+	ImGui::End();
 }
 
 void CGUISystem::GUI_Begin()
@@ -86,20 +125,17 @@ void CGUISystem::GUI_Begin()
 
 void CGUISystem::Render_GUI()
 {
-	ImGuiIO& io = ImGui::GetIO();
-	ImGui::SetNextWindowPos(ImVec2(5, 5), ImGuiCond_Always);
-	ImGui::Begin("FPSWindow", nullptr,
-		ImGuiWindowFlags_NoTitleBar |
-		ImGuiWindowFlags_NoResize |
-		ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_NoScrollbar |
-		ImGuiWindowFlags_NoSavedSettings |
-		ImGuiWindowFlags_AlwaysAutoResize);
-	ImGui::Text("FPS: %d", (int)ImGui::GetIO().Framerate);
+	GUI_Begin();
+	if (!m_bActiveGUI) return;
 
-	ImGui::End();
 
-	Test();
+	for (auto& panel : m_Panels) {
+		if(panel->Get_Active())
+			panel->Render_GUI();
+	}
+	
+	Render_Frame();
+	GUI_End();
 }
 
 void CGUISystem::GUI_End()
@@ -120,7 +156,7 @@ void CGUISystem::Test()
 	{
 		ImGui::Separator();
 		const auto& levelList = CGameInstance::GetInstance()->Get_LevelMgr()->Get_LevelList();
-		GUIWidget::ShowList(levelList, [&](const string& selectedLevel)->void {
+		GUIWidget::ShowListString(levelList, [&](const string& selectedLevel)->void {
 			string debugMessage = "Button for '" + selectedLevel + "' was clicked. \n";
 			OutputDebugStringA(debugMessage.c_str());
 			ImGuiStyle& style = ImGui::GetStyle();
@@ -143,7 +179,13 @@ CGUISystem* CGUISystem::Create(const ENGINE_DESC& engine, ID3D11Device* pDevice,
 
 void CGUISystem::Free()
 {
+	__super::Free();
+
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+	Safe_Release(m_pGameInstance);
+
+	for (auto& panel : m_Panels)
+		Safe_Release(panel);
 }

@@ -1,5 +1,6 @@
 #include "Layer.h"
 #include "GameObject.h"
+#include "GUIWidget.h"
 
 CLayer::CLayer()
 {
@@ -10,9 +11,15 @@ HRESULT CLayer::Add_GameObject(CGameObject* pGameObject)
 	if (!pGameObject)
 		return E_FAIL;
 
-	m_GameObjects.push_back(pGameObject);
+	auto result = m_GameObjectsByID.emplace(pGameObject->Get_ObjectID(), pGameObject);
 
-	return S_OK;
+	if (result.second) {
+		m_GameObjects.push_back(pGameObject);
+		Safe_AddRef(pGameObject);
+		return S_OK;
+	}
+	else
+		return E_FAIL;
 }
 
 void CLayer::Priority_Update(_float dt)
@@ -33,6 +40,16 @@ void CLayer::Late_Update(_float dt)
 		pGameObject->Late_Update(dt);
 }
 
+CGameObject* CLayer::Find_ObjectByID(_uint ID)
+{
+	auto iter = m_GameObjectsByID.find(ID);
+	if (iter == m_GameObjectsByID.end())
+		return nullptr;
+
+	else
+		return iter->second;
+}
+
 CLayer* CLayer::Create()
 {
 	return new CLayer();
@@ -46,4 +63,10 @@ void CLayer::Free()
 		Safe_Release(pGameObject);
 
 	m_GameObjects.clear();
+
+
+	for (auto& Pair : m_GameObjectsByID)
+		Safe_Release(Pair.second);
+
+	m_GameObjectsByID.clear();
 }

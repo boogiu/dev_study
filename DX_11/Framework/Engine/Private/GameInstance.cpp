@@ -30,7 +30,9 @@ _bool CGameInstance::Init_Engine(const ENGINE_DESC& engine)
 	m_pPrototypeManager = CPrototypeMgr::Create();
 	m_pObjectManager = CObjectMgr::Create();
 	m_pResourceManager = CResourceMgr::Create(m_pDevice, m_pDeviceContext);
-	m_pGuiSystem = CGUISystem::Create(engine,m_pDevice, m_pDeviceContext);
+#if defined _DEBUG
+	m_pGuiSystem = CGUISystem::Create(engine, m_pDevice, m_pDeviceContext);
+#endif
 
 	Notify_LevelSet();
 	m_pResourceManager->Load_InitialResource();
@@ -54,7 +56,9 @@ void CGameInstance::Update_Engine(_float dt)
 	m_pInputDevice->Update();
 	m_pSoundDevice->Update();
 	m_pLevelManager->Update(dt);
+#if defined _DEBUG
 	m_pGuiSystem->Update(dt);
+#endif
 	m_pObjectManager->Late_Update(dt);
 }
 
@@ -102,20 +106,20 @@ HRESULT CGameInstance::Draw_Begin(_float4* pColor)
 {
 	m_pGraphicDevice->Clear_BackBuffer_View(pColor);
 	m_pGraphicDevice->Clear_DepthStencil_View();
-	m_pGuiSystem->GUI_Begin();
 	return S_OK;
 }
 
 HRESULT CGameInstance::Draw()
 {
 	m_pLevelManager->Render();
+#if defined _DEBUG
 	m_pGuiSystem->Render_GUI();
+#endif
 	return S_OK;
 }
 
 HRESULT CGameInstance::Draw_End()
 {
-	m_pGuiSystem->GUI_End();
 	m_pGraphicDevice->Present();
 	return S_OK;
 }

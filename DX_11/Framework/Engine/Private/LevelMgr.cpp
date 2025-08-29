@@ -110,6 +110,14 @@ _bool CLevelMgr::Check_ValidateLevel(const string& LevelTag)
     return m_LevelCreators.count(LevelTag);
 }
 
+const string& CLevelMgr::Get_NowLevelKey()
+{
+    if (m_pCurrentLevel)
+        return m_pCurrentLevel->Get_Key();
+    else
+        return string();
+}
+
 #pragma endregion
 
 #pragma region For_LoadingLevel

@@ -15,8 +15,12 @@ public:
 	void Update(_float dt);
 	void Late_Update(_float dt);
 
+	class CGameObject* Find_ObjectByID(_uint ID);
+	const vector<CGameObject*>& Get_AllObject() { return m_GameObjects; };
+
 private:
-	vector<class CGameObject*>			m_GameObjects;
+	vector<class CGameObject*>			m_GameObjects; /*¼øÈ¸¿ë*/
+	unordered_map<_uint,class CGameObject*>			m_GameObjectsByID;
 
 public:
 	static CLayer* Create();

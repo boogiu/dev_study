@@ -14,5 +14,10 @@ namespace Engine
 
     enum class STATE { RIGHT, UP, LOOK, POSITION, END };
 
+    enum class BUFFER_TYPE { 
+        BASIC_RECT , BASIC_CUBE, BASIC_SPHERE,
+        MESH,
+    };
+
 }
 #endif // Engine_Enum_h__

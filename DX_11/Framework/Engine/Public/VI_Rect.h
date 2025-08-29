@@ -19,5 +19,9 @@ private:
 public:
 	static CVI_Rect* Create(ID3D11Device* pDevice) ;
 	virtual void Free() override;
+
+	// CVIBuffer을(를) 통해 상속됨
+	_uint Get_ElementCount() override;
+	const D3D11_INPUT_ELEMENT_DESC* Get_ElementDesc() override;
 };
 NS_END

@@ -106,3 +106,13 @@ void CVI_Rect::Free()
 {
 	__super::Free();
 }
+
+_uint CVI_Rect::Get_ElementCount()
+{
+	return VTXPOS::iElementCount;
+}
+
+const D3D11_INPUT_ELEMENT_DESC* CVI_Rect::Get_ElementDesc()
+{
+	return VTXPOS::Elements;
+}

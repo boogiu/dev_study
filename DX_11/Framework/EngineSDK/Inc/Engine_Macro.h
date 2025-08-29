@@ -18,6 +18,7 @@
 #define ENGINE_DLL		_declspec(dllimport)
 #endif
 
+
 #define NO_COPY(CLASSNAME)								\
 		private:										\
 		CLASSNAME(const CLASSNAME&) = delete;			\

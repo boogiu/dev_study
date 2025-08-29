@@ -12,23 +12,24 @@ private:
 
 public: 
     HRESULT Initialize();
-    HRESULT Request_ChangeLevel(string key,_bool Load = true);/*레벨 체인지 요청*/
-    void Update(_float dt);
-    HRESULT Render();
+    virtual  HRESULT Request_ChangeLevel(string key, _bool Load = true) override;/*레벨 체인지 요청*/
+    virtual void Update(_float dt)override;
+    virtual HRESULT Render()override;
 
 public :
-    void Register_Level(string key, LEVEL_CREATOR creator); /*레벨 생성자 등록*/
+    virtual void Register_Level(string key, LEVEL_CREATOR creator)override; /*레벨 생성자 등록*/
 
 #pragma region For_OtherManager
-    _uint Get_LevelCount() { return m_LevelCreators.size(); }
-    const vector<string> Get_LevelList(); //레벨 키 모음
-    _bool Check_ValidateLevel(const string& LevelTag);
+    virtual _uint Get_LevelCount() override { return m_LevelCreators.size(); }
+    virtual const vector<string> Get_LevelList()override; //레벨 키 모음
+    virtual _bool Check_ValidateLevel(const string& LevelTag)override;
+    virtual const string& Get_NowLevelKey()override;
 #pragma endregion
 
 #pragma region For_LoadingLevel
-    void Set_LoadingLevel(const string& LoadingKey); //로딩 역할을 하는 레벨이 있는지.
-    const string& Get_NextLevel() { return m_NextLevelTag; } //로딩 이후 레벨은 무엇인지
-    void Notify_LoadComplete(); //로딩이 다되었다면 호출
+    virtual void Set_LoadingLevel(const string& LoadingKey)override; //로딩 역할을 하는 레벨이 있는지.
+    virtual const string& Get_NextLevel() override { return m_NextLevelTag; } //로딩 이후 레벨은 무엇인지
+    virtual void Notify_LoadComplete()override; //로딩이 다되었다면 호출
 #pragma endregion
 
 private:

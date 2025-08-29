@@ -13,7 +13,7 @@ public:
     virtual HRESULT Initialize() PURE;
     virtual void Update() PURE;
     virtual HRESULT Render() PURE;
-
+    const string& Get_Key() { return m_LevelKey; }
 protected:
     string m_LevelKey = {};
 public:

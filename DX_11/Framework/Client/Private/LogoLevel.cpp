@@ -26,6 +26,12 @@ HRESULT CLogoLevel::Initialize()
 		.Set_Rotate({10.f, 10.f,10.f})
 		.Build("Instance"); //객체명은 뭐로 할거냐.
 
+		pObjMgr->Create_Object({ "Logo_Level","Proto_GameObject_Background" }) //어디서 꺼내냐
+			.Add_Layer({ "Logo_Level", "Layer_BackGround" }) //어디로 넣냐 ->기존에 프로토에서 꺼내서 레이어로
+			.With_Transform() //뭘 채우냐
+			.Set_Position({ 0.f,0.f,0.f })
+			.Set_Rotate({ 10.f, 10.f,10.f })
+			.Build("Instance2"); //객체명은 뭐로 할거냐.
 
 		CTransform* m_pTransform = obk->Get_Component<CTransform>();
 		m_pTransform->Translate(m_pTransform->Dir(STATE::UP)*10);

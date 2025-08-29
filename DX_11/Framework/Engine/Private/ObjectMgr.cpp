@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Layer.h"
 #include "Builder.h"
+#include "ILevelService.h"
 
 CObjectMgr::CObjectMgr()
 	: m_pGameInstance(CGameInstance::GetInstance())
@@ -89,6 +90,15 @@ HRESULT CObjectMgr::Sync_To_Level()
 
 	for (string& name : LevelList)
 		m_Layers.emplace(name, LAYERS{});
+}
+
+const unordered_map<string, class CLayer*>& CObjectMgr::Get_LevelLayer(const string& LevelTag)
+{
+	auto iter = m_Layers.find(LevelTag);
+	if (iter == m_Layers.end())
+		return unordered_map<string, class CLayer*>();
+	else
+		return iter->second;
 }
 
 CObjectMgr* CObjectMgr::Create()

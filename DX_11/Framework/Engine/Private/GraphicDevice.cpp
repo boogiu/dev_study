@@ -1,4 +1,6 @@
 #include "GraphicDevice.h"
+#include "VIBuffer.h"
+#include "Shader.h"
 
 CGraphicDevice::CGraphicDevice()
 {
@@ -201,13 +203,52 @@ CGraphicDevice* CGraphicDevice::Create(ENGINE_DESC engine, ID3D11Device** ppDevi
 	return instance;
 }
 
+
+HRESULT CGraphicDevice::Get_InputLayout(
+	CVIBuffer* pBuffer, CShader* pShader, _uint PassIndex,
+	ID3D11InputLayout** ppInputLayout)
+{
+
+	if (!pBuffer || !pShader || !ppInputLayout)
+		return E_FAIL;
+
+	string key = pBuffer->Get_Key() + '_' + pShader->Get_Key() + '_' + to_string(PassIndex);
+
+	auto iter = m_InputLayouts.find(key);
+
+	if (iter != m_InputLayouts.end()) {
+		*ppInputLayout = iter->second;
+		return S_OK;
+	}
+
+	D3DX11_PASS_DESC passDesc = {};
+	if (FAILED(pShader->GetPassSignature(PassIndex, &passDesc)))
+		return E_FAIL;
+	if (pBuffer->Get_ElementCount() == 0 || pBuffer->Get_ElementDesc() == nullptr)
+		return E_FAIL;
+
+	HRESULT hr = m_pDevice->CreateInputLayout(
+		pBuffer->Get_ElementDesc(), pBuffer->Get_ElementCount(),
+		passDesc.pIAInputSignature, passDesc.IAInputSignatureSize,
+		ppInputLayout);
+
+	if (FAILED(hr))
+		return E_FAIL;
+
+	m_InputLayouts.emplace(key, *ppInputLayout);
+
+	return S_OK;
+}
+
 void CGraphicDevice::Free()
 {
 	Safe_Release(m_pSwapChain);
 	Safe_Release(m_pDepthStencilView);
 	Safe_Release(m_pBackBufferRTV);
 	Safe_Release(m_pDeviceContext);
-
+	for (auto& pair : m_InputLayouts)
+		Safe_Release(pair.second);
+	m_InputLayouts.clear();
 
 #if defined(DEBUG) || defined(_DEBUG)
 	ID3D11Debug* d3dDebug;
