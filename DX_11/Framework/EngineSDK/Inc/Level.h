@@ -16,6 +16,7 @@ public:
     const string& Get_Key() { return m_LevelKey; }
 protected:
     string m_LevelKey = {};
+
 public:
     virtual void Free() override;
 };

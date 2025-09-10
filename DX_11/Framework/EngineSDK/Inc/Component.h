@@ -14,8 +14,11 @@ protected:
 public:
     virtual HRESULT Initialize_Prototype() PURE;
     virtual HRESULT Initialize(COMPONENT_DESC* pArg = nullptr)PURE;
+    virtual void Render_GUI();
+
 public:
     void Set_Owner(class CGameObject* owner) { m_pOwner = owner; }
+    class CGameObject* Get_Owner() { return m_pOwner; }
 protected:
     class CGameObject* m_pOwner = {nullptr};
 

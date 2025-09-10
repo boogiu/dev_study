@@ -113,22 +113,26 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../Public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>fmodL_vc.lib;d3d11.lib;dxguid.lib;Effects11d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;d3d11.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)UpdateLib.bat"</Command>
+      <Command>mkdir "$(TargetDir)Engine_Shaders\"
+copy "$(TargetDir)*.cso" "$(TargetDir)Engine_Shaders\"
+call "$(SolutionDir)UpdateLib.bat"</Command>
     </PostBuildEvent>
     <FxCompile>
       <ShaderType>Effect</ShaderType>
     </FxCompile>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
+      <AdditionalIncludeDirectories>../Public/;</AdditionalIncludeDirectories>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -151,27 +155,34 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>../ThirdPartyLib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>fmod_vc.lib;d3d11.lib;dxguid.lib;Effects11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;d3d11.lib;dxguid.lib;Effects11.lib;DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)UpdateLib.bat"</Command>
+      <Command>mkdir "$(TargetDir)Engine_Shaders\"
+copy "$(TargetDir)*.cso" "$(TargetDir)Engine_Shaders\"
+call "$(SolutionDir)UpdateLib.bat"</Command>
     </PostBuildEvent>
     <FxCompile>
       <ShaderType>Effect</ShaderType>
     </FxCompile>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
+      <AdditionalIncludeDirectories>../Public/;</AdditionalIncludeDirectories>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h" />
     <ClInclude Include="..\Public\BasePanel.h" />
     <ClInclude Include="..\Public\Builder.h" />
+    <ClInclude Include="..\Public\GameObjectBuilder.h" />
     <ClInclude Include="..\Public\Build_Struct.h" />
     <ClInclude Include="..\Public\Camera.h" />
+    <ClInclude Include="..\Public\CameraMgr.h" />
     <ClInclude Include="..\Public\Component.h" />
     <ClInclude Include="..\Public\Engine_Service.h" />
+    <ClInclude Include="..\Public\GuizmoPanel.h" />
     <ClInclude Include="..\Public\GUI_Context.h" />
+    <ClInclude Include="..\Public\GUI_Inc\ImGuizmo.h" />
     <ClInclude Include="..\Public\Helper_Func.h" />
     <ClInclude Include="..\Public\GameInstance.h" />
     <ClInclude Include="..\Public\GameObject.h" />
@@ -182,27 +193,43 @@
     <ClInclude Include="..\Public\GUI_Inc\backends\imgui_impl_win32.h" />
     <ClInclude Include="..\Public\GUI_Inc\imgui.h" />
     <ClInclude Include="..\Public\HierarchyPanel.h" />
+    <ClInclude Include="..\Public\ICameraService.h" />
     <ClInclude Include="..\Public\IGraphicService.h" />
     <ClInclude Include="..\Public\IGUIService.h" />
     <ClInclude Include="..\Public\IInputService.h" />
     <ClInclude Include="..\Public\ILevelService.h" />
+    <ClInclude Include="..\Public\ILightService.h" />
     <ClInclude Include="..\Public\InputMgr.h" />
+    <ClInclude Include="..\Public\InspectorPanel.h" />
     <ClInclude Include="..\Public\IObjectService.h" />
     <ClInclude Include="..\Public\IProtoService.h" />
+    <ClInclude Include="..\Public\IRenderService.h" />
     <ClInclude Include="..\Public\IResourceService.h" />
     <ClInclude Include="..\Public\IService.h" />
-    <ClInclude Include="..\Public\ISoundService.h" />
+    <ClInclude Include="..\Public\IAudioService.h" />
     <ClInclude Include="..\Public\ITimeService.h" />
+    <ClInclude Include="..\Public\IUI_Service.h" />
     <ClInclude Include="..\Public\Layer.h" />
     <ClInclude Include="..\Public\Level.h" />
     <ClInclude Include="..\Public\LevelMgr.h" />
+    <ClInclude Include="..\Public\Light.h" />
+    <ClInclude Include="..\Public\LightMgr.h" />
+    <ClInclude Include="..\Public\Material.h" />
+    <ClInclude Include="..\Public\Model.h" />
     <ClInclude Include="..\Public\NFD_Inc\nfd.h" />
     <ClInclude Include="..\Public\ObjectMgr.h" />
+    <ClInclude Include="..\public\PipeLine.h" />
     <ClInclude Include="..\Public\PrototypeMgr.h" />
+    <ClInclude Include="..\Public\RenderPass.h" />
+    <ClInclude Include="..\Public\RenderSystem.h" />
+    <ClInclude Include="..\Public\Data_Packets.h" />
     <ClInclude Include="..\Public\ResourceMgr.h" />
     <ClInclude Include="..\Public\ResourcePool.h" />
     <ClInclude Include="..\Public\Shader.h" />
-    <ClInclude Include="..\Public\SoundDevice.h" />
+    <ClInclude Include="..\Public\AudioSource.h" />
+    <ClInclude Include="..\Public\SoundData.h" />
+    <ClInclude Include="..\Public\AudioDevice.h" />
+    <ClInclude Include="..\Public\Texture.h" />
     <ClInclude Include="..\Public\TimeMgr.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
     <ClInclude Include="..\Public\Engine_Enum.h" />
@@ -212,40 +239,63 @@
     <ClInclude Include="..\Public\Engine_Typedef.h" />
     <ClInclude Include="..\Public\Timer.h" />
     <ClInclude Include="..\Public\Transform.h" />
+    <ClInclude Include="..\Public\UIObjcetBuilder.h" />
+    <ClInclude Include="..\Public\UI_Manager.h" />
+    <ClInclude Include="..\Public\UI_Object.h" />
     <ClInclude Include="..\Public\VIBuffer.h" />
+    <ClInclude Include="..\Public\VI_Cube.h" />
     <ClInclude Include="..\Public\VI_Rect.h" />
+    <ClInclude Include="..\Public\VI_Terrain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\BasePanel.cpp" />
-    <ClCompile Include="..\Private\Builder.cpp" />
+    <ClCompile Include="..\Private\GameObjectBuilder.cpp" />
     <ClCompile Include="..\Private\Camera.cpp" />
+    <ClCompile Include="..\Private\CameraMgr.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
-    <ClCompile Include="..\Private\Engine_Struct.cpp" />
+    <ClCompile Include="..\Private\GuizmoPanel.cpp" />
     <ClCompile Include="..\Private\Helper_Func.cpp" />
     <ClCompile Include="..\Private\GUISystem.cpp" />
     <ClCompile Include="..\Private\GUIWidget.cpp" />
     <ClCompile Include="..\Private\HierarchyPanel.cpp" />
+    <ClCompile Include="..\Private\InspectorPanel.cpp" />
     <ClCompile Include="..\Private\Layer.cpp" />
+    <ClCompile Include="..\Private\Light.cpp" />
+    <ClCompile Include="..\Private\LightMgr.cpp" />
+    <ClCompile Include="..\Private\Material.cpp" />
+    <ClCompile Include="..\Private\Model.cpp" />
     <ClCompile Include="..\Private\ObjectMgr.cpp" />
+    <ClCompile Include="..\Private\PipeLine.cpp" />
     <ClCompile Include="..\Private\PrototypeMgr.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />
     <ClCompile Include="..\Private\GraphicDevice.cpp" />
     <ClCompile Include="..\Private\Level.cpp" />
     <ClCompile Include="..\Private\LevelMgr.cpp" />
+    <ClCompile Include="..\Private\RenderPass.cpp" />
+    <ClCompile Include="..\Private\RenderSystem.cpp" />
     <ClCompile Include="..\Private\ResourceMgr.cpp" />
     <ClCompile Include="..\Private\Shader.cpp" />
-    <ClCompile Include="..\Private\SoundDevice.cpp" />
+    <ClCompile Include="..\Private\AudioSource.cpp" />
+    <ClCompile Include="..\Private\SoundData.cpp" />
+    <ClCompile Include="..\Private\AudioDevice.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\InputMgr.cpp" />
+    <ClCompile Include="..\Private\Texture.cpp" />
     <ClCompile Include="..\Private\TimeMgr.cpp" />
     <ClCompile Include="..\Private\Timer.cpp" />
     <ClCompile Include="..\Private\Transform.cpp" />
+    <ClCompile Include="..\Private\UIObjcetBuilder.cpp" />
+    <ClCompile Include="..\Private\UI_Manager.cpp" />
+    <ClCompile Include="..\Private\UI_Object.cpp" />
     <ClCompile Include="..\Private\VIBuffer.cpp" />
+    <ClCompile Include="..\Private\VI_Cube.cpp" />
     <ClCompile Include="..\Private\VI_Rect.cpp" />
+    <ClCompile Include="..\Private\VI_Terrain.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\imgui.cpp" />
+    <ClCompile Include="..\Public\GUI_Inc\ImGuizmo.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\imgui_draw.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\imgui_tables.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\imgui_widgets.cpp" />
@@ -253,6 +303,7 @@
     <ClCompile Include="..\Public\NFD_Inc\nfd_win.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Public\Engine_Shader\Shader_Define.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_TexPos.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

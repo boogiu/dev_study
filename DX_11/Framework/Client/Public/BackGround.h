@@ -1,8 +1,8 @@
 #pragma once
-#include "GameObject.h"
+#include "UI_Object.h"
 NS_BEGIN(Client)
 class CBackGround final:
-    public CGameObject
+    public CUI_Object
 {
 private:
     CBackGround();

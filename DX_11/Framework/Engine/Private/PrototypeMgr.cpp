@@ -74,6 +74,7 @@ void CPrototypeMgr::Clear(const string& LevelTag)
 
 	for (auto& pair : m_Prototypes[LevelTag])
 		Safe_Release(pair.second);
+	m_Prototypes[LevelTag].clear();
 }
 
 CGameObject* CPrototypeMgr::Find_Prototype(const string& LevelTag, const string& protoTag)

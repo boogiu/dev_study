@@ -31,7 +31,8 @@ public :
     virtual const string& Get_NextLevel() override { return m_NextLevelTag; } //로딩 이후 레벨은 무엇인지
     virtual void Notify_LoadComplete()override; //로딩이 다되었다면 호출
 #pragma endregion
-
+private:
+    void ClearResource();
 private:
     string m_LoadingLevelKey = { }; // 로딩 레벨이 있다면 그 로딩 레벨의 태그(키)
 
@@ -40,7 +41,6 @@ private:
     string m_NextLevelTag = { }; //전환될 레벨 태그(키)
     
     unordered_map<string, LEVEL_CREATOR> m_LevelCreators;/*레벨 생성자*/
-
 public:
     static CLevelMgr* Create();
     virtual void Free() override;

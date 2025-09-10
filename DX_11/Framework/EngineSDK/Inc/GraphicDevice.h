@@ -15,9 +15,6 @@ public:
 	virtual HRESULT Clear_BackBuffer_View(const _float4* pClearColor) override;
 	virtual HRESULT Clear_DepthStencil_View() override;
 	virtual HRESULT Present() override;
-	virtual HRESULT Get_InputLayout(
-		class CVIBuffer* pBuffer, class CShader* pShader, _uint PassIndex, 
-		ID3D11InputLayout** ppInputLayout) override;
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };
@@ -31,8 +28,6 @@ private:
 	HRESULT Ready_BackBufferRenderTargetView();
 	HRESULT Ready_DepthStencilView(_uint iWinCX, _uint iWinCY);
 
-private:
-	unordered_map<string, ID3D11InputLayout*> m_InputLayouts;
 
 public:
 	static  CGraphicDevice* Create(ENGINE_DESC engine, ID3D11Device** ppDevice, ID3D11DeviceContext** ppDeviceContextOut);

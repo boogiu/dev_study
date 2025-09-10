@@ -1,0 +1,139 @@
+#include "Builder.h"
+#include "GameInstance.h"
+
+#include "GameObjectBuilder.h"
+#include "UI_Object.h"
+#include "IProtoService.h"
+#include "ILevelService.h"
+#include "IObjectService.h"
+
+#include "Camera.h"
+#include "Model.h"
+
+CGameObjectBuilder::CGameObjectBuilder(const CLONE_DESC& _cloneDesc)
+	:m_pGameInstance(CGameInstance::GetInstance())
+{
+	if (!CGameInstance::GetInstance()->Get_LevelMgr()->Check_ValidateLevel(_cloneDesc.OriginLevel))
+	{
+		MSG_BOX("Origin Level Tag is Invalidate : Builder");
+	}
+	else {
+		m_CloneDesc = new CLONE_DESC(_cloneDesc);
+	}
+	Safe_AddRef(m_pGameInstance);
+}
+
+CGameObjectBuilder::~CGameObjectBuilder()
+{
+	for (auto& pair : m_CompDesc)
+		delete(pair.second);
+
+	m_CompDesc.clear();
+	Safe_Delete(m_CloneDesc);
+	Safe_Delete(m_layerDesc);
+	Safe_Delete(m_pObjDesc);
+
+	Safe_Release(m_pGameInstance);
+}
+
+CGameObject* CGameObjectBuilder::Build(const string& instanceKey, _uint* id)
+{
+	if (!m_CloneDesc)
+	{
+		MSG_BOX("CLONE_DESC is missing : CGameObjectBuilder ");
+		return nullptr;
+	}
+
+	if (!m_layerDesc)
+	{
+		MSG_BOX("LAYER_DESC is missing : CGameObjectBuilder ");
+		return nullptr;
+	}
+
+	//오브젝트 설명체 채우기
+	m_pObjDesc = new GAMEOBJECT_DESC;
+	m_pObjDesc->InstanceName = instanceKey;
+
+	for (auto& pair : m_CompDesc)
+		m_pObjDesc->CompDesc[pair.first] = pair.second;
+
+	//프로토 매니저에서 가져오기
+	CGameObject* instance = m_pGameInstance->Get_PrototypeMgr()->Clone_Prototype(m_CloneDesc->OriginLevel, m_CloneDesc->protoTag, m_pObjDesc);
+	if (!instance) {
+		return nullptr;
+	}
+
+	//오브젝트 레이어에 삽입
+	m_pGameInstance->Get_ObjectMgr()->Add_Object(instance, m_layerDesc);
+
+	if (instance && id)
+		*id = instance->Get_ObjectID();
+
+	return instance;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::Add_Level(const LAYER_DESC& layer)
+{
+
+	if (!m_pGameInstance->Get_LevelMgr()->Check_ValidateLevel(layer.DestLevel)) {
+		MSG_BOX("Destination Level Tag is Invalidate : Builder");
+		return *this;
+	}
+
+	m_layerDesc = new LAYER_DESC(layer);
+	return *this;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::Set_Position(const _float3 position)
+{
+	auto iter = m_CompDesc.find(type_index(typeid(CTransform)));
+
+	if (iter == m_CompDesc.end())
+	{
+		TRANSFORM_DESC* transformDesc = new TRANSFORM_DESC();
+		iter = m_CompDesc.emplace(type_index(typeid(CTransform)), transformDesc).first;
+	}
+
+	TRANSFORM_DESC* pDesc = static_cast<TRANSFORM_DESC*>(iter->second);
+	pDesc->vInitialPosition = position;
+	return *this;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::Set_Rotate(const _float3 rotate)
+{
+	auto iter = m_CompDesc.find(type_index(typeid(CTransform)));
+
+
+	if (iter == m_CompDesc.end())
+	{
+		TRANSFORM_DESC* transformDesc = new TRANSFORM_DESC();
+		iter = m_CompDesc.emplace(type_index(typeid(CTransform)), transformDesc).first;
+	}
+
+
+	TRANSFORM_DESC* pDesc = static_cast<TRANSFORM_DESC*>(iter->second);
+	pDesc->vInitialEulerVector = rotate;
+	return *this;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::Set_Scale(const _float3 scale)
+{
+	auto iter = m_CompDesc.find(type_index(typeid(CTransform)));
+
+	if (iter == m_CompDesc.end())
+	{
+		TRANSFORM_DESC* transformDesc = new TRANSFORM_DESC();
+		iter = m_CompDesc.emplace(type_index(typeid(CTransform)), transformDesc).first;
+	}
+
+	TRANSFORM_DESC* pDesc = static_cast<TRANSFORM_DESC*>(iter->second);
+	pDesc->vInitialScale = scale;
+	return *this;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::With_Camera(const CAMERA_DESC& camera)
+{
+	CAMERA_DESC* CameraDesc = new CAMERA_DESC(camera);
+	m_CompDesc.emplace(type_index(typeid(CCamera)), CameraDesc);
+	return *this;
+}

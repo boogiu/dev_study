@@ -8,14 +8,6 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CGameObject abstract:
     public CBase
 {
-public:
-    typedef struct tagGameObjectDesc : public INIT_DESC {
-        string InstanceName = "";
-        unordered_map<type_index, COMPONENT_DESC*> CompDesc;
-
-        virtual ~tagGameObjectDesc() DEFAULT;
-    }GAMEOBJECT_DESC;
-
 protected:
    CGameObject();
    CGameObject(const CGameObject& rhs);
@@ -30,18 +22,20 @@ public:
 public:
     virtual HRESULT Initialize_Prototype();
     virtual HRESULT Initialize(INIT_DESC* pArg = nullptr);
+    virtual void Engine_Update(_float dt);
     virtual void Priority_Update(_float dt) PURE;
     virtual void Update(_float dt) PURE;
     virtual void Late_Update(_float dt) PURE;
 
+    void Render_GUI();
     const string& Get_InstanceName() { return m_InstanceName; }
     const _uint Get_ObjectID() { return m_ObjectID; }
-
+    _float4x4* Get_WorldMatrix();
 protected:
     string m_InstanceName = {};
     _uint m_ObjectID = {};
     CTransform* m_pTransform = { nullptr };
-    unordered_map<type_index,class CComponent*> m_Components;
+    map<type_index,class CComponent*> m_Components;
 
 public:
     virtual CGameObject* Clone(INIT_DESC* pArg = nullptr)PURE;

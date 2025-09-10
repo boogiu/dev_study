@@ -17,12 +17,14 @@ REM 실제 복사
 xcopy /y "%BASE%Engine\Bin\Engine.dll"      "%BASE%Client\Bin\"
 xcopy /y "%BASE%Engine\Bin\fmodL.dll"      "%BASE%Client\Bin\"
 xcopy /y "%BASE%Engine\Bin\fmod.dll"      "%BASE%Client\Bin\"
+REM /// 엔진 셰이더(.cso) 파일을 클라이언트로 복사 (추가된 부분) ///
+xcopy /y /s /e /i "%BASE%Engine\Bin\Engine_Shaders" "%BASE%Client\Bin\"
+REM ==========================================================
 
 xcopy /y /s /e /i "%BASE%Engine\Public\"      "%BASE%EngineSDK\Inc\"
 xcopy /y "%BASE%Engine\Bin\Engine.lib"      "%BASE%EngineSDK\Lib\"
 xcopy /y "%BASE%Engine\ThirdPartyLib\fmod_vc.lib"       "%BASE%EngineSDK\Lib\"
 xcopy /y "%BASE%Engine\ThirdPartyLib\fmodL_vc.lib"      "%BASE%EngineSDK\Lib\"
-
 
 goto :eof
 

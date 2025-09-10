@@ -5,7 +5,7 @@ class ENGINE_DLL CVI_Rect final :
     public CVIBuffer
 {
 protected:
-	CVI_Rect();
+	CVI_Rect(const string& key);
 	CVI_Rect(const CVI_Rect& rhs);
 	virtual ~CVI_Rect();
 
@@ -17,11 +17,8 @@ private:
 	virtual HRESULT Create_Index(ID3D11Device* pDevice) override;
 
 public:
-	static CVI_Rect* Create(ID3D11Device* pDevice) ;
+	static CVI_Rect* Create(ID3D11Device* pDevice, const string& key) ;
 	virtual void Free() override;
 
-	// CVIBuffer을(를) 통해 상속됨
-	_uint Get_ElementCount() override;
-	const D3D11_INPUT_ELEMENT_DESC* Get_ElementDesc() override;
 };
 NS_END

@@ -6,6 +6,8 @@
 #include "IInputService.h"
 #include "BasePanel.h"
 #include "HierarchyPanel.h"
+#include "InspectorPanel.h"
+#include "GuizmoPanel.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);                // Use ImGui::GetCurrentContext()
 
@@ -19,21 +21,21 @@ CGUISystem::CGUISystem()
 HRESULT CGUISystem::Initialize(const ENGINE_DESC& engine, ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	IMGUI_CHECKVERSION();
-
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
-	ImFont* fonts = io.Fonts->AddFontFromFileTTF("../../Resources/font/NanumSquareNeo-cBd.ttf", 14.0f, nullptr,
+	m_GuiIo = &ImGui::GetIO();
+	ImFont* fonts = io.Fonts->AddFontFromFileTTF("../../Resources/font/SUIT-Bold.ttf", 16.0f, nullptr,
 		io.Fonts->GetGlyphRangesKorean()); //
 	io.FontDefault = fonts;
-
 	ImGui::StyleColorsDark();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     /*키보드 컨트롤*/
 	io.DisplaySize = ImVec2((float)engine.iWinSizeX, (float)engine.iWinSizeY);
 
-	m_tGuiContext.VPSize = { (LONG)engine.iWinSizeX ,(LONG)engine.iWinSizeY };
 	m_tGuiContext.pLevelManager = m_pGameInstance->Get_LevelMgr();
 	m_tGuiContext.pObjectManager = m_pGameInstance->Get_ObjectMgr();
-
+	m_tGuiContext.pCameraManager = m_pGameInstance->Get_CameraMgr();
+	m_tGuiContext.pInputDevice = m_pGameInstance->Get_InputDev();
+//햄부기햄북어햄북스딱스
 	Set_Theme();
 	Set_Panel();
 
@@ -45,29 +47,20 @@ HRESULT CGUISystem::Initialize(const ENGINE_DESC& engine, ID3D11Device* pDevice,
 	return S_OK;
 }
 
-void CGUISystem::Update(_float& dt)
+void CGUISystem::Update(_float dt)
 {
 	if (m_pGameInstance->Get_InputDev()->Key_Tap(VK_F9))
 		m_bActiveGUI = !m_bActiveGUI;
 
-	_bool itemActive = ImGui::IsAnyItemActive();
-	_bool hoverWindow = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow); //마우스가 ㅇ올라가면
+	m_tGuiContext.viewPort = m_pGameInstance->Get_ClientSize();
+	m_GuiIo->DisplaySize = ImVec2(m_tGuiContext.viewPort.x, m_tGuiContext.viewPort.y);
 
-	if (!itemActive && !hoverWindow)
-		m_bUsingUI = false;
-	else
-		m_bUsingUI = true;
+	Adjust_Alpha(dt);
 
-	ImGuiStyle& style = ImGui::GetStyle();
-	float alpha = style.Alpha;
-
-	if (m_bUsingUI)
-		alpha += dt;
-	else
-		alpha -= dt * 0.4f;
-
-	alpha = clamp(alpha, 0.3f, 1.f);
-	style.Alpha = alpha;
+	for (auto& panel : m_Panels) {
+		if (panel->Get_Active())
+			panel->Update_Panel(dt);
+	}
 }
 
 void CGUISystem::Set_Theme()
@@ -94,11 +87,19 @@ void CGUISystem::Set_Theme()
 
 	style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
 	style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
+	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+	style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
+	style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+
+	style.Colors[ImGuiCol_SliderGrab] = style.Colors[ImGuiCol_ChildBg];
+	style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
 }
 
 void CGUISystem::Set_Panel()
 {
-	m_Panels.push_back(CHierarchyPanel::Create());
+	m_Panels.push_back(CHierarchyPanel::Create(&m_tGuiContext));
+	m_Panels.push_back(CInspectorPanel::Create(&m_tGuiContext));
+	m_Panels.push_back(CGuizmoPanel::Create(&m_tGuiContext));
 }
 
 void CGUISystem::Render_Frame()
@@ -116,6 +117,29 @@ void CGUISystem::Render_Frame()
 	ImGui::End();
 }
 
+void CGUISystem::Adjust_Alpha(_float dt)
+{
+	_bool itemActive = ImGui::IsAnyItemActive();
+	_bool hoverWindow = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow); //마우스가 ㅇ올라가면
+
+	if (!itemActive && !hoverWindow)
+		m_bUsingUI = false;
+	else
+		m_bUsingUI = true;
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	float alpha = style.Alpha;
+
+	if (m_bUsingUI)
+		alpha += dt;
+	else
+		alpha -= dt * 0.4f;
+
+	alpha = clamp(alpha, 0.3f, 1.f);
+	style.Alpha = alpha;
+
+}
+
 void CGUISystem::GUI_Begin()
 {
 	ImGui_ImplDX11_NewFrame();
@@ -125,9 +149,8 @@ void CGUISystem::GUI_Begin()
 
 void CGUISystem::Render_GUI()
 {
-	GUI_Begin();
 	if (!m_bActiveGUI) return;
-
+	GUI_Begin();
 
 	for (auto& panel : m_Panels) {
 		if(panel->Get_Active())
@@ -152,7 +175,7 @@ bool CGUISystem::Set_ProcHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 
 void CGUISystem::Test()
 {
-	if (ImGui::Begin("Level Selector")) // UI를 담을 창을 시작합니다.
+	if (ImGui::Begin("Level Selector")) 
 	{
 		ImGui::Separator();
 		const auto& levelList = CGameInstance::GetInstance()->Get_LevelMgr()->Get_LevelList();
@@ -165,7 +188,7 @@ void CGUISystem::Test()
 		static _vector vec = XMVectorSet(1, 1, 1, 1);
 		vec= GUIWidget::Vector4Float("TestVector", vec);
 	}
-	ImGui::End(); // 창을 닫습니다.
+	ImGui::End(); 
 }
 
 CGUISystem* CGUISystem::Create(const ENGINE_DESC& engine, ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

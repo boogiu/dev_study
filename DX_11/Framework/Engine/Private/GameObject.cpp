@@ -1,6 +1,9 @@
 #include "GameObject.h"
 #include "GameInstance.h"
 #include "Builder.h"
+#include "IRenderService.h"
+#include "Model.h"
+#include "Material.h"
 
 _uint CGameObject::s_NextID = 1;
 
@@ -37,17 +40,52 @@ HRESULT CGameObject::Initialize(INIT_DESC* pArg)
 
 	GAMEOBJECT_DESC* obj = static_cast<GAMEOBJECT_DESC*>(pArg);
 
-	for (auto& pair : obj->CompDesc) {
-		auto iter = m_Components.find(pair.first);
+	//for (auto& pair : obj->CompDesc) {
+	//	auto iter = m_Components.find(pair.first);
+	//
+	//	if (iter == m_Components.end())
+	//		MSG_BOX("Wrong Description Imported");
+	//	else
+	//		iter->second->Initialize(pair.second);
+	//}
+	//
+	//
+	for (auto& pair : m_Components)
+	{
+		auto iter = obj->CompDesc.find(pair.first);
 
-		if (iter == m_Components.end())
-			MSG_BOX("Wrong Description Imported");
+		if (iter == obj->CompDesc.end())
+			pair.second->Initialize(nullptr);
 		else
-			iter->second->Initialize(pair.second);
+			pair.second->Initialize(iter->second);
 	}
 
 	m_InstanceName = obj->InstanceName;
 	return S_OK;
+}
+
+void CGameObject::Engine_Update(_float dt)
+{
+	OPAQUE_PACKET packet;
+	packet.pModel = Get_Component<CModel>();
+	packet.pMaterial = Get_Component<CMaterial>();
+	packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+
+	CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
+}
+
+void CGameObject::Render_GUI()
+{
+	m_pTransform->Render_GUI();
+	for (auto& pair : m_Components) {
+		if (pair.first == type_index(typeid(CTransform))) continue;
+		pair.second->Render_GUI();
+	}
+}
+
+_float4x4* CGameObject::Get_WorldMatrix()
+{
+	return m_pTransform->Get_WorldMatrix();
 }
 
 void CGameObject::Free()

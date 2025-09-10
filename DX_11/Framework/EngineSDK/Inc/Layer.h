@@ -11,6 +11,7 @@ private:
 
 public:
 	HRESULT Add_GameObject(class CGameObject* pGameObject);
+	void Engine_Update(_float dt);
 	void Priority_Update(_float dt);
 	void Update(_float dt);
 	void Late_Update(_float dt);

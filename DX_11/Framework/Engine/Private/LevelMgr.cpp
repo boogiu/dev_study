@@ -1,5 +1,6 @@
 #include "LevelMgr.h"
 #include "Level.h"
+#include "GameInstance.h"
 
 
 CLevelMgr::CLevelMgr()
@@ -40,8 +41,7 @@ void CLevelMgr::Update(_float dt)
         break;
     case Engine::LEVEL_STATE::REQUEST: //다음 레벨로 가는 것을 요청한 상태
         if (!m_LoadingLevelKey.empty() && m_LevelCreators.count(m_LoadingLevelKey)) {
-            //로딩 레벨이 있다면.
-            Safe_Release(m_pCurrentLevel); //자원 해제(이전 레벨)
+            ClearResource();
             m_pCurrentLevel = m_LevelCreators[m_LoadingLevelKey]();
             m_eState = LEVEL_STATE::LOADING; //로딩 레벨 설정이 되어 있으면 로딩을 진행함.
         }
@@ -54,7 +54,7 @@ void CLevelMgr::Update(_float dt)
 
     case Engine::LEVEL_STATE::LOADED: //로딩이 완료되면 아까 요청한 레벨로 전환
         if (!m_NextLevelTag.empty() && m_LevelCreators.count(m_NextLevelTag)) {
-            Safe_Release(m_pCurrentLevel);//자원 해제 (로딩 레벨)
+            ClearResource();
             m_pCurrentLevel = m_LevelCreators[m_NextLevelTag](); 
             m_eState = LEVEL_STATE::STABLE;
             m_NextLevelTag.clear();
@@ -92,6 +92,16 @@ void CLevelMgr::Register_Level(string key, LEVEL_CREATOR creator)
    }
 
    m_LevelCreators.insert({ key,creator });
+}
+
+void CLevelMgr::ClearResource()
+{
+    if (!m_pCurrentLevel) return;
+    const string& key = m_pCurrentLevel->Get_Key();
+    if(key == G_GlobalLevelKey)return;
+
+    CGameInstance::GetInstance()->Clear_LevelResource(key);
+    Safe_Release(m_pCurrentLevel);
 }
 
 #pragma region For_OtherManager

@@ -19,7 +19,6 @@ public:
     _bool isFinished() const {return m_isFinished; }
 
 private:
-    void Load_LogoLevel();
     void Set_Finished() { m_isFinished = true; };
 
 private:

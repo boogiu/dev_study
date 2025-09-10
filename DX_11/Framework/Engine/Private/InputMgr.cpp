@@ -49,7 +49,7 @@ void CInputMgr::Update()
 			key.state = KEY_STATE::AWAY;
 
 		else if(!key.CurrDown && !key.PrevDown)
-			key.state = KEY_STATE::NONE;
+			key.state = KEY_STATE::Center;
 
 		key.PrevDown = key.CurrDown;
 	}
@@ -65,10 +65,18 @@ void CInputMgr::Update()
 			key.state = KEY_STATE::AWAY;
 
 		else if (!key.CurrDown && !key.PrevDown)
-			key.state = KEY_STATE::NONE;
+			key.state = KEY_STATE::Center;
 
 		key.PrevDown = key.CurrDown;
 	}
+
+	GetCursorPos(&m_pMousePos);
+	ScreenToClient(m_hWnd, &m_pMousePos);
+}
+
+const _float2& CInputMgr::Mouse_Pos()
+{
+	return { (float)m_pMousePos.x, (float)m_pMousePos.y };
 }
 
 void CInputMgr::Process_Input(LPARAM lParam)

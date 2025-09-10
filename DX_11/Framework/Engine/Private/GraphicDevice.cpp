@@ -10,22 +10,20 @@ CGraphicDevice::~CGraphicDevice()
 {
 }
 
-HRESULT CGraphicDevice::Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, 
+HRESULT CGraphicDevice::Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY,
 	ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
 {
 	_uint		iFlag = 0;
 
-	#ifdef _DEBUG
-		iFlag = D3D11_CREATE_DEVICE_DEBUG;
-	#endif
+#ifdef _DEBUG
+	iFlag = D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
 
 	D3D_FEATURE_LEVEL			FeatureLV;
 
-	/* 그래픽 장치를 초기화한다. */
-	if (FAILED(D3D11CreateDevice(
-		nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, 
-		iFlag, nullptr, 0, D3D11_SDK_VERSION, &m_pDevice, 
-		&FeatureLV, &m_pDeviceContext)))
+	if (FAILED(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0,
+		iFlag, nullptr, 0, D3D11_SDK_VERSION, &m_pDevice, &FeatureLV, &m_pDeviceContext)))
 		return E_FAIL;
 
 	if (FAILED(Ready_SwapChain(hWnd, isWindowed, iWinSizeX, iWinSizeY)))
@@ -109,7 +107,7 @@ HRESULT CGraphicDevice::Ready_SwapChain(HWND hWnd, WINMODE isWindowed, _uint iWi
 	SwapChain.BufferDesc.Width = iWinCX;	/* 가로 픽셀 수 */
 	SwapChain.BufferDesc.Height = iWinCY;	/* 세로 픽셀 수 */
 
-	SwapChain.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; 
+	SwapChain.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	SwapChain.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	SwapChain.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
@@ -204,41 +202,6 @@ CGraphicDevice* CGraphicDevice::Create(ENGINE_DESC engine, ID3D11Device** ppDevi
 }
 
 
-HRESULT CGraphicDevice::Get_InputLayout(
-	CVIBuffer* pBuffer, CShader* pShader, _uint PassIndex,
-	ID3D11InputLayout** ppInputLayout)
-{
-
-	if (!pBuffer || !pShader || !ppInputLayout)
-		return E_FAIL;
-
-	string key = pBuffer->Get_Key() + '_' + pShader->Get_Key() + '_' + to_string(PassIndex);
-
-	auto iter = m_InputLayouts.find(key);
-
-	if (iter != m_InputLayouts.end()) {
-		*ppInputLayout = iter->second;
-		return S_OK;
-	}
-
-	D3DX11_PASS_DESC passDesc = {};
-	if (FAILED(pShader->GetPassSignature(PassIndex, &passDesc)))
-		return E_FAIL;
-	if (pBuffer->Get_ElementCount() == 0 || pBuffer->Get_ElementDesc() == nullptr)
-		return E_FAIL;
-
-	HRESULT hr = m_pDevice->CreateInputLayout(
-		pBuffer->Get_ElementDesc(), pBuffer->Get_ElementCount(),
-		passDesc.pIAInputSignature, passDesc.IAInputSignatureSize,
-		ppInputLayout);
-
-	if (FAILED(hr))
-		return E_FAIL;
-
-	m_InputLayouts.emplace(key, *ppInputLayout);
-
-	return S_OK;
-}
 
 void CGraphicDevice::Free()
 {
@@ -246,9 +209,6 @@ void CGraphicDevice::Free()
 	Safe_Release(m_pDepthStencilView);
 	Safe_Release(m_pBackBufferRTV);
 	Safe_Release(m_pDeviceContext);
-	for (auto& pair : m_InputLayouts)
-		Safe_Release(pair.second);
-	m_InputLayouts.clear();
 
 #if defined(DEBUG) || defined(_DEBUG)
 	ID3D11Debug* d3dDebug;

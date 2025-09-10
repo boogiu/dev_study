@@ -8,11 +8,11 @@ class ENGINE_DLL IObjectService : public IService
 protected :
 	~IObjectService() DEFAULT;
 public:
+	virtual void Engine_Update(_float dt) PURE;
 	virtual void Priority_Update(_float fTimeDelta)PURE;
 	virtual void Update(_float fTimeDelta)PURE;
 	virtual void Late_Update(_float fTimeDelta)PURE;
 
-	virtual class CBuilder Create_Object(const CLONE_DESC clone)PURE;
 	virtual void Add_Object(class CGameObject* object, const LAYER_DESC* layer)PURE;
 	virtual const unordered_map<string, class CLayer*>& Get_LevelLayer(const string& LevelTag)PURE;
 

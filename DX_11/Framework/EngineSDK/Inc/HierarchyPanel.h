@@ -6,18 +6,27 @@ class CHierarchyPanel final:
 	public CBasePanel
 {
 private:
-	CHierarchyPanel(SIZE vp);
+	CHierarchyPanel(GUI_CONTEXT* context);
 	virtual ~CHierarchyPanel();
 	 HRESULT Initialize() ;
 
 public:
 	virtual void Render_GUI() override;
+	virtual void Update_Panel(_float dt) override;
 
 private:
-	class IObjectService* m_pObjectManager = { nullptr };
+	void ShowLevelList();
+	void ShowLayerList(const string& nowLevel);
+	void ShowObjectList();
+	vector<string> ConvertObjectNameList(class CLayer* layer);
 
+private:
+	_bool m_bOpened = { true };
+	_float m_fPosX = {};
+	_uint m_iSelectedLevel = {};
+	_uint m_iSelectedLayer = {};
 public:
-	static CHierarchyPanel* Create(SIZE vp);
+	static CHierarchyPanel* Create(GUI_CONTEXT* context);
 	virtual void Free();
 
 };

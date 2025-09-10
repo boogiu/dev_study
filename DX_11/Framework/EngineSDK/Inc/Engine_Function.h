@@ -54,21 +54,6 @@ namespace Engine
 		return iRefCnt;
 	}
 
-	template<>
-	inline  unsigned int Safe_Release(FMOD::Sound*& pInstance)
-	{
-		unsigned int		iRefCnt = 0;
-
-		if (nullptr != pInstance)
-		{
-			iRefCnt = pInstance->release();
-
-			if (0 == iRefCnt)
-				pInstance = nullptr;
-		}
-
-		return iRefCnt;
-	}
 }
 
 #endif // Engine_Function_h__

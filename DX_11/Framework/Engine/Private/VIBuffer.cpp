@@ -1,6 +1,7 @@
 #include "VIBuffer.h"
 
-CVIBuffer::CVIBuffer()
+CVIBuffer::CVIBuffer(const string& key)
+	:m_VIKey{key}
 {
 }
 

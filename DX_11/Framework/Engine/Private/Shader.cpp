@@ -15,7 +15,7 @@ HRESULT CShader::Initialize(ID3D11Device* pDevice, const string& filePath)
 #ifdef _DEBUG
 	iCompileFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
-	iShaderFlag = D3DCOMPILE_OPTIMIZATION_LEVEL1;
+	iCompileFlag = D3DCOMPILE_OPTIMIZATION_LEVEL1;
 #endif
 
 	wstring wPath = Helper::ConvertToWideString(filePath);
@@ -28,10 +28,21 @@ HRESULT CShader::Initialize(ID3D11Device* pDevice, const string& filePath)
 		return E_FAIL;
 
 	m_pTechnique = m_pEffect->GetTechniqueByIndex(0);
+	D3DX11_TECHNIQUE_DESC tDesc{};
+	m_pTechnique->GetDesc(&tDesc);
 
 	if (nullptr == m_pTechnique)
 		return E_FAIL;
 
+	for (size_t i = 0; i < tDesc.Passes; i++)
+	{
+		D3DX11_PASS_DESC desc{};
+		m_pTechnique->GetPassByIndex(i)->GetDesc(&desc);
+		m_Passes.emplace(desc.Name, m_pTechnique->GetPassByIndex(i));
+	}
+
+	m_FileName = filesystem::path(wPath).stem().wstring();
+	ReflectShader();
 	return S_OK;
 }
 
@@ -49,19 +60,168 @@ HRESULT CShader::GetPassSignature(UINT iPassIndex, D3DX11_PASS_DESC* pOutPassDes
 	return S_OK;
 }
 
+HRESULT CShader::GetPassSignature(const string& passConstant, D3DX11_PASS_DESC* pOutPassDesc)
+{
+	auto iter = m_Passes.find(passConstant);
+	if (iter != m_Passes.end()) {
+		iter->second->GetDesc(pOutPassDesc);
+		return S_OK;
+	}
+	return E_FAIL;
+}
 
-CShader* CShader::Create(ID3D11Device* pDevice, const string& filePath)
+
+void CShader::Apply(const string& passConstant, ID3D11DeviceContext* pContext)
+{
+	auto iter = m_Passes.find(passConstant);
+	if (iter != m_Passes.end()) {
+		iter->second->Apply(0, pContext);
+	}
+}
+
+HRESULT CShader::Bind_Value(const string& ConstantName, void* pData, _uint size)
+{
+	auto iter = m_Variables.find(ConstantName);
+	if(iter == m_Variables.end())
+		return E_FAIL;
+
+	if (iter->second.typeName == "float4x4")
+		return Bind_Matrix(ConstantName, static_cast<const _float4x4*>(pData));
+	else if (iter->second.typeName == "Texture2D")
+		return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(pData));
+
+	HRESULT hr = iter->second.pHandle->SetRawValue(pData, 0, size);
+
+	if (FAILED(hr)) {
+		return E_FAIL;
+	}
+
+	return hr;
+}
+
+HRESULT CShader::SetConstantBuffer(const string& ConstantName, ID3D11Buffer* pData)
+{
+	auto iter = m_CBuffers.find(ConstantName);
+	if (iter == m_CBuffers.end()) {
+		MSG_BOX("Wrong ConstantBuffer is Binding : CShader");
+		return E_FAIL;
+	}
+	
+	return iter->second.pHandle->SetConstantBuffer(pData);
+}
+
+HRESULT CShader::Bind_Matrix(const string& ConstantName, const _float4x4* pMatrix)
+{
+	auto iter = m_Variables.find(ConstantName);
+	if (iter == m_Variables.end()) {
+		MSG_BOX("Wrong Variable Name is Binding : CShader");
+		return E_FAIL;
+	}
+
+	ID3DX11EffectMatrixVariable* pMatrixVariable = iter->second.pHandle->AsMatrix();
+	if (!pMatrixVariable) {
+		MSG_BOX("Wrong Variable Type is Binding : CShader");
+		return E_FAIL;
+	}
+
+	pMatrixVariable->SetMatrix(reinterpret_cast<const _float*>(pMatrix));
+	return S_OK;
+}
+
+HRESULT CShader::Bind_ShaderResource(const string& ConstantName, ID3D11ShaderResourceView* pSRV)
+{
+	auto iter = m_Variables.find(ConstantName);
+	if (iter == m_Variables.end()) {
+		MSG_BOX("Wrong Variable Name is Binding : CShader");
+		return E_FAIL;
+	}
+
+	ID3DX11EffectShaderResourceVariable* pShaderVariable = iter->second.pHandle->AsShaderResource();
+	if (!pShaderVariable) {
+		MSG_BOX("Wrong Variable Type is Binding : CShader");
+		return E_FAIL;
+	}
+
+	pShaderVariable->SetResource(pSRV);
+	return S_OK;
+}
+
+void CShader::ReflectShader()
+{
+	D3DX11_EFFECT_DESC effectDesc;
+	m_pEffect->GetDesc(&effectDesc);
+
+	for (size_t i = 0; i < effectDesc.GlobalVariables; i++)
+	{
+		ID3DX11EffectVariable* pVariable=m_pEffect->GetVariableByIndex(i);
+		if (!pVariable->IsValid())
+			continue;
+
+		D3DX11_EFFECT_VARIABLE_DESC varDesc;
+		pVariable->GetDesc(&varDesc);
+
+		ID3DX11EffectType* pType = pVariable->GetType();
+		D3DX11_EFFECT_TYPE_DESC tType; 
+		pType->GetDesc(&tType);
+
+		string typname = tType.TypeName;
+		SHADER_VAR_DESC variableSlot{};
+		variableSlot.pHandle = pVariable;
+		variableSlot.constantName = varDesc.Name;
+		variableSlot.typeName = tType.TypeName;
+
+		ID3DX11EffectConstantBuffer* pParentCBuffer = pVariable->GetParentConstantBuffer();
+
+		if (pParentCBuffer->IsValid()) 
+		{
+			D3DX11_EFFECT_VARIABLE_DESC cbVarDesc;
+			pParentCBuffer->GetDesc(&cbVarDesc);
+			variableSlot.parentCBufferName = cbVarDesc.Name;
+		}
+		m_Variables.emplace(varDesc.Name, variableSlot);
+	}
+
+	for (size_t i = 0; i < effectDesc.ConstantBuffers; i++)
+	{
+		ID3DX11EffectConstantBuffer* pConstant = m_pEffect->GetConstantBufferByIndex(i);
+		if (!pConstant->IsValid())
+			continue;
+
+		D3DX11_EFFECT_VARIABLE_DESC varDesc;
+		pConstant->GetDesc(&varDesc);
+
+		ID3DX11EffectType* pType = pConstant->GetType();
+		D3DX11_EFFECT_TYPE_DESC typeDesc;
+		pType->GetDesc(&typeDesc);
+
+		CBUFFER_DESC cbDesc = {};
+		cbDesc.Name = varDesc.Name;
+		cbDesc.pHandle = pConstant;
+		cbDesc.Size = typeDesc.UnpackedSize;
+
+		m_CBuffers.emplace(cbDesc.Name, cbDesc);
+	}
+}
+
+
+CShader* CShader::Create(ID3D11Device* pDevice, const string& filePath, const string& key)
 {
 	CShader* instance = new CShader();
 	if (FAILED(instance->Initialize(pDevice, filePath))) {
-		MessageBoxA(nullptr, filePath.c_str(), "CShader Create", MB_OK);
+		MessageBoxA(nullptr, filePath.c_str(), "CShader Create error", MB_OK);
 		Safe_Release(instance);
 	}
+	if(instance)
+		instance->m_ShaderKey = key;
 
 	return instance;
 }
 
 void CShader::Free()
 {
+	__super::Free();
+	Safe_Release(m_pTechnique);
+	Safe_Release(m_pEffect);
 
+	m_Passes.clear();
 }

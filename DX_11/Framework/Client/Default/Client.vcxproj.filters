@@ -25,11 +25,23 @@
     <Filter Include="02. GameObjects">
       <UniqueIdentifier>{82f19664-ac45-4ed0-b50c-c55fd98ac222}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\BackGround">
-      <UniqueIdentifier>{78a54625-b9cd-4f3c-96cb-5744032ae8b8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Levels\GamePlay">
       <UniqueIdentifier>{4490dd11-7e81-4ce4-97e6-8eadd5785ae9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\CameraObject">
+      <UniqueIdentifier>{92a79fff-17a9-41de-acfd-0ee0fd264e61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97. Client_Shader">
+      <UniqueIdentifier>{0192430b-364d-419f-a00b-efda2080a236}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\UI_Object">
+      <UniqueIdentifier>{abc494be-97f5-4612-b714-94228bfc6aa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\UI_Object\BackGround">
+      <UniqueIdentifier>{78a54625-b9cd-4f3c-96cb-5744032ae8b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\Terrain">
+      <UniqueIdentifier>{17ae4b41-53cf-44b6-81e5-72754602e567}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -61,10 +73,16 @@
       <Filter>01. Levels\Logo</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BackGround.h">
-      <Filter>02. GameObjects\BackGround</Filter>
+      <Filter>02. GameObjects\UI_Object\BackGround</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\GamePlayLevel.h">
       <Filter>01. Levels\GamePlay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Free_Camera.h">
+      <Filter>02. GameObjects\CameraObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Terrain.h">
+      <Filter>02. GameObjects\Terrain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -92,15 +110,26 @@
       <Filter>01. Levels\Logo</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BackGround.cpp">
-      <Filter>02. GameObjects\BackGround</Filter>
+      <Filter>02. GameObjects\UI_Object\BackGround</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\GamePlayLevel.cpp">
       <Filter>01. Levels\GamePlay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Free_Camera.cpp">
+      <Filter>02. GameObjects\CameraObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Terrain.cpp">
+      <Filter>02. GameObjects\Terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
       <Filter>98. Default</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\Resources\ShaderFiles\VTX_NorTex.hlsl">
+      <Filter>97. Client_Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

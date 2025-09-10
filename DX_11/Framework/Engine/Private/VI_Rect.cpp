@@ -1,6 +1,7 @@
 #include "VI_Rect.h"
 
-CVI_Rect::CVI_Rect()
+CVI_Rect::CVI_Rect(const string& key)
+	:CVIBuffer{ key }
 {
 }
 
@@ -17,7 +18,7 @@ HRESULT CVI_Rect::Initialize(ID3D11Device* pDevice)
 {
 	m_iVertexBufferCount = 1;
 	m_iVerticesCount = 4;
-	m_iVertexStride = sizeof(VTXTEX);
+	m_iVertexStride = sizeof(VTXPOSTEX);
 	m_iIndicesCount = 6;
 	m_iIndexStride = 2; //byte
 	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
@@ -42,7 +43,7 @@ HRESULT CVI_Rect::Create_Vertex(ID3D11Device* pDevice)
 	VBDesc.MiscFlags = 0;
 	VBDesc.StructureByteStride = m_iVertexStride;
 
-	VTXTEX* VB = new VTXTEX[m_iVerticesCount];
+	VTXPOSTEX* VB = new VTXPOSTEX[m_iVerticesCount];
 	ZeroMemory(VB, m_iVertexStride * m_iVerticesCount);
 
 	_float s = 0.5;
@@ -92,9 +93,9 @@ HRESULT CVI_Rect::Create_Index(ID3D11Device* pDevice)
 	return hr;
 }
 
-CVI_Rect* CVI_Rect::Create(ID3D11Device* pDevice)
+CVI_Rect* CVI_Rect::Create(ID3D11Device* pDevice,const string& key)
 {
-	CVI_Rect* instance = new CVI_Rect();
+	CVI_Rect* instance = new CVI_Rect(key);
 	if (FAILED(instance->Initialize(pDevice))) {
 		MSG_BOX("Failed to Created : CVIBuffer_Rect");
 		Safe_Release(instance);
@@ -105,14 +106,4 @@ CVI_Rect* CVI_Rect::Create(ID3D11Device* pDevice)
 void CVI_Rect::Free()
 {
 	__super::Free();
-}
-
-_uint CVI_Rect::Get_ElementCount()
-{
-	return VTXPOS::iElementCount;
-}
-
-const D3D11_INPUT_ELEMENT_DESC* CVI_Rect::Get_ElementDesc()
-{
-	return VTXPOS::Elements;
 }

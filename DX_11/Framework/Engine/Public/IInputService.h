@@ -23,6 +23,8 @@ public:
     virtual const _float& Mouse_DeltaX() PURE;
     virtual const _float& Mouse_DeltaY() PURE;
     virtual const _float& Mouse_DeltaW()PURE;
+    virtual const _float2& Mouse_Pos() PURE;
+
 };
 
 NS_END

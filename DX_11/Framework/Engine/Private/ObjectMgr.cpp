@@ -4,17 +4,25 @@
 #include "IProtoService.h"
 #include "GameObject.h"
 #include "Layer.h"
-#include "Builder.h"
+#include "GameObjectBuilder.h"
 #include "ILevelService.h"
 
 CObjectMgr::CObjectMgr()
 	: m_pGameInstance(CGameInstance::GetInstance())
 {
+	Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CObjectMgr::Initialize()
 {
 	return S_OK;
+}
+
+void CObjectMgr::Engine_Update(_float dt)
+{
+	for (auto& pair : m_Layers)
+		for (auto& layers : pair.second)
+			layers.second->Engine_Update(dt);
 }
 
 void CObjectMgr::Priority_Update(_float dt)
@@ -36,12 +44,6 @@ void CObjectMgr::Late_Update(_float dt)
 	for (auto& pair : m_Layers)
 		for (auto& layers : pair.second)
 			layers.second->Late_Update(dt);
-}
-
-CBuilder CObjectMgr::Create_Object(const CLONE_DESC clone)
-{
-	_bool result = false;
-	return CBuilder(clone,&result);
 }
 
 void CObjectMgr::Add_Object(CGameObject* object, const LAYER_DESC* layer)
@@ -75,6 +77,7 @@ void CObjectMgr::Clear(const string& LevelTag)
 	for (auto& pair : m_Layers[LevelTag]) {
 		Safe_Release(pair.second);
 	}
+	m_Layers[LevelTag].clear();
 }
 
 HRESULT CObjectMgr::Sync_To_Level()
@@ -123,4 +126,6 @@ void CObjectMgr::Free()
 		pair.second.clear();
 	}
 	m_Layers.clear();
+
+	Safe_Release(m_pGameInstance);
 }

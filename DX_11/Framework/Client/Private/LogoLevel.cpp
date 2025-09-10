@@ -5,7 +5,14 @@
 #include "GameInstance.h"
 #include "IProtoService.h"
 #include "IObjectService.h"
+#include "IResourceService.h"
+#include "ICameraService.h"
+
 #include "BackGround.h"
+#include "Free_Camera.h"
+#include "Camera.h"
+#include "Terrain.h"
+#include "Builder.h"
 
 CLogoLevel::CLogoLevel(const string& LevelKey)
 	: CLevel{ LevelKey },
@@ -16,28 +23,26 @@ CLogoLevel::CLogoLevel(const string& LevelKey)
 
 HRESULT CLogoLevel::Initialize()
 {
-	
-		IObjectService* pObjMgr= m_pGameInstance->Get_ObjectMgr();
+	_uint ID2{};
 
-		CGameObject* obk = pObjMgr->Create_Object({ "Logo_Level","Proto_GameObject_Background" }) //어디서 꺼내냐
-		.Add_Layer({ "Logo_Level", "Layer_BackGround" }) //어디로 넣냐 ->기존에 프로토에서 꺼내서 레이어로
-		.With_Transform() //뭘 채우냐
-		.Set_Position({0.f,0.f,0.f})
-		.Set_Rotate({10.f, 10.f,10.f})
-		.Build("Instance"); //객체명은 뭐로 할거냐.
+	Builder::Create_UIObject({ "Logo_Level","Proto_GameObject_Background" })
+		.Add_Level("Logo_Level")
+		.Set_Position({ g_iWinSizeX * 0.5f,g_iWinSizeY * 0.5f })
+		.Set_Scale({30,30})
+		.Build("Main_UI");
 
-		pObjMgr->Create_Object({ "Logo_Level","Proto_GameObject_Background" }) //어디서 꺼내냐
-			.Add_Layer({ "Logo_Level", "Layer_BackGround" }) //어디로 넣냐 ->기존에 프로토에서 꺼내서 레이어로
-			.With_Transform() //뭘 채우냐
-			.Set_Position({ 0.f,0.f,0.f })
-			.Set_Rotate({ 10.f, 10.f,10.f })
-			.Build("Instance2"); //객체명은 뭐로 할거냐.
+	Builder::Create_Object({ "Logo_Level", "Proto_GameObject_Terrain" })
+		.Add_Level({ "Logo_Level","Layer_BackGround" })
+		.Set_Position({ 0,10,10 })
+		.Build("Terrain");
 
-		CTransform* m_pTransform = obk->Get_Component<CTransform>();
-		m_pTransform->Translate(m_pTransform->Dir(STATE::UP)*10);
+	CGameObject* Camera = Builder::Create_Object({ "Logo_Level","Proto_GameObject_Camera" })
+		.Add_Level({ "Logo_Level","Layer_Camera" })
+		.With_Camera({ (float)g_iWinSizeX / g_iWinSizeY })
+		.Set_Position({ 0,10,0 })
+		.Build("Main_Camera");
 
-		m_pTransform->Get_WorldMatrix();
-
+	m_pGameInstance->Get_CameraMgr()->Set_MainCam(Camera->Get_Component<CCamera>());
 	return S_OK;
 }
 
@@ -71,5 +76,22 @@ void CLogoLevel::Free()
 void CLogoLevel::PreLoad_Level()
 {
 	IProtoService* pProtoMgr = CGameInstance::GetInstance()->Get_PrototypeMgr();
+	IResourceService* pResourceMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
+
+	/*Loading Path*/
+	pResourceMgr->Add_ResourcePath(G_GlobalLevelKey, "Default_Tex", "../Bin/Resources/Textures/Terrain/Grass_1.dds");
+	pResourceMgr->Add_ResourcePath("Logo_Level", "Default_TexUI", "../Bin/Resources/Textures/TestUI.png");
+	pResourceMgr->Add_ResourcePath("Logo_Level", "Default_Terrain", "../Bin/Resources/Textures/Terrain/Height.bmp");
+	pResourceMgr->Add_ResourcePath("Logo_Level", "VTX_NorTex.hlsl", "../Bin/Resources/ShaderFiles/VTX_NorTex.hlsl");
+	pResourceMgr->Add_ResourcePath("Logo_Level", "Test_Sound", "../Bin/Resources/Sounds/Test.wav");
+
+	///*Loading Buffer*/ -> 사실상 오브젝트 로드할 때 로드 됨.
+	//pResourceMgr->Load_VIBuffer("Logo_Level", "Default_Terrain", BUFFER_TYPE::TERRAIN);
+	///*Loading Sound*/
+	//pResourceMgr->Load_Sound("Logo_Level", "Test_Sound");
+
+	/*Loading Object*/
 	pProtoMgr->Add_ProtoType("Logo_Level", "Proto_GameObject_Background", CBackGround::Create());
+	pProtoMgr->Add_ProtoType("Logo_Level", "Proto_GameObject_Camera", CFree_Camera::Create());
+	pProtoMgr->Add_ProtoType("Logo_Level", "Proto_GameObject_Terrain", CTerrain::Create());
 }

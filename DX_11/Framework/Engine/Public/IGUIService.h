@@ -9,7 +9,7 @@ protected:
     virtual ~IGUIService() DEFAULT;
 
 public:
-    virtual void Update(_float& dt) PURE;
+    virtual void Update(_float dt) PURE;
     virtual void Render_GUI() PURE;
     virtual bool Set_ProcHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)PURE;
     virtual _bool UsingUI()PURE;

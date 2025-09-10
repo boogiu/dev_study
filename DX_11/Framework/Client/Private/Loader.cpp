@@ -34,6 +34,8 @@ _uint WINAPI  CLoader::LoadingThread(void* pArg)
 
 HRESULT CLoader::Loading()
 {
+    CoInitializeEx(nullptr, 0);
+
     EnterCriticalSection(&m_CriticalSection);
     /*로딩 로직*/
     if (m_sNextLevel == "Logo_Level")
@@ -44,10 +46,6 @@ HRESULT CLoader::Loading()
     return S_OK;
 }
 
-void CLoader::Load_LogoLevel()
-{
-
-}
 
 CLoader* CLoader::Create(const string& nextLV)
 {

@@ -7,6 +7,18 @@
 
 #include "LoadingLevel.h"
 #include "LogoLevel.h"
+//ÇÜºÎ±âÇÜºÏ¾îÇÜºÏ½ºµü½º
+//		D3D11_FILTER Filter;
+//		D3D11_TEXTURE_ADDRESS_MODE AddressU;
+//		D3D11_TEXTURE_ADDRESS_MODE AddressV;
+//		D3D11_TEXTURE_ADDRESS_MODE AddressW;
+//		FLOAT MipLODBias;
+//		UINT MaxAnisotropy;
+//		D3D11_COMPARISON_FUNC ComparisonFunc;
+//		FLOAT BorderColor[4];
+//		FLOAT MinLOD;
+//		FLOAT MaxLOD;
+
 CMainApp::CMainApp()
 {
 }

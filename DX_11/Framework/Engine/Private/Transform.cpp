@@ -5,12 +5,14 @@ CTransform::CTransform()
 }
 
 CTransform::CTransform(const CTransform& rhs)
-	:CComponent(rhs)
+	:CComponent(rhs), m_WorldMatrix{rhs.m_WorldMatrix }
 {
 }
 
 HRESULT CTransform::Initialize_Prototype()
 {
+	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
+	XMStoreFloat4x4(&m_WorldInversMatrix, XMMatrixIdentity());
 	return S_OK;
 }
 
@@ -49,9 +51,29 @@ void CTransform::Rotation(_fvector eulerVector)
 {
 	_fvector addQuaternion = XMQuaternionRotationRollPitchYawFromVector(eulerVector);
 	_fvector myQuaternion = XMLoadFloat4(&m_qRotation);
+	_fvector newQuaternion = XMQuaternionMultiply(myQuaternion, addQuaternion);
+	_vector finalQuaternion= XMQuaternionNormalize(newQuaternion);
+	XMStoreFloat4(&m_qRotation, finalQuaternion);
+	m_bDirty = true;
+}
+
+void CTransform::Rotation(_fvector vAxis, _float fRadian)
+{
+	_fvector addQuaternion = XMQuaternionRotationAxis(vAxis, fRadian);
+	_fvector myQuaternion = XMLoadFloat4(&m_qRotation);
 	_fvector newQuaternion = XMQuaternionMultiply(addQuaternion, myQuaternion);
-	XMQuaternionNormalize(newQuaternion);
-	XMStoreFloat4(&m_qRotation, newQuaternion);
+	_vector finalQuaternion = XMQuaternionNormalize(newQuaternion);
+	XMStoreFloat4(&m_qRotation, finalQuaternion);
+	m_bDirty = true;
+}
+
+
+void CTransform::AddScale( _fvector scale)
+{
+	_vector nowScale = XMLoadFloat4(&m_vScale);
+	nowScale += scale;
+
+	XMStoreFloat4(&m_vScale, nowScale);
 	m_bDirty = true;
 }
 
@@ -73,16 +95,24 @@ void CTransform::Set_Rotate(const _float3& _eular)
 void CTransform::Set_Scale(const _float3& scale)
 {
 	_fvector newScale = XMVectorSetW(XMLoadFloat3(&scale), 0.f);
-	XMStoreFloat4(&m_vPosition, newScale);
+	XMStoreFloat4(&m_vScale, newScale);
 	m_bDirty = true;
 }
 
-const _float4x4& CTransform::Get_WorldMatrix()
+ _float4x4* CTransform::Get_WorldMatrix()
 {
 	if (m_bDirty) 
 		Update_Transform();
 	
-	return m_WorldMatrix;
+	return &m_WorldMatrix;
+}
+
+ _float4x4 CTransform::Get_InverseWorldMatrix()
+{
+	if (m_bDirty)
+		Update_Transform();
+	
+	return m_WorldInversMatrix;
 }
 
 _vector CTransform::Dir(STATE eState)
@@ -91,6 +121,23 @@ if (m_bDirty)
 		Update_Transform();
 	_matrix worldMat = XMLoadFloat4x4(&m_WorldMatrix);
 	return XMVector3Normalize(worldMat.r[static_cast<int>(eState)]);
+}
+
+void CTransform::Render_GUI()
+{
+	ImGui::SeparatorText("Transform");
+	float childWidth = ImGui::GetContentRegionAvail().x;
+	const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
+	const float childHeight = (textLineHeight * 8) + (ImGui::GetStyle().WindowPadding.y * 2);
+
+	ImGui::BeginChild("##TransformChild", ImVec2{ 0, childHeight}, true);
+	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Position");
+	ImGui::InputFloat3("##Position", reinterpret_cast<float*>(&m_vPosition),"%.1f", ImGuiInputTextFlags_ReadOnly);
+	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Rotation");
+	ImGui::InputFloat4("##Rotation", reinterpret_cast<float*>(&m_qRotation), "%.1f", ImGuiInputTextFlags_ReadOnly);
+	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Scale");
+	ImGui::InputFloat3("##Scale", reinterpret_cast<float*>(&m_vScale), "%.1f", ImGuiInputTextFlags_ReadOnly);
+	ImGui::EndChild();
 }
 
 void CTransform::LookAt(_fvector vAt)
@@ -134,7 +181,9 @@ void CTransform::Update_Transform()
 	_matrix matPos =	XMMatrixTranslation(m_vPosition.x, m_vPosition.y, m_vPosition.z);
 
 	_matrix WorldMatrix = matScale * matRot * matPos;
+	_matrix WorldInverseMatrix;
 	XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
+	XMStoreFloat4x4(&m_WorldInversMatrix, XMMatrixInverse(nullptr, WorldMatrix));
 	m_bDirty = false;
 }
 

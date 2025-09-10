@@ -22,6 +22,12 @@ HRESULT CLayer::Add_GameObject(CGameObject* pGameObject)
 		return E_FAIL;
 }
 
+void CLayer::Engine_Update(_float dt)
+{
+	for (auto& pGameObject : m_GameObjects)
+		pGameObject->Engine_Update(dt);
+}
+
 void CLayer::Priority_Update(_float dt)
 {
 	for (auto& pGameObject : m_GameObjects)

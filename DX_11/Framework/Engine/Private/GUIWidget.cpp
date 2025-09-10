@@ -40,26 +40,31 @@ void GUIWidget::ShowListInt(const vector<string>& vector, function<void(_uint)> 
 
  _vector GUIWidget::Vector4Float(const string& Name, _fvector vector, bool Editable)
 {
-	ImGui::Text(Name.c_str()); ImGui::SameLine();
+	ImGui::Text(Name.c_str());
 	ImGui::DragFloat4(("##" + Name).c_str(), (float*)&vector, 0.1f);
 	return vector;
 }
 
- void GUIWidget::ShowCombo(const vector<string>& vector, function<void(_uint)> callback)
- {
-	 if (ImGui::BeginCombo("##Layer", currentPreview)) {
-		 for (int i = 0; i < layerList.size(); ++i) {
-			 bool isSelected = (i == currentLayerIndex);
+void GUIWidget::ShowCombo(const vector<string>& vector, int currentIndex, const string& key,function<void(_uint)> callback)
+{
+	if (vector.empty())
+		return;
 
-			 if (ImGui::Selectable(layerList[i].c_str(), isSelected)) {
-				 currentLayerIndex = i;
-				 CSceneMgr::GetInstance()->Get_NowScene()->SwapLayer(this, LayerName, layerList[i]);
-				 LayerName = layerList[i]; // 반영
-			 }
+	float childWidth = ImGui::GetContentRegionAvail().x;//->이건 넓이 설정
+	ImGui::SetNextItemWidth(childWidth);
 
-			 if (isSelected)
-				 ImGui::SetItemDefaultFocus();
+	if (ImGui::BeginCombo(string("##" + key).c_str(), vector[currentIndex].c_str())) {
+	 for (int i = 0; i < vector.size(); ++i) {
+		 bool isSelected = (i == currentIndex);
+
+		 if (ImGui::Selectable(vector[i].c_str(), isSelected)) {
+			 currentIndex = i;
+			 callback(i);
 		 }
-		 ImGui::EndCombo();
+
+		 if (isSelected)
+			 ImGui::SetItemDefaultFocus();
 	 }
- }
+	 ImGui::EndCombo();
+}
+}
