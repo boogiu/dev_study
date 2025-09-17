@@ -10,11 +10,12 @@ private:
 
 public:
     HRESULT Initialize();
-    virtual void Register_Light(LIGHT_DESC* Light) override;
-    virtual void UnRegister_Light(LIGHT_DESC* Light) override;
+    virtual _int Register_Light(class CLight* Light) override;
+    virtual void UnRegister_Light(_int ID) override;
 
 private:
-    vector<LIGHT_DESC*> m_Lights;
+    vector<_bool> m_LightLifes;
+    vector<class CLight*> m_Lights;
 
 public:
     static CLightMgr* Create();

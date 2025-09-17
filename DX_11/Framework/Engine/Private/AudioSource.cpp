@@ -13,12 +13,11 @@ CAudioSource::CAudioSource()
 
 CAudioSource::CAudioSource(const CAudioSource& rhs)
 	:m_pAudioDevice(CGameInstance::GetInstance()->Get_AudioDev())
-	, CComponent(rhs), m_Audios(rhs.m_Audios), m_pTransform{rhs.m_pTransform}
+	, CComponent(rhs), m_Audios(rhs.m_Audios)
 {
 	for (auto& sound : m_Audios)
 		Safe_AddRef(sound.second.pSound);
 
-	Safe_AddRef(m_pTransform);
 	Safe_AddRef(m_pAudioDevice);
 }
 
@@ -38,30 +37,29 @@ HRESULT CAudioSource::Initialize(COMPONENT_DESC* pArg)
 	return S_OK;
 }
 
-HRESULT CAudioSource::Add_Slot(const string& levelTag, const string& key, const string& slotKey, bool isLoop)
+HRESULT CAudioSource::Add_Slot(const string& levelTag, const string& SoundKey, const string& slotKey, bool isLoop)
 {
 	IResourceService* pService = CGameInstance::GetInstance()->Get_ResourceMgr();
 	AUDIO_SLOT audioSlot = {};
-	audioSlot.pSound = pService->Load_Sound(levelTag, key);
+	audioSlot.pSound = pService->Load_Sound(levelTag, SoundKey);
 	audioSlot.isLoop = isLoop;
 
 	if (audioSlot.pSound == nullptr)
 		return E_FAIL;
 
-	auto iter = m_Audios.emplace(slotKey.empty() ? key : slotKey, audioSlot);
-
+	auto iter = m_Audios.emplace(slotKey.empty() ? SoundKey : slotKey, audioSlot);
 	if (iter.second == false)
 	{
 		MSG_BOX("There is Same Key Audio : CAudioSource");
 		return E_FAIL;
 	}
-
+	Safe_AddRef(audioSlot.pSound);
 	return S_OK;
 }
 
-void CAudioSource::Play(const string& key)
+void CAudioSource::Play(const string& SoundKey)
 {
-	auto iter = m_Audios.find(key);
+	auto iter = m_Audios.find(SoundKey);
 
 	if (iter == m_Audios.end())
 		return;

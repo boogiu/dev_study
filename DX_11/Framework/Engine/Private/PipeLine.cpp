@@ -3,6 +3,8 @@
 #include "ICameraService.h"
 #include "IResourceService.h"
 #include "Shader.h"
+#include "Model.h"
+#include "AnimatedModel.h"
 
 CPipeLine::CPipeLine()
 {
@@ -21,6 +23,8 @@ HRESULT CPipeLine::Initialize(ID3D11Device* pDevice)
     pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceObjectBuffer);    
     desc.ByteWidth = sizeof(LightBuffer);
     pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceLightBuffer);
+    desc.ByteWidth = sizeof(SkinningBuffer);
+    pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceSkinningBuffer);
 
     return S_OK;
 }
@@ -63,7 +67,7 @@ HRESULT CPipeLine::Update_LightBuffer(ID3D11DeviceContext* pContext)
 
     lightBuffer.vLightDir = {0,-1,0,0};
     lightBuffer.vLightDiffuse = { 1.f, 1.f, 1.f, 1.f };
-    lightBuffer.vLightAmbient = { 0.3f,0.3f,0.3f,1 };
+    lightBuffer.vLightAmbient = { 0.8f,0.8f,0.8f,1 };
     lightBuffer.vLightSpecular = { 1.f, 1.f, 1.f, 1.f };
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -108,6 +112,35 @@ HRESULT CPipeLine::Update_ObjectBuffer(ID3D11DeviceContext* pContext, _float4x4*
     return S_OK;
 }
 
+HRESULT CPipeLine::Update_SkinningBuffer(ID3D11DeviceContext* pContext, CModel* pModel, _uint drawIndexd)
+{
+    CAnimatedModel* pAnimModel = dynamic_cast<CAnimatedModel*>(pModel);
+    if (!pAnimModel)
+          return S_OK;
+
+    const auto& boneMatrices = pAnimModel->Get_BoneMatrices(drawIndexd);
+    if (boneMatrices.empty())
+        return S_OK; 
+
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT hr = pContext->Map(
+        m_pDeviceSkinningBuffer,
+        0,
+        D3D11_MAP_WRITE_DISCARD,
+        0,
+        &mappedResource
+    );
+
+    if (FAILED(hr))
+        return hr;
+
+    size_t dataSize = sizeof(_float4x4) * boneMatrices.size();
+    memcpy(mappedResource.pData, boneMatrices.data(), dataSize);
+    pContext->Unmap(m_pDeviceSkinningBuffer, 0);
+
+    return S_OK;
+}
+
 
 CPipeLine* CPipeLine::Create(ID3D11Device* pDevice)
 {
@@ -125,4 +158,5 @@ void CPipeLine::Free()
     Safe_Release(m_pDeviceFrameBuffer);
     Safe_Release(m_pDeviceObjectBuffer);
     Safe_Release(m_pDeviceLightBuffer);
+    Safe_Release(m_pDeviceSkinningBuffer);
 }

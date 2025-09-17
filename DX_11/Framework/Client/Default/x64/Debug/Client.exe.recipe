@@ -5,11 +5,7 @@
       <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\Client.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles>
-    <ContentFile>
-      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\VTX_NorTex.cso</FullPath>
-    </ContentFile>
-  </ContentFiles>
+  <ContentFiles />
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>

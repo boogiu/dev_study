@@ -43,6 +43,9 @@
     <Filter Include="02. GameObjects\Terrain">
       <UniqueIdentifier>{17ae4b41-53cf-44b6-81e5-72754602e567}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\StaticObject">
+      <UniqueIdentifier>{4c782a84-7d56-461b-baa2-11912b2fd8c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -84,6 +87,9 @@
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02. GameObjects\Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\StaticObject.h">
+      <Filter>02. GameObjects\StaticObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -121,15 +127,13 @@
     <ClCompile Include="..\Private\Terrain.cpp">
       <Filter>02. GameObjects\Terrain</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\StaticObject.cpp">
+      <Filter>02. GameObjects\StaticObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
       <Filter>98. Default</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\Bin\Resources\ShaderFiles\VTX_NorTex.hlsl">
-      <Filter>97. Client_Shader</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

@@ -4220,9 +4220,9 @@ ImGuiInputTextState::~ImGuiInputTextState()
     IM_DELETE(Stb);
 }
 
-void ImGuiInputTextState::OnKeyPressed(int key)
+void ImGuiInputTextState::OnKeyPressed(int imguiID)
 {
-    stb_textedit_key(this, Stb, key);
+    stb_textedit_key(this, Stb, imguiID);
     CursorFollow = true;
     CursorAnimReset();
 }
@@ -4705,8 +4705,8 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         // Declare some inputs, the other are registered and polled via Shortcut() routing system.
         // FIXME: The reason we don't use Shortcut() is we would need a routing flag to specify multiple mods, or to all mods combination into individual shortcuts.
         const ImGuiKey always_owned_keys[] = { ImGuiKey_LeftArrow, ImGuiKey_RightArrow, ImGuiKey_Enter, ImGuiKey_KeypadEnter, ImGuiKey_Delete, ImGuiKey_Backspace, ImGuiKey_Home, ImGuiKey_End };
-        for (ImGuiKey key : always_owned_keys)
-            SetKeyOwner(key, id);
+        for (ImGuiKey imguiID : always_owned_keys)
+            SetKeyOwner(imguiID, id);
         if (user_clicked)
             SetKeyOwner(ImGuiKey_MouseLeft, id);
         g.ActiveIdUsingNavDirMask |= (1 << ImGuiDir_Left) | (1 << ImGuiDir_Right);
@@ -8294,7 +8294,7 @@ bool ImGuiSelectionBasicStorage::GetNextSelectedItem(void** opaque_it, ImGuiID* 
             it++;
     const bool has_more = (it != it_end);
     *opaque_it = has_more ? (void**)(it + 1) : (void**)(it);
-    *out_id = has_more ? it->key : 0;
+    *out_id = has_more ? it->imguiID : 0;
     if (PreserveOrder && !has_more)
         _Storage.BuildSortByKey();
     return has_more;
@@ -8312,7 +8312,7 @@ static void ImGuiSelectionBasicStorage_BatchSetItemSelected(ImGuiSelectionBasicS
 {
     ImGuiStorage* storage = &selection->_Storage;
     ImGuiStoragePair* it = ImLowerBound(storage->Data.Data, storage->Data.Data + size_before_amends, id);
-    const bool is_contained = (it != storage->Data.Data + size_before_amends) && (it->key == id);
+    const bool is_contained = (it != storage->Data.Data + size_before_amends) && (it->imguiID == id);
     if (selected == (is_contained && it->val_i != 0))
         return;
     if (selected && !is_contained)

@@ -17,7 +17,7 @@ public:
 	virtual void Submit_UI(const UI_PACKET& packet) override {m_pUIPass->Submit(packet);};
 
 public:
-	HRESULT Get_InputLayout(class CModel* pModel, class CShader* pShader, const string& passConstant, ID3D11InputLayout** ppInputLayout);
+	HRESULT Get_InputLayout(class CModel* pModel, class CMaterial* pMaterial,  _uint DrawIndex, ID3D11InputLayout** ppInputLayout);
 	class CPipeLine* Get_Pipeline() { return m_pPipeLine; }
 
 private:

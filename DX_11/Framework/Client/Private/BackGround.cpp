@@ -25,14 +25,14 @@ HRESULT CBackGround::Initialize_Prototype()
 	//여기서 컴포넌트 추가 ...//
 	__super::Initialize_Prototype();
 
-	CModel* model = Get_Component<CModel>();
-	CMaterial* material = Get_Component<CMaterial>();
-
-	model->Link_Buffer(G_GlobalLevelKey, "Engine_Default_Rect", BUFFER_TYPE::BASIC_RECT);
-	model->Link_Element(VTXPOSTEX::Elements, VTXPOSTEX::iElementCount);
-
-	material->Link_Shader(G_GlobalLevelKey, "VTX_TexPos.hlsl");
-	material->Link_Texture("Logo_Level", "Default_TexUI", "g_DiffuseTexture");
+	//CModel* model = Get_Component<CModel>();
+	//CMaterial* material = Get_Component<CMaterial>();
+	//
+	//model->Link_Buffer(G_GlobalLevelKey, "Engine_Default_Rect", BUFFER_TYPE::BASIC_RECT);
+	//model->Link_Element(VTXPOSTEX::Elements, VTXPOSTEX::iElementCount);
+	//
+	//material->Link_Shader(G_GlobalLevelKey, "VTX_TexPos.hlsl");
+	//material->Link_Texture("Logo_Level", "Default_TexUI", "g_DiffuseTexture");
 
 	return S_OK;
 }

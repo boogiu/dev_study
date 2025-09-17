@@ -16,11 +16,11 @@ public:
     HRESULT Initialize(const ENGINE_DESC& engine, ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual void Update(_float dt);
     virtual void Render_GUI();
-
+    virtual ImGuiContext* GetEngineImGuiContext() override;
 public:
     virtual bool Set_ProcHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
     virtual _bool UsingUI() { return m_bUsingUI; }
-
+    virtual void Register_Panel(class CBasePanel* ) {}
 private:
     void Set_Theme();
     void Set_Panel();

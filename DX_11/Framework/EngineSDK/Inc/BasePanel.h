@@ -3,7 +3,7 @@
 #include "GUI_Context.h"
 
 NS_BEGIN(Engine)
-class CBasePanel abstract:
+class ENGINE_DLL CBasePanel abstract:
     public CBase
 {
 protected:

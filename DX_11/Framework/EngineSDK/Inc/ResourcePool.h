@@ -4,69 +4,48 @@
 
 NS_BEGIN(Engine)
 
-template<typename T>
+
+using Resource = unordered_map<string, any>; //-> 이건 특정 자료형을 담는 언오더드 맵임. (리소스 키와, 리소스 자체)
+
 class ResourcePool {
 public:
-	HRESULT Add_Resource(const string& key, T* resource) {
-		if (m_Resources.count(key)) {
-			string err = key + "is Already Exsist. ";
-			MessageBoxA(nullptr, err.c_str(), "ResourcePool", MB_OK);
-			return E_FAIL;
-		}
-		
-		m_Resources.emplace(key, resource);
-	}
+	template<typename T>
+	HRESULT Add_BaseResource(T resource, const string& imguiID) {
 
-	T* Find(const string& key) {
+		auto iter = m_Resources[type_index(typeid(T))].emplace(imguiID, resource);
 
-		auto iter = m_Resources.find(key);
-
-		if (iter != m_Resources.end())
-			return iter->second;
+		if (iter->second == true)
+			return S_OK;
 		else
-			return nullptr;
+			return E_FAIL;
 	}
 
-	void Clear() {
-		for (auto& pair : m_Resources)
-			Safe_Release(pair.second);
+	template<typename T>
+	T Find_Resource(const string& imguiID) {
+		auto iter = m_Resources.find(type_index(typeid(T)));
 
+		if (iter == m_Resources.end())
+		{
+			MSG_BOX("Wrong Resource Type Requested : ResourcePool");
+			return T() ;
+		}
+		auto resourceIter = iter->second.find(imguiID);
+
+		if (resourceIter == iter->second.end()) {
+			MSG_BOX("Wrong Resource Key Requested : ResourcePool");
+			return T();
+		}
+		return any_cast<T>(resourceIter->second);
+	}
+
+	void ClearAll() {
+		for (auto& pair : m_Resources) {
+
+			pair.second.clear();
+		}
 		m_Resources.clear();
 	}
-
 private:
-	unordered_map<string, T*> m_Resources;
+	unordered_map<type_index, Resource> m_Resources; //이건 각 자료형을 기준으로 나누는 리소스
 };
-
-template<>
-class ResourcePool<string> {
-public:
-	HRESULT Add_Resource(const string& key, string resource) {
-		if (m_Resources.count(key)) {
-			string err = key + "is Already Exsist. ";
-			MessageBoxA(nullptr, err.c_str(), "ResourcePool", MB_OK);
-			return E_FAIL;
-		}
-
-		m_Resources.emplace(key, resource);
-	}
-
-	string Find(const string& key) {
-
-		auto iter = m_Resources.find(key);
-
-		if (iter != m_Resources.end())
-			return iter->second;
-		else
-			return string();
-	}
-
-	void Clear() {
-		m_Resources.clear();
-	}
-
-private:
-	unordered_map<string, string> m_Resources;
-};
-
 NS_END

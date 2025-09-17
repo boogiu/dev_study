@@ -25,9 +25,9 @@ HRESULT CUI_Object::Initialize_Prototype()
     XMStoreFloat4x4(&m_ViewMat, XMMatrixIdentity());
     XMStoreFloat4x4(&m_ProjMat, XMMatrixIdentity());
 
-    CModel* model = Add_Component<CModel>();
-    CMaterial* material = Add_Component<CMaterial>();
-
+//    CModel* model = Add_Component<CModel>();
+//    CMaterial* material = Add_Component<CMaterial>();
+//
     __super::Initialize_Prototype();
     return S_OK;
 }
@@ -52,8 +52,8 @@ void CUI_Object::Engine_Update(_float dt)
     Update_UITransform();
 
     UI_PACKET packet;
-    packet.pModel = Add_Component<CModel>();
-    packet.pMaterial = Add_Component<CMaterial>();
+   // packet.pModel = Add_Component<CModel>();
+   // packet.pMaterial = Add_Component<CMaterial>();
     packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
     packet.pViewMatrix = &m_ViewMat;
 
@@ -78,9 +78,9 @@ void CUI_Object::Update_UITransform()
     m_WinSizeX = CGameInstance::GetInstance()->Get_ClientSize().x;
     m_WinSizeY = CGameInstance::GetInstance()->Get_ClientSize().y;
 
-    m_pTransform->Set_Scale({ m_fSizeX,m_fSizeY,1.f });
+    m_pTransform->Scale({ m_fSizeX,m_fSizeY,1.f });
     m_pTransform->Set_Pos({m_fX - m_WinSizeX*0.5f,  -m_fY+m_WinSizeY*0.5f, 0.f});
-    m_pTransform->Set_Rotate({ 0,0,m_fRadian});
+    m_pTransform->Rotate({ 0,0,m_fRadian});
 }
 
 void CUI_Object::Rotate_Left(_float _radian)

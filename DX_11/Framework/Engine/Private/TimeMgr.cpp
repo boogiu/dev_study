@@ -7,49 +7,49 @@ CTimeMgr::CTimeMgr()
 }
 
 
-CTimer* CTimeMgr::Add_Timer(const string& key)
+CTimer* CTimeMgr::Add_Timer(const string& imguiID)
 {
-	CTimer* instance =  Find_Timer(key);
+	CTimer* instance =  Find_Timer(imguiID);
 
 	if(instance)
 		return instance;
 
 	instance = CTimer::Create();
-	m_Timers.insert({ key,instance });
+	m_Timers.insert({ imguiID,instance });
 
 	return instance;
 }
 
-void CTimeMgr::Update_Timer(const string& key)
+void CTimeMgr::Update_Timer(const string& imguiID)
 {
-	CTimer* instance = Find_Timer(key);
+	CTimer* instance = Find_Timer(imguiID);
 
 	if (!instance) return;
 
 	instance->Update_Timer();
 }
 
-_float CTimeMgr::Get_DeltaTime(const string& key, _bool raw)
+_float CTimeMgr::Get_DeltaTime(const string& imguiID, _bool raw)
 {
-	CTimer* instance = Find_Timer(key);
+	CTimer* instance = Find_Timer(imguiID);
 
 	if (!instance) return 0.f;
 
 	return instance->Get_DeltaTime(raw);
 }
 
-void CTimeMgr::Set_TimeScale(const string& key, _float scale)
+void CTimeMgr::Set_TimeScale(const string& imguiID, _float scale)
 {
-	CTimer* instance = Find_Timer(key);
+	CTimer* instance = Find_Timer(imguiID);
 
 	if (!instance) return ;
 
 	instance->Set_TimeScale(scale);
 }
 
-CTimer* CTimeMgr::Find_Timer(const string& key)
+CTimer* CTimeMgr::Find_Timer(const string& imguiID)
 {
-	auto iter = m_Timers.find(key);
+	auto iter = m_Timers.find(imguiID);
 
 	if (iter != m_Timers.end())
 		return iter->second;

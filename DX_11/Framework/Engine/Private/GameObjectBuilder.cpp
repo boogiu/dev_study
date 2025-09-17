@@ -9,6 +9,7 @@
 
 #include "Camera.h"
 #include "Model.h"
+#include "Light.h"
 
 CGameObjectBuilder::CGameObjectBuilder(const CLONE_DESC& _cloneDesc)
 	:m_pGameInstance(CGameInstance::GetInstance())
@@ -72,7 +73,7 @@ CGameObject* CGameObjectBuilder::Build(const string& instanceKey, _uint* id)
 	return instance;
 }
 
-CGameObjectBuilder& CGameObjectBuilder::Add_Level(const LAYER_DESC& layer)
+CGameObjectBuilder& CGameObjectBuilder::Add_To_Layer(const LAYER_DESC& layer)
 {
 
 	if (!m_pGameInstance->Get_LevelMgr()->Check_ValidateLevel(layer.DestLevel)) {
@@ -84,7 +85,7 @@ CGameObjectBuilder& CGameObjectBuilder::Add_Level(const LAYER_DESC& layer)
 	return *this;
 }
 
-CGameObjectBuilder& CGameObjectBuilder::Set_Position(const _float3 position)
+CGameObjectBuilder& CGameObjectBuilder::Position(const _float3 position)
 {
 	auto iter = m_CompDesc.find(type_index(typeid(CTransform)));
 
@@ -99,7 +100,7 @@ CGameObjectBuilder& CGameObjectBuilder::Set_Position(const _float3 position)
 	return *this;
 }
 
-CGameObjectBuilder& CGameObjectBuilder::Set_Rotate(const _float3 rotate)
+CGameObjectBuilder& CGameObjectBuilder::Rotate(const _float3 rotate)
 {
 	auto iter = m_CompDesc.find(type_index(typeid(CTransform)));
 
@@ -116,7 +117,7 @@ CGameObjectBuilder& CGameObjectBuilder::Set_Rotate(const _float3 rotate)
 	return *this;
 }
 
-CGameObjectBuilder& CGameObjectBuilder::Set_Scale(const _float3 scale)
+CGameObjectBuilder& CGameObjectBuilder::Scale(const _float3 scale)
 {
 	auto iter = m_CompDesc.find(type_index(typeid(CTransform)));
 
@@ -131,9 +132,16 @@ CGameObjectBuilder& CGameObjectBuilder::Set_Scale(const _float3 scale)
 	return *this;
 }
 
-CGameObjectBuilder& CGameObjectBuilder::With_Camera(const CAMERA_DESC& camera)
+CGameObjectBuilder& CGameObjectBuilder::Camera(const CAMERA_DESC& camera)
 {
 	CAMERA_DESC* CameraDesc = new CAMERA_DESC(camera);
 	m_CompDesc.emplace(type_index(typeid(CCamera)), CameraDesc);
+	return *this;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::Light(const LIGHT_INIT_DESC& light)
+{
+	LIGHT_INIT_DESC* LightDesc = new LIGHT_INIT_DESC(light);
+	m_CompDesc.emplace(type_index(typeid(CLight)), LightDesc);
 	return *this;
 }

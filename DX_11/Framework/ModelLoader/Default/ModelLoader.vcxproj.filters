@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="00. MainApp">
+      <UniqueIdentifier>{29db53c3-e626-4ea8-88cb-2876bc291c21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Levels">
+      <UniqueIdentifier>{9f32b5ab-ba7f-413b-a732-92a72c06c300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. ModelObject">
+      <UniqueIdentifier>{2dbb905e-9d46-4d0d-a7e2-701531862e71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. LoaderComponent">
+      <UniqueIdentifier>{168c879f-28b7-4113-bbbc-250dea311749}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99. Defines">
+      <UniqueIdentifier>{8b20fbde-3288-4877-921e-aefb2e6295ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Default">
+      <UniqueIdentifier>{db93563a-652a-47c5-b4aa-e1a91e664d27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. LoadResource">
+      <UniqueIdentifier>{5e041312-e46e-45d1-97c8-10fb6adc5f7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. LoadResource\Meshes">
+      <UniqueIdentifier>{84f440a2-189e-42ab-a631-fad9febeffab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97. GUI_Inc">
+      <UniqueIdentifier>{42c3d686-f2ef-4ae5-93d2-80e999469de7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. ModelObject\BasicObject">
+      <UniqueIdentifier>{a56df350-b3dd-4bee-a1d8-0ff239e17890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. ModelObject\CamObject">
+      <UniqueIdentifier>{34ab0cd1-bcc2-41d5-a562-d6ff8540211f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. LoaderComponent\Model">
+      <UniqueIdentifier>{5005a669-dde6-4bc1-86c1-5c67029aa1bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. LoaderComponent\Material">
+      <UniqueIdentifier>{464a4645-ab79-42d3-abc5-8b1ca3f84517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. LoadResource\MaterialData">
+      <UniqueIdentifier>{64cf9b9b-9f4e-4c9c-bdf7-ccc3cca7f042}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. LoaderComponent\Model\Static">
+      <UniqueIdentifier>{a8170fdc-2a36-421b-b21b-72f01699582f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. LoadResource\Skeleton">
+      <UniqueIdentifier>{ebbc872d-2693-4129-8485-d26705389d6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. LoadResource\Skeleton\Bone">
+      <UniqueIdentifier>{63527be2-5dc8-46ce-be17-c1480bcd9840}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. LoaderComponent\Model\Animated">
+      <UniqueIdentifier>{1fa6e934-d275-42d0-8571-6c3959c18459}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. LoadResource\Meshes\Static">
+      <UniqueIdentifier>{0f8bc89d-b361-43ac-978e-7f8292278d46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. LoadResource\Meshes\Animated">
+      <UniqueIdentifier>{08c389ff-8973-4218-bb7f-c6a36680d1f0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>98. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>98. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>98. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>98. Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Loader_Defines.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MainApp.h">
+      <Filter>00. MainApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ModelLevel.h">
+      <Filter>01. Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\GraphEditor.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imconfig.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\ImCurveEdit.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\ImGradient.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imgui.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_internal.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\ImGuizmo.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\ImSequencer.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imstb_rectpack.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imstb_textedit.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imstb_truetype.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\ImZoomSlider.h">
+      <Filter>97. GUI_Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ModelObject.h">
+      <Filter>02. ModelObject\BasicObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Free_Camera.h">
+      <Filter>02. ModelObject\CamObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LoadMaterial.h">
+      <Filter>03. LoaderComponent\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LoadedMaterialData.h">
+      <Filter>04. LoadResource\MaterialData</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LoadBone.h">
+      <Filter>04. LoadResource\Skeleton\Bone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LoadStaticModel.h">
+      <Filter>03. LoaderComponent\Model\Static</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LoadedSkeleton.h">
+      <Filter>04. LoadResource\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LoadAnimatedModel.h">
+      <Filter>03. LoaderComponent\Model\Animated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\LoadedStaticMesh.h">
+      <Filter>04. LoadResource\Meshes\Static</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LoadedAnimatedMesh.h">
+      <Filter>04. LoadResource\Meshes\Animated</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="ModelLoader.ico">
+      <Filter>98. Default</Filter>
+    </Image>
+    <Image Include="small.ico">
+      <Filter>98. Default</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>98. Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MainApp.cpp">
+      <Filter>00. MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ModelLevel.cpp">
+      <Filter>01. Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\GraphEditor.cpp">
+      <Filter>97. GUI_Inc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\ImCurveEdit.cpp">
+      <Filter>97. GUI_Inc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\ImGradient.cpp">
+      <Filter>97. GUI_Inc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui.cpp">
+      <Filter>97. GUI_Inc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_demo.cpp">
+      <Filter>97. GUI_Inc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_draw.cpp">
+      <Filter>97. GUI_Inc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_tables.cpp">
+      <Filter>97. GUI_Inc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_widgets.cpp">
+      <Filter>97. GUI_Inc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\ImGuizmo.cpp">
+      <Filter>97. GUI_Inc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\ImSequencer.cpp">
+      <Filter>97. GUI_Inc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ModelObject.cpp">
+      <Filter>02. ModelObject\BasicObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Free_Camera.cpp">
+      <Filter>02. ModelObject\CamObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LoadMaterial.cpp">
+      <Filter>03. LoaderComponent\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LoadedMaterialData.cpp">
+      <Filter>04. LoadResource\MaterialData</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LoadBone.cpp">
+      <Filter>04. LoadResource\Skeleton\Bone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LoadStaticModel.cpp">
+      <Filter>03. LoaderComponent\Model\Static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LoadedSkeleton.cpp">
+      <Filter>04. LoadResource\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LoadAnimatedModel.cpp">
+      <Filter>03. LoaderComponent\Model\Animated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LoadedStaticMesh.cpp">
+      <Filter>04. LoadResource\Meshes\Static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LoadedAnimatedMesh.cpp">
+      <Filter>04. LoadResource\Meshes\Animated</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ModelLoader.rc">
+      <Filter>98. Default</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

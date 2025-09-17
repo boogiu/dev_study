@@ -25,6 +25,11 @@ class CPipeLine :
         _float4x4 matWorld;
     };
 
+    struct SkinningBuffer
+    {
+        _float4x4 BoneMatrices[512];
+    };
+
 private:
     CPipeLine();
    virtual ~CPipeLine() DEFAULT;
@@ -34,16 +39,19 @@ public:
     HRESULT Update_FrameBuffer(ID3D11DeviceContext* pContext);
     HRESULT Update_LightBuffer(ID3D11DeviceContext* pContext);
     HRESULT Update_ObjectBuffer(ID3D11DeviceContext* pContext, _float4x4* pMatrix);
+    HRESULT Update_SkinningBuffer(ID3D11DeviceContext* pContext, class CModel* pModel, _uint drawIndexd);
 
 public:
     ID3D11Buffer* Get_FrameBuffer() { return m_pDeviceFrameBuffer; };
     ID3D11Buffer* Get_ObjectBuffer() { return m_pDeviceObjectBuffer; };
     ID3D11Buffer* Get_LightBuffer() { return m_pDeviceLightBuffer; };
+    ID3D11Buffer* Get_SkinningBuffer() { return m_pDeviceSkinningBuffer; };
 
 private:
     ID3D11Buffer* m_pDeviceFrameBuffer = {nullptr};
     ID3D11Buffer* m_pDeviceLightBuffer = {nullptr};
     ID3D11Buffer* m_pDeviceObjectBuffer = {nullptr};
+    ID3D11Buffer* m_pDeviceSkinningBuffer = {nullptr};
 
 public:
     static CPipeLine* Create(ID3D11Device* pDevice);

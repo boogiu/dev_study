@@ -10,6 +10,15 @@
       <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\Shader_Define.cso</FullPath>
     </ContentFile>
     <ContentFile>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_Mesh.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_NorTex.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_SkinMesh.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
       <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_TexPos.cso</FullPath>
     </ContentFile>
   </ContentFiles>

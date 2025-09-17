@@ -6,7 +6,7 @@ class ENGINE_DLL CVI_Terrain :
     public CVIBuffer
 {
 protected:
-	CVI_Terrain(const string& key);
+	CVI_Terrain(const string& imguiID);
 	CVI_Terrain(const CVI_Terrain& rhs);
 	virtual ~CVI_Terrain();
 
@@ -22,14 +22,14 @@ private:
 
 private:
 	_uint* pPixels = {nullptr};
-	VTXNORMTEX* VB = { nullptr };
-	_uint* IB = { nullptr };
+	VTXNORMTEX* m_VBContainer = { nullptr };
+	_uint* m_IBContainer = { nullptr };
 
 	_uint iVerticesCountX = {};
 	_uint iVerticesCountZ = {};
 
 public:
-	static CVI_Terrain* Create(ID3D11Device* pDevice, const string& key, const string& HeightfilePath );
+	static CVI_Terrain* Create(ID3D11Device* pDevice, const string& imguiID, const string& HeightfilePath );
 	virtual void Free() override;
 
 };

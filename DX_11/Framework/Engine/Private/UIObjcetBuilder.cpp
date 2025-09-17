@@ -71,7 +71,7 @@ CUI_Object* CUIObjcetBuilder::Build(const string& instanceKey, _uint* id)
 	return instance;
 }
 
-CUIObjcetBuilder& CUIObjcetBuilder::Add_Level(const string& Level)
+CUIObjcetBuilder& CUIObjcetBuilder::Add_To_Level(const string& Level)
 {
 	if (!m_pGameInstance->Get_LevelMgr()->Check_ValidateLevel(Level)) {
 		MSG_BOX("Destination Level Tag is Invalidate : CUIObjcetBuilder");
@@ -82,20 +82,20 @@ CUIObjcetBuilder& CUIObjcetBuilder::Add_Level(const string& Level)
 	return *this;
 }
 
-CUIObjcetBuilder& CUIObjcetBuilder::Set_Position(const _float2 position)
+CUIObjcetBuilder& CUIObjcetBuilder::Position(const _float2 position)
 {
 	m_pObjDesc->fX = position.x;
 	m_pObjDesc->fY = position.y;
 	return *this;
 }
 
-CUIObjcetBuilder& CUIObjcetBuilder::Set_Rotate(const _float radian)
+CUIObjcetBuilder& CUIObjcetBuilder::Rotate(const _float radian)
 {
 	m_pObjDesc->fRadian = radian;
 	return *this;
 }
 
-CUIObjcetBuilder& CUIObjcetBuilder::Set_Scale(const _float2 scale)
+CUIObjcetBuilder& CUIObjcetBuilder::Scale(const _float2 scale)
 {
 	m_pObjDesc->fSizeX = scale.x;
 	m_pObjDesc->fSizeY = scale.y;

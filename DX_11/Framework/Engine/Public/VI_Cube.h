@@ -6,7 +6,7 @@ class ENGINE_DLL CVI_Cube final :
 	public CVIBuffer
 {
 protected:
-	CVI_Cube(const string& key);
+	CVI_Cube(const string& imguiID);
 	CVI_Cube(const CVI_Cube& rhs);
 	virtual ~CVI_Cube();
 
@@ -18,7 +18,7 @@ private:
 	virtual HRESULT Create_Index(ID3D11Device* pDevice) override;
 
 public:
-	static CVI_Cube* Create(ID3D11Device* pDevice, const string& key);
+	static CVI_Cube* Create(ID3D11Device* pDevice, const string& imguiID);
 	virtual void Free() override;
 };
 NS_END

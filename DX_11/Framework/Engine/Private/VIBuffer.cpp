@@ -1,7 +1,7 @@
 #include "VIBuffer.h"
 
-CVIBuffer::CVIBuffer(const string& key)
-	:m_VIKey{key}
+CVIBuffer::CVIBuffer(const string& meshKey)
+	:m_VIKey{ meshKey }
 {
 }
 
@@ -47,6 +47,10 @@ HRESULT CVIBuffer::Render(ID3D11DeviceContext* pContext)
 {
 	pContext->DrawIndexed(m_iIndicesCount, 0, 0);
 	return S_OK;
+}
+
+void CVIBuffer::Render_GUI()
+{
 }
 
 HRESULT CVIBuffer::Create_Vertex(ID3D11Device* pDevice)

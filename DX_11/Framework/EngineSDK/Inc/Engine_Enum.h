@@ -15,8 +15,7 @@ namespace Engine
     enum class STATE { RIGHT, UP, LOOK, POSITION, END };
 
     enum class BUFFER_TYPE { 
-        BASIC_RECT , BASIC_CUBE, BASIC_SPHERE,
-        MESH, TERRAIN,
+        BASIC_RECT , BASIC_CUBE, BASIC_SPHERE,TERRAIN,MESH
     };
 
     enum class SOUND_GROUP{BGM, SFX, UI, TALK,END };
@@ -33,5 +32,38 @@ namespace Engine
     };
 
     enum class LIGHT_TYPE{DIRECTIONAL, POINT,SPOTLIGHT};
+
+    enum class TEXTURE_TYPE {
+        NONE = 0,
+        DIFFUSE = 1,
+        SPECULAR = 2,
+        AMBIENT = 3,
+        EMISSIVE = 4,
+        HEIGHT = 5,
+        NORMALS = 6,
+        SHININESS = 7,
+        OPACITY = 8,
+        DISPLACEMENT = 9,
+        LIGHTMAP = 10,
+        REFLECTION = 11,
+        BASE_COLOR = 12,
+        NORMAL_CAMERA = 13,
+        EMISSION_COLOR = 14,
+        METALNESS = 15,
+        DIFFUSE_ROUGHNESS = 16,
+        AMBIENT_OCCLUSION = 17,
+        UNKNOWN = 18,
+        SHEEN = 19,
+        CLEARCOAT = 20,
+        TRANSMISSION = 21,
+        MAYA_BASE = 22,
+        MAYA_SPECULAR = 23,
+        MAYA_SPECULAR_COLOR = 24,
+        MAYA_SPECULAR_ROUGHNESS = 25,
+        ANISOTROPY = 26,
+        GLTF_METALLIC_ROUGHNESS = 27,
+    };
 }
 #endif // Engine_Enum_h__
+
+

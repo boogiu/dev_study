@@ -5,7 +5,7 @@ class ENGINE_DLL CVI_Rect final :
     public CVIBuffer
 {
 protected:
-	CVI_Rect(const string& key);
+	CVI_Rect(const string& imguiID);
 	CVI_Rect(const CVI_Rect& rhs);
 	virtual ~CVI_Rect();
 
@@ -17,7 +17,7 @@ private:
 	virtual HRESULT Create_Index(ID3D11Device* pDevice) override;
 
 public:
-	static CVI_Rect* Create(ID3D11Device* pDevice, const string& key) ;
+	static CVI_Rect* Create(ID3D11Device* pDevice, const string& imguiID) ;
 	virtual void Free() override;
 
 };

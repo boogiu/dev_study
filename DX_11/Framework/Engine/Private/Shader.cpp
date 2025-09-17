@@ -1,6 +1,12 @@
 #include "Shader.h"
 #include "Helper_Func.h"
+#include "GUIWidget.h"
+#include "Texture.h"
+
+_uint CShader::s_NextID = 1;
+
 CShader::CShader()
+	:m_ShaderID(s_NextID++)
 {
 }
 
@@ -60,9 +66,9 @@ HRESULT CShader::GetPassSignature(UINT iPassIndex, D3DX11_PASS_DESC* pOutPassDes
 	return S_OK;
 }
 
-HRESULT CShader::GetPassSignature(const string& passConstant, D3DX11_PASS_DESC* pOutPassDesc)
+HRESULT CShader::GetPassSignature(const string& m_passConstant, D3DX11_PASS_DESC* pOutPassDesc)
 {
-	auto iter = m_Passes.find(passConstant);
+	auto iter = m_Passes.find(m_passConstant);
 	if (iter != m_Passes.end()) {
 		iter->second->GetDesc(pOutPassDesc);
 		return S_OK;
@@ -71,9 +77,9 @@ HRESULT CShader::GetPassSignature(const string& passConstant, D3DX11_PASS_DESC* 
 }
 
 
-void CShader::Apply(const string& passConstant, ID3D11DeviceContext* pContext)
+void CShader::Apply(const string& m_passConstant, ID3D11DeviceContext* pContext)
 {
-	auto iter = m_Passes.find(passConstant);
+	auto iter = m_Passes.find(m_passConstant);
 	if (iter != m_Passes.end()) {
 		iter->second->Apply(0, pContext);
 	}
@@ -89,6 +95,8 @@ HRESULT CShader::Bind_Value(const string& ConstantName, void* pData, _uint size)
 		return Bind_Matrix(ConstantName, static_cast<const _float4x4*>(pData));
 	else if (iter->second.typeName == "Texture2D")
 		return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(pData));
+	else if (iter->second.typeName == "Texture2DArray")
+		return Bind_ShaderResourceArray(ConstantName, static_cast<vector<CTexture*>*>(pData));
 
 	HRESULT hr = iter->second.pHandle->SetRawValue(pData, 0, size);
 
@@ -108,6 +116,16 @@ HRESULT CShader::SetConstantBuffer(const string& ConstantName, ID3D11Buffer* pDa
 	}
 	
 	return iter->second.pHandle->SetConstantBuffer(pData);
+}
+
+vector<string>  CShader::Get_PassList()
+{
+	vector<string> passConstant;
+
+	for (auto& pass : m_Passes)
+		passConstant.push_back(pass.first);
+
+	return passConstant;
 }
 
 HRESULT CShader::Bind_Matrix(const string& ConstantName, const _float4x4* pMatrix)
@@ -144,6 +162,28 @@ HRESULT CShader::Bind_ShaderResource(const string& ConstantName, ID3D11ShaderRes
 
 	pShaderVariable->SetResource(pSRV);
 	return S_OK;
+}
+
+HRESULT CShader::Bind_ShaderResourceArray(const string& ConstantName, vector<class CTexture*>* pTextures)
+{
+	auto iter = m_Variables.find(ConstantName);
+	if (iter == m_Variables.end()) {
+		MSG_BOX("Wrong Variable Name is Binding : CShader");
+		return E_FAIL;
+	}
+	ID3DX11EffectShaderResourceVariable* pShaderVariable = iter->second.pHandle->AsShaderResource();
+	if (!pShaderVariable) {
+		MSG_BOX("Wrong Variable Type is Binding : CShader");
+		return E_FAIL;
+	}
+
+	pTextures->size();
+	vector<ID3D11ShaderResourceView*> srvVector;
+	for (auto tex : *pTextures)
+		srvVector.push_back(tex->Get_SRV());
+
+	pShaderVariable->SetResourceArray(srvVector.data(),0, srvVector.size());
+	return E_NOTIMPL;
 }
 
 void CShader::ReflectShader()
@@ -204,7 +244,7 @@ void CShader::ReflectShader()
 }
 
 
-CShader* CShader::Create(ID3D11Device* pDevice, const string& filePath, const string& key)
+CShader* CShader::Create(ID3D11Device* pDevice, const string& filePath, const string& shaderKey)
 {
 	CShader* instance = new CShader();
 	if (FAILED(instance->Initialize(pDevice, filePath))) {
@@ -212,7 +252,7 @@ CShader* CShader::Create(ID3D11Device* pDevice, const string& filePath, const st
 		Safe_Release(instance);
 	}
 	if(instance)
-		instance->m_ShaderKey = key;
+		instance->m_ShaderKey = shaderKey;
 
 	return instance;
 }

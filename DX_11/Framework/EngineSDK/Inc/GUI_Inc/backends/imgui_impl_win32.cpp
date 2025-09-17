@@ -273,10 +273,10 @@ static bool IsVkDown(int vk)
     return (::GetKeyState(vk) & 0x8000) != 0;
 }
 
-static void ImGui_ImplWin32_AddKeyEvent(ImGuiIO& io, ImGuiKey key, bool down, int native_keycode, int native_scancode = -1)
+static void ImGui_ImplWin32_AddKeyEvent(ImGuiIO& io, ImGuiKey imguiID, bool down, int native_keycode, int native_scancode = -1)
 {
-    io.AddKeyEvent(key, down);
-    io.SetKeyEventNativeData(key, native_keycode, native_scancode); // To support legacy indexing (<1.87 user code)
+    io.AddKeyEvent(imguiID, down);
+    io.SetKeyEventNativeData(imguiID, native_keycode, native_scancode); // To support legacy indexing (<1.87 user code)
     IM_UNUSED(native_scancode);
 }
 
@@ -730,17 +730,17 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandlerEx(HWND hwnd, UINT msg, WPA
             ImGui_ImplWin32_UpdateKeyModifiers(io);
 
             // Obtain virtual key code and convert to ImGuiKey
-            const ImGuiKey key = ImGui_ImplWin32_KeyEventToImGuiKey(wParam, lParam);
+            const ImGuiKey imguiID = ImGui_ImplWin32_KeyEventToImGuiKey(wParam, lParam);
             const int vk = (int)wParam;
             const int scancode = (int)LOBYTE(HIWORD(lParam));
 
             // Special behavior for VK_SNAPSHOT / ImGuiKey_PrintScreen as Windows doesn't emit the key down event.
-            if (key == ImGuiKey_PrintScreen && !is_key_down)
-                ImGui_ImplWin32_AddKeyEvent(io, key, true, vk, scancode);
+            if (imguiID == ImGuiKey_PrintScreen && !is_key_down)
+                ImGui_ImplWin32_AddKeyEvent(io, imguiID, true, vk, scancode);
 
             // Submit key event
-            if (key != ImGuiKey_None)
-                ImGui_ImplWin32_AddKeyEvent(io, key, is_key_down, vk, scancode);
+            if (imguiID != ImGuiKey_None)
+                ImGui_ImplWin32_AddKeyEvent(io, imguiID, is_key_down, vk, scancode);
 
             // Submit individual left/right modifier events
             if (vk == VK_SHIFT)

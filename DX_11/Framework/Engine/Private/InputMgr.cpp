@@ -38,36 +38,36 @@ void CInputMgr::Update()
 	m_Mouse.fDeltaY = 0.f;
 	m_Mouse.fWheelDelta = 0.f;
 
-	for (auto& key : m_Keyboard) {
-		if (key.CurrDown && !key.PrevDown)
-			key.state = KEY_STATE::TAP;
+	for (auto& imguiID : m_Keyboard) {
+		if (imguiID.CurrDown && !imguiID.PrevDown)
+			imguiID.state = KEY_STATE::TAP;
 
-		else if(key.CurrDown && key.PrevDown)
-			key.state = KEY_STATE::HOLD;
+		else if(imguiID.CurrDown && imguiID.PrevDown)
+			imguiID.state = KEY_STATE::HOLD;
 
-		else if(!key.CurrDown && key.PrevDown)
-			key.state = KEY_STATE::AWAY;
+		else if(!imguiID.CurrDown && imguiID.PrevDown)
+			imguiID.state = KEY_STATE::AWAY;
 
-		else if(!key.CurrDown && !key.PrevDown)
-			key.state = KEY_STATE::Center;
+		else if(!imguiID.CurrDown && !imguiID.PrevDown)
+			imguiID.state = KEY_STATE::Center;
 
-		key.PrevDown = key.CurrDown;
+		imguiID.PrevDown = imguiID.CurrDown;
 	}
 
-	for (auto& key : m_Mouse.mouseKey) {
-		if (key.CurrDown && !key.PrevDown)
-			key.state = KEY_STATE::TAP;
+	for (auto& imguiID : m_Mouse.mouseKey) {
+		if (imguiID.CurrDown && !imguiID.PrevDown)
+			imguiID.state = KEY_STATE::TAP;
 
-		else if (key.CurrDown && key.PrevDown)
-			key.state = KEY_STATE::HOLD;
+		else if (imguiID.CurrDown && imguiID.PrevDown)
+			imguiID.state = KEY_STATE::HOLD;
 
-		else if (!key.CurrDown && key.PrevDown)
-			key.state = KEY_STATE::AWAY;
+		else if (!imguiID.CurrDown && imguiID.PrevDown)
+			imguiID.state = KEY_STATE::AWAY;
 
-		else if (!key.CurrDown && !key.PrevDown)
-			key.state = KEY_STATE::Center;
+		else if (!imguiID.CurrDown && !imguiID.PrevDown)
+			imguiID.state = KEY_STATE::Center;
 
-		key.PrevDown = key.CurrDown;
+		imguiID.PrevDown = imguiID.CurrDown;
 	}
 
 	GetCursorPos(&m_pMousePos);

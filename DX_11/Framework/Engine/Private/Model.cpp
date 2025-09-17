@@ -3,89 +3,60 @@
 #include "VIBuffer.h"
 #include "IResourceService.h"
 #include "IRenderService.h"
+#include "Mesh.h"
 
 CModel::CModel()
 {
 }
 
 CModel::CModel(const CModel& rhs)
-	: m_pBuffer(rhs.m_pBuffer)
-	,m_iElementCount(rhs.m_iElementCount)
-	,m_pElementDesc(rhs.m_pElementDesc)
+	: m_Buffers(rhs.m_Buffers),
+	m_DrawableMeshes(rhs.m_DrawableMeshes)
 {
-	Safe_AddRef(m_pBuffer);
+	for (auto& mesh : m_Buffers)
+		Safe_AddRef(mesh);
 }
 
-CModel::~CModel()
-{
-}
-
-HRESULT CModel::Initialize_Prototype()
+HRESULT CModel::Link_Buffer(const string& levelKey, const string& MeshKey)
 {
 	return S_OK;
 }
 
-HRESULT CModel::Initialize(COMPONENT_DESC* pArg)
-{
-	return S_OK;
-}
 
-HRESULT CModel::Link_Buffer(const string& levelKey, const string& bufferKey, BUFFER_TYPE eType)
+_uint CModel::Get_MaterialIndex(_uint Index)
 {
-	m_pBuffer = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_VIBuffer(levelKey, bufferKey,eType);
+	if (Index >= m_Buffers.size()) return 0;
 	
-	if (!m_pBuffer)
-		return E_FAIL;
-
-	Safe_AddRef(m_pBuffer);
-	return S_OK;
+	return m_Buffers[Index]->Get_MaterialIndex();
 }
 
-void CModel::Link_Element(const D3D11_INPUT_ELEMENT_DESC* pDesc, _uint elementCount)
+_bool CModel::isDrawable(_uint Index)
 {
-	m_pElementDesc = pDesc;
-	m_iElementCount = elementCount;
+	if (Index >= m_DrawableMeshes.size()) return false;
+
+	return m_DrawableMeshes[Index];
 }
 
-HRESULT CModel::Bind_Model(ID3D11DeviceContext* pContext)
+const string& CModel::Get_BufferKey(_uint Index)
 {
-	return m_pBuffer->Bind_Buffer(pContext);
+	if (m_Buffers.size() <= Index) return string();
+	return m_Buffers[Index]->Get_Key();
 }
-
-HRESULT CModel::Render_Model(ID3D11DeviceContext* pContext)
-{
-	return m_pBuffer->Render(pContext);
-}
-
 
 void CModel::Render_GUI()
 {
 	ImGui::SeparatorText("Model");
 	float childWidth = ImGui::GetContentRegionAvail().x;
 	const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
-	const float childHeight = (textLineHeight *2) + (ImGui::GetStyle().WindowPadding.y * 4);
+	const float childHeight = (textLineHeight * 2) + (ImGui::GetStyle().WindowPadding.y * 4);
 	ImGui::BeginChild("##ModelChild", ImVec2{ childWidth, childHeight }, true);
 
 	ImGui::EndChild();
 }
 
-CModel* CModel::Create()
-{
-	CModel* instance = new CModel();
-	if (FAILED(instance->Initialize_Prototype())) {
-		Safe_Release(instance);
-	}
-	return instance;
-}
-
-CComponent* CModel::Clone()
-{
-	CModel* instance = new CModel(*this);
-	return instance;
-}
-
 void CModel::Free()
 {
 	__super::Free();
-	Safe_Release(m_pBuffer);
+	for (auto& mesh : m_Buffers)
+		Safe_Release(mesh);
 }

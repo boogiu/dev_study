@@ -11,15 +11,15 @@ private:
 
 public:
 	const string& Get_Key() { return m_TextureKey; }
-	void Set_Key(const string& key) { m_TextureKey = key; }
+	void Set_Key(const string& imguiID) { m_TextureKey = imguiID; }
 	ID3D11ShaderResourceView* Get_SRV(){ return m_pShaderResourceView; };
 	void Render_GUI(_float Width);
 private:
-	string m_TextureKey;
+	string m_TextureKey = {};
 	ID3D11ShaderResourceView* m_pShaderResourceView;
 
 public:
-	static CTexture* Create(ID3D11Device* pDevice, const wstring& filePath, const string& key);
+	static CTexture* Create(ID3D11Device* pDevice, const wstring& filePath, const string& textureKey);
 	virtual void Free() override;
 };
 NS_END

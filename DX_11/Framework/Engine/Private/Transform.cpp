@@ -84,7 +84,7 @@ void CTransform::Set_Pos(const _float3& position)
 	m_bDirty = true;
 }
 
-void CTransform::Set_Rotate(const _float3& _eular)
+void CTransform::Rotate(const _float3& _eular)
 {
 	_fvector euler = XMVectorSetW(XMLoadFloat3(&_eular), 0.f);
 	_fvector  quaternion = XMQuaternionRotationRollPitchYawFromVector(euler);
@@ -92,7 +92,7 @@ void CTransform::Set_Rotate(const _float3& _eular)
 	m_bDirty = true;
 }
 
-void CTransform::Set_Scale(const _float3& scale)
+void CTransform::Scale(const _float3& scale)
 {
 	_fvector newScale = XMVectorSetW(XMLoadFloat3(&scale), 0.f);
 	XMStoreFloat4(&m_vScale, newScale);

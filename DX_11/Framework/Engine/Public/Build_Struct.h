@@ -44,6 +44,23 @@ namespace Engine {
 		virtual ~CameraInitDesc() DEFAULT;
 	}CAMERA_DESC;
 
+	typedef struct LightInitDesc :public COMPONENT_DESC {
+
+		LIGHT_TYPE			eType = {};
+		_float4		vDiffuse = {};
+		_float4		vAmbient = {};
+		_float4		vSpecular = {};
+
+		_float4		vDirection = {};
+		_float4		vPosition = {};
+		_float			fRange = {};
+
+
+		LightInitDesc() DEFAULT;
+		virtual ~LightInitDesc() DEFAULT;
+
+	}LIGHT_INIT_DESC;
+
 	typedef struct ColliderInitDesc :public COMPONENT_DESC {
 
 		ColliderInitDesc() DEFAULT;

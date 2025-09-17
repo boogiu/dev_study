@@ -1,7 +1,7 @@
 #include "VI_Rect.h"
 
-CVI_Rect::CVI_Rect(const string& key)
-	:CVIBuffer{ key }
+CVI_Rect::CVI_Rect(const string& imguiID)
+	:CVIBuffer{ imguiID }
 {
 }
 
@@ -43,29 +43,29 @@ HRESULT CVI_Rect::Create_Vertex(ID3D11Device* pDevice)
 	VBDesc.MiscFlags = 0;
 	VBDesc.StructureByteStride = m_iVertexStride;
 
-	VTXPOSTEX* VB = new VTXPOSTEX[m_iVerticesCount];
-	ZeroMemory(VB, m_iVertexStride * m_iVerticesCount);
+	VTXPOSTEX* m_VBContainer = new VTXPOSTEX[m_iVerticesCount];
+	ZeroMemory(m_VBContainer, m_iVertexStride * m_iVerticesCount);
 
 	_float s = 0.5;
 
-	VB[0].vPosition = _float3(-s, s, 0.f);
-	VB[0].vTexcoord = _float2(0.f, 0.f);
+	m_VBContainer[0].vPosition = _float3(-s, s, 0.f);
+	m_VBContainer[0].vTexcoord = _float2(0.f, 0.f);
 
-	VB[1].vPosition = _float3(s, s, 0.f);
-	VB[1].vTexcoord = _float2(1.f, 0.f);
+	m_VBContainer[1].vPosition = _float3(s, s, 0.f);
+	m_VBContainer[1].vTexcoord = _float2(1.f, 0.f);
 
-	VB[2].vPosition = _float3(s, -s, 0.f);
-	VB[2].vTexcoord = _float2(1.f, 1.f);
+	m_VBContainer[2].vPosition = _float3(s, -s, 0.f);
+	m_VBContainer[2].vTexcoord = _float2(1.f, 1.f);
 
-	VB[3].vPosition = _float3(-s, -s, 0.f);
-	VB[3].vTexcoord = _float2(0.f, 1.f);
+	m_VBContainer[3].vPosition = _float3(-s, -s, 0.f);
+	m_VBContainer[3].vTexcoord = _float2(0.f, 1.f);
 
 	D3D11_SUBRESOURCE_DATA subData;
-	subData.pSysMem = VB;
+	subData.pSysMem = m_VBContainer;
 
 	HRESULT hr = pDevice->CreateBuffer(&VBDesc, &subData, &m_pVB);
 
-	Safe_Delete_Array(VB);
+	Safe_Delete_Array(m_VBContainer);
 	return hr;
 }
 
@@ -79,23 +79,23 @@ HRESULT CVI_Rect::Create_Index(ID3D11Device* pDevice)
 	IDDesc.MiscFlags = 0;
 	IDDesc.StructureByteStride = m_iIndexStride;
 
-	_ushort* IB = new _ushort[m_iIndicesCount];
-	ZeroMemory(IB, m_iIndexStride * m_iIndicesCount);
+	_ushort* m_IBContainer = new _ushort[m_iIndicesCount];
+	ZeroMemory(m_IBContainer, m_iIndexStride * m_iIndicesCount);
 
-	IB[0] = 0;    IB[1] = 1;    IB[2] = 2;    IB[3] = 0;    IB[4] = 2;    IB[5] = 3;
+	m_IBContainer[0] = 0;    m_IBContainer[1] = 1;    m_IBContainer[2] = 2;    m_IBContainer[3] = 0;    m_IBContainer[4] = 2;    m_IBContainer[5] = 3;
 
 	D3D11_SUBRESOURCE_DATA subData;
-	subData.pSysMem = IB;
+	subData.pSysMem = m_IBContainer;
 
 	HRESULT hr = pDevice->CreateBuffer(&IDDesc, &subData, &m_pIB);
 
-	Safe_Delete_Array(IB);
+	Safe_Delete_Array(m_IBContainer);
 	return hr;
 }
 
-CVI_Rect* CVI_Rect::Create(ID3D11Device* pDevice,const string& key)
+CVI_Rect* CVI_Rect::Create(ID3D11Device* pDevice,const string& imguiID)
 {
-	CVI_Rect* instance = new CVI_Rect(key);
+	CVI_Rect* instance = new CVI_Rect(imguiID);
 	if (FAILED(instance->Initialize(pDevice))) {
 		MSG_BOX("Failed to Created : CVIBuffer_Rect");
 		Safe_Release(instance);

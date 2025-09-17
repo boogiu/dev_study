@@ -6,34 +6,32 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CModel :
     public CComponent
 {
-private:
+protected:
     CModel();
     CModel(const CModel& rhs);
-    virtual ~CModel();
-public:
-    HRESULT Initialize_Prototype() override;
-    HRESULT Initialize(COMPONENT_DESC* pArg) override;
-public:
-    HRESULT Link_Buffer(const string& levelKey, const string& bufferKey, BUFFER_TYPE eType);
-    void Link_Element(const D3D11_INPUT_ELEMENT_DESC* pDesc, _uint elementCount);
-    _uint Get_ElementCount() { return m_iElementCount; };
-    const D3D11_INPUT_ELEMENT_DESC* Get_ElementDesc() { return m_pElementDesc; };
+    virtual ~CModel() DEFAULT;
 
 public:
-    HRESULT Bind_Model(ID3D11DeviceContext* pContext);
-    HRESULT Render_Model(ID3D11DeviceContext* pContext);
-    CVIBuffer* Get_Buffer() { return m_pBuffer; };
+    virtual HRESULT Link_Buffer(const string& levelKey, const string& MeshKey);
+   virtual  _uint Get_ElementCount()PURE;
+   virtual const D3D11_INPUT_ELEMENT_DESC* Get_ElementDesc() PURE;
+   virtual HRESULT Render_Mesh(ID3D11DeviceContext* pContext,_uint Index) PURE;
+  
+public:
+     _uint Get_MaterialIndex(_uint Index);
+    _bool hasBuffer() { return !m_Buffers.empty(); }
+    _bool isDrawable(_uint Index);
+    const string& Get_BufferKey(_uint Index);
+    _uint Get_MeshCount() { return m_Buffers.size(); }
 
 public:
     virtual void Render_GUI() override;
-private:
-    CVIBuffer* m_pBuffer = { nullptr };
-    _uint m_iElementCount = {};
-    const D3D11_INPUT_ELEMENT_DESC* m_pElementDesc = { nullptr };
+
+protected:
+    vector<_bool> m_DrawableMeshes;
+    vector<class CMesh*> m_Buffers;
 
 public:
-    static CModel* Create();
-    virtual CComponent* Clone() override;
     virtual void Free() override;
 };
 

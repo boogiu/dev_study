@@ -19,12 +19,12 @@ HRESULT CLevelMgr::Initialize()
     return S_OK;
 }
 
-HRESULT CLevelMgr::Request_ChangeLevel(string key,_bool Load)
+HRESULT CLevelMgr::Request_ChangeLevel(string imguiID,_bool Load)
 {
-    if (!m_LevelCreators.count(key))
+    if (!m_LevelCreators.count(imguiID))
         return E_FAIL;
 
-    m_NextLevelTag = key;
+    m_NextLevelTag = imguiID;
     if (Load) //로딩 설정이 없으면 그냥 바로 로드되었다 치고 다음레벨로 넘어감.
         m_eState = LEVEL_STATE::REQUEST;
     else
@@ -77,30 +77,30 @@ HRESULT CLevelMgr::Render()
     return m_pCurrentLevel->Render();
 }
 
-void CLevelMgr::Register_Level(string key, LEVEL_CREATOR creator)
+void CLevelMgr::Register_Level(string imguiID, LEVEL_CREATOR creator)
 {
-    if (G_GlobalLevelKey == key ) {
+    if (G_GlobalLevelKey == imguiID ) {
         MSG_BOX(" [Global_Level] is Reserved Register Another key : CLevelMgr");
         return;
     }
 
-   auto iter =  m_LevelCreators.find(key);
+   auto iter =  m_LevelCreators.find(imguiID);
 
    if (iter != m_LevelCreators.end()) {
        MSG_BOX("Level Already Exist : CLevelMgr");
        return;
    }
 
-   m_LevelCreators.insert({ key,creator });
+   m_LevelCreators.insert({ imguiID,creator });
 }
 
 void CLevelMgr::ClearResource()
 {
     if (!m_pCurrentLevel) return;
-    const string& key = m_pCurrentLevel->Get_Key();
-    if(key == G_GlobalLevelKey)return;
+    const string& imguiID = m_pCurrentLevel->Get_Key();
+    if(imguiID == G_GlobalLevelKey)return;
 
-    CGameInstance::GetInstance()->Clear_LevelResource(key);
+    CGameInstance::GetInstance()->Clear_LevelResource(imguiID);
     Safe_Release(m_pCurrentLevel);
 }
 

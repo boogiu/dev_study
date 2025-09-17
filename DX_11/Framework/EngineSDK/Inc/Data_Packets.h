@@ -12,6 +12,8 @@ namespace Engine {
 	}SHADOW_PACKET;
 
 	typedef struct DrawOpaquePacket {
+		_bool bSkinning = { false };
+		_uint DrawIndex = {};
 		_float4x4* pWorldMatrix;
 		class CModel* pModel = { nullptr };
 		class CMaterial* pMaterial = { nullptr };
@@ -19,6 +21,7 @@ namespace Engine {
 
 
 	typedef struct DrawUIPacket {
+		_uint DrawIndex = {};
 		_float4x4* pWorldMatrix;
 		_float4x4* pViewMatrix;
 		class CModel* pModel = { nullptr };

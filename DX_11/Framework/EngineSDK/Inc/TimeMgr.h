@@ -12,13 +12,13 @@ private:
     virtual ~CTimeMgr()  DEFAULT;
 
 public:
-    CTimer* Add_Timer(const string& key);
-    void Update_Timer(const string& key);
-    _float Get_DeltaTime(const string& key,_bool raw = false);
-    void Set_TimeScale(const string& key,_float scale);
+    CTimer* Add_Timer(const string& imguiID);
+    void Update_Timer(const string& imguiID);
+    _float Get_DeltaTime(const string& imguiID,_bool raw = false);
+    void Set_TimeScale(const string& imguiID,_float scale);
 
 private:
-    CTimer* Find_Timer(const string& key);
+    CTimer* Find_Timer(const string& imguiID);
 
 private:
     unordered_map<string, CTimer*> m_Timers;

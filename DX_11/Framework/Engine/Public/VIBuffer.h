@@ -1,10 +1,10 @@
 #pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
-class CVIBuffer abstract:public CBase
+class ENGINE_DLL CVIBuffer abstract:public CBase
 {
 protected:
-	CVIBuffer(const string& key);
+	CVIBuffer(const string& meshKey);
 	CVIBuffer(const CVIBuffer& rhs);
 	virtual ~CVIBuffer();
 
@@ -14,7 +14,7 @@ public:
 	virtual HRESULT Render(ID3D11DeviceContext* pContext);
 
 	const string& Get_Key() { return m_VIKey; }
-	void Set_Key(const string& key) { m_VIKey = key; }
+	virtual void Render_GUI();
 
 protected:
 	virtual HRESULT Create_Vertex(ID3D11Device* pDevice);
@@ -38,8 +38,6 @@ protected:
 	D3D_PRIMITIVE_TOPOLOGY m_ePrimitive = {};
 
 	string m_VIKey;
-
-
 public:
 	virtual void Free() override;
 };

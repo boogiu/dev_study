@@ -27,10 +27,12 @@ public:
     virtual void Update(_float dt) PURE;
     virtual void Late_Update(_float dt) PURE;
 
-    void Render_GUI();
+    virtual void Render_GUI();
     const string& Get_InstanceName() { return m_InstanceName; }
     const _uint Get_ObjectID() { return m_ObjectID; }
     _float4x4* Get_WorldMatrix();
+    _float4 Get_Position();
+
 protected:
     string m_InstanceName = {};
     _uint m_ObjectID = {};

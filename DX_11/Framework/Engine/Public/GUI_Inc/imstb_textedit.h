@@ -774,10 +774,10 @@ static void stb_textedit_text(IMSTB_TEXTEDIT_STRING* str, STB_TexteditState* sta
 }
 
 // API key: process a keyboard input
-static void stb_textedit_key(IMSTB_TEXTEDIT_STRING *str, STB_TexteditState *state, STB_TEXTEDIT_KEYTYPE key)
+static void stb_textedit_key(IMSTB_TEXTEDIT_STRING *str, STB_TexteditState *state, STB_TEXTEDIT_KEYTYPE m_Modelkey)
 {
 retry:
-   switch (key) {
+   switch (m_Modelkey) {
       default: {
 #ifdef STB_TEXTEDIT_KEYTOTEXT
          // This is not suitable for UTF-8 support.
@@ -893,13 +893,13 @@ retry:
       case STB_TEXTEDIT_K_PGDOWN | STB_TEXTEDIT_K_SHIFT: {
          StbFindState find;
          StbTexteditRow row;
-         int i, j, sel = (key & STB_TEXTEDIT_K_SHIFT) != 0;
-         int is_page = (key & ~STB_TEXTEDIT_K_SHIFT) == STB_TEXTEDIT_K_PGDOWN;
+         int i, j, sel = (m_Modelkey & STB_TEXTEDIT_K_SHIFT) != 0;
+         int is_page = (m_Modelkey & ~STB_TEXTEDIT_K_SHIFT) == STB_TEXTEDIT_K_PGDOWN;
          int row_count = is_page ? state->row_count_per_page : 1;
 
          if (!is_page && state->single_line) {
             // on windows, up&down in single-line behave like left&right
-            key = STB_TEXTEDIT_K_RIGHT | (key & STB_TEXTEDIT_K_SHIFT);
+            m_Modelkey = STB_TEXTEDIT_K_RIGHT | (m_Modelkey & STB_TEXTEDIT_K_SHIFT);
             goto retry;
          }
 
@@ -962,13 +962,13 @@ retry:
       case STB_TEXTEDIT_K_PGUP | STB_TEXTEDIT_K_SHIFT: {
          StbFindState find;
          StbTexteditRow row;
-         int i, j, prev_scan, sel = (key & STB_TEXTEDIT_K_SHIFT) != 0;
-         int is_page = (key & ~STB_TEXTEDIT_K_SHIFT) == STB_TEXTEDIT_K_PGUP;
+         int i, j, prev_scan, sel = (m_Modelkey & STB_TEXTEDIT_K_SHIFT) != 0;
+         int is_page = (m_Modelkey & ~STB_TEXTEDIT_K_SHIFT) == STB_TEXTEDIT_K_PGUP;
          int row_count = is_page ? state->row_count_per_page : 1;
 
          if (!is_page && state->single_line) {
             // on windows, up&down become left&right
-            key = STB_TEXTEDIT_K_LEFT | (key & STB_TEXTEDIT_K_SHIFT);
+            m_Modelkey = STB_TEXTEDIT_K_LEFT | (m_Modelkey & STB_TEXTEDIT_K_SHIFT);
             goto retry;
          }
 

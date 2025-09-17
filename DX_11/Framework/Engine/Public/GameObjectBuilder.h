@@ -10,12 +10,13 @@ public:
     ~CGameObjectBuilder();
 public:
     class CGameObject* Build (const string& instanceKey,_uint* id = nullptr);
-    CGameObjectBuilder& Add_Level(const LAYER_DESC& layer);/*{level,layer}*/
-    CGameObjectBuilder& With_Camera(const CAMERA_DESC& camera);
+    CGameObjectBuilder& Add_To_Layer(const LAYER_DESC& layer);/*{level,layer}*/
+    CGameObjectBuilder& Camera(const CAMERA_DESC& camera);
+    CGameObjectBuilder& Light(const LIGHT_INIT_DESC& light);
 
-    CGameObjectBuilder& Set_Position(const _float3 position);
-    CGameObjectBuilder& Set_Rotate(const _float3 rotate);
-    CGameObjectBuilder& Set_Scale(const _float3 scale);
+    CGameObjectBuilder& Position(const _float3 position);
+    CGameObjectBuilder& Rotate(const _float3 rotate);
+    CGameObjectBuilder& Scale(const _float3 scale);
 
 private:
     class CGameInstance* m_pGameInstance = { nullptr };

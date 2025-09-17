@@ -9,6 +9,7 @@
 
 #include "DirectXTK_Inc/WICTextureLoader.h"
 #include "DirectXTK_Inc/DDSTextureLoader.h"
+#include "DirectXTK_Inc/ScreenGrab.h"
 
 #include <vector>
 #include <list>
@@ -24,6 +25,12 @@
 #include <typeindex>
 #include <filesystem>
 #include <sstream>
+#include <any>
+#include <iostream>
+#include <fstream>
+
+#include <commdlg.h> // GetSaveFileName API를 위해 필요
+#pragma comment(lib, "Comdlg32.lib") // 라이브러리 링크
 
 using namespace std;
 using namespace DirectX;
@@ -40,6 +47,10 @@ using namespace DirectX;
 #include "NFD_Inc/nfd.h"
 #pragma pop_macro("new")
 
+//---JSON -- //
+#include "Json_Inc/json.hpp"  
+using json = nlohmann::json;
+
 #include "Engine_Enum.h"
 #include "Engine_Macro.h"
 #include "Engine_Typedef.h"
@@ -47,7 +58,6 @@ using namespace DirectX;
 #include "Engine_Struct.h"
 #include "Build_Struct.h"
 #include "Data_Packets.h"
-
 using namespace Engine;
 
 #include <windowsx.h>

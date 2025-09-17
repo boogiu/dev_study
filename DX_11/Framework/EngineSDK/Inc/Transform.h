@@ -20,8 +20,8 @@ public:
 	void AddScale(_fvector scale);
 
 	void Set_Pos(const _float3& position);
-	void Set_Rotate(const _float3& eular);
-	void Set_Scale(const _float3& scale);
+	void Rotate(const _float3& eular);
+	void Scale(const _float3& scale);
 
 	void LookAt(_fvector vAt);
 

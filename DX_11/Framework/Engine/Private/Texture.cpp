@@ -43,7 +43,7 @@ void CTexture::Render_GUI(_float Width)
 	ImGui::Text(m_TextureKey.c_str());
 }
 
-CTexture* CTexture::Create(ID3D11Device* pDevice, const wstring& filePath, const string& key)
+CTexture* CTexture::Create(ID3D11Device* pDevice, const wstring& filePath, const string& textureKey)
 {
 	CTexture* instance = new CTexture;
 
@@ -51,7 +51,10 @@ CTexture* CTexture::Create(ID3D11Device* pDevice, const wstring& filePath, const
 		Safe_Release(instance);
 		MSG_BOX("Texture Create Failed : CTexture");
 	}
-	instance->m_TextureKey = key;
+	else {
+		instance->m_TextureKey = textureKey;
+	}
+
 	return instance;
 }
 

@@ -16,7 +16,6 @@ HRESULT CGamePlayLevel::Initialize()
 
 void CGamePlayLevel::Update()
 {
-    m_pGameInstance->Get_LevelMgr()->Request_ChangeLevel("¾ÈÁ¦Çö");
 }
 
 HRESULT CGamePlayLevel::Render()

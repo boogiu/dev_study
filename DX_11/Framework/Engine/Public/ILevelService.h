@@ -9,12 +9,12 @@ protected:
     virtual ~ILevelService() DEFAULT;
 
 public:
-    virtual HRESULT Request_ChangeLevel(string key, _bool Load = true) PURE;
+    virtual HRESULT Request_ChangeLevel(string levelKey, _bool Load = true) PURE;
 
     virtual void Update(_float dt)PURE;
     virtual HRESULT Render()PURE;
 
-    virtual void Register_Level(string key, LEVEL_CREATOR creator)PURE;
+    virtual void Register_Level(string levelKey, LEVEL_CREATOR creator)PURE;
     virtual _uint Get_LevelCount() PURE;
     virtual const vector<string> Get_LevelList() PURE; //레벨 키 모음
     virtual _bool Check_ValidateLevel(const string& LevelTag) PURE;

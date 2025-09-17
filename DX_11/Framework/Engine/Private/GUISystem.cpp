@@ -30,12 +30,12 @@ HRESULT CGUISystem::Initialize(const ENGINE_DESC& engine, ID3D11Device* pDevice,
 	ImGui::StyleColorsDark();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     /*Å°º¸µå ÄÁÆ®·Ñ*/
 	io.DisplaySize = ImVec2((float)engine.iWinSizeX, (float)engine.iWinSizeY);
-
+	io.IniFilename = nullptr;
 	m_tGuiContext.pLevelManager = m_pGameInstance->Get_LevelMgr();
 	m_tGuiContext.pObjectManager = m_pGameInstance->Get_ObjectMgr();
 	m_tGuiContext.pCameraManager = m_pGameInstance->Get_CameraMgr();
 	m_tGuiContext.pInputDevice = m_pGameInstance->Get_InputDev();
-//ÇÜºÎ±âÇÜºÏ¾îÇÜºÏ½ºµü½º
+
 	Set_Theme();
 	Set_Panel();
 
@@ -93,6 +93,10 @@ void CGUISystem::Set_Theme()
 
 	style.Colors[ImGuiCol_SliderGrab] = style.Colors[ImGuiCol_ChildBg];
 	style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+
+	style.Colors[ImGuiCol_Tab] = style.Colors[ImGuiCol_ChildBg];
+	style.Colors[ImGuiCol_TabActive] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+
 }
 
 void CGUISystem::Set_Panel()
@@ -159,6 +163,11 @@ void CGUISystem::Render_GUI()
 	
 	Render_Frame();
 	GUI_End();
+}
+
+ImGuiContext* CGUISystem::GetEngineImGuiContext()
+{
+	return ImGui::GetCurrentContext();
 }
 
 void CGUISystem::GUI_End()

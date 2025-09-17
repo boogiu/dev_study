@@ -9,11 +9,11 @@ class ENGINE_DLL CUIObjcetBuilder
         ~CUIObjcetBuilder();
     public:
         class CUI_Object* Build(const string& instanceKey, _uint* id = nullptr);
-        CUIObjcetBuilder& Add_Level(const string& Level);/*{level,layer}*/
+        CUIObjcetBuilder& Add_To_Level(const string& Level);/*{level,layer}*/
     public:
-        CUIObjcetBuilder& Set_Position(const _float2 position);
-        CUIObjcetBuilder& Set_Rotate(const _float rotate);
-        CUIObjcetBuilder& Set_Scale(const _float2 scale);
+        CUIObjcetBuilder& Position(const _float2 position);
+        CUIObjcetBuilder& Rotate(const _float rotate);
+        CUIObjcetBuilder& Scale(const _float2 scale);
         CUIObjcetBuilder& Set_Anchor(UI_Anchor eAnchor, _float2 vPivot);
 
     private:

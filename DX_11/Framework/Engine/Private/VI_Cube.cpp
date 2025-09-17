@@ -1,7 +1,7 @@
 #include "VI_Cube.h"
 
-CVI_Cube::CVI_Cube(const string& key)
-    :CVIBuffer{ key }
+CVI_Cube::CVI_Cube(const string& imguiID)
+    :CVIBuffer{ imguiID }
 {
 }
 
@@ -43,41 +43,41 @@ HRESULT CVI_Cube::Create_Vertex(ID3D11Device* pDevice)
 	VBDesc.MiscFlags = 0;
 	VBDesc.StructureByteStride = m_iVertexStride;
 
-	VTXPOSTEX* VB = new VTXPOSTEX[m_iVerticesCount];
-	ZeroMemory(VB, m_iVertexStride * m_iVerticesCount);
+	VTXPOSTEX* m_VBContainer = new VTXPOSTEX[m_iVerticesCount];
+	ZeroMemory(m_VBContainer, m_iVertexStride * m_iVerticesCount);
 
 	_float s = 0.5;
 
-	VB[0].vPosition = _float3(-s, s, -s);		   
+	m_VBContainer[0].vPosition = _float3(-s, s, -s);		   
 	//VB[0].vTexcoord = VB[0].vPosition;
 																				 
-	VB[1].vPosition = _float3(s, s, -s);
+	m_VBContainer[1].vPosition = _float3(s, s, -s);
 	//VB[1].vTexcoord = VB[1].vPosition;
 																				 
-	VB[2].vPosition = _float3(s, -s, -s);
+	m_VBContainer[2].vPosition = _float3(s, -s, -s);
 	//VB[2].vTexcoord = VB[2].vPosition;
 																				 
-	VB[3].vPosition = _float3(-s, -s, -s);
+	m_VBContainer[3].vPosition = _float3(-s, -s, -s);
 	//VB[3].vTexcoord = VB[3].vPosition;
 
-	VB[4].vPosition = _float3(-s, s, s);
+	m_VBContainer[4].vPosition = _float3(-s, s, s);
 	//VB[4].vTexcoord = VB[4].vPosition;
 
-	VB[5].vPosition = _float3(s, s, s);
+	m_VBContainer[5].vPosition = _float3(s, s, s);
 	//VB[5].vTexcoord = VB[5].vPosition;
 
-	VB[6].vPosition = _float3(s, -s, s);
+	m_VBContainer[6].vPosition = _float3(s, -s, s);
 	//VB[6].vTexcoord = VB[6].vPosition;
 
-	VB[7].vPosition = _float3(-s, -s, s);
+	m_VBContainer[7].vPosition = _float3(-s, -s, s);
 	//VB[7].vTexcoord = VB[7].vPosition;
 
 	D3D11_SUBRESOURCE_DATA subData;
-	subData.pSysMem = VB;
+	subData.pSysMem = m_VBContainer;
 
 	HRESULT hr = pDevice->CreateBuffer(&VBDesc, &subData, &m_pVB);
 
-	Safe_Delete_Array(VB);
+	Safe_Delete_Array(m_VBContainer);
 	return hr;
 
 }
@@ -92,29 +92,29 @@ HRESULT CVI_Cube::Create_Index(ID3D11Device* pDevice)
 	IDDesc.MiscFlags = 0;
 	IDDesc.StructureByteStride = m_iIndexStride;
 
-	_ushort* IB = new _ushort[m_iIndicesCount];
-	ZeroMemory(IB, m_iIndexStride * m_iIndicesCount);
+	_ushort* m_IBContainer = new _ushort[m_iIndicesCount];
+	ZeroMemory(m_IBContainer, m_iIndexStride * m_iIndicesCount);
 	int i = 0;
-	IB[i++] = 1;		 IB[i++] = 5;    IB[i++] = 6;    IB[i++] = 1;    IB[i++] = 6;    IB[i++] = 2;
-	IB[i++] = 4;		 IB[i++] = 0;    IB[i++] = 3;    IB[i++] =4;    IB[i++] = 3;    IB[i++] = 7;
-	IB[i++] = 4;		 IB[i++] = 5;    IB[i++] = 1;    IB[i++] =4;    IB[i++] = 1;    IB[i++] = 0;
-	IB[i++] = 3;		 IB[i++] = 2;    IB[i++] = 6;    IB[i++] =3;    IB[i++] = 6;    IB[i++] = 7;
-	IB[i++] = 5;		 IB[i++] = 4;    IB[i++] = 7;    IB[i++] =5;    IB[i++] = 7;    IB[i++] = 6;
-	IB[i++] = 0;		 IB[i++] = 1;    IB[i++] = 2;    IB[i++] = 0;    IB[i++] = 2;    IB[i++] = 3;
+	m_IBContainer[i++] = 1;		 m_IBContainer[i++] = 5;    m_IBContainer[i++] = 6;    m_IBContainer[i++] = 1;    m_IBContainer[i++] = 6;    m_IBContainer[i++] = 2;
+	m_IBContainer[i++] = 4;		 m_IBContainer[i++] = 0;    m_IBContainer[i++] = 3;    m_IBContainer[i++] =4;    m_IBContainer[i++] = 3;    m_IBContainer[i++] = 7;
+	m_IBContainer[i++] = 4;		 m_IBContainer[i++] = 5;    m_IBContainer[i++] = 1;    m_IBContainer[i++] =4;    m_IBContainer[i++] = 1;    m_IBContainer[i++] = 0;
+	m_IBContainer[i++] = 3;		 m_IBContainer[i++] = 2;    m_IBContainer[i++] = 6;    m_IBContainer[i++] =3;    m_IBContainer[i++] = 6;    m_IBContainer[i++] = 7;
+	m_IBContainer[i++] = 5;		 m_IBContainer[i++] = 4;    m_IBContainer[i++] = 7;    m_IBContainer[i++] =5;    m_IBContainer[i++] = 7;    m_IBContainer[i++] = 6;
+	m_IBContainer[i++] = 0;		 m_IBContainer[i++] = 1;    m_IBContainer[i++] = 2;    m_IBContainer[i++] = 0;    m_IBContainer[i++] = 2;    m_IBContainer[i++] = 3;
 
 	D3D11_SUBRESOURCE_DATA subData;
-	subData.pSysMem = IB;
+	subData.pSysMem = m_IBContainer;
 
 	HRESULT hr = pDevice->CreateBuffer(&IDDesc, &subData, &m_pIB);
 
-	Safe_Delete_Array(IB);
+	Safe_Delete_Array(m_IBContainer);
 	return hr;
 
 }
 
-CVI_Cube* CVI_Cube::Create(ID3D11Device* pDevice, const string& key)
+CVI_Cube* CVI_Cube::Create(ID3D11Device* pDevice, const string& imguiID)
 {
-    CVI_Cube* instance = new CVI_Cube(key);
+    CVI_Cube* instance = new CVI_Cube(imguiID);
     if (FAILED(instance->Initialize(pDevice))) {
         MSG_BOX("Failed to Created : CVIBuffer_Rect");
         Safe_Release(instance);

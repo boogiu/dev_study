@@ -2,7 +2,8 @@
 #include "GameInstance.h"
 #include "Builder.h"
 #include "IRenderService.h"
-#include "Model.h"
+#include "StaticModel.h"
+#include "AnimatedModel.h"
 #include "Material.h"
 
 _uint CGameObject::s_NextID = 1;
@@ -40,16 +41,6 @@ HRESULT CGameObject::Initialize(INIT_DESC* pArg)
 
 	GAMEOBJECT_DESC* obj = static_cast<GAMEOBJECT_DESC*>(pArg);
 
-	//for (auto& pair : obj->CompDesc) {
-	//	auto iter = m_Components.find(pair.first);
-	//
-	//	if (iter == m_Components.end())
-	//		MSG_BOX("Wrong Description Imported");
-	//	else
-	//		iter->second->Initialize(pair.second);
-	//}
-	//
-	//
 	for (auto& pair : m_Components)
 	{
 		auto iter = obj->CompDesc.find(pair.first);
@@ -66,12 +57,33 @@ HRESULT CGameObject::Initialize(INIT_DESC* pArg)
 
 void CGameObject::Engine_Update(_float dt)
 {
-	OPAQUE_PACKET packet;
-	packet.pModel = Get_Component<CModel>();
-	packet.pMaterial = Get_Component<CMaterial>();
-	packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+	CModel* model = { nullptr };
+	_bool Skinning = false;
+	if (Get_Component<CStaticModel>()) {
+		model = Get_Component<CStaticModel>();
+		Skinning = false;
+	}
+	else if(Get_Component<CAnimatedModel>()) {
+		model = Get_Component<CAnimatedModel>();
+		Skinning = true;
+	}
+	else {
+		model = Get_Component<CModel>();
+	}
+	if (!model) return;
 
-	CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
+	for (size_t i = 0; i < model->Get_MeshCount(); i++)
+	{
+		if (!model->isDrawable(i)) continue;
+
+		OPAQUE_PACKET packet;
+		packet.bSkinning = Skinning;
+		packet.pModel = model;
+		packet.DrawIndex = i;
+		packet.pMaterial = Get_Component<CMaterial>();
+		packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+		CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
+	}
 }
 
 void CGameObject::Render_GUI()
@@ -86,6 +98,13 @@ void CGameObject::Render_GUI()
 _float4x4* CGameObject::Get_WorldMatrix()
 {
 	return m_pTransform->Get_WorldMatrix();
+}
+
+_float4 CGameObject::Get_Position()
+{
+	_float4 pos;
+	XMStoreFloat4(&pos, m_pTransform->Get_Pos());
+	return pos;
 }
 
 void CGameObject::Free()

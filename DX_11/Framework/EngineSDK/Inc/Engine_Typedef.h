@@ -43,7 +43,9 @@ namespace Engine
 	typedef		CXMMATRIX				_cmatrix;
 
 	using LEVEL_CREATOR = function<class CLevel* ()>;
-	static const std::string G_GlobalLevelKey = "Global_Level";
+	static const string G_GlobalLevelKey = "Global_Level";
+	static constexpr _uint g_iMaxNumBones = 512;
+	static constexpr _uint MAX_TEXTURE_TYPE_VALUE = static_cast<_uint>(TEXTURE_TYPE::GLTF_METALLIC_ROUGHNESS);
 }
 
 #endif // Engine_Typedef_h__

@@ -6,16 +6,16 @@ class ENGINE_DLL CSoundData final :
 {
 
 private:
-    CSoundData(const string& key);
+    CSoundData(const string& soundKey);
     virtual ~CSoundData() DEFAULT;
 public:
-    HRESULT Initialize( FMOD::System* pSystem, const string& filePath);
+    HRESULT Initialize(const string& filePath);
     FMOD::Sound* Get_SoundData() { return m_pSound; };
 private:
     string m_SoundKey;
     FMOD::Sound* m_pSound = { nullptr };
 public:
-    static CSoundData* Create( FMOD::System* pSystem, const string& filePath, const string& key);
+    static CSoundData* Create(const string& filePath, const string& soundKey);
     virtual void Free() override;
 
 };

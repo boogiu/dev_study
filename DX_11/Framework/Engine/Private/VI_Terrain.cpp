@@ -1,7 +1,7 @@
 #include "VI_Terrain.h"
 
-CVI_Terrain::CVI_Terrain(const string& key)
-	:CVIBuffer{ key }
+CVI_Terrain::CVI_Terrain(const string& imguiID)
+	:CVIBuffer{ imguiID }
 {
 }
 
@@ -63,8 +63,8 @@ HRESULT CVI_Terrain::Create_Vertex(ID3D11Device* pDevice)
 	VBDesc.MiscFlags = 0;
 	VBDesc.StructureByteStride = m_iVertexStride;
 
-	VB = new VTXNORMTEX[m_iVerticesCount];
-	ZeroMemory(VB, m_iVertexStride * m_iVerticesCount);
+	m_VBContainer = new VTXNORMTEX[m_iVerticesCount];
+	ZeroMemory(m_VBContainer, m_iVertexStride * m_iVerticesCount);
 
 	_float s = 0.5;
 
@@ -72,18 +72,18 @@ HRESULT CVI_Terrain::Create_Vertex(ID3D11Device* pDevice)
 		for (size_t j = 0; j < iVerticesCountX; ++j) {
 			_uint       iIndex = i * iVerticesCountX + j;
 			/*ARGB -> 합연산 B만 쳐버리면, B의 마지막 인자 00000000(8비트)중 켜진 것만 가져오니까*/
-			VB[iIndex].vPosition = _float3(j, (pPixels[iIndex] & 0x000000ff) / 10.f, i);
-			VB[iIndex].vTexcoord = _float2(j / (iVerticesCountX - 1.f), (i / (iVerticesCountX - 1.f)));
-			VB[iIndex].vNormal = _float3(0.f, 0.f, 0.f);
+			m_VBContainer[iIndex].vPosition = _float3(j, (pPixels[iIndex] & 0x000000ff) / 10.f, i);
+			m_VBContainer[iIndex].vTexcoord = _float2(j / (iVerticesCountX - 1.f), (i / (iVerticesCountX - 1.f)));
+			m_VBContainer[iIndex].vNormal = _float3(0.f, 0.f, 0.f);
 		}
 	}
 
 	Create_Index(pDevice);
 
 	D3D11_SUBRESOURCE_DATA subData;
-	subData.pSysMem = VB;
+	subData.pSysMem = m_VBContainer;
 	HRESULT hr = pDevice->CreateBuffer(&VBDesc, &subData, &m_pVB);
-	Safe_Delete_Array(VB);
+	Safe_Delete_Array(m_VBContainer);
 	return hr;
 }
 
@@ -97,8 +97,8 @@ HRESULT CVI_Terrain::Create_Index(ID3D11Device* pDevice)
 	IDDesc.MiscFlags = 0;
 	IDDesc.StructureByteStride = m_iIndexStride;
 
-	IB = new _uint[m_iIndicesCount];
-	ZeroMemory(IB, m_iIndexStride * m_iIndicesCount);
+	m_IBContainer = new _uint[m_iIndicesCount];
+	ZeroMemory(m_IBContainer, m_iIndexStride * m_iIndicesCount);
 	_uint iCount = {};
 
 	//0~128까지.
@@ -114,12 +114,12 @@ HRESULT CVI_Terrain::Create_Index(ID3D11Device* pDevice)
 				/*3*/			iIndex
 			};
 
-			IB[iCount++] = iIndices[0];
-			IB[iCount++] = iIndices[1];
-			IB[iCount++] = iIndices[2];
-			IB[iCount++] = iIndices[0];
-			IB[iCount++] = iIndices[2];
-			IB[iCount++] = iIndices[3];
+			m_IBContainer[iCount++] = iIndices[0];
+			m_IBContainer[iCount++] = iIndices[1];
+			m_IBContainer[iCount++] = iIndices[2];
+			m_IBContainer[iCount++] = iIndices[0];
+			m_IBContainer[iCount++] = iIndices[2];
+			m_IBContainer[iCount++] = iIndices[3];
 
 		}
 	}
@@ -127,11 +127,11 @@ HRESULT CVI_Terrain::Create_Index(ID3D11Device* pDevice)
 	ComputeNormal();
 
 	D3D11_SUBRESOURCE_DATA subData;
-	subData.pSysMem = IB;
+	subData.pSysMem = m_IBContainer;
 
 	HRESULT hr = pDevice->CreateBuffer(&IDDesc, &subData, &m_pIB);
 
-	Safe_Delete_Array(IB);
+	Safe_Delete_Array(m_IBContainer);
 	return hr;
 }
 
@@ -142,17 +142,17 @@ void CVI_Terrain::ComputeNormal()
 		if (i  >= 98304)
 			return;
 		//면의 법선의 누적
-		_uint index0 = IB[i];
-		_uint index1 = IB[i + 1];
-		_uint index2 = IB[i + 2];
+		_uint index0 = m_IBContainer[i];
+		_uint index1 = m_IBContainer[i + 1];
+		_uint index2 = m_IBContainer[i + 2];
 
-		_vector vPosition0 = XMLoadFloat3(&VB[index0].vPosition);
-		_vector vPosition1 = XMLoadFloat3(&VB[index1].vPosition);
-		_vector vPosition2 = XMLoadFloat3(&VB[index2].vPosition);
+		_vector vPosition0 = XMLoadFloat3(&m_VBContainer[index0].vPosition);
+		_vector vPosition1 = XMLoadFloat3(&m_VBContainer[index1].vPosition);
+		_vector vPosition2 = XMLoadFloat3(&m_VBContainer[index2].vPosition);
 
-		_vector vNormal0 = XMLoadFloat3(&VB[index0].vNormal);
-		_vector vNormal1 = XMLoadFloat3(&VB[index1].vNormal);
-		_vector vNormal2 = XMLoadFloat3(&VB[index2].vNormal);
+		_vector vNormal0 = XMLoadFloat3(&m_VBContainer[index0].vNormal);
+		_vector vNormal1 = XMLoadFloat3(&m_VBContainer[index1].vNormal);
+		_vector vNormal2 = XMLoadFloat3(&m_VBContainer[index2].vNormal);
 
 		_vector vEdge01 = vPosition1 - vPosition0;		//(0이 1을 바라봄)
 		_vector vEdge02 = vPosition2 - vPosition0;	//(0이 2를 바라봄)
@@ -162,21 +162,21 @@ void CVI_Terrain::ComputeNormal()
 		vNormal1 += vPlaneNorm;
 		vNormal2 += vPlaneNorm;
 
-		XMStoreFloat3(&VB[index0].vNormal, vNormal0);
-		XMStoreFloat3(&VB[index1].vNormal, vNormal1);
-		XMStoreFloat3(&VB[index2].vNormal, vNormal2);
+		XMStoreFloat3(&m_VBContainer[index0].vNormal, vNormal0);
+		XMStoreFloat3(&m_VBContainer[index1].vNormal, vNormal1);
+		XMStoreFloat3(&m_VBContainer[index2].vNormal, vNormal2);
 	}
 
 	for (size_t i = 0; i < m_iVerticesCount; ++i) {
-		_vector vNormal = XMLoadFloat3(&VB[i].vNormal);
-		XMStoreFloat3(&VB[i].vNormal,XMVector3Normalize(vNormal));
+		_vector vNormal = XMLoadFloat3(&m_VBContainer[i].vNormal);
+		XMStoreFloat3(&m_VBContainer[i].vNormal,XMVector3Normalize(vNormal));
 	}
 
 }
 
-CVI_Terrain* CVI_Terrain::Create(ID3D11Device* pDevice, const string& key, const string& HeightfilePath)
+CVI_Terrain* CVI_Terrain::Create(ID3D11Device* pDevice, const string& imguiID, const string& HeightfilePath)
 {
-	CVI_Terrain* instance = new CVI_Terrain(key);
+	CVI_Terrain* instance = new CVI_Terrain(imguiID);
 	if (FAILED(instance->Initialize(pDevice, HeightfilePath))) {
 		MSG_BOX("Failed to Created : CVIBuffer_Terrain");
 		Safe_Release(instance);

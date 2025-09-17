@@ -88,26 +88,8 @@
     <Filter Include="01. Utility\05. Resources">
       <UniqueIdentifier>{477b53bf-d03b-4163-8b11-5b6229193acc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\05. Resources\VIBuffer">
-      <UniqueIdentifier>{f6c4535e-e114-4f91-806f-596c177c486f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\VIBuffer\VI_Rect">
-      <UniqueIdentifier>{79e28e40-d36b-41fe-925e-85313b8af44c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\Resource_Manager">
-      <UniqueIdentifier>{6154d539-ae2e-4f8c-a748-e2b2e10aa2c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\Shader">
-      <UniqueIdentifier>{e7232e7c-5fa9-45ab-83fb-52bf19b077e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\Texture">
-      <UniqueIdentifier>{ed80865b-cb31-4472-8efc-a13b4f549275}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\04. Components\Material">
       <UniqueIdentifier>{880aa0b8-a0a6-4a25-a399-8ba05a443f16}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\VIBuffer\VI_Cube">
-      <UniqueIdentifier>{3a74939d-c4fe-46d4-918a-f1df0a362d1b}</UniqueIdentifier>
     </Filter>
     <Filter Include="00. System\03. GUI\GUI_Panel\GuizmoPanel">
       <UniqueIdentifier>{daa2c0cd-3be2-4b92-98f0-57cb860cddad}</UniqueIdentifier>
@@ -151,14 +133,8 @@
     <Filter Include="01. Utility\98. Services\11. CameraService">
       <UniqueIdentifier>{ed4a8191-8771-4fb8-a97c-a62525a2cce7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\05. Resources\VIBuffer\VI_Terrain">
-      <UniqueIdentifier>{5ce578f1-59ff-4a61-b2a2-9059309c6598}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00. System\03. GUI\GUI_Panel\PopUp">
       <UniqueIdentifier>{e9abfedc-d595-4fa3-ab2d-d175d2dc1a17}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\SoundData">
-      <UniqueIdentifier>{40f4df22-0ddd-420c-9fca-5a5d3f05f3ee}</UniqueIdentifier>
     </Filter>
     <Filter Include="00. System\02. Device\InputDevice">
       <UniqueIdentifier>{306f5d37-59ea-48d2-95e9-ddb32320ec9f}</UniqueIdentifier>
@@ -174,9 +150,6 @@
     </Filter>
     <Filter Include="01. Utility\98. Services\12. UIService">
       <UniqueIdentifier>{d4ca6a17-7f94-4d53-994f-0b4a62d96f59}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\96. Default_HLSL">
-      <UniqueIdentifier>{4fb0ed2d-431e-494f-8cc7-c1f734c94912}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Utility\04. Components\Light">
       <UniqueIdentifier>{d52888b5-3a73-46d3-9cf6-1e8cc6be1e54}</UniqueIdentifier>
@@ -229,6 +202,54 @@
     <Filter Include="01. Utility\98. Services\13. LightService">
       <UniqueIdentifier>{1e580bc2-e7a8-4edf-a0ee-b05647ac64d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="98. Default_HLSL">
+      <UniqueIdentifier>{4fb0ed2d-431e-494f-8cc7-c1f734c94912}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\MatrialAnimator">
+      <UniqueIdentifier>{f935a603-4e0f-4b65-b251-4867fe9d92d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\01. VIBuffer">
+      <UniqueIdentifier>{f6c4535e-e114-4f91-806f-596c177c486f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\01. VIBuffer\VI_Rect">
+      <UniqueIdentifier>{79e28e40-d36b-41fe-925e-85313b8af44c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\01. VIBuffer\VI_Cube">
+      <UniqueIdentifier>{3a74939d-c4fe-46d4-918a-f1df0a362d1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\01. VIBuffer\VI_Terrain">
+      <UniqueIdentifier>{5ce578f1-59ff-4a61-b2a2-9059309c6598}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\01. VIBuffer\Mesh">
+      <UniqueIdentifier>{318a2fde-1738-4ea8-b454-8de04d59ef3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\02. Texture">
+      <UniqueIdentifier>{ed80865b-cb31-4472-8efc-a13b4f549275}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\03. SoundData">
+      <UniqueIdentifier>{40f4df22-0ddd-420c-9fca-5a5d3f05f3ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\04. Skeleton">
+      <UniqueIdentifier>{691a0651-5709-4f18-8eed-822d62a181d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\04. Skeleton\Bone">
+      <UniqueIdentifier>{2b89e751-c434-46d9-b506-9d119b1285a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\00. Resource_Manager">
+      <UniqueIdentifier>{6154d539-ae2e-4f8c-a748-e2b2e10aa2c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\06. MaterialData">
+      <UniqueIdentifier>{861c5cd5-5dc8-4304-9ea9-97dc4036d275}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\05. Shader">
+      <UniqueIdentifier>{e7232e7c-5fa9-45ab-83fb-52bf19b077e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\Model\StaticModel">
+      <UniqueIdentifier>{f50d2d27-83bb-4430-b71d-226b0c89fabc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\Model\AnimatedModel">
+      <UniqueIdentifier>{d229de6b-a72a-4e90-8543-3f190158f391}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -280,16 +301,16 @@
       <Filter>01. Utility\04. Components\Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer.cpp">
-      <Filter>01. Utility\05. Resources\VIBuffer</Filter>
+      <Filter>01. Utility\05. Resources\01. VIBuffer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VI_Rect.cpp">
-      <Filter>01. Utility\05. Resources\VIBuffer\VI_Rect</Filter>
+      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Rect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ResourceMgr.cpp">
-      <Filter>01. Utility\05. Resources\Resource_Manager</Filter>
+      <Filter>01. Utility\05. Resources\00. Resource_Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Shader.cpp">
-      <Filter>01. Utility\05. Resources\Shader</Filter>
+      <Filter>01. Utility\05. Resources\05. Shader</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\GUISystem.cpp">
       <Filter>00. System\03. GUI</Filter>
@@ -343,7 +364,7 @@
       <Filter>00. System\03. GUI\GUI_Panel\InspectorPanel</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Texture.cpp">
-      <Filter>01. Utility\05. Resources\Texture</Filter>
+      <Filter>01. Utility\05. Resources\02. Texture</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\RenderPass.cpp">
       <Filter>01. Utility\06. RenderSystem\RenderPass</Filter>
@@ -352,7 +373,7 @@
       <Filter>01. Utility\07. CameraSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VI_Cube.cpp">
-      <Filter>01. Utility\05. Resources\VIBuffer\VI_Cube</Filter>
+      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Cube</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\GuizmoPanel.cpp">
       <Filter>00. System\03. GUI\GUI_Panel\GuizmoPanel</Filter>
@@ -364,13 +385,13 @@
       <Filter>01. Utility\03. GameObject\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VI_Terrain.cpp">
-      <Filter>01. Utility\05. Resources\VIBuffer\VI_Terrain</Filter>
+      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AudioSource.cpp">
       <Filter>01. Utility\04. Components\Audio</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SoundData.cpp">
-      <Filter>01. Utility\05. Resources\SoundData</Filter>
+      <Filter>01. Utility\05. Resources\03. SoundData</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\GameObjectBuilder.cpp">
       <Filter>01. Utility\03. GameObject\BuildSystem\Builder_GameObject</Filter>
@@ -389,6 +410,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\PipeLine.cpp">
       <Filter>01. Utility\06. RenderSystem\PipeLine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mesh.cpp">
+      <Filter>01. Utility\05. Resources\01. VIBuffer\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MaterialData.cpp">
+      <Filter>01. Utility\05. Resources\06. MaterialData</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MaterialAnimator.cpp">
+      <Filter>01. Utility\04. Components\MatrialAnimator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Bone.cpp">
+      <Filter>01. Utility\05. Resources\04. Skeleton\Bone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Skeleton.cpp">
+      <Filter>01. Utility\05. Resources\04. Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\StaticModel.cpp">
+      <Filter>01. Utility\04. Components\Model\StaticModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AnimatedModel.cpp">
+      <Filter>01. Utility\04. Components\Model\AnimatedModel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -486,22 +528,19 @@
       <Filter>01. Utility\04. Components\Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer.h">
-      <Filter>01. Utility\05. Resources\VIBuffer</Filter>
+      <Filter>01. Utility\05. Resources\01. VIBuffer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VI_Rect.h">
-      <Filter>01. Utility\05. Resources\VIBuffer\VI_Rect</Filter>
+      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Rect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ResourceMgr.h">
-      <Filter>01. Utility\05. Resources\Resource_Manager</Filter>
+      <Filter>01. Utility\05. Resources\00. Resource_Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\IResourceService.h">
       <Filter>01. Utility\98. Services\08. ResourceService</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\ResourcePool.h">
-      <Filter>01. Utility\05. Resources\Resource_Manager</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Shader.h">
-      <Filter>01. Utility\05. Resources\Shader</Filter>
+      <Filter>01. Utility\05. Resources\05. Shader</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\GUISystem.h">
       <Filter>00. System\03. GUI</Filter>
@@ -552,7 +591,7 @@
       <Filter>00. System\03. GUI\GUI_Panel\InspectorPanel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Texture.h">
-      <Filter>01. Utility\05. Resources\Texture</Filter>
+      <Filter>01. Utility\05. Resources\02. Texture</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\RenderPass.h">
       <Filter>01. Utility\06. RenderSystem\RenderPass</Filter>
@@ -564,7 +603,7 @@
       <Filter>01. Utility\98. Services\11. CameraService</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VI_Cube.h">
-      <Filter>01. Utility\05. Resources\VIBuffer\VI_Cube</Filter>
+      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Cube</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\GuizmoPanel.h">
       <Filter>00. System\03. GUI\GUI_Panel\GuizmoPanel</Filter>
@@ -576,13 +615,13 @@
       <Filter>01. Utility\03. GameObject\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VI_Terrain.h">
-      <Filter>01. Utility\05. Resources\VIBuffer\VI_Terrain</Filter>
+      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AudioSource.h">
       <Filter>01. Utility\04. Components\Audio</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SoundData.h">
-      <Filter>01. Utility\05. Resources\SoundData</Filter>
+      <Filter>01. Utility\05. Resources\03. SoundData</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Data_Packets.h">
       <Filter>99. Defines</Filter>
@@ -617,13 +656,49 @@
     <ClInclude Include="..\Public\ILightService.h">
       <Filter>01. Utility\98. Services\13. LightService</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Mesh.h">
+      <Filter>01. Utility\05. Resources\01. VIBuffer\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Json_Inc\json_fwd.hpp">
+      <Filter>01. Utility\97. Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Json_Inc\json.hpp">
+      <Filter>01. Utility\97. Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MaterialData.h">
+      <Filter>01. Utility\05. Resources\06. MaterialData</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MaterialAnimator.h">
+      <Filter>01. Utility\04. Components\MatrialAnimator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Bone.h">
+      <Filter>01. Utility\05. Resources\04. Skeleton\Bone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Skeleton.h">
+      <Filter>01. Utility\05. Resources\04. Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\StaticModel.h">
+      <Filter>01. Utility\04. Components\Model\StaticModel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AnimatedModel.h">
+      <Filter>01. Utility\04. Components\Model\AnimatedModel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Public\Engine_Shader\VTX_TexPos.hlsl">
-      <Filter>01. Utility\96. Default_HLSL</Filter>
+      <Filter>98. Default_HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Public\Engine_Shader\Shader_Define.hlsl">
-      <Filter>01. Utility\96. Default_HLSL</Filter>
+      <Filter>98. Default_HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Public\Engine_Shader\VTX_Mesh.hlsl">
+      <Filter>98. Default_HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Public\Engine_Shader\VTX_NorTex.hlsl">
+      <Filter>98. Default_HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Public\Engine_Shader\VTX_SkinMesh.hlsl">
+      <Filter>98. Default_HLSL</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

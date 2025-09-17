@@ -12,12 +12,12 @@ private:
 
 public: 
     HRESULT Initialize();
-    virtual  HRESULT Request_ChangeLevel(string key, _bool Load = true) override;/*레벨 체인지 요청*/
+    virtual  HRESULT Request_ChangeLevel(string imguiID, _bool Load = true) override;/*레벨 체인지 요청*/
     virtual void Update(_float dt)override;
     virtual HRESULT Render()override;
 
 public :
-    virtual void Register_Level(string key, LEVEL_CREATOR creator)override; /*레벨 생성자 등록*/
+    virtual void Register_Level(string imguiID, LEVEL_CREATOR creator)override; /*레벨 생성자 등록*/
 
 #pragma region For_OtherManager
     virtual _uint Get_LevelCount() override { return m_LevelCreators.size(); }

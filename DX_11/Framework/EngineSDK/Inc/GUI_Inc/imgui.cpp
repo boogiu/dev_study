@@ -1703,11 +1703,11 @@ void ImGuiIO::ClearEventsQueue()
 void ImGuiIO::ClearInputKeys()
 {
     ImGuiContext& g = *Ctx;
-    for (int key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key++)
+    for (int imguiID = ImGuiKey_NamedKey_BEGIN; imguiID < ImGuiKey_NamedKey_END; imguiID++)
     {
-        if (ImGui::IsMouseKey((ImGuiKey)key))
+        if (ImGui::IsMouseKey((ImGuiKey)imguiID))
             continue;
-        ImGuiKeyData* key_data = &g.IO.KeysData[key - ImGuiKey_NamedKey_BEGIN];
+        ImGuiKeyData* key_data = &g.IO.KeysData[imguiID - ImGuiKey_NamedKey_BEGIN];
         key_data->Down = false;
         key_data->DownDuration = -1.0f;
         key_data->DownDurationPrev = -1.0f;
@@ -1719,9 +1719,9 @@ void ImGuiIO::ClearInputKeys()
 
 void ImGuiIO::ClearInputMouse()
 {
-    for (ImGuiKey key = ImGuiKey_Mouse_BEGIN; key < ImGuiKey_Mouse_END; key = (ImGuiKey)(key + 1))
+    for (ImGuiKey imguiID = ImGuiKey_Mouse_BEGIN; imguiID < ImGuiKey_Mouse_END; imguiID = (ImGuiKey)(imguiID + 1))
     {
-        ImGuiKeyData* key_data = &KeysData[key - ImGuiKey_NamedKey_BEGIN];
+        ImGuiKeyData* key_data = &KeysData[imguiID - ImGuiKey_NamedKey_BEGIN];
         key_data->Down = false;
         key_data->DownDuration = -1.0f;
         key_data->DownDurationPrev = -1.0f;
@@ -1767,30 +1767,30 @@ static ImGuiInputEvent* FindLatestInputEvent(ImGuiContext* ctx, ImGuiInputEventT
 // - float analog_value: 0.0f..1.0f
 // IMPORTANT: THIS FUNCTION AND OTHER "ADD" GRABS THE CONTEXT FROM OUR INSTANCE.
 // WE NEED TO ENSURE THAT ALL FUNCTION CALLS ARE FULFILLING THIS, WHICH IS WHY GetKeyData() HAS AN EXPLICIT CONTEXT.
-void ImGuiIO::AddKeyAnalogEvent(ImGuiKey key, bool down, float analog_value)
+void ImGuiIO::AddKeyAnalogEvent(ImGuiKey imguiID, bool down, float analog_value)
 {
     //if (e->Down) { IMGUI_DEBUG_LOG_IO("AddKeyEvent() Key='%s' %d, NativeKeycode = %d, NativeScancode = %d\n", ImGui::GetKeyName(e->Key), e->Down, e->NativeKeycode, e->NativeScancode); }
     IM_ASSERT(Ctx != NULL);
-    if (key == ImGuiKey_None || !AppAcceptingEvents)
+    if (imguiID == ImGuiKey_None || !AppAcceptingEvents)
         return;
     ImGuiContext& g = *Ctx;
-    IM_ASSERT(ImGui::IsNamedKeyOrMod(key)); // Backend needs to pass a valid ImGuiKey_ constant. 0..511 values are legacy native key codes which are not accepted by this API.
-    IM_ASSERT(ImGui::IsAliasKey(key) == false); // Backend cannot submit ImGuiKey_MouseXXX values they are automatically inferred from AddMouseXXX() events.
+    IM_ASSERT(ImGui::IsNamedKeyOrMod(imguiID)); // Backend needs to pass a valid ImGuiKey_ constant. 0..511 values are legacy native key codes which are not accepted by this API.
+    IM_ASSERT(ImGui::IsAliasKey(imguiID) == false); // Backend cannot submit ImGuiKey_MouseXXX values they are automatically inferred from AddMouseXXX() events.
 
     // MacOS: swap Cmd(Super) and Ctrl
     if (g.IO.ConfigMacOSXBehaviors)
     {
-        if (key == ImGuiMod_Super)          { key = ImGuiMod_Ctrl; }
-        else if (key == ImGuiMod_Ctrl)      { key = ImGuiMod_Super; }
-        else if (key == ImGuiKey_LeftSuper) { key = ImGuiKey_LeftCtrl; }
-        else if (key == ImGuiKey_RightSuper){ key = ImGuiKey_RightCtrl; }
-        else if (key == ImGuiKey_LeftCtrl)  { key = ImGuiKey_LeftSuper; }
-        else if (key == ImGuiKey_RightCtrl) { key = ImGuiKey_RightSuper; }
+        if (imguiID == ImGuiMod_Super)          { imguiID = ImGuiMod_Ctrl; }
+        else if (imguiID == ImGuiMod_Ctrl)      { imguiID = ImGuiMod_Super; }
+        else if (imguiID == ImGuiKey_LeftSuper) { imguiID = ImGuiKey_LeftCtrl; }
+        else if (imguiID == ImGuiKey_RightSuper){ imguiID = ImGuiKey_RightCtrl; }
+        else if (imguiID == ImGuiKey_LeftCtrl)  { imguiID = ImGuiKey_LeftSuper; }
+        else if (imguiID == ImGuiKey_RightCtrl) { imguiID = ImGuiKey_RightSuper; }
     }
 
     // Filter duplicate (in particular: key mods and gamepad analog values are commonly spammed)
-    const ImGuiInputEvent* latest_event = FindLatestInputEvent(&g, ImGuiInputEventType_Key, (int)key);
-    const ImGuiKeyData* key_data = ImGui::GetKeyData(&g, key);
+    const ImGuiInputEvent* latest_event = FindLatestInputEvent(&g, ImGuiInputEventType_Key, (int)imguiID);
+    const ImGuiKeyData* key_data = ImGui::GetKeyData(&g, imguiID);
     const bool latest_key_down = latest_event ? latest_event->Key.Down : key_data->Down;
     const float latest_key_analog = latest_event ? latest_event->Key.AnalogValue : key_data->AnalogValue;
     if (latest_key_down == down && latest_key_analog == analog_value)
@@ -1799,31 +1799,31 @@ void ImGuiIO::AddKeyAnalogEvent(ImGuiKey key, bool down, float analog_value)
     // Add event
     ImGuiInputEvent e;
     e.Type = ImGuiInputEventType_Key;
-    e.Source = ImGui::IsGamepadKey(key) ? ImGuiInputSource_Gamepad : ImGuiInputSource_Keyboard;
+    e.Source = ImGui::IsGamepadKey(imguiID) ? ImGuiInputSource_Gamepad : ImGuiInputSource_Keyboard;
     e.EventId = g.InputEventsNextEventId++;
-    e.Key.Key = key;
+    e.Key.Key = imguiID;
     e.Key.Down = down;
     e.Key.AnalogValue = analog_value;
     g.InputEventsQueue.push_back(e);
 }
 
-void ImGuiIO::AddKeyEvent(ImGuiKey key, bool down)
+void ImGuiIO::AddKeyEvent(ImGuiKey imguiID, bool down)
 {
     if (!AppAcceptingEvents)
         return;
-    AddKeyAnalogEvent(key, down, down ? 1.0f : 0.0f);
+    AddKeyAnalogEvent(imguiID, down, down ? 1.0f : 0.0f);
 }
 
 // [Optional] Call after AddKeyEvent().
 // Specify native keycode, scancode + Specify index for legacy <1.87 IsKeyXXX() functions with native indices.
 // If you are writing a backend in 2022 or don't use IsKeyXXX() with native values that are not ImGuiKey values, you can avoid calling this.
-void ImGuiIO::SetKeyEventNativeData(ImGuiKey key, int native_keycode, int native_scancode, int native_legacy_index)
+void ImGuiIO::SetKeyEventNativeData(ImGuiKey imguiID, int native_keycode, int native_scancode, int native_legacy_index)
 {
-    if (key == ImGuiKey_None)
+    if (imguiID == ImGuiKey_None)
         return;
-    IM_ASSERT(ImGui::IsNamedKey(key)); // >= 512
+    IM_ASSERT(ImGui::IsNamedKey(imguiID)); // >= 512
     IM_ASSERT(native_legacy_index == -1 || ImGui::IsLegacyKey((ImGuiKey)native_legacy_index)); // >= 0 && <= 511
-    IM_UNUSED(key);                 // Yet unused
+    IM_UNUSED(imguiID);                 // Yet unused
     IM_UNUSED(native_keycode);      // Yet unused
     IM_UNUSED(native_scancode);     // Yet unused
     IM_UNUSED(native_legacy_index); // Yet unused
@@ -2805,14 +2805,14 @@ void ImGui::ColorConvertHSVtoRGB(float h, float s, float v, float& out_r, float&
 //-----------------------------------------------------------------------------
 
 // std::lower_bound but without the bullshit
-ImGuiStoragePair* ImLowerBound(ImGuiStoragePair* in_begin, ImGuiStoragePair* in_end, ImGuiID key)
+ImGuiStoragePair* ImLowerBound(ImGuiStoragePair* in_begin, ImGuiStoragePair* in_end, ImGuiID imguiID)
 {
     ImGuiStoragePair* in_p = in_begin;
     for (size_t count = (size_t)(in_end - in_p); count > 0; )
     {
         size_t count2 = count >> 1;
         ImGuiStoragePair* mid = in_p + count2;
-        if (mid->key < key)
+        if (mid->imguiID < imguiID)
         {
             in_p = ++mid;
             count -= count2 + 1;
@@ -2829,8 +2829,8 @@ IM_MSVC_RUNTIME_CHECKS_OFF
 static int IMGUI_CDECL PairComparerByID(const void* lhs, const void* rhs)
 {
     // We can't just do a subtraction because qsort uses signed integers and subtracting our ID doesn't play well with that.
-    ImGuiID lhs_v = ((const ImGuiStoragePair*)lhs)->key;
-    ImGuiID rhs_v = ((const ImGuiStoragePair*)rhs)->key;
+    ImGuiID lhs_v = ((const ImGuiStoragePair*)lhs)->imguiID;
+    ImGuiID rhs_v = ((const ImGuiStoragePair*)rhs)->imguiID;
     return (lhs_v > rhs_v ? +1 : lhs_v < rhs_v ? -1 : 0);
 }
 
@@ -2840,94 +2840,94 @@ void ImGuiStorage::BuildSortByKey()
     ImQsort(Data.Data, (size_t)Data.Size, sizeof(ImGuiStoragePair), PairComparerByID);
 }
 
-int ImGuiStorage::GetInt(ImGuiID key, int default_val) const
+int ImGuiStorage::GetInt(ImGuiID imguiID, int default_val) const
 {
-    ImGuiStoragePair* it = ImLowerBound(const_cast<ImGuiStoragePair*>(Data.Data), const_cast<ImGuiStoragePair*>(Data.Data + Data.Size), key);
-    if (it == Data.Data + Data.Size || it->key != key)
+    ImGuiStoragePair* it = ImLowerBound(const_cast<ImGuiStoragePair*>(Data.Data), const_cast<ImGuiStoragePair*>(Data.Data + Data.Size), imguiID);
+    if (it == Data.Data + Data.Size || it->imguiID != imguiID)
         return default_val;
     return it->val_i;
 }
 
-bool ImGuiStorage::GetBool(ImGuiID key, bool default_val) const
+bool ImGuiStorage::GetBool(ImGuiID imguiID, bool default_val) const
 {
-    return GetInt(key, default_val ? 1 : 0) != 0;
+    return GetInt(imguiID, default_val ? 1 : 0) != 0;
 }
 
-float ImGuiStorage::GetFloat(ImGuiID key, float default_val) const
+float ImGuiStorage::GetFloat(ImGuiID imguiID, float default_val) const
 {
-    ImGuiStoragePair* it = ImLowerBound(const_cast<ImGuiStoragePair*>(Data.Data), const_cast<ImGuiStoragePair*>(Data.Data + Data.Size), key);
-    if (it == Data.Data + Data.Size || it->key != key)
+    ImGuiStoragePair* it = ImLowerBound(const_cast<ImGuiStoragePair*>(Data.Data), const_cast<ImGuiStoragePair*>(Data.Data + Data.Size), imguiID);
+    if (it == Data.Data + Data.Size || it->imguiID != imguiID)
         return default_val;
     return it->val_f;
 }
 
-void* ImGuiStorage::GetVoidPtr(ImGuiID key) const
+void* ImGuiStorage::GetVoidPtr(ImGuiID imguiID) const
 {
-    ImGuiStoragePair* it = ImLowerBound(const_cast<ImGuiStoragePair*>(Data.Data), const_cast<ImGuiStoragePair*>(Data.Data + Data.Size), key);
-    if (it == Data.Data + Data.Size || it->key != key)
+    ImGuiStoragePair* it = ImLowerBound(const_cast<ImGuiStoragePair*>(Data.Data), const_cast<ImGuiStoragePair*>(Data.Data + Data.Size), imguiID);
+    if (it == Data.Data + Data.Size || it->imguiID != imguiID)
         return NULL;
     return it->val_p;
 }
 
 // References are only valid until a new value is added to the storage. Calling a Set***() function or a Get***Ref() function invalidates the pointer.
-int* ImGuiStorage::GetIntRef(ImGuiID key, int default_val)
+int* ImGuiStorage::GetIntRef(ImGuiID imguiID, int default_val)
 {
-    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, key);
-    if (it == Data.Data + Data.Size || it->key != key)
-        it = Data.insert(it, ImGuiStoragePair(key, default_val));
+    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, imguiID);
+    if (it == Data.Data + Data.Size || it->imguiID != imguiID)
+        it = Data.insert(it, ImGuiStoragePair(imguiID, default_val));
     return &it->val_i;
 }
 
-bool* ImGuiStorage::GetBoolRef(ImGuiID key, bool default_val)
+bool* ImGuiStorage::GetBoolRef(ImGuiID imguiID, bool default_val)
 {
-    return (bool*)GetIntRef(key, default_val ? 1 : 0);
+    return (bool*)GetIntRef(imguiID, default_val ? 1 : 0);
 }
 
-float* ImGuiStorage::GetFloatRef(ImGuiID key, float default_val)
+float* ImGuiStorage::GetFloatRef(ImGuiID imguiID, float default_val)
 {
-    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, key);
-    if (it == Data.Data + Data.Size || it->key != key)
-        it = Data.insert(it, ImGuiStoragePair(key, default_val));
+    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, imguiID);
+    if (it == Data.Data + Data.Size || it->imguiID != imguiID)
+        it = Data.insert(it, ImGuiStoragePair(imguiID, default_val));
     return &it->val_f;
 }
 
-void** ImGuiStorage::GetVoidPtrRef(ImGuiID key, void* default_val)
+void** ImGuiStorage::GetVoidPtrRef(ImGuiID imguiID, void* default_val)
 {
-    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, key);
-    if (it == Data.Data + Data.Size || it->key != key)
-        it = Data.insert(it, ImGuiStoragePair(key, default_val));
+    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, imguiID);
+    if (it == Data.Data + Data.Size || it->imguiID != imguiID)
+        it = Data.insert(it, ImGuiStoragePair(imguiID, default_val));
     return &it->val_p;
 }
 
 // FIXME-OPT: Need a way to reuse the result of lower_bound when doing GetInt()/SetInt() - not too bad because it only happens on explicit interaction (maximum one a frame)
-void ImGuiStorage::SetInt(ImGuiID key, int val)
+void ImGuiStorage::SetInt(ImGuiID imguiID, int val)
 {
-    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, key);
-    if (it == Data.Data + Data.Size || it->key != key)
-        Data.insert(it, ImGuiStoragePair(key, val));
+    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, imguiID);
+    if (it == Data.Data + Data.Size || it->imguiID != imguiID)
+        Data.insert(it, ImGuiStoragePair(imguiID, val));
     else
         it->val_i = val;
 }
 
-void ImGuiStorage::SetBool(ImGuiID key, bool val)
+void ImGuiStorage::SetBool(ImGuiID imguiID, bool val)
 {
-    SetInt(key, val ? 1 : 0);
+    SetInt(imguiID, val ? 1 : 0);
 }
 
-void ImGuiStorage::SetFloat(ImGuiID key, float val)
+void ImGuiStorage::SetFloat(ImGuiID imguiID, float val)
 {
-    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, key);
-    if (it == Data.Data + Data.Size || it->key != key)
-        Data.insert(it, ImGuiStoragePair(key, val));
+    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, imguiID);
+    if (it == Data.Data + Data.Size || it->imguiID != imguiID)
+        Data.insert(it, ImGuiStoragePair(imguiID, val));
     else
         it->val_f = val;
 }
 
-void ImGuiStorage::SetVoidPtr(ImGuiID key, void* val)
+void ImGuiStorage::SetVoidPtr(ImGuiID imguiID, void* val)
 {
-    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, key);
-    if (it == Data.Data + Data.Size || it->key != key)
-        Data.insert(it, ImGuiStoragePair(key, val));
+    ImGuiStoragePair* it = ImLowerBound(Data.Data, Data.Data + Data.Size, imguiID);
+    if (it == Data.Data + Data.Size || it->imguiID != imguiID)
+        Data.insert(it, ImGuiStoragePair(imguiID, val));
     else
         it->val_p = val;
 }
@@ -4305,12 +4305,12 @@ void ImGui::Initialize()
     g.TempBuffer.resize(1024 * 3 + 1, 0);
 
     // Build KeysMayBeCharInput[] lookup table (1 bool per named key)
-    for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1))
-        if ((key >= ImGuiKey_0 && key <= ImGuiKey_9) || (key >= ImGuiKey_A && key <= ImGuiKey_Z) || (key >= ImGuiKey_Keypad0 && key <= ImGuiKey_Keypad9)
-            || key == ImGuiKey_Tab || key == ImGuiKey_Space || key == ImGuiKey_Apostrophe || key == ImGuiKey_Comma || key == ImGuiKey_Minus || key == ImGuiKey_Period
-            || key == ImGuiKey_Slash || key == ImGuiKey_Semicolon || key == ImGuiKey_Equal || key == ImGuiKey_LeftBracket || key == ImGuiKey_RightBracket || key == ImGuiKey_GraveAccent
-            || key == ImGuiKey_KeypadDecimal || key == ImGuiKey_KeypadDivide || key == ImGuiKey_KeypadMultiply || key == ImGuiKey_KeypadSubtract || key == ImGuiKey_KeypadAdd || key == ImGuiKey_KeypadEqual)
-            g.KeysMayBeCharInput.SetBit(key);
+    for (ImGuiKey imguiID = ImGuiKey_NamedKey_BEGIN; imguiID < ImGuiKey_NamedKey_END; imguiID = (ImGuiKey)(imguiID + 1))
+        if ((imguiID >= ImGuiKey_0 && imguiID <= ImGuiKey_9) || (imguiID >= ImGuiKey_A && imguiID <= ImGuiKey_Z) || (imguiID >= ImGuiKey_Keypad0 && imguiID <= ImGuiKey_Keypad9)
+            || imguiID == ImGuiKey_Tab || imguiID == ImGuiKey_Space || imguiID == ImGuiKey_Apostrophe || imguiID == ImGuiKey_Comma || imguiID == ImGuiKey_Minus || imguiID == ImGuiKey_Period
+            || imguiID == ImGuiKey_Slash || imguiID == ImGuiKey_Semicolon || imguiID == ImGuiKey_Equal || imguiID == ImGuiKey_LeftBracket || imguiID == ImGuiKey_RightBracket || imguiID == ImGuiKey_GraveAccent
+            || imguiID == ImGuiKey_KeypadDecimal || imguiID == ImGuiKey_KeypadDivide || imguiID == ImGuiKey_KeypadMultiply || imguiID == ImGuiKey_KeypadSubtract || imguiID == ImGuiKey_KeypadAdd || imguiID == ImGuiKey_KeypadEqual)
+            g.KeysMayBeCharInput.SetBit(imguiID);
 
 #ifdef IMGUI_HAS_DOCK
 #endif
@@ -9176,15 +9176,15 @@ IM_MSVC_RUNTIME_CHECKS_RESTORE
 // - Shortcut() [Internal]
 //-----------------------------------------------------------------------------
 
-static ImGuiKeyChord GetModForLRModKey(ImGuiKey key)
+static ImGuiKeyChord GetModForLRModKey(ImGuiKey imguiID)
 {
-    if (key == ImGuiKey_LeftCtrl || key == ImGuiKey_RightCtrl)
+    if (imguiID == ImGuiKey_LeftCtrl || imguiID == ImGuiKey_RightCtrl)
         return ImGuiMod_Ctrl;
-    if (key == ImGuiKey_LeftShift || key == ImGuiKey_RightShift)
+    if (imguiID == ImGuiKey_LeftShift || imguiID == ImGuiKey_RightShift)
         return ImGuiMod_Shift;
-    if (key == ImGuiKey_LeftAlt || key == ImGuiKey_RightAlt)
+    if (imguiID == ImGuiKey_LeftAlt || imguiID == ImGuiKey_RightAlt)
         return ImGuiMod_Alt;
-    if (key == ImGuiKey_LeftSuper || key == ImGuiKey_RightSuper)
+    if (imguiID == ImGuiKey_LeftSuper || imguiID == ImGuiKey_RightSuper)
         return ImGuiMod_Super;
     return ImGuiMod_None;
 }
@@ -9192,22 +9192,22 @@ static ImGuiKeyChord GetModForLRModKey(ImGuiKey key)
 ImGuiKeyChord ImGui::FixupKeyChord(ImGuiKeyChord key_chord)
 {
     // Add ImGuiMod_XXXX when a corresponding ImGuiKey_LeftXXX/ImGuiKey_RightXXX is specified.
-    ImGuiKey key = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
-    if (IsLRModKey(key))
-        key_chord |= GetModForLRModKey(key);
+    ImGuiKey imguiID = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
+    if (IsLRModKey(imguiID))
+        key_chord |= GetModForLRModKey(imguiID);
     return key_chord;
 }
 
-ImGuiKeyData* ImGui::GetKeyData(ImGuiContext* ctx, ImGuiKey key)
+ImGuiKeyData* ImGui::GetKeyData(ImGuiContext* ctx, ImGuiKey imguiID)
 {
     ImGuiContext& g = *ctx;
 
     // Special storage location for mods
-    if (key & ImGuiMod_Mask_)
-        key = ConvertSingleModFlagToKey(key);
+    if (imguiID & ImGuiMod_Mask_)
+        imguiID = ConvertSingleModFlagToKey(imguiID);
 
-    IM_ASSERT(IsNamedKey(key) && "Support for user key indices was dropped in favor of ImGuiKey. Please update backend & user code.");
-    return &g.IO.KeysData[key - ImGuiKey_NamedKey_BEGIN];
+    IM_ASSERT(IsNamedKey(imguiID) && "Support for user key indices was dropped in favor of ImGuiKey. Please update backend & user code.");
+    return &g.IO.KeysData[imguiID - ImGuiKey_NamedKey_BEGIN];
 }
 
 // Those names are provided for debugging purpose and are not meant to be saved persistently nor compared.
@@ -9237,17 +9237,17 @@ static const char* const GKeyNames[] =
 };
 IM_STATIC_ASSERT(ImGuiKey_NamedKey_COUNT == IM_ARRAYSIZE(GKeyNames));
 
-const char* ImGui::GetKeyName(ImGuiKey key)
+const char* ImGui::GetKeyName(ImGuiKey imguiID)
 {
-    if (key == ImGuiKey_None)
+    if (imguiID == ImGuiKey_None)
         return "None";
-    IM_ASSERT(IsNamedKeyOrMod(key) && "Support for user key indices was dropped in favor of ImGuiKey. Please update backend and user code.");
-    if (key & ImGuiMod_Mask_)
-        key = ConvertSingleModFlagToKey(key);
-    if (!IsNamedKey(key))
+    IM_ASSERT(IsNamedKeyOrMod(imguiID) && "Support for user key indices was dropped in favor of ImGuiKey. Please update backend and user code.");
+    if (imguiID & ImGuiMod_Mask_)
+        imguiID = ConvertSingleModFlagToKey(imguiID);
+    if (!IsNamedKey(imguiID))
         return "Unknown";
 
-    return GKeyNames[key - ImGuiKey_NamedKey_BEGIN];
+    return GKeyNames[imguiID - ImGuiKey_NamedKey_BEGIN];
 }
 
 // Return untranslated names: on macOS, Cmd key will show as Ctrl, Ctrl key will show as super.
@@ -9256,17 +9256,17 @@ const char* ImGui::GetKeyChordName(ImGuiKeyChord key_chord)
 {
     ImGuiContext& g = *GImGui;
 
-    const ImGuiKey key = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
-    if (IsLRModKey(key))
-        key_chord &= ~GetModForLRModKey(key); // Return "Ctrl+LeftShift" instead of "Ctrl+Shift+LeftShift"
+    const ImGuiKey imguiID = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
+    if (IsLRModKey(imguiID))
+        key_chord &= ~GetModForLRModKey(imguiID); // Return "Ctrl+LeftShift" instead of "Ctrl+Shift+LeftShift"
     ImFormatString(g.TempKeychordName, IM_ARRAYSIZE(g.TempKeychordName), "%s%s%s%s%s",
         (key_chord & ImGuiMod_Ctrl) ? "Ctrl+" : "",
         (key_chord & ImGuiMod_Shift) ? "Shift+" : "",
         (key_chord & ImGuiMod_Alt) ? "Alt+" : "",
         (key_chord & ImGuiMod_Super) ? "Super+" : "",
-        (key != ImGuiKey_None || key_chord == ImGuiKey_None) ? GetKeyName(key) : "");
+        (imguiID != ImGuiKey_None || key_chord == ImGuiKey_None) ? GetKeyName(imguiID) : "");
     size_t len;
-    if (key == ImGuiKey_None && key_chord != 0)
+    if (imguiID == ImGuiKey_None && key_chord != 0)
         if ((len = ImStrlen(g.TempKeychordName)) != 0) // Remove trailing '+'
             g.TempKeychordName[len - 1] = 0;
     return g.TempKeychordName;
@@ -9303,10 +9303,10 @@ void ImGui::GetTypematicRepeatRate(ImGuiInputFlags flags, float* repeat_delay, f
 
 // Return value representing the number of presses in the last time period, for the given repeat rate
 // (most often returns 0 or 1. The result is generally only >1 when RepeatRate is smaller than DeltaTime, aka large DeltaTime or fast RepeatRate)
-int ImGui::GetKeyPressedAmount(ImGuiKey key, float repeat_delay, float repeat_rate)
+int ImGui::GetKeyPressedAmount(ImGuiKey imguiID, float repeat_delay, float repeat_rate)
 {
     ImGuiContext& g = *GImGui;
-    const ImGuiKeyData* key_data = GetKeyData(key);
+    const ImGuiKeyData* key_data = GetKeyData(imguiID);
     if (!key_data->Down) // In theory this should already be encoded as (DownDuration < 0.0f), but testing this facilitates eating mechanism (until we finish work on key ownership)
         return 0;
     const float t = key_data->DownDuration;
@@ -9329,11 +9329,11 @@ static void ImGui::UpdateKeyRoutingTable(ImGuiKeyRoutingTable* rt)
 {
     ImGuiContext& g = *GImGui;
     rt->EntriesNext.resize(0);
-    for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1))
+    for (ImGuiKey imguiID = ImGuiKey_NamedKey_BEGIN; imguiID < ImGuiKey_NamedKey_END; imguiID = (ImGuiKey)(imguiID + 1))
     {
         const int new_routing_start_idx = rt->EntriesNext.Size;
         ImGuiKeyRoutingData* routing_entry;
-        for (int old_routing_idx = rt->Index[key - ImGuiKey_NamedKey_BEGIN]; old_routing_idx != -1; old_routing_idx = routing_entry->NextEntryIndex)
+        for (int old_routing_idx = rt->Index[imguiID - ImGuiKey_NamedKey_BEGIN]; old_routing_idx != -1; old_routing_idx = routing_entry->NextEntryIndex)
         {
             routing_entry = &rt->Entries[old_routing_idx];
             routing_entry->RoutingCurrScore = routing_entry->RoutingNextScore;
@@ -9348,7 +9348,7 @@ static void ImGui::UpdateKeyRoutingTable(ImGuiKeyRoutingTable* rt)
             // This is the result of previous frame's SetShortcutRouting() call.
             if (routing_entry->Mods == g.IO.KeyMods)
             {
-                ImGuiKeyOwnerData* owner_data = GetKeyOwnerData(&g, key);
+                ImGuiKeyOwnerData* owner_data = GetKeyOwnerData(&g, imguiID);
                 if (owner_data->OwnerCurr == ImGuiKeyOwner_NoOwner)
                 {
                     owner_data->OwnerCurr = routing_entry->RoutingCurr;
@@ -9358,7 +9358,7 @@ static void ImGui::UpdateKeyRoutingTable(ImGuiKeyRoutingTable* rt)
         }
 
         // Rewrite linked-list
-        rt->Index[key - ImGuiKey_NamedKey_BEGIN] = (ImGuiKeyRoutingIndex)(new_routing_start_idx < rt->EntriesNext.Size ? new_routing_start_idx : -1);
+        rt->Index[imguiID - ImGuiKey_NamedKey_BEGIN] = (ImGuiKeyRoutingIndex)(new_routing_start_idx < rt->EntriesNext.Size ? new_routing_start_idx : -1);
         for (int n = new_routing_start_idx; n < rt->EntriesNext.Size; n++)
             rt->EntriesNext[n].NextEntryIndex = (ImGuiKeyRoutingIndex)((n + 1 < rt->EntriesNext.Size) ? n + 1 : -1);
     }
@@ -9383,15 +9383,15 @@ ImGuiKeyRoutingData* ImGui::GetShortcutRoutingData(ImGuiKeyChord key_chord)
     ImGuiContext& g = *GImGui;
     ImGuiKeyRoutingTable* rt = &g.KeysRoutingTable;
     ImGuiKeyRoutingData* routing_data;
-    ImGuiKey key = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
+    ImGuiKey imguiID = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
     ImGuiKey mods = (ImGuiKey)(key_chord & ImGuiMod_Mask_);
-    if (key == ImGuiKey_None)
-        key = ConvertSingleModFlagToKey(mods);
-    IM_ASSERT(IsNamedKey(key));
+    if (imguiID == ImGuiKey_None)
+        imguiID = ConvertSingleModFlagToKey(mods);
+    IM_ASSERT(IsNamedKey(imguiID));
 
     // Get (in the majority of case, the linked list will have one element so this should be 2 reads.
     // Subsequent elements will be contiguous in memory as list is sorted/rebuilt in NewFrame).
-    for (ImGuiKeyRoutingIndex idx = rt->Index[key - ImGuiKey_NamedKey_BEGIN]; idx != -1; idx = routing_data->NextEntryIndex)
+    for (ImGuiKeyRoutingIndex idx = rt->Index[imguiID - ImGuiKey_NamedKey_BEGIN]; idx != -1; idx = routing_data->NextEntryIndex)
     {
         routing_data = &rt->Entries[idx];
         if (routing_data->Mods == mods)
@@ -9403,8 +9403,8 @@ ImGuiKeyRoutingData* ImGui::GetShortcutRoutingData(ImGuiKeyChord key_chord)
     rt->Entries.push_back(ImGuiKeyRoutingData());
     routing_data = &rt->Entries[routing_data_idx];
     routing_data->Mods = (ImU16)mods;
-    routing_data->NextEntryIndex = rt->Index[key - ImGuiKey_NamedKey_BEGIN]; // Setup linked list
-    rt->Index[key - ImGuiKey_NamedKey_BEGIN] = routing_data_idx;
+    routing_data->NextEntryIndex = rt->Index[imguiID - ImGuiKey_NamedKey_BEGIN]; // Setup linked list
+    rt->Index[imguiID - ImGuiKey_NamedKey_BEGIN] = routing_data_idx;
     return routing_data;
 }
 
@@ -9473,10 +9473,10 @@ static bool IsKeyChordPotentiallyCharInput(ImGuiKeyChord key_chord)
         return false;
 
     // Return true for A-Z, 0-9 and other keys associated to char inputs. Other keys such as F1-F12 won't be filtered.
-    ImGuiKey key = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
-    if (key == ImGuiKey_None)
+    ImGuiKey imguiID = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
+    if (imguiID == ImGuiKey_None)
         return false;
-    return g.KeysMayBeCharInput.TestBit(key);
+    return g.KeysMayBeCharInput.TestBit(imguiID);
 }
 
 // Request a desired route for an input chord (key + mods).
@@ -9533,10 +9533,10 @@ bool ImGui::SetShortcutRouting(ImGuiKeyChord key_chord, ImGuiInputFlags flags, I
         // ActiveIdUsingAllKeyboardKeys trumps all for ActiveId
         if ((flags & ImGuiInputFlags_RouteOverActive) == 0 && g.ActiveIdUsingAllKeyboardKeys)
         {
-            ImGuiKey key = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
-            if (key == ImGuiKey_None)
-                key = ConvertSingleModFlagToKey((ImGuiKey)(key_chord & ImGuiMod_Mask_));
-            if (key >= ImGuiKey_Keyboard_BEGIN && key < ImGuiKey_Keyboard_END)
+            ImGuiKey imguiID = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
+            if (imguiID == ImGuiKey_None)
+                imguiID = ConvertSingleModFlagToKey((ImGuiKey)(key_chord & ImGuiMod_Mask_));
+            if (imguiID >= ImGuiKey_Keyboard_BEGIN && imguiID < ImGuiKey_Keyboard_END)
                 return false;
         }
     }
@@ -9579,30 +9579,30 @@ bool ImGui::TestShortcutRouting(ImGuiKeyChord key_chord, ImGuiID owner_id)
 
 // Note that Dear ImGui doesn't know the meaning/semantic of ImGuiKey from 0..511: they are legacy native keycodes.
 // Consider transitioning from 'IsKeyDown(MY_ENGINE_KEY_A)' (<1.87) to IsKeyDown(ImGuiKey_A) (>= 1.87)
-bool ImGui::IsKeyDown(ImGuiKey key)
+bool ImGui::IsKeyDown(ImGuiKey imguiID)
 {
-    return IsKeyDown(key, ImGuiKeyOwner_Any);
+    return IsKeyDown(imguiID, ImGuiKeyOwner_Any);
 }
 
-bool ImGui::IsKeyDown(ImGuiKey key, ImGuiID owner_id)
+bool ImGui::IsKeyDown(ImGuiKey imguiID, ImGuiID owner_id)
 {
-    const ImGuiKeyData* key_data = GetKeyData(key);
+    const ImGuiKeyData* key_data = GetKeyData(imguiID);
     if (!key_data->Down)
         return false;
-    if (!TestKeyOwner(key, owner_id))
+    if (!TestKeyOwner(imguiID, owner_id))
         return false;
     return true;
 }
 
-bool ImGui::IsKeyPressed(ImGuiKey key, bool repeat)
+bool ImGui::IsKeyPressed(ImGuiKey imguiID, bool repeat)
 {
-    return IsKeyPressed(key, repeat ? ImGuiInputFlags_Repeat : ImGuiInputFlags_None, ImGuiKeyOwner_Any);
+    return IsKeyPressed(imguiID, repeat ? ImGuiInputFlags_Repeat : ImGuiInputFlags_None, ImGuiKeyOwner_Any);
 }
 
 // Important: unlike legacy IsKeyPressed(ImGuiKey, bool repeat=true) which DEFAULT to repeat, this requires EXPLICIT repeat.
-bool ImGui::IsKeyPressed(ImGuiKey key, ImGuiInputFlags flags, ImGuiID owner_id)
+bool ImGui::IsKeyPressed(ImGuiKey imguiID, ImGuiInputFlags flags, ImGuiID owner_id)
 {
-    const ImGuiKeyData* key_data = GetKeyData(key);
+    const ImGuiKeyData* key_data = GetKeyData(imguiID);
     if (!key_data->Down) // In theory this should already be encoded as (DownDuration < 0.0f), but testing this facilitates eating mechanism (until we finish work on key ownership)
         return false;
     const float t = key_data->DownDuration;
@@ -9617,7 +9617,7 @@ bool ImGui::IsKeyPressed(ImGuiKey key, ImGuiInputFlags flags, ImGuiID owner_id)
     {
         float repeat_delay, repeat_rate;
         GetTypematicRepeatRate(flags, &repeat_delay, &repeat_rate);
-        pressed = (t > repeat_delay) && GetKeyPressedAmount(key, repeat_delay, repeat_rate) > 0;
+        pressed = (t > repeat_delay) && GetKeyPressedAmount(imguiID, repeat_delay, repeat_rate) > 0;
         if (pressed && (flags & ImGuiInputFlags_RepeatUntilMask_))
         {
             // Slightly bias 'key_pressed_time' as DownDuration is an accumulation of DeltaTime which we compare to an absolute time value.
@@ -9634,22 +9634,22 @@ bool ImGui::IsKeyPressed(ImGuiKey key, ImGuiInputFlags flags, ImGuiID owner_id)
     }
     if (!pressed)
         return false;
-    if (!TestKeyOwner(key, owner_id))
+    if (!TestKeyOwner(imguiID, owner_id))
         return false;
     return true;
 }
 
-bool ImGui::IsKeyReleased(ImGuiKey key)
+bool ImGui::IsKeyReleased(ImGuiKey imguiID)
 {
-    return IsKeyReleased(key, ImGuiKeyOwner_Any);
+    return IsKeyReleased(imguiID, ImGuiKeyOwner_Any);
 }
 
-bool ImGui::IsKeyReleased(ImGuiKey key, ImGuiID owner_id)
+bool ImGui::IsKeyReleased(ImGuiKey imguiID, ImGuiID owner_id)
 {
-    const ImGuiKeyData* key_data = GetKeyData(key);
+    const ImGuiKeyData* key_data = GetKeyData(imguiID);
     if (key_data->DownDurationPrev < 0.0f || key_data->Down)
         return false;
-    if (!TestKeyOwner(key, owner_id))
+    if (!TestKeyOwner(imguiID, owner_id))
         return false;
     return true;
 }
@@ -9869,10 +9869,10 @@ void ImGui::SetMouseCursor(ImGuiMouseCursor cursor_type)
     g.MouseCursor = cursor_type;
 }
 
-static void UpdateAliasKey(ImGuiKey key, bool v, float analog_value)
+static void UpdateAliasKey(ImGuiKey imguiID, bool v, float analog_value)
 {
-    IM_ASSERT(ImGui::IsAliasKey(key));
-    ImGuiKeyData* key_data = ImGui::GetKeyData(key);
+    IM_ASSERT(ImGui::IsAliasKey(imguiID));
+    ImGuiKeyData* key_data = ImGui::GetKeyData(imguiID);
     key_data->Down = v;
     key_data->AnalogValue = analog_value;
 }
@@ -9919,32 +9919,32 @@ static void ImGui::UpdateKeyboardInputs()
 
     // Clear gamepad data if disabled
     if ((io.BackendFlags & ImGuiBackendFlags_HasGamepad) == 0)
-        for (int key = ImGuiKey_Gamepad_BEGIN; key < ImGuiKey_Gamepad_END; key++)
+        for (int imguiID = ImGuiKey_Gamepad_BEGIN; imguiID < ImGuiKey_Gamepad_END; imguiID++)
         {
-            io.KeysData[key - ImGuiKey_NamedKey_BEGIN].Down = false;
-            io.KeysData[key - ImGuiKey_NamedKey_BEGIN].AnalogValue = 0.0f;
+            io.KeysData[imguiID - ImGuiKey_NamedKey_BEGIN].Down = false;
+            io.KeysData[imguiID - ImGuiKey_NamedKey_BEGIN].AnalogValue = 0.0f;
         }
 
     // Update keys
-    for (int key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key++)
+    for (int imguiID = ImGuiKey_NamedKey_BEGIN; imguiID < ImGuiKey_NamedKey_END; imguiID++)
     {
-        ImGuiKeyData* key_data = &io.KeysData[key - ImGuiKey_NamedKey_BEGIN];
+        ImGuiKeyData* key_data = &io.KeysData[imguiID - ImGuiKey_NamedKey_BEGIN];
         key_data->DownDurationPrev = key_data->DownDuration;
         key_data->DownDuration = key_data->Down ? (key_data->DownDuration < 0.0f ? 0.0f : key_data->DownDuration + io.DeltaTime) : -1.0f;
         if (key_data->DownDuration == 0.0f)
         {
-            if (IsKeyboardKey((ImGuiKey)key))
+            if (IsKeyboardKey((ImGuiKey)imguiID))
                 g.LastKeyboardKeyPressTime = g.Time;
-            else if (key == ImGuiKey_ReservedForModCtrl || key == ImGuiKey_ReservedForModShift || key == ImGuiKey_ReservedForModAlt || key == ImGuiKey_ReservedForModSuper)
+            else if (imguiID == ImGuiKey_ReservedForModCtrl || imguiID == ImGuiKey_ReservedForModShift || imguiID == ImGuiKey_ReservedForModAlt || imguiID == ImGuiKey_ReservedForModSuper)
                 g.LastKeyboardKeyPressTime = g.Time;
         }
     }
 
     // Update keys/input owner (named keys only): one entry per key
-    for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1))
+    for (ImGuiKey imguiID = ImGuiKey_NamedKey_BEGIN; imguiID < ImGuiKey_NamedKey_END; imguiID = (ImGuiKey)(imguiID + 1))
     {
-        ImGuiKeyData* key_data = &io.KeysData[key - ImGuiKey_NamedKey_BEGIN];
-        ImGuiKeyOwnerData* owner_data = &g.KeysOwnerData[key - ImGuiKey_NamedKey_BEGIN];
+        ImGuiKeyData* key_data = &io.KeysData[imguiID - ImGuiKey_NamedKey_BEGIN];
+        ImGuiKeyOwnerData* owner_data = &g.KeysOwnerData[imguiID - ImGuiKey_NamedKey_BEGIN];
         owner_data->OwnerCurr = owner_data->OwnerNext;
         if (!key_data->Down) // Important: ownership is released on the frame after a release. Ensure a 'MouseDown -> CloseWindow -> MouseUp' chain doesn't lead to someone else seeing the MouseUp.
             owner_data->OwnerNext = ImGuiKeyOwner_NoOwner;
@@ -10277,14 +10277,14 @@ void ImGui::UpdateInputEvents(bool trickle_fast_inputs)
             // Trickling Rule: Stop processing queued events if we got multiple action on the same button
             if (io.ConfigFlags & ImGuiConfigFlags_NoKeyboard)
                 continue;
-            ImGuiKey key = e->Key.Key;
-            IM_ASSERT(key != ImGuiKey_None);
-            ImGuiKeyData* key_data = GetKeyData(key);
+            ImGuiKey imguiID = e->Key.Key;
+            IM_ASSERT(imguiID != ImGuiKey_None);
+            ImGuiKeyData* key_data = GetKeyData(imguiID);
             const int key_data_index = (int)(key_data - g.IO.KeysData);
             if (trickle_fast_inputs && key_data->Down != e->Key.Down && (key_changed_mask.TestBit(key_data_index) || mouse_button_changed != 0))
                 break;
 
-            const bool key_is_potentially_for_char_input = IsKeyChordPotentiallyCharInput(GetMergedModsFromKeys() | key);
+            const bool key_is_potentially_for_char_input = IsKeyChordPotentiallyCharInput(GetMergedModsFromKeys() | imguiID);
             if (trickle_interleaved_nonchar_keys_and_text && (text_inputted && !key_is_potentially_for_char_input))
                 break;
 
@@ -10355,17 +10355,17 @@ void ImGui::UpdateInputEvents(bool trickle_fast_inputs)
     }
 }
 
-ImGuiID ImGui::GetKeyOwner(ImGuiKey key)
+ImGuiID ImGui::GetKeyOwner(ImGuiKey imguiID)
 {
-    if (!IsNamedKeyOrMod(key))
+    if (!IsNamedKeyOrMod(imguiID))
         return ImGuiKeyOwner_NoOwner;
 
     ImGuiContext& g = *GImGui;
-    ImGuiKeyOwnerData* owner_data = GetKeyOwnerData(&g, key);
+    ImGuiKeyOwnerData* owner_data = GetKeyOwnerData(&g, imguiID);
     ImGuiID owner_id = owner_data->OwnerCurr;
 
     if (g.ActiveIdUsingAllKeyboardKeys && owner_id != g.ActiveId && owner_id != ImGuiKeyOwner_Any)
-        if (key >= ImGuiKey_Keyboard_BEGIN && key < ImGuiKey_Keyboard_END)
+        if (imguiID >= ImGuiKey_Keyboard_BEGIN && imguiID < ImGuiKey_Keyboard_END)
             return ImGuiKeyOwner_NoOwner;
 
     return owner_id;
@@ -10375,17 +10375,17 @@ ImGuiID ImGui::GetKeyOwner(ImGuiKey key)
 // TestKeyOwner(..., None) : (owner == None)
 // TestKeyOwner(..., Any)  : no owner test
 // All paths are also testing for key not being locked, for the rare cases that key have been locked with using ImGuiInputFlags_LockXXX flags.
-bool ImGui::TestKeyOwner(ImGuiKey key, ImGuiID owner_id)
+bool ImGui::TestKeyOwner(ImGuiKey imguiID, ImGuiID owner_id)
 {
-    if (!IsNamedKeyOrMod(key))
+    if (!IsNamedKeyOrMod(imguiID))
         return true;
 
     ImGuiContext& g = *GImGui;
     if (g.ActiveIdUsingAllKeyboardKeys && owner_id != g.ActiveId && owner_id != ImGuiKeyOwner_Any)
-        if (key >= ImGuiKey_Keyboard_BEGIN && key < ImGuiKey_Keyboard_END)
+        if (imguiID >= ImGuiKey_Keyboard_BEGIN && imguiID < ImGuiKey_Keyboard_END)
             return false;
 
-    ImGuiKeyOwnerData* owner_data = GetKeyOwnerData(&g, key);
+    ImGuiKeyOwnerData* owner_data = GetKeyOwnerData(&g, imguiID);
     if (owner_id == ImGuiKeyOwner_Any)
         return (owner_data->LockThisFrame == false);
 
@@ -10408,14 +10408,14 @@ bool ImGui::TestKeyOwner(ImGuiKey key, ImGuiID owner_id)
 // - SetKeyOwner(..., None)              : clears owner
 // - SetKeyOwner(..., Any, !Lock)        : illegal (assert)
 // - SetKeyOwner(..., Any or None, Lock) : set lock
-void ImGui::SetKeyOwner(ImGuiKey key, ImGuiID owner_id, ImGuiInputFlags flags)
+void ImGui::SetKeyOwner(ImGuiKey imguiID, ImGuiID owner_id, ImGuiInputFlags flags)
 {
     ImGuiContext& g = *GImGui;
-    IM_ASSERT(IsNamedKeyOrMod(key) && (owner_id != ImGuiKeyOwner_Any || (flags & (ImGuiInputFlags_LockThisFrame | ImGuiInputFlags_LockUntilRelease)))); // Can only use _Any with _LockXXX flags (to eat a key away without an ID to retrieve it)
+    IM_ASSERT(IsNamedKeyOrMod(imguiID) && (owner_id != ImGuiKeyOwner_Any || (flags & (ImGuiInputFlags_LockThisFrame | ImGuiInputFlags_LockUntilRelease)))); // Can only use _Any with _LockXXX flags (to eat a key away without an ID to retrieve it)
     IM_ASSERT((flags & ~ImGuiInputFlags_SupportedBySetKeyOwner) == 0); // Passing flags not supported by this function!
     //IMGUI_DEBUG_LOG("SetKeyOwner(%s, owner_id=0x%08X, flags=%08X)\n", GetKeyName(key), owner_id, flags);
 
-    ImGuiKeyOwnerData* owner_data = GetKeyOwnerData(&g, key);
+    ImGuiKeyOwnerData* owner_data = GetKeyOwnerData(&g, imguiID);
     owner_data->OwnerCurr = owner_data->OwnerNext = owner_id;
 
     // We cannot lock by default as it would likely break lots of legacy code.
@@ -10440,7 +10440,7 @@ void ImGui::SetKeyOwnersForKeyChord(ImGuiKeyChord key_chord, ImGuiID owner_id, I
 // Extensive uses of that (e.g. many calls for a single item) may want to manually perform the tests once and then call SetKeyOwner() multiple times.
 // More advanced usage scenarios may want to call SetKeyOwner() manually based on different condition.
 // Worth noting is that only one item can be hovered and only one item can be active, therefore this usage pattern doesn't need to bother with routing and priority.
-void ImGui::SetItemKeyOwner(ImGuiKey key, ImGuiInputFlags flags)
+void ImGui::SetItemKeyOwner(ImGuiKey imguiID, ImGuiInputFlags flags)
 {
     ImGuiContext& g = *GImGui;
     ImGuiID id = g.LastItemData.ID;
@@ -10451,13 +10451,13 @@ void ImGui::SetItemKeyOwner(ImGuiKey key, ImGuiInputFlags flags)
     if ((g.HoveredId == id && (flags & ImGuiInputFlags_CondHovered)) || (g.ActiveId == id && (flags & ImGuiInputFlags_CondActive)))
     {
         IM_ASSERT((flags & ~ImGuiInputFlags_SupportedBySetItemKeyOwner) == 0); // Passing flags not supported by this function!
-        SetKeyOwner(key, id, flags & ~ImGuiInputFlags_CondMask_);
+        SetKeyOwner(imguiID, id, flags & ~ImGuiInputFlags_CondMask_);
     }
 }
 
-void ImGui::SetItemKeyOwner(ImGuiKey key)
+void ImGui::SetItemKeyOwner(ImGuiKey imguiID)
 {
-    SetItemKeyOwner(key, ImGuiInputFlags_None);
+    SetItemKeyOwner(imguiID, ImGuiInputFlags_None);
 }
 
 // This is the only public API until we expose owner_id versions of the API as replacements.
@@ -10476,10 +10476,10 @@ bool ImGui::IsKeyChordPressed(ImGuiKeyChord key_chord, ImGuiInputFlags flags, Im
         return false;
 
     // Special storage location for mods
-    ImGuiKey key = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
-    if (key == ImGuiKey_None)
-        key = ConvertSingleModFlagToKey(mods);
-    if (!IsKeyPressed(key, (flags & ImGuiInputFlags_RepeatMask_), owner_id))
+    ImGuiKey imguiID = (ImGuiKey)(key_chord & ~ImGuiMod_Mask_);
+    if (imguiID == ImGuiKey_None)
+        imguiID = ConvertSingleModFlagToKey(mods);
+    if (!IsKeyPressed(imguiID, (flags & ImGuiInputFlags_RepeatMask_), owner_id))
         return false;
     return true;
 }
@@ -13428,14 +13428,14 @@ static void ImGui::NavUpdate()
     const bool nav_gamepad_active = (io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & ImGuiBackendFlags_HasGamepad) != 0;
     const ImGuiKey nav_gamepad_keys_to_change_source[] = { ImGuiKey_GamepadFaceRight, ImGuiKey_GamepadFaceLeft, ImGuiKey_GamepadFaceUp, ImGuiKey_GamepadFaceDown, ImGuiKey_GamepadDpadRight, ImGuiKey_GamepadDpadLeft, ImGuiKey_GamepadDpadUp, ImGuiKey_GamepadDpadDown };
     if (nav_gamepad_active)
-        for (ImGuiKey key : nav_gamepad_keys_to_change_source)
-            if (IsKeyDown(key))
+        for (ImGuiKey imguiID : nav_gamepad_keys_to_change_source)
+            if (IsKeyDown(imguiID))
                 g.NavInputSource = ImGuiInputSource_Gamepad;
     const bool nav_keyboard_active = (io.ConfigFlags & ImGuiConfigFlags_NavEnableKeyboard) != 0;
     const ImGuiKey nav_keyboard_keys_to_change_source[] = { ImGuiKey_Space, ImGuiKey_Enter, ImGuiKey_Escape, ImGuiKey_RightArrow, ImGuiKey_LeftArrow, ImGuiKey_UpArrow, ImGuiKey_DownArrow };
     if (nav_keyboard_active)
-        for (ImGuiKey key : nav_keyboard_keys_to_change_source)
-            if (IsKeyDown(key))
+        for (ImGuiKey imguiID : nav_keyboard_keys_to_change_source)
+            if (IsKeyDown(imguiID))
                 g.NavInputSource = ImGuiInputSource_Keyboard;
 
     // Process navigation init request (select first/default focus)
@@ -16489,9 +16489,9 @@ void ImGui::ShowMetricsWindow(bool* p_open)
         {
             // User code should never have to go through such hoops! You can generally iterate between ImGuiKey_NamedKey_BEGIN and ImGuiKey_NamedKey_END.
             Indent();
-            Text("Keys down:");         for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1)) { if (!IsKeyDown(key)) continue;     SameLine(); Text(IsNamedKey(key) ? "\"%s\"" : "\"%s\" %d", GetKeyName(key), key); SameLine(); Text("(%.02f)", GetKeyData(key)->DownDuration); }
-            Text("Keys pressed:");      for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1)) { if (!IsKeyPressed(key)) continue;  SameLine(); Text(IsNamedKey(key) ? "\"%s\"" : "\"%s\" %d", GetKeyName(key), key); }
-            Text("Keys released:");     for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1)) { if (!IsKeyReleased(key)) continue; SameLine(); Text(IsNamedKey(key) ? "\"%s\"" : "\"%s\" %d", GetKeyName(key), key); }
+            Text("Keys down:");         for (ImGuiKey imguiID = ImGuiKey_NamedKey_BEGIN; imguiID < ImGuiKey_NamedKey_END; imguiID = (ImGuiKey)(imguiID + 1)) { if (!IsKeyDown(imguiID)) continue;     SameLine(); Text(IsNamedKey(imguiID) ? "\"%s\"" : "\"%s\" %d", GetKeyName(imguiID), imguiID); SameLine(); Text("(%.02f)", GetKeyData(imguiID)->DownDuration); }
+            Text("Keys pressed:");      for (ImGuiKey imguiID = ImGuiKey_NamedKey_BEGIN; imguiID < ImGuiKey_NamedKey_END; imguiID = (ImGuiKey)(imguiID + 1)) { if (!IsKeyPressed(imguiID)) continue;  SameLine(); Text(IsNamedKey(imguiID) ? "\"%s\"" : "\"%s\" %d", GetKeyName(imguiID), imguiID); }
+            Text("Keys released:");     for (ImGuiKey imguiID = ImGuiKey_NamedKey_BEGIN; imguiID < ImGuiKey_NamedKey_END; imguiID = (ImGuiKey)(imguiID + 1)) { if (!IsKeyReleased(imguiID)) continue; SameLine(); Text(IsNamedKey(imguiID) ? "\"%s\"" : "\"%s\" %d", GetKeyName(imguiID), imguiID); }
             Text("Keys mods: %s%s%s%s", io.KeyCtrl ? "CTRL " : "", io.KeyShift ? "SHIFT " : "", io.KeyAlt ? "ALT " : "", io.KeySuper ? "SUPER " : "");
             Text("Chars queue:");       for (int i = 0; i < io.InputQueueCharacters.Size; i++) { ImWchar c = io.InputQueueCharacters[i]; SameLine(); Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char)c : '?', c); } // FIXME: We should convert 'c' to UTF-8 here but the functions are not public.
             DebugRenderKeyboardPreview(GetWindowDrawList());
@@ -16530,12 +16530,12 @@ void ImGui::ShowMetricsWindow(bool* p_open)
         {
             Indent();
             if (BeginChild("##owners", ImVec2(-FLT_MIN, GetTextLineHeightWithSpacing() * 8), ImGuiChildFlags_FrameStyle | ImGuiChildFlags_ResizeY, ImGuiWindowFlags_NoSavedSettings))
-                for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1))
+                for (ImGuiKey imguiID = ImGuiKey_NamedKey_BEGIN; imguiID < ImGuiKey_NamedKey_END; imguiID = (ImGuiKey)(imguiID + 1))
                 {
-                    ImGuiKeyOwnerData* owner_data = GetKeyOwnerData(&g, key);
+                    ImGuiKeyOwnerData* owner_data = GetKeyOwnerData(&g, imguiID);
                     if (owner_data->OwnerCurr == ImGuiKeyOwner_NoOwner)
                         continue;
-                    Text("%s: 0x%08X%s", GetKeyName(key), owner_data->OwnerCurr,
+                    Text("%s: 0x%08X%s", GetKeyName(imguiID), owner_data->OwnerCurr,
                         owner_data->LockUntilRelease ? " LockUntilRelease" : owner_data->LockThisFrame ? " LockThisFrame" : "");
                     DebugLocateItemOnHover(owner_data->OwnerCurr);
                 }
@@ -16548,13 +16548,13 @@ void ImGui::ShowMetricsWindow(bool* p_open)
         {
             Indent();
             if (BeginChild("##routes", ImVec2(-FLT_MIN, GetTextLineHeightWithSpacing() * 8), ImGuiChildFlags_FrameStyle | ImGuiChildFlags_ResizeY, ImGuiWindowFlags_NoSavedSettings))
-                for (ImGuiKey key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1))
+                for (ImGuiKey imguiID = ImGuiKey_NamedKey_BEGIN; imguiID < ImGuiKey_NamedKey_END; imguiID = (ImGuiKey)(imguiID + 1))
                 {
                     ImGuiKeyRoutingTable* rt = &g.KeysRoutingTable;
-                    for (ImGuiKeyRoutingIndex idx = rt->Index[key - ImGuiKey_NamedKey_BEGIN]; idx != -1; )
+                    for (ImGuiKeyRoutingIndex idx = rt->Index[imguiID - ImGuiKey_NamedKey_BEGIN]; idx != -1; )
                     {
                         ImGuiKeyRoutingData* routing_data = &rt->Entries[idx];
-                        ImGuiKeyChord key_chord = key | routing_data->Mods;
+                        ImGuiKeyChord key_chord = imguiID | routing_data->Mods;
                         Text("%s: 0x%08X (scored %d)", GetKeyChordName(key_chord), routing_data->RoutingCurr, routing_data->RoutingCurrScore);
                         DebugLocateItemOnHover(routing_data->RoutingCurr);
                         if (g.IO.ConfigDebugIsDebuggerPresent)
@@ -17111,8 +17111,8 @@ void ImGui::DebugNodeStorage(ImGuiStorage* storage, const char* label)
         return;
     for (const ImGuiStoragePair& p : storage->Data)
     {
-        BulletText("Key 0x%08X Value { i: %d }", p.key, p.val_i); // Important: we currently don't store a type, real value may not be integer.
-        DebugLocateItemOnHover(p.key);
+        BulletText("Key 0x%08X Value { i: %d }", p.imguiID, p.val_i); // Important: we currently don't store a type, real value may not be integer.
+        DebugLocateItemOnHover(p.imguiID);
     }
     TreePop();
 }

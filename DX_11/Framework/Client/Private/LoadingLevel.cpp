@@ -15,8 +15,8 @@ CLoadingLevel::~CLoadingLevel()
 
 HRESULT CLoadingLevel::Initialize()
 {
-	string key =CGameInstance::GetInstance()->Get_LevelMgr()->Get_NextLevel();
-	m_pLoader = CLoader::Create(key);
+	string imguiID =CGameInstance::GetInstance()->Get_LevelMgr()->Get_NextLevel();
+	m_pLoader = CLoader::Create(imguiID);
 
 	if (!m_pLoader)
 		return E_FAIL;

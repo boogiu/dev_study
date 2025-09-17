@@ -5,6 +5,7 @@
 #include "ICameraService.h"
 #include "Shader.h"
 #include "PipeLine.h"
+#include"Material.h"
 
 CRenderSystem::CRenderSystem(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:m_pDevice{pDevice},m_pContext{ pContext }
@@ -47,15 +48,16 @@ CRenderSystem* CRenderSystem::Create(ID3D11Device* pDevice, ID3D11DeviceContext*
 	return instance;
 }
 
-
-HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CShader* pShader, const string& passConstant, ID3D11InputLayout** ppInputLayout)
+HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CMaterial* pMaterial, _uint DrawIndex, ID3D11InputLayout** ppInputLayout)
 {
-	if (!pModel || !pShader || !ppInputLayout)
+	if (!pModel || !pMaterial || !ppInputLayout)
 		return E_FAIL;
 
-	string key = pModel->Get_Buffer()->Get_Key() +to_string(pModel->Get_ElementCount()) + '_' + pShader->Get_Key() + '_' + passConstant;
+	string imguiID = pModel->Get_BufferKey(DrawIndex) + '_' + 
+		to_string(pMaterial->Get_MaterialDataID(DrawIndex)) + '_' +
+			to_string(pMaterial->Get_ShaderID(DrawIndex));
 
-	auto iter = m_InputLayouts.find(key);
+	auto iter = m_InputLayouts.find(imguiID);
 
 	if (iter != m_InputLayouts.end()) {
 		*ppInputLayout = iter->second;
@@ -63,7 +65,7 @@ HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CShader* pShader, const s
 	}
 
 	D3DX11_PASS_DESC passDesc = {};
-	if (FAILED(pShader->GetPassSignature(passConstant, &passDesc)))
+	if (FAILED(pMaterial->GetPassSignature(pModel->Get_MaterialIndex(DrawIndex), &passDesc)))
 		return E_FAIL;
 	if (pModel->Get_ElementCount() == 0 || pModel->Get_ElementDesc() == nullptr)
 		return E_FAIL;
@@ -76,7 +78,7 @@ HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CShader* pShader, const s
 	if (FAILED(hr))
 		return E_FAIL;
 
-	m_InputLayouts.emplace(key, *ppInputLayout);
+	m_InputLayouts.emplace(imguiID, *ppInputLayout);
 
 	return S_OK;
 }

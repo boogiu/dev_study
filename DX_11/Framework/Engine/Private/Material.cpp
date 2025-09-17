@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "IResourceService.h"
 #include "GameObject.h"
+#include "MaterialData.h"
 
 CMaterial::CMaterial()
 {
@@ -11,85 +12,65 @@ CMaterial::CMaterial()
 
 CMaterial::CMaterial(const CMaterial& rhs)
 	:CComponent(rhs),
-	m_pShader{ rhs.m_pShader },
-	m_Textures{ rhs.m_Textures },
-	m_MaterialConstant{ rhs.m_MaterialConstant}
+	m_MaterialDatas(rhs.m_MaterialDatas)
 {
-	Safe_AddRef(m_pShader);
-
-	for (auto& pair : m_Textures)
-		Safe_AddRef(pair.second);
+	for (auto& data : m_MaterialDatas)
+		Safe_AddRef(data);
 }
 
 HRESULT CMaterial::Initialize_Prototype()
 {
-	
-	m_MaterialConstant.vMtrDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	m_MaterialConstant.vMtrlAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
-	m_MaterialConstant.vMtrlSpecular = _float4(1.0f, 1.0f, 1.0f, 1.f);
-	m_MaterialConstant.fSpecularPow = { 0.1f };
 	return S_OK;
 }
 
 HRESULT CMaterial::Initialize(COMPONENT_DESC* pArg)
 {
-	D3D11_BUFFER_DESC desc = {};
-	desc.ByteWidth = sizeof(MaterialConstants);
-	desc.Usage = D3D11_USAGE_DYNAMIC;
-	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-	CGameInstance::GetInstance()->Get_Device()->CreateBuffer(&desc, nullptr, &m_pMaterialCBuffer);
-
 	return S_OK;
 }
 
-HRESULT CMaterial::Link_Shader(const string& levelKey, const string& key)
+
+HRESULT CMaterial::Link_Material(const string& levelKey, const string& materialKey)
 {
-	m_pShader = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Shader(levelKey, key);
-
-	if (!m_pShader)
-		return E_FAIL;
-
-	Safe_AddRef(m_pShader);
-	return S_OK;
-}
-
-HRESULT CMaterial::Link_Texture(const string& levelKey, const string& key, const string& constant)
-{
-	CTexture* pTexture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture(levelKey, key);
-	if (!pTexture) {
-		MSG_BOX("There is no Texture Key  : Link_Texture");
-		return E_FAIL;
+	for (CMaterialData* material : CGameInstance::GetInstance()->Get_ResourceMgr()->Load_MaterialData(levelKey, materialKey)) {
+		m_MaterialDatas.push_back(material);
+		Safe_AddRef(material);
 	}
 
-	auto iter = m_Textures.emplace(constant, pTexture);
-
-	if (iter.second)
-		Safe_AddRef(pTexture);
-
 	return S_OK;
 }
 
-void CMaterial::Apply_Material(const string& passConstant, ID3D11DeviceContext* pContext)
+CShader* CMaterial::Get_Shader(_uint Index)
 {
-	Bind_InternalValues(pContext);
-	m_pShader->Apply(passConstant, pContext);
+	if (Index >= m_MaterialDatas.size()) return nullptr;
+
+	return m_MaterialDatas[Index]->Get_Shader();
 }
 
-void CMaterial::Bind_InternalValues(ID3D11DeviceContext* pContext)
+_uint CMaterial::Get_ShaderID(_uint Index)
 {
-	/*텍스처 바인딩*/
-	for (auto& pair : m_Textures)
-		m_pShader->Bind_Value(pair.first, pair.second->Get_SRV(), 0);
+	if (Index >= m_MaterialDatas.size()) return 0;
 
-	/*상수 버퍼*/
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	pContext->Map(m_pMaterialCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, &m_MaterialConstant, sizeof(MaterialConstants));
-	pContext->Unmap(m_pMaterialCBuffer, 0);
+	return m_MaterialDatas[Index]->Get_ShaderID();
+}
 
-	m_pShader->SetConstantBuffer("MaterialBuffer", m_pMaterialCBuffer);
+_uint CMaterial::Get_MaterialDataID(_uint Index)
+{
+	if (Index >= m_MaterialDatas.size()) return 0;
+
+	return m_MaterialDatas[Index]->Get_MaterialDataID();
+}
+
+void CMaterial::Apply_Material(ID3D11DeviceContext* pContext, _uint Index)
+{
+	if (Index >= m_MaterialDatas.size()) return;
+	m_MaterialDatas[Index]->ApplyData(pContext , m_TextureIndex);
+}
+
+HRESULT CMaterial::GetPassSignature(_uint Index, D3DX11_PASS_DESC* pOutPassDesc)
+{
+	if (Index >= m_MaterialDatas.size()) E_FAIL;
+
+	return m_MaterialDatas[Index]->GetPassSignature(pOutPassDesc);
 }
 
 CMaterial* CMaterial::Create()
@@ -109,44 +90,43 @@ CComponent* CMaterial::Clone()
 
 void CMaterial::Free()
 {
-	Safe_Release(m_pShader);
-	Safe_Release(m_pMaterialCBuffer);
-
-	for (auto& pair : m_Textures)
-		Safe_Release(pair.second);
+	for (auto& data : m_MaterialDatas)
+		Safe_Release(data);
 }
 
 void CMaterial::Render_GUI()
 {
+
+	if (m_MaterialDatas.empty())
+		return;
 	ImGui::SeparatorText("Material");
 	float childWidth = ImGui::GetContentRegionAvail().x;
 	const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
-	const float childHeight = (textLineHeight * (m_Textures.size() +2)) + (ImGui::GetStyle().WindowPadding.y * 4);
-	ImGui::BeginChild("##Material Texture", ImVec2{ childWidth,  max(min(childHeight,180), 100) }, true);
-	ImGui::SeparatorText("Material Texture");
-	for (auto& pair : m_Textures)
-	{
-		ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), pair.first.c_str());
-		pair.second->Render_GUI(64);
+	const float childHeight = (m_MaterialDatas.size() * 2) + (ImGui::GetStyle().WindowPadding.y * 4);
+
+	if(ImGui::Button("Material Tabs")) {
+		m_bMaterialTabOpen = true;
 	}
-	ImGui::EndChild();
 
-	const float propertyHeight = (textLineHeight * (15)) + (ImGui::GetStyle().WindowPadding.y * 4);
-	ImGui::BeginChild("##Material Property", ImVec2{ childWidth,  max(min(propertyHeight,180), 100) }, true);
-	ImGui::PushItemWidth(childWidth-40);
-	ImGui::SeparatorText("Material Property");
-
-	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Diffuse Material");
-	ImGui::SliderFloat4("##DiffuseMaterial", reinterpret_cast<float*>(&m_MaterialConstant.vMtrDiffuse), 0.f, 1.f, "%.2f");
-
-	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Ambient Material");
-	ImGui::SliderFloat4("##AmbientMaterial", reinterpret_cast<float*>(&m_MaterialConstant.vMtrlAmbient), 0.f, 1.f, "%.2f");
-
-	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Specular Material");
-	ImGui::SliderFloat4("##SpecularMaterial", reinterpret_cast<float*>(&m_MaterialConstant.vMtrlSpecular), 0.f, 1.f, "%.2f");
-
-	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Specular Power");
-	ImGui::SliderFloat("##SpecularPow", (&m_MaterialConstant.fSpecularPow), 0.f, 1.f, "%.2f");
-	ImGui::PopItemWidth();
-	ImGui::EndChild();
+	if(m_bMaterialTabOpen){
+		ImGui::SetNextWindowSize(ImVec2(500, 400));
+		if (ImGui::Begin("Materials", &m_bMaterialTabOpen, ImGuiWindowFlags_NoCollapse))
+		{
+		if (ImGui::BeginTabBar("##MaterialTabs"))
+		{
+			for (int i = 0; i < m_MaterialDatas.size(); ++i)
+			{
+				CMaterialData* pData = m_MaterialDatas[i];
+				string tab_name = "Material " + to_string(i);
+				if (ImGui::BeginTabItem(tab_name.c_str()))
+				{
+					pData->Render_GUI();
+					ImGui::EndTabItem();
+				}
+			}
+		}
+		ImGui::EndTabBar();
+	}
+	ImGui::End();
+	}
 }

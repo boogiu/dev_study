@@ -27,8 +27,8 @@ public:
     virtual HRESULT Initialize(COMPONENT_DESC* pArg) override;
 
 public:
-    HRESULT Add_Slot(const string& levelTag, const string& key, const string& slotKey = {}, bool isLoop = false);
-    void Play(const string& key);
+    HRESULT Add_Slot(const string& levelTag, const string& SoundKey, const string& slotKey = {}, bool isLoop = false);
+    void Play(const string& SoundKey);
 
 public:
     void Render_GUI();

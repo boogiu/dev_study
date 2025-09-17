@@ -8,7 +8,7 @@ public IService
 protected:
 	virtual  ~ILightService() DEFAULT;
 public:
-	virtual void Register_Light(LIGHT_DESC* Light) PURE;
-	virtual void UnRegister_Light(LIGHT_DESC* Light) PURE;
+	virtual _int Register_Light(class CLight* Light) PURE;
+	virtual void UnRegister_Light(_int ID) PURE;
 };
 NS_END

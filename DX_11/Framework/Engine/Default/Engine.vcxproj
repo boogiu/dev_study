@@ -119,7 +119,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>fmodL_vc.lib;d3d11.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodL_vc.lib;d3d11.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -155,7 +155,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>../ThirdPartyLib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>fmod_vc.lib;d3d11.lib;dxguid.lib;Effects11.lib;DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmod_vc.lib;d3d11.lib;dxguid.lib;Effects11.lib;DirectXTK.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(TargetDir)Engine_Shaders\"
@@ -171,8 +171,10 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\AnimatedModel.h" />
     <ClInclude Include="..\Public\Base.h" />
     <ClInclude Include="..\Public\BasePanel.h" />
+    <ClInclude Include="..\Public\Bone.h" />
     <ClInclude Include="..\Public\Builder.h" />
     <ClInclude Include="..\Public\GameObjectBuilder.h" />
     <ClInclude Include="..\Public\Build_Struct.h" />
@@ -209,12 +211,17 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\IAudioService.h" />
     <ClInclude Include="..\Public\ITimeService.h" />
     <ClInclude Include="..\Public\IUI_Service.h" />
+    <ClInclude Include="..\Public\Json_Inc\json.hpp" />
+    <ClInclude Include="..\Public\Json_Inc\json_fwd.hpp" />
     <ClInclude Include="..\Public\Layer.h" />
     <ClInclude Include="..\Public\Level.h" />
     <ClInclude Include="..\Public\LevelMgr.h" />
     <ClInclude Include="..\Public\Light.h" />
     <ClInclude Include="..\Public\LightMgr.h" />
     <ClInclude Include="..\Public\Material.h" />
+    <ClInclude Include="..\Public\MaterialAnimator.h" />
+    <ClInclude Include="..\Public\MaterialData.h" />
+    <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\Public\Model.h" />
     <ClInclude Include="..\Public\NFD_Inc\nfd.h" />
     <ClInclude Include="..\Public\ObjectMgr.h" />
@@ -224,11 +231,12 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\RenderSystem.h" />
     <ClInclude Include="..\Public\Data_Packets.h" />
     <ClInclude Include="..\Public\ResourceMgr.h" />
-    <ClInclude Include="..\Public\ResourcePool.h" />
     <ClInclude Include="..\Public\Shader.h" />
     <ClInclude Include="..\Public\AudioSource.h" />
+    <ClInclude Include="..\Public\Skeleton.h" />
     <ClInclude Include="..\Public\SoundData.h" />
     <ClInclude Include="..\Public\AudioDevice.h" />
+    <ClInclude Include="..\Public\StaticModel.h" />
     <ClInclude Include="..\Public\Texture.h" />
     <ClInclude Include="..\Public\TimeMgr.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
@@ -248,8 +256,10 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\VI_Terrain.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\AnimatedModel.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\BasePanel.cpp" />
+    <ClCompile Include="..\Private\Bone.cpp" />
     <ClCompile Include="..\Private\GameObjectBuilder.cpp" />
     <ClCompile Include="..\Private\Camera.cpp" />
     <ClCompile Include="..\Private\CameraMgr.cpp" />
@@ -264,6 +274,9 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\Light.cpp" />
     <ClCompile Include="..\Private\LightMgr.cpp" />
     <ClCompile Include="..\Private\Material.cpp" />
+    <ClCompile Include="..\Private\MaterialAnimator.cpp" />
+    <ClCompile Include="..\Private\MaterialData.cpp" />
+    <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\Private\Model.cpp" />
     <ClCompile Include="..\Private\ObjectMgr.cpp" />
     <ClCompile Include="..\Private\PipeLine.cpp" />
@@ -277,10 +290,12 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\ResourceMgr.cpp" />
     <ClCompile Include="..\Private\Shader.cpp" />
     <ClCompile Include="..\Private\AudioSource.cpp" />
+    <ClCompile Include="..\Private\Skeleton.cpp" />
     <ClCompile Include="..\Private\SoundData.cpp" />
     <ClCompile Include="..\Private\AudioDevice.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\InputMgr.cpp" />
+    <ClCompile Include="..\Private\StaticModel.cpp" />
     <ClCompile Include="..\Private\Texture.cpp" />
     <ClCompile Include="..\Private\TimeMgr.cpp" />
     <ClCompile Include="..\Private\Timer.cpp" />
@@ -304,6 +319,9 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Public\Engine_Shader\Shader_Define.hlsl" />
+    <FxCompile Include="..\Public\Engine_Shader\VTX_Mesh.hlsl" />
+    <FxCompile Include="..\Public\Engine_Shader\VTX_NorTex.hlsl" />
+    <FxCompile Include="..\Public\Engine_Shader\VTX_SkinMesh.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_TexPos.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

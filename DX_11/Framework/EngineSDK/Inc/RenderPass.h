@@ -11,6 +11,8 @@ protected:
 public:
 	virtual void Execute(ID3D11DeviceContext* pContext) PURE;
 protected:
+	void BindConstant(ID3D11DeviceContext* pContext,class CModel* pModel, class CMaterial* pMaterial , _uint DrawIndex);
+protected:
 	class CRenderSystem* m_pRenderSystem = { nullptr };
 	class CShader* pCurShader = { nullptr };
 
@@ -41,7 +43,7 @@ private:
 	virtual ~UIPass() DEFAULT;
 public:
 	void Execute(ID3D11DeviceContext* pContext) override;
-	void Submit(UI_PACKET packet) { m_Packets.push_back(packet); };
+	void Submit(UI_PACKET packet);
 private:
 	vector<UI_PACKET> m_Packets;
 public:

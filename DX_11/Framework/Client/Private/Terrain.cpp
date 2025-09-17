@@ -22,19 +22,19 @@ CTerrain::~CTerrain()
 
 HRESULT CTerrain::Initialize_Prototype()
 {
-	//여기서 컴포넌트 추가 ...//
-	__super::Initialize_Prototype();
-
-	CModel* model = Add_Component<CModel>();
-	model->Link_Buffer("Logo_Level", "Default_Terrain", BUFFER_TYPE::TERRAIN);
-	model->Link_Element(VTXNORMTEX::Elements, VTXNORMTEX::iElementCount);
-
-	CMaterial* material = Add_Component<CMaterial>();
-	material->Link_Shader("Logo_Level", "VTX_NorTex.hlsl");
-	material->Link_Texture(G_GlobalLevelKey, "Default_Tex", "g_DiffuseTexture");
-
-	CAudioSource* audio = Add_Component<CAudioSource>();
-	audio->Add_Slot("Logo_Level", "Test_Sound", "Bump");
+	////여기서 컴포넌트 추가 ...//
+	//__super::Initialize_Prototype();
+	//
+	//CModel* model = Add_Component<CModel>();
+	//model->Link_Buffer("Logo_Level", "Default_Terrain", BUFFER_TYPE::TERRAIN);
+	//model->Link_Element(VTXNORMTEX::Elements, VTXNORMTEX::iElementCount);
+ 	//
+	//CMaterial* material = Add_Component<CMaterial>();
+	//material->Link_Shader(G_GlobalLevelKey, "VTX_NorTex.hlsl");
+	//material->Link_Texture("Logo_Level", "Default_Tex", "g_DiffuseTexture");
+	//
+	//CAudioSource* audio = Add_Component<CAudioSource>();
+	//audio->Add_Slot("Logo_Level", "Test_Sound", "Bump");
 	return S_OK;
 }
 
@@ -56,6 +56,11 @@ void CTerrain::Update(_float dt)
 void CTerrain::Late_Update(_float dt)
 {
 	
+}
+
+void CTerrain::Render_GUI()
+{
+	__super::Render_GUI();
 }
 
 CTerrain* CTerrain::Create()

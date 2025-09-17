@@ -23,7 +23,12 @@ cbuffer ObjectBuffer : register(b2)
     matrix matWorld;
 }
 
-cbuffer MaterialBuffer : register(b3)
+cbuffer SkinningBuffer : register(b3)
+{
+    matrix BoneMatrices[512];
+}
+
+cbuffer MaterialBuffer : register(b4)
 {
     float4 vMtrlDiffuse;
     float4 vMtrlAmbient;

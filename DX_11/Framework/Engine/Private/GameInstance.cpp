@@ -45,15 +45,6 @@ _bool CGameInstance::Init_Engine(const ENGINE_DESC& engine)
 #if defined _DEBUG
 	m_pGuiSystem = CGUISystem::Create(engine, m_pDevice, m_pDeviceContext);
 #endif
-	//
-	//D3D11_RASTERIZER_DESC rasterDesc = {};
-	//rasterDesc.FillMode = D3D11_FILL_WIREFRAME; // 와이어프레임
-	//rasterDesc.CullMode = D3D11_CULL_BACK;      // 백페이스 컬링
-	//rasterDesc.DepthClipEnable = TRUE;
-	//
-	//ID3D11RasterizerState* pWireframeRS = nullptr;
-	//HRESULT hr = m_pDevice->CreateRasterizerState(&rasterDesc, &pWireframeRS);
-	//m_pDeviceContext->RSSetState(pWireframeRS);
 
 	Notify_LevelSet();
 	return TRUE;
@@ -107,10 +98,8 @@ void CGameInstance::Release_Engine()
 {
 
 	/*Managers*/
-	Safe_Release(m_pGraphicDevice);
 	Safe_Release(m_pTimeManager);
-	Safe_Release(m_pInputDevice);
-	Safe_Release(m_pSoundDevice);
+	
 	Safe_Release(m_pLevelManager);
 	Safe_Release(m_pPrototypeManager);
 	Safe_Release(m_pObjectManager);
@@ -120,7 +109,9 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pGuiSystem);
 	Safe_Release(m_UIManager);
 	Safe_Release(m_LightService);
-
+	Safe_Release(m_pGraphicDevice);
+	Safe_Release(m_pInputDevice);
+	Safe_Release(m_pSoundDevice);
 	DestroyInstance();
 }
 

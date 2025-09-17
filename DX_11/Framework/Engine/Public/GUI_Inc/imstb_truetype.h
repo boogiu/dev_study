@@ -1233,7 +1233,7 @@ static void stbtt__cff_skip_operand(stbtt__buf *b) {
    }
 }
 
-static stbtt__buf stbtt__dict_get(stbtt__buf *b, int key)
+static stbtt__buf stbtt__dict_get(stbtt__buf *b, int m_Modelkey)
 {
    stbtt__buf_seek(b, 0);
    while (b->cursor < b->size) {
@@ -1243,15 +1243,15 @@ static stbtt__buf stbtt__dict_get(stbtt__buf *b, int key)
       end = b->cursor;
       op = stbtt__buf_get8(b);
       if (op == 12)  op = stbtt__buf_get8(b) | 0x100;
-      if (op == key) return stbtt__buf_range(b, start, end-start);
+      if (op == m_Modelkey) return stbtt__buf_range(b, start, end-start);
    }
    return stbtt__buf_range(b, 0, 0);
 }
 
-static void stbtt__dict_get_ints(stbtt__buf *b, int key, int outcount, stbtt_uint32 *out)
+static void stbtt__dict_get_ints(stbtt__buf *b, int m_Modelkey, int outcount, stbtt_uint32 *out)
 {
    int i;
-   stbtt__buf operands = stbtt__dict_get(b, key);
+   stbtt__buf operands = stbtt__dict_get(b, m_Modelkey);
    for (i = 0; i < outcount && operands.cursor < operands.size; i++)
       out[i] = stbtt__cff_int(&operands);
 }
