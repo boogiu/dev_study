@@ -9,11 +9,10 @@ class CResourceMgr final :
 	struct RS_Pool {
 		unordered_map<string, class CShader*>m_Shaders;
 		unordered_map<string, class CVIBuffer*>m_Buffers;
-		unordered_map<string, class vector<class CMesh*>>m_Meshes;
+		unordered_map<string, class CModelData*>m_ModelDatas;
 		unordered_map<string, class vector<class CMaterialData*>>m_MaterialDatas;
 		unordered_map<string, class CTexture*>m_Textures;
 		unordered_map<string, class CSoundData*>m_Sounds;
-		unordered_map<string, class CSkeleton*>m_Skeletons;
 	};
 
 private:
@@ -28,11 +27,10 @@ public:
 public:
 	virtual class CSoundData* Load_Sound(const string& levelTag, const string& soundKey) override;
 	virtual class CVIBuffer* Load_VIBuffer(const string& levelTag, const string& bufferKey, BUFFER_TYPE eType) override;
-	virtual const vector<class CMesh*>& Load_Mesh(const string& levelTag, const string& modelkey) override;
 	virtual const vector<class CMaterialData*>& Load_MaterialData(const string& levelTag, const string& materialKey) override;
 	virtual class CShader* Load_Shader(const string& levelTag, const string& shaderKey) override;
 	virtual class CTexture* Load_Texture(const string& levelTag, const string& textureKey) override;
-	virtual class CSkeleton* Load_Skeleton(const string& levelTag, const string& skeletonKey) override;
+	virtual class CModelData* Load_ModelData(const string& levelTag, const string& ModelKey) override;
 
 	virtual string Get_ResourcePath(const string& resourceKey) override;
 	virtual HRESULT Add_ResourcePath(const string& resourceKey, const string& resourcePath) override;

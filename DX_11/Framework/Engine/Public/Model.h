@@ -12,25 +12,23 @@ protected:
     virtual ~CModel() DEFAULT;
 
 public:
-    virtual HRESULT Link_Buffer(const string& levelKey, const string& MeshKey);
-   virtual  _uint Get_ElementCount()PURE;
-   virtual const D3D11_INPUT_ELEMENT_DESC* Get_ElementDesc() PURE;
-   virtual HRESULT Render_Mesh(ID3D11DeviceContext* pContext,_uint Index) PURE;
+    virtual HRESULT Link_Model(const string& levelKey, const string& MeshKey) PURE;
+    virtual const D3D11_INPUT_ELEMENT_DESC* Get_ElementDesc(_uint DrawIndex);
+    virtual const _uint Get_ElementCount(_uint DrawIndex);
+    virtual const string_view Get_ElementKey(_uint DrawIndex);
+   virtual HRESULT Render_Model(ID3D11DeviceContext* pContext,_uint Index) PURE;
   
 public:
-     _uint Get_MaterialIndex(_uint Index);
-    _bool hasBuffer() { return !m_Buffers.empty(); }
+    _uint Get_MeshCount();
+    _uint Get_MaterialIndex(_uint Index);
     _bool isDrawable(_uint Index);
-    const string& Get_BufferKey(_uint Index);
-    _uint Get_MeshCount() { return m_Buffers.size(); }
 
 public:
     virtual void Render_GUI() override;
 
 protected:
     vector<_bool> m_DrawableMeshes;
-    vector<class CMesh*> m_Buffers;
-
+    class CModelData* m_pData = { nullptr };
 public:
     virtual void Free() override;
 };

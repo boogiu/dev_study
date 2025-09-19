@@ -71,8 +71,6 @@ void CGameInstance::Clear_LevelResource(const string& levelKey)
 
 void CGameInstance::Update_Engine(_float dt)
 {
-
-
 	m_pObjectManager->Priority_Update(dt);
 	m_UIManager->Priority_Update(dt);
 
@@ -112,6 +110,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pGraphicDevice);
 	Safe_Release(m_pInputDevice);
 	Safe_Release(m_pSoundDevice);
+
 	DestroyInstance();
 }
 

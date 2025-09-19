@@ -73,6 +73,11 @@ HRESULT CMaterial::GetPassSignature(_uint Index, D3DX11_PASS_DESC* pOutPassDesc)
 	return m_MaterialDatas[Index]->GetPassSignature(pOutPassDesc);
 }
 
+const string& CMaterial::GetPassConstant(_uint Index)
+{
+	return m_MaterialDatas[Index]->Get_PassConstant();
+}
+
 CMaterial* CMaterial::Create()
 {
 	CMaterial* instance = new CMaterial;
@@ -92,6 +97,7 @@ void CMaterial::Free()
 {
 	for (auto& data : m_MaterialDatas)
 		Safe_Release(data);
+	m_MaterialDatas.clear();
 }
 
 void CMaterial::Render_GUI()

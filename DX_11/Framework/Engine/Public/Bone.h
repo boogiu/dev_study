@@ -9,12 +9,13 @@ protected:
     virtual ~CBone() DEFAULT;
 public:
     HRESULT InitializeFromFile(ifstream& ifs);
-    void Update_CombinedTransformMatrix(const vector<CBone*> Bones);
-    _matrix Get_CombinedTransformationMatrix();
+    const string& Get_Name()    { return m_BoneName; }
+    _int Get_ParentIndex()           {return m_iParentBoneIndex; };
+    _float4x4 Get_TransformationMatrix()           {return m_TransformationMatrix; };
+
 protected:
     string				m_BoneName = {};
     _float4x4			m_TransformationMatrix = {};
-    _float4x4			m_CombinedTransformationMatrix = {};
     _int				m_iParentBoneIndex = { -1 };
 
 public:

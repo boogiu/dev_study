@@ -1,5 +1,8 @@
 #pragma once
 #include "GameObject.h"
+NS_BEGIN(Engine)
+class CAnimator3D;
+NS_END
 NS_BEGIN(Loader)
 
 class CModelObject :
@@ -20,14 +23,19 @@ public:
    void Render_GUI() override;
 private:
     HRESULT Load_AIScene(const string& filePath);
-    HRESULT Load_Static(const string& filePath);
-    HRESULT Load_Animated(const string& filePath);
+    HRESULT Load_Static(const string& fileName);
+    HRESULT Load_Animated(const string& fileName);
     HRESULT Save_AIScene();
 
     _bool HasBones();
+
+    void RealesPrevModel();
 private:
+    _bool IsAnimateModel = { false };
     Importer		m_Importer = {};
     const aiScene* m_pAIScene = { nullptr };
+
+    CAnimator3D* m_pAnimator = { nullptr };
 public:
     static CModelObject* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

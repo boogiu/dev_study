@@ -22,9 +22,6 @@
     <Filter Include="04. LoadResource">
       <UniqueIdentifier>{5e041312-e46e-45d1-97c8-10fb6adc5f7f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. LoadResource\Meshes">
-      <UniqueIdentifier>{84f440a2-189e-42ab-a631-fad9febeffab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="97. GUI_Inc">
       <UniqueIdentifier>{42c3d686-f2ef-4ae5-93d2-80e999469de7}</UniqueIdentifier>
     </Filter>
@@ -55,11 +52,20 @@
     <Filter Include="03. LoaderComponent\Model\Animated">
       <UniqueIdentifier>{1fa6e934-d275-42d0-8571-6c3959c18459}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. LoadResource\Meshes\Static">
-      <UniqueIdentifier>{0f8bc89d-b361-43ac-978e-7f8292278d46}</UniqueIdentifier>
+    <Filter Include="03. LoaderComponent\Animator">
+      <UniqueIdentifier>{12515238-28c5-4cc5-98de-021711326841}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. LoadResource\Meshes\Animated">
-      <UniqueIdentifier>{08c389ff-8973-4218-bb7f-c6a36680d1f0}</UniqueIdentifier>
+    <Filter Include="04. LoadResource\AnimationClip">
+      <UniqueIdentifier>{3e2a6a9e-684b-42df-849e-a27d51f2e512}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. LoadResource\AnimationClip\Channel">
+      <UniqueIdentifier>{33bba906-cc35-4959-899b-aba821fd4444}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. LoadResource\ModelData">
+      <UniqueIdentifier>{eb68d28c-3593-4978-b60b-f3a20fd44f0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. LoadResource\ModelData\Meshes">
+      <UniqueIdentifier>{84f440a2-189e-42ab-a631-fad9febeffab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -129,26 +135,35 @@
     <ClInclude Include="..\Public\LoadMaterial.h">
       <Filter>03. LoaderComponent\Material</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\LoadedMaterialData.h">
+    <ClInclude Include="..\Public\AIMaterial.h">
       <Filter>04. LoadResource\MaterialData</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\LoadBone.h">
+    <ClInclude Include="..\Public\AIBone.h">
       <Filter>04. LoadResource\Skeleton\Bone</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\LoadStaticModel.h">
       <Filter>03. LoaderComponent\Model\Static</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\LoadedSkeleton.h">
+    <ClInclude Include="..\Public\AISkeleton.h">
       <Filter>04. LoadResource\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\LoadAnimatedModel.h">
       <Filter>03. LoaderComponent\Model\Animated</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\LoadedStaticMesh.h">
-      <Filter>04. LoadResource\Meshes\Static</Filter>
+    <ClInclude Include="..\Public\LoadAnimator3D.h">
+      <Filter>03. LoaderComponent\Animator</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\LoadedAnimatedMesh.h">
-      <Filter>04. LoadResource\Meshes\Animated</Filter>
+    <ClInclude Include="..\Public\AIAnimationClip.h">
+      <Filter>04. LoadResource\AnimationClip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AIChannel.h">
+      <Filter>04. LoadResource\AnimationClip\Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AIModelData.h">
+      <Filter>04. LoadResource\ModelData</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AIMesh.h">
+      <Filter>04. LoadResource\ModelData\Meshes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -208,26 +223,35 @@
     <ClCompile Include="..\Private\LoadMaterial.cpp">
       <Filter>03. LoaderComponent\Material</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\LoadedMaterialData.cpp">
+    <ClCompile Include="..\Private\AIMaterial.cpp">
       <Filter>04. LoadResource\MaterialData</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\LoadBone.cpp">
+    <ClCompile Include="..\Private\AIBone.cpp">
       <Filter>04. LoadResource\Skeleton\Bone</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LoadStaticModel.cpp">
       <Filter>03. LoaderComponent\Model\Static</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\LoadedSkeleton.cpp">
+    <ClCompile Include="..\Private\AISkeleton.cpp">
       <Filter>04. LoadResource\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LoadAnimatedModel.cpp">
       <Filter>03. LoaderComponent\Model\Animated</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\LoadedStaticMesh.cpp">
-      <Filter>04. LoadResource\Meshes\Static</Filter>
+    <ClCompile Include="..\Private\LoadAnimator3D.cpp">
+      <Filter>03. LoaderComponent\Animator</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\LoadedAnimatedMesh.cpp">
-      <Filter>04. LoadResource\Meshes\Animated</Filter>
+    <ClCompile Include="..\Private\AIAnimationClip.cpp">
+      <Filter>04. LoadResource\AnimationClip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AIChannel.cpp">
+      <Filter>04. LoadResource\AnimationClip\Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AIModelData.cpp">
+      <Filter>04. LoadResource\ModelData</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AIMesh.cpp">
+      <Filter>04. LoadResource\ModelData\Meshes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

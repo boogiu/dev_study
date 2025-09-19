@@ -1,15 +1,15 @@
-#include "LoadedMaterialData.h"
+#include "AIMaterial.h"
 #include "Texture.h"
 #include "GameInstance.h"
 #include "IResourceService.h"
 #include "Helper_Func.h"
 
-CLoadedMaterialData::CLoadedMaterialData(const string& MaterialKey)
+CAIMaterial::CAIMaterial(const string& MaterialKey)
 	:CMaterialData(MaterialKey)
 {
 }
 
-HRESULT CLoadedMaterialData::Initialize(ID3D11Device* pDevice, const aiMaterial* pAIMaterial, const string& fileDirectory)
+HRESULT CAIMaterial::Initialize(ID3D11Device* pDevice, const aiMaterial* pAIMaterial, const string& fileDirectory)
 {
 	for (size_t i = 0; i < MAX_TEXTURE_TYPE_VALUE; i++)
 	{
@@ -51,13 +51,12 @@ HRESULT CLoadedMaterialData::Initialize(ID3D11Device* pDevice, const aiMaterial*
 	}
 
 	m_passConstant = "Opaque";
-	Link_Shader(G_GlobalLevelKey, "VTX_SkinMesh.hlsl");
 
 	__super::CreateCBuffer(pDevice);
 	return S_OK;
 }
 
-void CLoadedMaterialData::Save_MaterialData(ID3D11DeviceContext* pContext, ofstream& ofs, const string& directory)
+void CAIMaterial::Save_MaterialData(ID3D11DeviceContext* pContext, ofstream& ofs, const string& directory)
 {
 	MATERIAL_INFO_HEADER infoHead = {};
 	strcpy_s(infoHead.passConstant, sizeof(infoHead.passConstant), m_passConstant.c_str());
@@ -85,7 +84,7 @@ void CLoadedMaterialData::Save_MaterialData(ID3D11DeviceContext* pContext, ofstr
 	}
 }
 
-void CLoadedMaterialData::Render_GUI()
+void CAIMaterial::Render_GUI()
 {
 	vector<string> passes = m_pShader->Get_PassList();
 	if (passes.empty())
@@ -113,16 +112,21 @@ void CLoadedMaterialData::Render_GUI()
 
 }
 
-CLoadedMaterialData* CLoadedMaterialData::Create(ID3D11Device* pDevice, const aiMaterial* pAIMaterial, const string& MaterialKey, const string& fileDirectory)
+void CAIMaterial::LinkShader(const string& shader)
 {
-	CLoadedMaterialData* instance = new CLoadedMaterialData(MaterialKey);
+	Link_Shader(G_GlobalLevelKey, shader);
+}
+
+CAIMaterial* CAIMaterial::Create(ID3D11Device* pDevice, const aiMaterial* pAIMaterial, const string& MaterialKey, const string& fileDirectory)
+{
+	CAIMaterial* instance = new CAIMaterial(MaterialKey);
 	if (FAILED(instance->Initialize(pDevice, pAIMaterial, fileDirectory))) {
 		Safe_Release(instance);
 	}
 	return instance;
 }
 
-void CLoadedMaterialData::Free()
+void CAIMaterial::Free()
 {
 	__super::Free();
 }

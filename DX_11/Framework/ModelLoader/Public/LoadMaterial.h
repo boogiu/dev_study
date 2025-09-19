@@ -13,6 +13,7 @@ public:
     virtual void Render_GUI() override;
     HRESULT Load_Material(_uint materialNum, aiMaterial* material[], const string& filePath);
     HRESULT Save_Material ();
+    void LinkShader(const string& shader);
 
 private:
     ID3D11Device* m_pDevice = { nullptr };

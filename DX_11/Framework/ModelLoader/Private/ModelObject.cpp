@@ -3,7 +3,10 @@
 #include "LoadStaticModel.h"
 #include "LoadAnimatedModel.h"
 #include "LoadMaterial.h"
+#include "AIMaterial.h"
 #include "Helper_Func.h"
+#include "LoadAnimator3D.h"
+#include "Animator3D.h"
 
 CModelObject::CModelObject()
 {
@@ -33,10 +36,8 @@ void CModelObject::Priority_Update(_float dt)
 
 void CModelObject::Update(_float dt)
 {
-	if (Get_Component<CAnimatedModel>()) {
-		Get_Component<CAnimatedModel>()->Update_Animation(dt);
-	}
-
+	if (m_pAnimator)
+		m_pAnimator->Update_Animation(dt);
 }
 
 void CModelObject::Late_Update(_float dt)
@@ -51,6 +52,7 @@ void CModelObject::Render_GUI()
 
 	ImGui::SeparatorText("Model Load & Save");
 	ImGui::BeginChild("##Loaded OBJECT BTN", ImVec2{ 0, childHeight }, true);
+
 	if (ImGui::Button("Model Load")) {
 		string path = Helper::OpenFile_Dialogue();
 		Load_AIScene(path);
@@ -75,37 +77,52 @@ HRESULT CModelObject::Load_AIScene(const string& filePath)
 	if (nullptr == m_pAIScene)
 		return E_FAIL;
 
-	if (HasBones())
-	Load_Animated(filePath);
-	else
-	Load_Static(filePath);
+	string fileName = Helper::GetFileNameWithExtension(filePath);
 
 	CLoadMaterial* pMaterial = CLoadMaterial::Create();
 	pMaterial->Set_Owner(this);
-	m_Components.emplace(type_index(typeid(CMaterial)), pMaterial);
-	_uint NumMaterial = m_pAIScene->mNumMaterials;
-	pMaterial->Load_Material(NumMaterial, m_pAIScene->mMaterials, filePath);
+	if (HasBones()) {
+		Load_Animated(fileName);
+		m_Components.emplace(type_index(typeid(CMaterial)), pMaterial);
+		_uint NumMaterial = m_pAIScene->mNumMaterials;
+		pMaterial->Load_Material(NumMaterial, m_pAIScene->mMaterials, filePath);
+		pMaterial->LinkShader("VTX_SkinMesh.hlsl");
+	}
+	else {
+		Load_Static(fileName);
+		m_Components.emplace(type_index(typeid(CMaterial)), pMaterial);
+		_uint NumMaterial = m_pAIScene->mNumMaterials;
+		pMaterial->Load_Material(NumMaterial, m_pAIScene->mMaterials, filePath);
+		pMaterial->LinkShader("VTX_Mesh.hlsl");
+	}
 
 	return S_OK;
 }
 
-HRESULT CModelObject::Load_Static(const string& filePath)
+HRESULT CModelObject::Load_Static(const string& fileName)
 {
+	RealesPrevModel();
 	CLoadStaticModel* pModel = CLoadStaticModel::Create();
 	pModel->Set_Owner(this);
 	m_Components.emplace(type_index(typeid(CStaticModel)), pModel);
 
-	_uint NumMesh = m_pAIScene->mNumMeshes;
-	pModel->Load_Model(NumMesh, m_pAIScene->mMeshes, filePath);
+	pModel->Load_Model(m_pAIScene, fileName);
 	return S_OK;
 }
 
-HRESULT CModelObject::Load_Animated(const string& filePath)
+HRESULT CModelObject::Load_Animated(const string& fileName)
 {
+	RealesPrevModel();
 	CLoadAnimatedModel* pModel = CLoadAnimatedModel::Create();
 	pModel->Set_Owner(this);
 	m_Components.emplace(type_index(typeid(CAnimatedModel)), pModel);
-	pModel->Load_Model(m_pAIScene, filePath);
+	CLoadAnimator3D* pAnimator = CLoadAnimator3D::Create();
+	pAnimator->Set_Owner(this);
+	m_Components.emplace(type_index(typeid(CAnimator3D)), pAnimator);
+	m_pAnimator = pAnimator;
+
+	pModel->Load_Model(m_pAIScene, fileName);
+	pAnimator->Set_Data(pModel->Get_Data());
 
 	return S_OK;
 }
@@ -142,6 +159,15 @@ _bool CModelObject::HasBones()
 	}
 
 	return false;
+}
+
+void CModelObject::RealesPrevModel()
+{
+	Remove_Component<CStaticModel>();
+	Remove_Component<CAnimatedModel>();
+	Remove_Component<CAnimator3D>();
+	Remove_Component<CMaterial>();
+	m_pAnimator = nullptr;
 }
 
 CModelObject* CModelObject::Create()

@@ -16,6 +16,9 @@ CVI_Rect::~CVI_Rect()
 
 HRESULT CVI_Rect::Initialize(ID3D11Device* pDevice)
 {
+	m_ElementCount = VTXPOSTEX::iElementCount;
+	m_ElementKey = VTXPOSTEX::Key;
+	m_ElementDesc = VTXPOSTEX::Elements;
 	m_iVertexBufferCount = 1;
 	m_iVerticesCount = 4;
 	m_iVertexStride = sizeof(VTXPOSTEX);

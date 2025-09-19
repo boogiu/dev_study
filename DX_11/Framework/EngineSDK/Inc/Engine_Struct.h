@@ -42,13 +42,14 @@ namespace Engine
 
 	/*File Info Desc*/
 	/*Model*/
-	typedef struct ENGINE_DLL tagMeshFileHeader {
-		char meshKey[64];
+	typedef struct ENGINE_DLL tagModelFileHeader {
+		char ModelKey[MAX_PATH];
 		_uint MeshCount = {};
-	}MESH_FILE_HEADER;
+		_bool isAnimate = { false };
+	}MODEL_FILE_HEADER;
 
 	typedef struct ENGINE_DLL tagMeshInfoHeader {
-		_bool isAnimate = { false };
+		char MeshName[MAX_PATH];
 		_uint VerticesCount = {};
 		_uint IndicesCount = {};
 		_uint MaterialIndex = {};
@@ -60,11 +61,9 @@ namespace Engine
 	}SKELETON_FILE_HEADER;
 
 	typedef struct ENGINE_DLL tagBoneInfoHeader {
-		char BoneName[64];
-		_uint ParentBoneIndex = {};
+		char BoneName[MAX_PATH];
+		_int ParentBoneIndex = {};
 		_float4x4 TransformationMatrix = {};
-		_float4x4 CombinedTransformationMatrix = {};
-
 	}BONE_INFO_HEADER;
 
 	/*Mateial*/
@@ -78,14 +77,14 @@ namespace Engine
 	};
 
 	typedef struct ENGINE_DLL tagMaterialFileHeader {
-		char materialDataKey[64];
+		char materialDataKey[MAX_PATH];
 		_uint MaterialDataCount = {};
 	}MATERIAL_FILE_HEADER;
 
 	typedef struct ENGINE_DLL tagMaterialInfoHeader {
 		MaterialConstants materialConstant = {};
-		char passConstant[64];
-		char ShaderKey[64];
+		char passConstant[MAX_PATH];
+		char ShaderKey[MAX_PATH];
 		_uint TextureTypeCount = {};
 	}MATERIAL_INFO_HEADER;
 
@@ -95,12 +94,57 @@ namespace Engine
 	}TEXTURE_FILE_HEADER;
 
 	typedef struct ENGINE_DLL tagTextuerInfoHeader {
-		char TextureKey[64];
+		char TextureKey[MAX_PATH];
 	}TEXTURE_INFO_HEADER;
+
+	/*Animation*/
+	typedef struct ENGINE_DLL tagAnimationClipHeader {
+		_bool					bLoop = { };
+		_float					fDuration = {}; 
+		_float					fTickPerSecond = {}; 
+		_uint					iNumChannels = {};
+		char					ClipName[MAX_PATH];
+	}ANIMATION_CLIP_HEADER;
+
+	typedef struct ENGINE_DLL tagAnimationChannelHeader {
+		_uint				iBoneIndex = {};
+		_uint				iNumKeyFrames = {};
+		char			BoneName[MAX_PATH];
+	}ANIMATION_CHANNEL_HEADER;
+
+	struct _XMKeyFrame {
+		_vector vScale;
+		_vector vRotation;
+		_vector vTranslation;
+	};
+
+	typedef struct ENGINE_DLL tagKeyFrame
+	{
+		_float3			vScale;
+		_float4			vRotation;
+		_float3			vTranslation;
+		_float				fTrackPosition;
+
+		_bool IsBefore(_float nowTrackPosition) {
+			return fTrackPosition < nowTrackPosition;
+		}
+
+		_XMKeyFrame LerpKeyFram(const tagKeyFrame& nextFrame, _float nowTrackPosition) {
+			_XMKeyFrame lerpedFrame = {};
+			_float fRatio = (nowTrackPosition - fTrackPosition) / (nextFrame.fTrackPosition - fTrackPosition);
+			lerpedFrame.vScale = XMVectorLerp(XMLoadFloat3(&vScale), XMLoadFloat3(&nextFrame.vScale), fRatio);
+			lerpedFrame.vRotation = XMQuaternionSlerp(XMLoadFloat4(&vRotation), XMLoadFloat4(&nextFrame.vRotation), fRatio);
+			lerpedFrame.vTranslation = XMVectorLerp(XMVectorSetW(XMLoadFloat3(&vTranslation), 1.f), XMVectorSetW(XMLoadFloat3(&nextFrame.vTranslation), 1.f), fRatio);
+			return lerpedFrame;
+		}
+	}KEYFRAME;
+
 
 	/* Input LayOut*/
 	typedef struct ENGINE_DLL tagVertexPosition {
 		XMFLOAT3		vPosition;
+
+		static constexpr string_view  Key = "VTXPOS";
 		static constexpr unsigned int iElementCount = { 1 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC		Elements[iElementCount] = {
 			{"POSITION",        0,      DXGI_FORMAT_R32G32B32A32_FLOAT,         0,      0,		D3D11_INPUT_PER_VERTEX_DATA,	0},
@@ -112,6 +156,7 @@ namespace Engine
 		XMFLOAT3		vPosition;
 		XMFLOAT2		vTexcoord;
 
+		static constexpr string_view  Key = "VTXPOSTEX";
 		static constexpr unsigned int					iElementCount = { 2 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC		Elements[iElementCount] = {
 			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -125,6 +170,7 @@ namespace Engine
 		XMFLOAT3		vNormal;
 		XMFLOAT2		vTexcoord;
 
+		static constexpr string_view  Key = "VTXNORMTEX";
 		static constexpr unsigned int					iElementCount = { 3 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC		Elements[iElementCount] = {
 			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -140,6 +186,7 @@ namespace Engine
 		XMFLOAT2		vTexcoord;
 		XMFLOAT3		vTangent;
 
+		static constexpr string_view  Key = "VTXMESH";
 		static constexpr unsigned int					iElementCount = {4 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC		Elements[iElementCount] = {
 			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -159,6 +206,7 @@ namespace Engine
 		XMUINT4 vBlendIndex;
 		XMFLOAT4 vBlendWeight;
 
+		static constexpr string_view  Key = "VTXSKINMESH";
 		static constexpr unsigned int					iElementCount = { 6 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC		Elements[iElementCount] = {
 			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},

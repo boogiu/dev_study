@@ -183,7 +183,7 @@ HRESULT CShader::Bind_ShaderResourceArray(const string& ConstantName, vector<cla
 		srvVector.push_back(tex->Get_SRV());
 
 	pShaderVariable->SetResourceArray(srvVector.data(),0, srvVector.size());
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void CShader::ReflectShader()

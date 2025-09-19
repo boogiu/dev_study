@@ -1,7 +1,12 @@
 #include "Mesh.h"
 #include "Bone.h"
-CMesh::CMesh(const string& meshKey)
-	:CVIBuffer(meshKey)
+
+CMesh::CMesh()
+	: CVIBuffer("")
+{
+}
+CMesh::CMesh(const string& ModelKey)
+	:CVIBuffer(ModelKey)
 {
 }
 
@@ -9,20 +14,25 @@ CMesh::~CMesh()
 {
 }
 
-HRESULT CMesh::Initialize_From_File(ID3D11Device* pDevice, ifstream& ifs)
+HRESULT CMesh::Initialize_From_File(ID3D11Device* pDevice, ifstream& ifs, MESH_TYPE eType)
 {
 	MESH_INFO_HEADER infoHeader = {};
+
+
 	ifs.read(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
+	m_VIKey = infoHeader.MeshName;
 	m_MaterialIndex = infoHeader.MaterialIndex;
 	m_iVertexBufferCount = 1;
 	m_iVerticesCount = infoHeader.VerticesCount;
-	m_iVertexStride = infoHeader.isAnimate? sizeof(VTXSKINMESH) : sizeof(VTXMESH);
+	m_iVertexStride = eType == MESH_TYPE::ANIM  ? sizeof(VTXSKINMESH) : sizeof(VTXMESH);
 	m_iIndicesCount = infoHeader.IndicesCount;
 	m_iIndexStride = 4; //byte
 	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
 	m_ePrimitive = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-
-	HRESULT hr = infoHeader.isAnimate ? Create_AnimateVertex(pDevice, ifs) : Create_StaticVertex(pDevice,  ifs);
+	m_ElementCount = eType == MESH_TYPE::ANIM ? VTXSKINMESH::iElementCount : VTXMESH::iElementCount;
+	m_ElementKey = eType == MESH_TYPE::ANIM ? VTXSKINMESH::Key : VTXMESH::Key;
+	m_ElementDesc = eType == MESH_TYPE::ANIM ? VTXSKINMESH::Elements : VTXMESH::Elements;
+	HRESULT hr = eType==MESH_TYPE::ANIM ? Create_AnimateVertex(pDevice, ifs) : Create_StaticVertex(pDevice,  ifs);
 
 	if (FAILED(hr))
 		return E_FAIL;
@@ -32,15 +42,15 @@ HRESULT CMesh::Initialize_From_File(ID3D11Device* pDevice, ifstream& ifs)
 
 	if (FAILED(Create_Index(pDevice)))
 		return E_FAIL;
-
-	ifs.read(reinterpret_cast<char*>(m_BoneIndices.data()), infoHeader.BoneCount * sizeof(_uint));
-	ifs.read(reinterpret_cast<char*>(m_OffsetMatrices.data()), infoHeader.BoneCount * sizeof(_float4x4));
-
 	return S_OK;
 }
 
 HRESULT CMesh::Create_AnimateVertex(ID3D11Device* pDevice, ifstream& ifs)
 {
+	m_ElementCount = VTXSKINMESH::iElementCount;
+	m_ElementKey = VTXSKINMESH::Key;
+	m_ElementDesc = VTXSKINMESH::Elements;
+
 	vector<VTXSKINMESH>vertices = {};
 	vertices.resize(m_iVerticesCount);
 
@@ -63,6 +73,9 @@ HRESULT CMesh::Create_AnimateVertex(ID3D11Device* pDevice, ifstream& ifs)
 
 HRESULT CMesh::Create_StaticVertex(ID3D11Device* pDevice, ifstream& ifs)
 {
+	m_ElementCount = VTXMESH::iElementCount;
+	m_ElementKey = VTXMESH::Key;
+	m_ElementDesc = VTXMESH::Elements;
 	vector<VTXMESH>vertices = {};
 	vertices.resize(m_iVerticesCount);
 
@@ -104,33 +117,16 @@ HRESULT CMesh::Create_Index(ID3D11Device* pDevice)
 
 }
 
-_matrix CMesh::Get_BoneOffsetMatrix(_uint i)
+void CMesh::Render_GUI()
 {
-	return XMLoadFloat4x4(&m_OffsetMatrices[i]);
+	
 }
 
-_uint CMesh::Get_BoneIndex(_uint i)
-{
-	return m_BoneIndices[i];
-}
 
-const vector<_float4x4>& CMesh::Bind_BoneMatrices(const vector<CBone*>& Bones)
+CMesh* CMesh::Create(ID3D11Device* pDevice, ifstream& ifs, MESH_TYPE eType)
 {
-	m_BoneMatrices.resize(m_OffsetMatrices.size());
-	for (size_t i = 0; i < m_OffsetMatrices.size(); i++)
-	{
-		XMStoreFloat4x4(&m_BoneMatrices[i],
-			XMLoadFloat4x4(&m_OffsetMatrices[i]) *
-			Bones[m_BoneIndices[i]]->Get_CombinedTransformationMatrix());
-	}
-
-	return m_BoneMatrices;
-}
-
-CMesh* CMesh::Create(ID3D11Device* pDevice, const string& meshKey,ifstream& ifs)
-{
-	CMesh* instance = new CMesh(meshKey);
-	if (FAILED(instance->Initialize_From_File(pDevice, ifs))) {
+	CMesh* instance = new CMesh();
+	if (FAILED(instance->Initialize_From_File(pDevice, ifs, eType))) {
 		Safe_Release(instance);
 	}
 	return instance;

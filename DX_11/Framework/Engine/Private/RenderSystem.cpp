@@ -48,37 +48,38 @@ CRenderSystem* CRenderSystem::Create(ID3D11Device* pDevice, ID3D11DeviceContext*
 	return instance;
 }
 
-HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CMaterial* pMaterial, _uint DrawIndex, ID3D11InputLayout** ppInputLayout)
+HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CShader* pShader, _uint DrawIndex, const string& passConstant,ID3D11InputLayout** ppInputLayout)
 {
-	if (!pModel || !pMaterial || !ppInputLayout)
+	if (!pModel || !pShader || !ppInputLayout)
 		return E_FAIL;
+	
+	/*모델 데이터 이름 + 셰이더 이름*/
+	string LayOutID = string(pModel->Get_ElementKey(DrawIndex)) + pShader->Get_Key();
 
-	string imguiID = pModel->Get_BufferKey(DrawIndex) + '_' + 
-		to_string(pMaterial->Get_MaterialDataID(DrawIndex)) + '_' +
-			to_string(pMaterial->Get_ShaderID(DrawIndex));
-
-	auto iter = m_InputLayouts.find(imguiID);
-
+	auto iter = m_InputLayouts.find(LayOutID);
+	
 	if (iter != m_InputLayouts.end()) {
 		*ppInputLayout = iter->second;
 		return S_OK;
 	}
 
 	D3DX11_PASS_DESC passDesc = {};
-	if (FAILED(pMaterial->GetPassSignature(pModel->Get_MaterialIndex(DrawIndex), &passDesc)))
-		return E_FAIL;
-	if (pModel->Get_ElementCount() == 0 || pModel->Get_ElementDesc() == nullptr)
+	
+	if (FAILED(pShader->GetPassSignature(passConstant, &passDesc)))
 		return E_FAIL;
 
+	if (pModel->Get_ElementCount(DrawIndex) == 0 || pModel->Get_ElementDesc(DrawIndex) == nullptr)
+		return E_FAIL;
+	
 	HRESULT hr = m_pDevice->CreateInputLayout(
-		pModel->Get_ElementDesc(), pModel->Get_ElementCount(),
+		pModel->Get_ElementDesc(DrawIndex), pModel->Get_ElementCount(DrawIndex),
 		passDesc.pIAInputSignature, passDesc.IAInputSignatureSize,
 		ppInputLayout);
-
+	
 	if (FAILED(hr))
 		return E_FAIL;
-
-	m_InputLayouts.emplace(imguiID, *ppInputLayout);
+	
+	m_InputLayouts.emplace(LayOutID, *ppInputLayout);
 
 	return S_OK;
 }

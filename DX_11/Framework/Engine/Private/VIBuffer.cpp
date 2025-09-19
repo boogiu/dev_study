@@ -1,7 +1,7 @@
 #include "VIBuffer.h"
 
-CVIBuffer::CVIBuffer(const string& meshKey)
-	:m_VIKey{ meshKey }
+CVIBuffer::CVIBuffer(const string& ModelKey)
+	:m_VIKey{ ModelKey }
 {
 }
 

@@ -5,36 +5,58 @@ CSkeleton::CSkeleton()
 {
 }
 
-HRESULT CSkeleton::InitializeFromFile(const string& filePath)
+HRESULT CSkeleton::InitializeFromFile(ifstream& ifs)
 {
     return S_OK;
 }
 
-void CSkeleton::Update_CombinedMatrix(_float dt)
+_uint CSkeleton::Get_BoneParentIndex(_uint i)
 {
-    for (auto& bone : m_Bones)
-        bone->Update_CombinedTransformMatrix(m_Bones);
+    return m_Bones[i]->Get_ParentIndex();
 }
 
-_matrix CSkeleton::Get_CombinedMatrix(_uint BoneIndex)
+_float4x4 CSkeleton::Get_TransformationMatrix(_uint BoneIndex)
 {
-    return m_Bones[BoneIndex]->Get_CombinedTransformationMatrix();
+     return m_Bones[BoneIndex]->Get_TransformationMatrix();
 }
 
-_int CSkeleton::FindBoneIndex_ByName(const string& boneName)
+
+
+_int CSkeleton::Find_BoneIndexByName(const string& boneName)
 {
     auto iter = m_BoneMap.find(boneName);
 
     if (iter != m_BoneMap.end())
         return iter->second;
-    else
+    else {
+        return FindBoneIndexWithPrefix(boneName);
+    }
+}
+const string& CSkeleton::Find_BoneNameByIndex(_uint boneIndex)
+{
+    return m_Bones[boneIndex]->Get_Name();
+}
+_int CSkeleton::FindBoneIndexWithPrefix(const string& BonePrefixName)
+{
+    string prefix = "Armature_" + BonePrefixName;
+    auto iter = m_BoneMap.find(prefix);
+
+    if (iter != m_BoneMap.end())
+        return iter->second;
+    else {
         return -1;
+    }
+}
+void CSkeleton::Render_GUI()
+{
+        for (auto& bone : m_Bones)
+            ImGui::Text(bone->Get_Name().c_str());
 }
 
-CSkeleton* CSkeleton::Create(const string& filePath)
+CSkeleton* CSkeleton::Create(ifstream& ifs)
 {
     CSkeleton* instance = new CSkeleton;
-    if (FAILED(instance->InitializeFromFile(filePath))) {
+    if (FAILED(instance->InitializeFromFile(ifs))) {
         Safe_Release(instance);
     }
     return instance;
@@ -43,8 +65,10 @@ CSkeleton* CSkeleton::Create(const string& filePath)
 void CSkeleton::Free()
 {
     __super::Free();
+
     for (auto& bones : m_Bones)
         Safe_Release(bones);
 
+    m_BoneMap.clear();
     m_Bones.clear();
 }

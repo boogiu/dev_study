@@ -16,6 +16,7 @@ CVI_Terrain::~CVI_Terrain()
 
 HRESULT CVI_Terrain::Initialize(ID3D11Device* pDevice, const string& HeightfilePath)
 {
+	
 	_ulong dwByte = {};
 	HANDLE handle = CreateFileA(HeightfilePath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (0 == handle)
@@ -37,6 +38,10 @@ HRESULT CVI_Terrain::Initialize(ID3D11Device* pDevice, const string& HeightfileP
 	iVerticesCountX = iHeader.biWidth;
 	iVerticesCountZ = iHeader.biHeight;
 
+
+	m_ElementCount = VTXNORMTEX::iElementCount;
+	m_ElementKey = VTXNORMTEX::Key;
+	m_ElementDesc = VTXNORMTEX::Elements;
 
 	m_iVertexBufferCount = 1;
 	m_iVerticesCount = iVerticesCountX * iVerticesCountZ;

@@ -172,10 +172,13 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\AnimatedModel.h" />
+    <ClInclude Include="..\Public\AnimationClip.h" />
+    <ClInclude Include="..\Public\Animator3D.h" />
     <ClInclude Include="..\Public\Base.h" />
     <ClInclude Include="..\Public\BasePanel.h" />
     <ClInclude Include="..\Public\Bone.h" />
     <ClInclude Include="..\Public\Builder.h" />
+    <ClInclude Include="..\Public\Channel.h" />
     <ClInclude Include="..\Public\GameObjectBuilder.h" />
     <ClInclude Include="..\Public\Build_Struct.h" />
     <ClInclude Include="..\Public\Camera.h" />
@@ -223,6 +226,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\MaterialData.h" />
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\Public\Model.h" />
+    <ClInclude Include="..\Public\ModelData.h" />
     <ClInclude Include="..\Public\NFD_Inc\nfd.h" />
     <ClInclude Include="..\Public\ObjectMgr.h" />
     <ClInclude Include="..\public\PipeLine.h" />
@@ -257,9 +261,13 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\AnimatedModel.cpp" />
+    <ClCompile Include="..\Private\AnimationClip.cpp" />
+    <ClCompile Include="..\Private\Animator3D.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\BasePanel.cpp" />
     <ClCompile Include="..\Private\Bone.cpp" />
+    <ClCompile Include="..\Private\Channel.cpp" />
+    <ClCompile Include="..\Private\Data_Packets.cpp" />
     <ClCompile Include="..\Private\GameObjectBuilder.cpp" />
     <ClCompile Include="..\Private\Camera.cpp" />
     <ClCompile Include="..\Private\CameraMgr.cpp" />
@@ -278,6 +286,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\MaterialData.cpp" />
     <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\Private\Model.cpp" />
+    <ClCompile Include="..\Private\ModelData.cpp" />
     <ClCompile Include="..\Private\ObjectMgr.cpp" />
     <ClCompile Include="..\Private\PipeLine.cpp" />
     <ClCompile Include="..\Private\PrototypeMgr.cpp" />

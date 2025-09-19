@@ -220,20 +220,11 @@
     <Filter Include="01. Utility\05. Resources\01. VIBuffer\VI_Terrain">
       <UniqueIdentifier>{5ce578f1-59ff-4a61-b2a2-9059309c6598}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\05. Resources\01. VIBuffer\Mesh">
-      <UniqueIdentifier>{318a2fde-1738-4ea8-b454-8de04d59ef3f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\05. Resources\02. Texture">
       <UniqueIdentifier>{ed80865b-cb31-4472-8efc-a13b4f549275}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Utility\05. Resources\03. SoundData">
       <UniqueIdentifier>{40f4df22-0ddd-420c-9fca-5a5d3f05f3ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\04. Skeleton">
-      <UniqueIdentifier>{691a0651-5709-4f18-8eed-822d62a181d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\04. Skeleton\Bone">
-      <UniqueIdentifier>{2b89e751-c434-46d9-b506-9d119b1285a5}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Utility\05. Resources\00. Resource_Manager">
       <UniqueIdentifier>{6154d539-ae2e-4f8c-a748-e2b2e10aa2c8}</UniqueIdentifier>
@@ -249,6 +240,30 @@
     </Filter>
     <Filter Include="01. Utility\04. Components\Model\AnimatedModel">
       <UniqueIdentifier>{d229de6b-a72a-4e90-8543-3f190158f391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\Animator3D">
+      <UniqueIdentifier>{f64efe90-8369-484d-b5cc-45b7bbf97977}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\07. AnimationClip">
+      <UniqueIdentifier>{a2dce519-64f9-4fbc-8287-92089cfdb2a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\07. AnimationClip\AnimationChannel">
+      <UniqueIdentifier>{de6929cc-ba98-4250-a996-153f70ea48b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\04. ModelData">
+      <UniqueIdentifier>{6157b7d8-8b11-45af-94f2-521b65b2de87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\04. ModelData\Mesh">
+      <UniqueIdentifier>{318a2fde-1738-4ea8-b454-8de04d59ef3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\04. ModelData\Skeleton">
+      <UniqueIdentifier>{691a0651-5709-4f18-8eed-822d62a181d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resources\04. ModelData\Skeleton\Bone">
+      <UniqueIdentifier>{2b89e751-c434-46d9-b506-9d119b1285a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99. Defines\Packets">
+      <UniqueIdentifier>{5b850f8f-adfd-498a-b0d1-80c86f008f6b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -412,7 +427,7 @@
       <Filter>01. Utility\06. RenderSystem\PipeLine</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Mesh.cpp">
-      <Filter>01. Utility\05. Resources\01. VIBuffer\Mesh</Filter>
+      <Filter>01. Utility\05. Resources\04. ModelData\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MaterialData.cpp">
       <Filter>01. Utility\05. Resources\06. MaterialData</Filter>
@@ -421,16 +436,31 @@
       <Filter>01. Utility\04. Components\MatrialAnimator</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Bone.cpp">
-      <Filter>01. Utility\05. Resources\04. Skeleton\Bone</Filter>
+      <Filter>01. Utility\05. Resources\04. ModelData\Skeleton\Bone</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Skeleton.cpp">
-      <Filter>01. Utility\05. Resources\04. Skeleton</Filter>
+      <Filter>01. Utility\05. Resources\04. ModelData\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\StaticModel.cpp">
       <Filter>01. Utility\04. Components\Model\StaticModel</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AnimatedModel.cpp">
       <Filter>01. Utility\04. Components\Model\AnimatedModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Animator3D.cpp">
+      <Filter>01. Utility\04. Components\Animator3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Channel.cpp">
+      <Filter>01. Utility\05. Resources\07. AnimationClip\AnimationChannel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AnimationClip.cpp">
+      <Filter>01. Utility\05. Resources\07. AnimationClip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ModelData.cpp">
+      <Filter>01. Utility\05. Resources\04. ModelData</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Data_Packets.cpp">
+      <Filter>99. Defines\Packets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -623,9 +653,6 @@
     <ClInclude Include="..\Public\SoundData.h">
       <Filter>01. Utility\05. Resources\03. SoundData</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Data_Packets.h">
-      <Filter>99. Defines</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Builder.h">
       <Filter>01. Utility\03. GameObject\BuildSystem\Builder_Base</Filter>
     </ClInclude>
@@ -657,7 +684,7 @@
       <Filter>01. Utility\98. Services\13. LightService</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Mesh.h">
-      <Filter>01. Utility\05. Resources\01. VIBuffer\Mesh</Filter>
+      <Filter>01. Utility\05. Resources\04. ModelData\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Json_Inc\json_fwd.hpp">
       <Filter>01. Utility\97. Helper</Filter>
@@ -665,23 +692,38 @@
     <ClInclude Include="..\Public\Json_Inc\json.hpp">
       <Filter>01. Utility\97. Helper</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\MaterialData.h">
-      <Filter>01. Utility\05. Resources\06. MaterialData</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\MaterialAnimator.h">
       <Filter>01. Utility\04. Components\MatrialAnimator</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Bone.h">
-      <Filter>01. Utility\05. Resources\04. Skeleton\Bone</Filter>
+      <Filter>01. Utility\05. Resources\04. ModelData\Skeleton\Bone</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Skeleton.h">
-      <Filter>01. Utility\05. Resources\04. Skeleton</Filter>
+      <Filter>01. Utility\05. Resources\04. ModelData\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\StaticModel.h">
       <Filter>01. Utility\04. Components\Model\StaticModel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AnimatedModel.h">
       <Filter>01. Utility\04. Components\Model\AnimatedModel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Animator3D.h">
+      <Filter>01. Utility\04. Components\Animator3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Channel.h">
+      <Filter>01. Utility\05. Resources\07. AnimationClip\AnimationChannel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AnimationClip.h">
+      <Filter>01. Utility\05. Resources\07. AnimationClip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ModelData.h">
+      <Filter>01. Utility\05. Resources\04. ModelData</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Data_Packets.h">
+      <Filter>99. Defines\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MaterialData.h">
+      <Filter>01. Utility\05. Resources\06. MaterialData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

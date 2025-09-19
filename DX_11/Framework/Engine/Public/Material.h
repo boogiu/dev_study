@@ -20,7 +20,7 @@ public:
     _uint Get_MaterialDataID(_uint Index);
     void Apply_Material(ID3D11DeviceContext* pContext, _uint Index);
     HRESULT GetPassSignature(_uint Index, D3DX11_PASS_DESC* pOutPassDesc);
-
+    const string& GetPassConstant(_uint Index);
 public:
     virtual void Render_GUI() override;
 protected:

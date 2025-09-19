@@ -207,7 +207,7 @@ ENGINE_DLL string Helper::SaveFileDialogByWinAPI(const string& fileName, const s
 
 	if (filterStr.empty())
 	{
-		wideFilter = L"JSON Files (*.json)\0*.json\0Data Files (*.dat)\0*.dat\Model Files (*.model)\0*.mode\Material Files (*.mat)\0*.mat\0All Files (*.*)\0*.*\0";
+		wideFilter = L"JSON Files (*.json)\0*.json\0Data Files (*.dat)\0*.dat\0Model Files (*.model)\0*.model\0Material Files (*.mat)\0*.mat\Animation Files (*.anim)\0*.anim\0All Files (*.*)\0*.*\0";
 		defaultExtension = L"json"; // 기본값일 경우 json을 기본 확장자로 설정
 	}
 	else

@@ -5,7 +5,7 @@
 #include "IResourceService.h"
 #include "GameObject.h"
 #include "Texture.h"
-#include "LoadedMaterialData.h"
+#include "AIMaterial.h"
 
 CLoadMaterial::CLoadMaterial()
 	:m_pDevice(CGameInstance::GetInstance()->Get_Device()),
@@ -37,9 +37,10 @@ HRESULT CLoadMaterial::Load_Material(_uint materialNum, aiMaterial* material[], 
 {
 	m_MaterialKey = Helper::GetFileNameWithOutExtension(filePath);
 	string Directory = filesystem::path(filePath).parent_path().string();
+
 	for (size_t i = 0; i < materialNum; i++)
 	{
-		CLoadedMaterialData* data = CLoadedMaterialData::Create(m_pDevice, material[i], string(m_MaterialKey + to_string(i)), Directory);
+		CAIMaterial* data = CAIMaterial::Create(m_pDevice, material[i], string(m_MaterialKey + to_string(i)), Directory);
 		if (data) {
 			m_MaterialDatas.push_back(data);
 		}
@@ -61,11 +62,16 @@ HRESULT CLoadMaterial::Save_Material()
 	ofs.write(reinterpret_cast<const char*>(&fileHead), sizeof(fileHead));
 
 	for (size_t i = 0; i < m_MaterialDatas.size(); i++)
-	{
-		dynamic_cast<CLoadedMaterialData*>(m_MaterialDatas[i])->Save_MaterialData(m_pContext,ofs, directory.parent_path().string());
-	}
+		dynamic_cast<CAIMaterial*>(m_MaterialDatas[i])->Save_MaterialData(m_pContext,ofs, directory.parent_path().string());
 
 	ofs.close();
+}
+
+void CLoadMaterial::LinkShader(const string& shader)
+{
+	for (CMaterialData* pMdata : m_MaterialDatas) {
+		static_cast<CAIMaterial*>(pMdata)->LinkShader(shader);
+	}
 }
 
 CLoadMaterial* CLoadMaterial::Create()

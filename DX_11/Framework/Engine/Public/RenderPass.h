@@ -4,6 +4,8 @@
 
 NS_BEGIN(Engine)
 
+
+
 class RenderPass abstract : public CBase {
 protected:
 	RenderPass(class CRenderSystem* pRenderSystem);
@@ -11,7 +13,7 @@ protected:
 public:
 	virtual void Execute(ID3D11DeviceContext* pContext) PURE;
 protected:
-	void BindConstant(ID3D11DeviceContext* pContext,class CModel* pModel, class CMaterial* pMaterial , _uint DrawIndex);
+	void BindConstant(ID3D11DeviceContext* pContext,class CModel* pModel, class CMaterial* pMaterial , _uint DrawIndex, _uint MaterialIndex);
 protected:
 	class CRenderSystem* m_pRenderSystem = { nullptr };
 	class CShader* pCurShader = { nullptr };

@@ -72,16 +72,22 @@ void CGUISystem::Set_Theme()
 	style.ScrollbarRounding = 4.0f;
 	style.ChildRounding = 4.0f;
 	style.GrabRounding = 6.0f;
-	style.FramePadding = ImVec2(5.f, 5.f);
+	style.FramePadding = ImVec2(4, 6);   
+	style.ItemSpacing = ImVec2(6, 4);  
+	
+	style.FrameBorderSize = 1.5f;
+	style.SelectableTextAlign = ImVec2(0.0f, 0.5f);
+	style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
 
 	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.00f);
 	style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
+	style.Colors[ImGuiCol_Border] = ImVec4(0.25f, 0.25f, 0.25f, 0.65f);
 
 	style.Colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	style.Colors[ImGuiCol_ChildBg] = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
 	style.Colors[ImGuiCol_TabActive] = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
 
-	style.Colors[ImGuiCol_Button] = ImVec4(0.05f, 0.05f, 0.05f, 0.3f);
+	style.Colors[ImGuiCol_Button] = ImVec4(0.05f, 0.05f, 0.05f, 0.80f);
 	style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
 	style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
 

@@ -30,7 +30,7 @@ HRESULT CStaticObject::Initialize_Prototype()
 	__super::Initialize_Prototype();
 
 	CStaticModel* model = Add_Component<CStaticModel>();
-	model->Link_Buffer("Logo_Level", "RacoonModel");
+	model->Link_Model("Logo_Level", "RacoonModel");
 
 	CMaterial* material = Add_Component<CMaterial>();
 	material->Link_Material("Logo_Level", "RacoonMaterial");

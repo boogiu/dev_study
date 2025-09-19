@@ -13,9 +13,8 @@
 #include "Material.h"
 #include "Texture.h"
 #include "SoundData.h"
-#include "Mesh.h"
 #include "MaterialData.h"
-#include "Skeleton.h"
+#include "ModelData.h"
 
 CResourceMgr::CResourceMgr(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }, m_pContext{ pContext }, m_pInstance(CGameInstance::GetInstance())
@@ -55,9 +54,8 @@ void CResourceMgr::Clear_Resource(const string& levelTag)
 	for (auto& pair : m_Resources[index].m_Shaders)
 		Safe_Release(pair.second);
 
-	for (auto& pair : m_Resources[index].m_Meshes)
-		for(auto& mesh : pair.second)
-			Safe_Release(mesh);
+	for (auto& pair : m_Resources[index].m_ModelDatas)
+			Safe_Release(pair.second);
 
 	for (auto& pair : m_Resources[index].m_MaterialDatas)
 		for (auto& material : pair.second)
@@ -138,49 +136,6 @@ CVIBuffer* CResourceMgr::Load_VIBuffer(const string& levelTag, const string& buf
 		map.emplace(bufferKey, buffer);
 
 	return buffer;
-}
-
-const vector<CMesh*>& CResourceMgr::Load_Mesh(const string& levelTag, const string& modelKey)
-{
-	vector<CMesh*> meshContainer;
-
-	int index = ValidLevel(levelTag);
-	if (index == -1) {
-		MSG_BOX("Wrong Level Tag. :Load_Mesh ");
-		return meshContainer;
-	}
-	auto& map = m_Resources[index].m_Meshes;
-	auto iter = map.find(modelKey);
-	if (iter != map.end()) return iter->second;
-
-	string filePath = MakePath(modelKey);
-	ifstream ifs(filePath.c_str(), ios::binary);
-
-	if (!ifs.is_open()) {
-		MSG_BOX("There is No File. :Load_Mesh ");
-		return vector<CMesh*>();
-	}
-
-	MESH_FILE_HEADER fileHeader = {};
-	ifs.read(reinterpret_cast<char*>(&fileHeader), sizeof(fileHeader));
-	for (int i = 0; i < fileHeader.MeshCount; ++i) {
-		CMesh* newMesh = CMesh::Create(m_pDevice, string(fileHeader.meshKey) + to_string(i), ifs);
-
-		if (newMesh)
-			meshContainer.push_back(newMesh);
-		else
-		{
-			ifs.close();
-			for (auto& mesh : meshContainer)
-				Safe_Release(mesh);
-			return vector<CMesh*>();
-		}
-	}
-	
-	ifs.close();
-
-	auto ResultIter = map.emplace(modelKey, meshContainer);
-	return ResultIter.first->second;
 }
 
 const vector<CMaterialData*>& CResourceMgr::Load_MaterialData(const string& levelTag, const string& materialKey)
@@ -266,26 +221,25 @@ CTexture* CResourceMgr::Load_Texture(const string& levelTag, const string& textu
 	return pData;
 }
 
-CSkeleton* CResourceMgr::Load_Skeleton(const string& levelTag, const string& skeletonKey)
+CModelData* CResourceMgr::Load_ModelData(const string& levelTag, const string& ModelKey)
 {
 	int index = ValidLevel(levelTag);
 	if (index == -1) {
-		MSG_BOX("Wrong Level Tag. :Load_Skeleton ");
+		MSG_BOX("Wrong Level Tag. :Load_Texture ");
 		return nullptr;
 	}
 
-	auto& map = m_Resources[index].m_Skeletons;
-	auto iter = map.find(skeletonKey);
+	auto& map = m_Resources[index].m_ModelDatas;
+	auto iter = map.find(ModelKey);
 
 	if (iter != map.end()) return iter->second;
 
-	string filePath = MakePath(skeletonKey);
-
-	CSkeleton* pData = CSkeleton::Create(filePath);
-	map.emplace(skeletonKey, pData);
+	CModelData* pData = CModelData::Create(MakePath(ModelKey),m_pDevice);
+	map.emplace(ModelKey, pData);
 
 	return pData;
 }
+
 
 string CResourceMgr::Get_ResourcePath(const string& resourceKey)
 {

@@ -2,16 +2,14 @@
 #include "GameInstance.h"
 #include "IResourceService.h"
 #include "IRenderService.h"
-#include "Mesh.h"
-#include "Skeleton.h"
-#include "Bone.h"
+#include "ModelData.h"
 
 CAnimatedModel::CAnimatedModel()
 {
 }
 
 CAnimatedModel::CAnimatedModel(const CAnimatedModel& rhs)
-	: CModel(rhs), m_pSkeleton{ rhs.m_pSkeleton }, m_FinalBoneMatrices{ rhs.m_FinalBoneMatrices }
+	: CModel(rhs)
 {
 }
 
@@ -25,38 +23,30 @@ HRESULT CAnimatedModel::Initialize(COMPONENT_DESC* pArg)
 	return S_OK;
 }
 
-HRESULT CAnimatedModel::Link_Buffer(const string& levelKey, const string& MeshKey)
+HRESULT CAnimatedModel::Link_Model(const string& levelKey, const string& MeshKey)
 {
-	m_Buffers = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Mesh(levelKey, MeshKey);
-	for (CMesh* mesh : m_Buffers) {
-		m_DrawableMeshes.push_back(true);
-		Safe_AddRef(mesh);
-	}
+	m_pData = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_ModelData(levelKey, MeshKey);
+	m_DrawableMeshes.resize(m_pData->Get_MeshCount(), true);
 
-	m_pSkeleton = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Skeleton(levelKey, MeshKey);
-	Safe_AddRef(m_pSkeleton);
-	m_FinalBoneMatrices.resize(m_Buffers.size());
 	return S_OK;
 }
 
-HRESULT CAnimatedModel::Render_Mesh(ID3D11DeviceContext* pContext, _uint Index)
+HRESULT CAnimatedModel::Render_Model(ID3D11DeviceContext* pContext, _uint Index)
 {
-	if (Index >= m_Buffers.size()) return E_FAIL;
-	m_Buffers[Index]->Bind_Buffer(pContext);
-	m_Buffers[Index]->Render(pContext);
-	return S_OK;
+	/*모델은 렌더의 역할만 수행할 것임*/
+	return m_pData->Render_Mesh(pContext, Index);
 }
 
-void CAnimatedModel::Update_Animation(_float dt)
+void CAnimatedModel::Render_GUI()
 {
-	//skeletonUpdate
-	m_pSkeleton->Update_CombinedMatrix(dt);
-}
+	ImGui::SeparatorText("Animate Model");
+	float childWidth = ImGui::GetContentRegionAvail().x;
+	const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
+	const float childHeight = (textLineHeight * 2) + (ImGui::GetStyle().WindowPadding.y * 2);
 
-
-const vector<_float4x4>& CAnimatedModel::Get_BoneMatrices(_uint DrawIndex)
-{
-	return m_Buffers[DrawIndex]->Bind_BoneMatrices(m_pSkeleton->Get_Bones());
+	ImGui::BeginChild("##Animate ModelChild", ImVec2{ 0, childHeight }, true);
+		m_pData->Render_GUI();
+	ImGui::EndChild();
 }
 
 
@@ -81,5 +71,4 @@ CComponent* CAnimatedModel::Clone()
 void CAnimatedModel::Free()
 {
 	__super::Free();
-	Safe_Release(m_pSkeleton);
 }

@@ -4,7 +4,7 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CVIBuffer abstract:public CBase
 {
 protected:
-	CVIBuffer(const string& meshKey);
+	CVIBuffer(const string& ModelKey);
 	CVIBuffer(const CVIBuffer& rhs);
 	virtual ~CVIBuffer();
 
@@ -15,6 +15,9 @@ public:
 
 	const string& Get_Key() { return m_VIKey; }
 	virtual void Render_GUI();
+	virtual const D3D11_INPUT_ELEMENT_DESC* Get_ElementDesc()	{ return m_ElementDesc; };
+	virtual const _uint Get_ElementCount()															{ return m_ElementCount; };
+	virtual const string_view Get_ElementKey()												{ return m_ElementKey; };
 
 protected:
 	virtual HRESULT Create_Vertex(ID3D11Device* pDevice);
@@ -38,6 +41,12 @@ protected:
 	D3D_PRIMITIVE_TOPOLOGY m_ePrimitive = {};
 
 	string m_VIKey;
+
+	/**/
+	const D3D11_INPUT_ELEMENT_DESC* m_ElementDesc = { nullptr };
+	_uint m_ElementCount = {};
+	string_view m_ElementKey = {};
+
 public:
 	virtual void Free() override;
 };

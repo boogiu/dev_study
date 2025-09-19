@@ -1,33 +1,43 @@
 #include "Model.h"
 #include "GameInstance.h"
-#include "VIBuffer.h"
 #include "IResourceService.h"
 #include "IRenderService.h"
-#include "Mesh.h"
+#include "ModelData.h"
 
 CModel::CModel()
 {
 }
 
 CModel::CModel(const CModel& rhs)
-	: m_Buffers(rhs.m_Buffers),
-	m_DrawableMeshes(rhs.m_DrawableMeshes)
+	:	m_pData(rhs.m_pData),
+		m_DrawableMeshes(rhs.m_DrawableMeshes)
 {
-	for (auto& mesh : m_Buffers)
-		Safe_AddRef(mesh);
+		Safe_AddRef(m_pData);
 }
 
-HRESULT CModel::Link_Buffer(const string& levelKey, const string& MeshKey)
+const D3D11_INPUT_ELEMENT_DESC* CModel::Get_ElementDesc(_uint DrawIndex)
 {
-	return S_OK;
+	return m_pData->Get_ElementDesc(DrawIndex);
 }
 
+const _uint CModel::Get_ElementCount(_uint DrawIndex)
+{
+	return m_pData->Get_ElementCount(DrawIndex);
+}
+
+const string_view CModel::Get_ElementKey(_uint DrawIndex)
+{
+	return m_pData->Get_ElementKey(DrawIndex);
+}
+
+_uint CModel::Get_MeshCount()
+{
+	return m_pData->Get_MeshCount();
+}
 
 _uint CModel::Get_MaterialIndex(_uint Index)
 {
-	if (Index >= m_Buffers.size()) return 0;
-	
-	return m_Buffers[Index]->Get_MaterialIndex();
+	return m_pData->Get_MaterialIndex(Index);
 }
 
 _bool CModel::isDrawable(_uint Index)
@@ -35,12 +45,6 @@ _bool CModel::isDrawable(_uint Index)
 	if (Index >= m_DrawableMeshes.size()) return false;
 
 	return m_DrawableMeshes[Index];
-}
-
-const string& CModel::Get_BufferKey(_uint Index)
-{
-	if (m_Buffers.size() <= Index) return string();
-	return m_Buffers[Index]->Get_Key();
 }
 
 void CModel::Render_GUI()
@@ -57,6 +61,5 @@ void CModel::Render_GUI()
 void CModel::Free()
 {
 	__super::Free();
-	for (auto& mesh : m_Buffers)
-		Safe_Release(mesh);
+	Safe_Release(m_pData);
 }

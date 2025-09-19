@@ -18,6 +18,7 @@ public:
 	class CShader* Get_Shader() { return m_pShader; }
 	_uint  Get_ShaderID() { return m_pShader->Get_ID(); }
 	_uint  Get_MaterialDataID() { return m_DataID; }
+	const string&  Get_PassConstant() { return m_passConstant; }
 	void ApplyData(ID3D11DeviceContext* pContext, _uint Index);
 	HRESULT GetPassSignature(D3DX11_PASS_DESC* pOutPassDesc);
 public:

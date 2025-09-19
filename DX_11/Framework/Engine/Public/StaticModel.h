@@ -14,10 +14,8 @@ public:
     HRESULT Initialize(COMPONENT_DESC* pArg) override;
 
 public:
-    virtual HRESULT Link_Buffer(const string& levelKey, const string& MeshKey);
-    virtual  _uint Get_ElementCount() { return VTXMESH::iElementCount; };
-    virtual const D3D11_INPUT_ELEMENT_DESC* Get_ElementDesc() { return VTXMESH::Elements; };
-    HRESULT Render_Mesh(ID3D11DeviceContext* pContext, _uint Index) override;
+    virtual HRESULT Link_Model(const string& levelKey, const string& MeshKey);
+    HRESULT Render_Model(ID3D11DeviceContext* pContext, _uint Index) override;
 
 public:
     static CStaticModel* Create();

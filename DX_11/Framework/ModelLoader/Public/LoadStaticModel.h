@@ -17,12 +17,12 @@ public:
 
 public:
 	virtual void Render_GUI()override;
-	HRESULT Load_Model(_uint meshNum, aiMesh* mesh[], const string& filePath);
+	HRESULT Load_Model(const aiScene* pAiScene, const string& fileName);
 	HRESULT Save_Model();
 private:
 	HRESULT Release_Mesh();
 private:
-	string fileName = {};
+	string m_fileName  = {};
 	ID3D11Device* m_pDevice = { nullptr };
 
 public:

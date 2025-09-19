@@ -4,23 +4,27 @@
 namespace Engine
 {
 
-    enum class KEY_STATE {  Center, TAP,HOLD, AWAY };
+    enum class KEY_STATE { Center, TAP, HOLD, AWAY };
 
-    enum class MOUSE_BTN  { LB,RB,MB};
+    enum class MOUSE_BTN { LB, RB, MB };
 
     enum class WINMODE { FULL, WIN, END };
 
-    enum class LEVEL_STATE{ INITIAL, REQUEST, LOADING, LOADED, STABLE };
+    enum class LEVEL_STATE { INITIAL, REQUEST, LOADING, LOADED, STABLE };
 
     enum class STATE { RIGHT, UP, LOOK, POSITION, END };
 
-    enum class BUFFER_TYPE { 
-        BASIC_RECT , BASIC_CUBE, BASIC_SPHERE,TERRAIN,MESH
+    enum class BUFFER_TYPE {
+        BASIC_RECT, BASIC_CUBE, BASIC_SPHERE, TERRAIN, MESH
     };
+    enum class MESH_TYPE
+    {
+        ANIM,
+        NONANIM
+    };
+    enum class SOUND_GROUP { BGM, SFX, UI, TALK, END };
 
-    enum class SOUND_GROUP{BGM, SFX, UI, TALK,END };
-
-    enum class RENDER_PASS{ RENDER_PRIORITY,  RENDER_OPAQUE, RENDER_TRANSPARENT, RENDER_UI, RG_END };
+    enum class RENDER_PASS { RENDER_PRIORITY, RENDER_OPAQUE, RENDER_TRANSPARENT, RENDER_UI, RG_END };
 
     /*Align to Pivot*/
     enum class UI_Anchor : unsigned int {
@@ -31,7 +35,7 @@ namespace Engine
         Bottom = 8		// 1000
     };
 
-    enum class LIGHT_TYPE{DIRECTIONAL, POINT,SPOTLIGHT};
+    enum class LIGHT_TYPE { DIRECTIONAL, POINT, SPOTLIGHT };
 
     enum class TEXTURE_TYPE {
         NONE = 0,
@@ -63,6 +67,7 @@ namespace Engine
         ANISOTROPY = 26,
         GLTF_METALLIC_ROUGHNESS = 27,
     };
+
 }
 #endif // Engine_Enum_h__
 

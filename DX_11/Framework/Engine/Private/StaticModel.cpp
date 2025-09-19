@@ -2,7 +2,7 @@
 #include "GameInstance.h"
 #include "IResourceService.h"
 #include "IRenderService.h"
-#include "Mesh.h"
+#include "ModelData.h"
 
 
 
@@ -25,22 +25,16 @@ HRESULT CStaticModel::Initialize(COMPONENT_DESC* pArg)
     return S_OK;
 }
 
-HRESULT CStaticModel::Link_Buffer(const string& levelKey, const string& MeshKey)
+HRESULT CStaticModel::Link_Model(const string& levelKey, const string& MeshKey)
 {
-    m_Buffers = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Mesh(levelKey, MeshKey);
-    for (CMesh* mesh : m_Buffers) {
-        m_DrawableMeshes.push_back(true);
-        Safe_AddRef(mesh);
-    }
+    m_pData = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_ModelData(levelKey, MeshKey);
+    m_DrawableMeshes.resize(m_pData->Get_MeshCount(), true);
     return S_OK;
 }
 
-HRESULT CStaticModel::Render_Mesh(ID3D11DeviceContext* pContext, _uint Index)
+HRESULT CStaticModel::Render_Model(ID3D11DeviceContext* pContext, _uint Index)
 {
-    if (Index >= m_Buffers.size()) return E_FAIL;
-    m_Buffers[Index]->Bind_Buffer(pContext);
-    m_Buffers[Index]->Render(pContext);
-    return S_OK;
+    return m_pData->Render_Mesh(pContext, Index);
 }
 
 CStaticModel* CStaticModel::Create()

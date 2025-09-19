@@ -18,7 +18,8 @@ public:
     T* Add_Component(Args&& ...args);
     template<typename T>
     T* Get_Component();
-
+    template<typename T>
+    HRESULT Remove_Component();
 public:
     virtual HRESULT Initialize_Prototype();
     virtual HRESULT Initialize(INIT_DESC* pArg = nullptr);
@@ -73,4 +74,19 @@ inline T* CGameObject::Get_Component()
         return static_cast<T*>(iter->second);
 
     return nullptr;
+}
+
+template<typename T>
+inline HRESULT CGameObject::Remove_Component()
+{
+    auto iter = m_Components.find(type_index(typeid(T)));
+
+    if (iter != m_Components.end()) {
+        Safe_Release(iter->second);
+        m_Components.erase(iter);
+        return S_OK;
+    }
+    else {
+        return E_FAIL;
+    }
 }

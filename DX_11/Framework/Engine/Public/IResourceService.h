@@ -10,13 +10,13 @@ protected:
 public:
     virtual HRESULT Initiallize()PURE;
 
-    virtual class CSoundData* Load_Sound(const string& levelTag, const string& imguiID) PURE;
-    virtual class CVIBuffer* Load_VIBuffer(const string& levelTag, const string& imguiID, BUFFER_TYPE eType) PURE;
-    virtual const vector<class CMesh*>& Load_Mesh(const string& levelTag, const string& imguiID) PURE;
+    virtual class CSoundData* Load_Sound(const string& levelTag, const string& SoundKey) PURE;
+    virtual class CVIBuffer* Load_VIBuffer(const string& levelTag, const string& bufferKey, BUFFER_TYPE eType) PURE;
     virtual const vector<class CMaterialData*>& Load_MaterialData(const string& levelTag, const string& materialKey) PURE;
-    virtual class CTexture* Load_Texture(const string& levelTag, const string& imguiID) PURE;
-    virtual class CShader* Load_Shader(const string& levelTag, const string& imguiID) PURE;
-    virtual class CSkeleton* Load_Skeleton(const string& levelTag, const string& skeletonKey) PURE;
+    virtual class CTexture* Load_Texture(const string& levelTag, const string& textureKey) PURE;
+    virtual class CShader* Load_Shader(const string& levelTag, const string& shaderKey) PURE;	
+    virtual class CModelData* Load_ModelData(const string& levelTag, const string& ModelKey) PURE;
+
 
     virtual string Get_ResourcePath(const string& resourceKey) PURE;
     virtual HRESULT Add_ResourcePath(const string& resourceKey, const string& resourcePath) PURE;

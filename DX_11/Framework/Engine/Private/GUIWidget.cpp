@@ -13,6 +13,7 @@ void GUIWidget::ShowListButton(const vector<string>& vector,function<void(const 
 
 void GUIWidget::ShowListString(const vector<string>& vector, function<void(const string&)> callback)
 {
+
 	for (auto it = vector.begin(); it != vector.end(); ++it)
 	{
 		string ListID = "##" + *it;

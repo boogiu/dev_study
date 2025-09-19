@@ -28,12 +28,14 @@ VS_OUT VS_MAIN(VS_IN In)
     matWV = mul(matWorld, matView);
     matWVP = mul(matWV, matProjection);
     
+    float blendWeightW = 1.f - In.vBlendWeight.x - In.vBlendWeight.y - In.vBlendWeight.z;
+    
     /*월드 포지션 이전에 본 행렬*/
     float4x4 BoneMatrix =
     (   BoneMatrices[In.vBlendIndex.x] * In.vBlendWeight.x +
          BoneMatrices[In.vBlendIndex.y] * In.vBlendWeight.y +
          BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z +
-         BoneMatrices[In.vBlendIndex.w] * In.vBlendWeight.w);
+         BoneMatrices[In.vBlendIndex.w] * blendWeightW);
     
      //벡터를 본 변환해줌
     vector BonePos = mul(vector(In.vPosition, 1.f), BoneMatrix);

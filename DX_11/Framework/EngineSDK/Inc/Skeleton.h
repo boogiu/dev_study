@@ -10,17 +10,29 @@ protected:
     CSkeleton();
     virtual ~CSkeleton() DEFAULT;
 public:
-    HRESULT InitializeFromFile(const string& filePath);
-    void Update_CombinedMatrix(_float dt);
-    _matrix Get_CombinedMatrix(_uint BoneIndex);
+    HRESULT InitializeFromFile(ifstream& ifs );
+
+public:
+    _int Find_BoneIndexByName(const string& boneName);
+    const string& Find_BoneNameByIndex(_uint boneIndex);
     _uint Get_BoneCount() { return m_Bones.size(); };
-    const vector<class CBone*>& Get_Bones() { return m_Bones; };
-    _int FindBoneIndex_ByName(const string& boneName);
+    _uint Get_BoneParentIndex(_uint i);
+    _matrix Get_OffsetMatrix(_uint BoneIndex) { return XMLoadFloat4x4(&m_OffsetMatrices[BoneIndex]); };
+    _float4x4 Get_TransformationMatrix(_uint BoneIndex);
+
+private:
+    _int FindBoneIndexWithPrefix(const string& BonePrefixName);
+
+public:
+    virtual void Render_GUI();
+
 protected:
     vector<class CBone*> m_Bones;
+    vector<_float4x4> m_OffsetMatrices;
     unordered_map<string, _uint> m_BoneMap;
+
 public:
-    static CSkeleton* Create(const string& filePath);
+    static CSkeleton* Create(ifstream& ifs);
     virtual void Free() override;
 };
 

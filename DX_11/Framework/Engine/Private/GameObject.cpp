@@ -5,6 +5,7 @@
 #include "StaticModel.h"
 #include "AnimatedModel.h"
 #include "Material.h"
+#include "Animator3D.h"
 
 _uint CGameObject::s_NextID = 1;
 
@@ -57,31 +58,31 @@ HRESULT CGameObject::Initialize(INIT_DESC* pArg)
 
 void CGameObject::Engine_Update(_float dt)
 {
-	CModel* model = { nullptr };
-	_bool Skinning = false;
-	if (Get_Component<CStaticModel>()) {
-		model = Get_Component<CStaticModel>();
-		Skinning = false;
+	OPAQUE_PACKET packet;
+	packet.pModel = { nullptr };
+	packet.bSkinning = false;
+	packet.pMaterial = Get_Component<CMaterial>();
+	packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+
+	if (auto pStatic = Get_Component<CStaticModel>()) {
+		packet.pModel = pStatic;
+		packet.bSkinning = false;
 	}
-	else if(Get_Component<CAnimatedModel>()) {
-		model = Get_Component<CAnimatedModel>();
-		Skinning = true;
+	else if (auto pAnim = Get_Component<CAnimatedModel>()) {
+		packet.pModel = pAnim;
+		packet.bSkinning = true;
+		packet.pAnimator = Get_Component<CAnimator3D>();
+		if (!packet.pAnimator) return;
 	}
 	else {
-		model = Get_Component<CModel>();
+		return;
 	}
-	if (!model) return;
 
-	for (size_t i = 0; i < model->Get_MeshCount(); i++)
+	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
 	{
-		if (!model->isDrawable(i)) continue;
-
-		OPAQUE_PACKET packet;
-		packet.bSkinning = Skinning;
-		packet.pModel = model;
+		if (!packet.pModel->isDrawable(i)) continue;
 		packet.DrawIndex = i;
-		packet.pMaterial = Get_Component<CMaterial>();
-		packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
 		CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
 	}
 }

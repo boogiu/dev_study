@@ -2,9 +2,8 @@
 #include "Engine_Defines.h"
 #include "GameInstance.h"
 #include "IGraphicService.h"
-#include "LoadedStaticMesh.h"
 #include "Helper_Func.h"
-#include "LoadBone.h"
+#include "AIModelData.h"
 CLoadStaticModel::CLoadStaticModel()
 {
 }
@@ -36,66 +35,39 @@ void CLoadStaticModel::Render_GUI()
 	ImGui::SeparatorText("Loaded Model");
 }
 
-HRESULT CLoadStaticModel::Load_Model(_uint meshNum, aiMesh* mesh[], const string& filePath)
+HRESULT CLoadStaticModel::Load_Model(const aiScene* pAiScene, const string& fileName)
 {
 	Release_Mesh();
-	fileName = Helper::GetFileNameWithOutExtension(filePath);
-	for (size_t i = 0; i < meshNum; i++)
-	{
-		CLoadedStaticMesh* pMesh = CLoadedStaticMesh::Create(m_pDevice, mesh[i], string(fileName + to_string(i)));
-		if (nullptr == pMesh)
-			return E_FAIL;
-
-		m_Buffers.push_back(pMesh);
-		m_DrawableMeshes.push_back(true);
-	}
+	_uint meshNum = pAiScene->mNumMeshes;
+	m_DrawableMeshes.resize(meshNum, true);
+	m_pData = CAIModelData::Create(pAiScene, m_pDevice, MESH_TYPE::NONANIM);
+	m_fileName = fileName;
+	return S_OK;
 }
 
 HRESULT CLoadStaticModel::Save_Model()
 {
-	string path = Helper::SaveFileDialogByWinAPI(fileName, "model");
+	string path = Helper::SaveFileDialogByWinAPI(m_fileName, "model");
+	filesystem::path directory(path);
 	ofstream ofs(path.c_str(), ios::binary);
 	if (!ofs.is_open())
 		return E_FAIL;
 
-	MESH_FILE_HEADER fileHead = {};
-	strcpy_s(fileHead.meshKey, sizeof(fileHead.meshKey), fileName.c_str());
-	fileHead.MeshCount = m_Buffers.size();
+	MODEL_FILE_HEADER fileHeader = {};
+	fileHeader.isAnimate = false;
+	fileHeader.MeshCount = m_pData->Get_MeshCount();
+	strcpy_s(fileHeader.ModelKey, sizeof(fileHeader.ModelKey), m_fileName.data());
+	ofs.write(reinterpret_cast<char*>(&fileHeader), sizeof(MODEL_FILE_HEADER));
 
-	ofs.write(reinterpret_cast<const char*>(&fileHead), sizeof(fileHead));
-
-	for (CMesh* buffer : m_Buffers)
-	{
-		CLoadedStaticMesh* mesh = static_cast<CLoadedStaticMesh*>(buffer);
-		const vector<VTXMESH> vertices = mesh->Get_Vertex();
-		size_t vSize = vertices.size();
-		const vector<_uint> indices = mesh->Get_Index();
-		size_t iSize = indices.size();
-
-		MESH_INFO_HEADER infoHead = {};
-		infoHead.VerticesCount = vertices.size();
-		infoHead.IndicesCount = indices.size();
-		infoHead.MaterialIndex = mesh->Get_MaterialIndex();
-		infoHead.isAnimate = false;
-		infoHead.BoneCount = {};
-		ofs.write(reinterpret_cast<const char*>(&infoHead), sizeof(infoHead));
-		ofs.write(reinterpret_cast<const char*>(vertices.data()), vertices.size() * sizeof(VTXMESH));
-		ofs.write(reinterpret_cast<const char*>(indices.data()), indices.size() * sizeof(_uint));
-	}
-
+	static_cast<CAIModelData*>(m_pData)->Save_File(ofs);
 	ofs.close();
-
 	return S_OK;
 }
 
 HRESULT CLoadStaticModel::Release_Mesh()
 {
-	for (auto& mesh : m_Buffers)
-		Safe_Release(mesh);
-
-	m_Buffers.clear();
-
-	vector<_bool>v = {};
+	Safe_Release(m_pData);
+	vector<bool> v;
 	m_DrawableMeshes.swap(v);
 
 	return S_OK;
