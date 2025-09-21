@@ -39,43 +39,43 @@ HRESULT CMaterial::Link_Material(const string& levelKey, const string& materialK
 	return S_OK;
 }
 
-CShader* CMaterial::Get_Shader(_uint Index)
+CShader* CMaterial::Get_Shader(_uint subsetIndex)
 {
-	if (Index >= m_MaterialDatas.size()) return nullptr;
+	if (subsetIndex >= m_MaterialDatas.size()) return nullptr;
 
-	return m_MaterialDatas[Index]->Get_Shader();
+	return m_MaterialDatas[subsetIndex]->Get_Shader();
 }
 
-_uint CMaterial::Get_ShaderID(_uint Index)
+_uint CMaterial::Get_ShaderID(_uint subsetIndex)
 {
-	if (Index >= m_MaterialDatas.size()) return 0;
+	if (subsetIndex >= m_MaterialDatas.size()) return 0;
 
-	return m_MaterialDatas[Index]->Get_ShaderID();
+	return m_MaterialDatas[subsetIndex]->Get_ShaderID();
 }
 
-_uint CMaterial::Get_MaterialDataID(_uint Index)
+_uint CMaterial::Get_MaterialDataID(_uint subsetIndex)
 {
-	if (Index >= m_MaterialDatas.size()) return 0;
+	if (subsetIndex >= m_MaterialDatas.size()) return 0;
 
-	return m_MaterialDatas[Index]->Get_MaterialDataID();
+	return m_MaterialDatas[subsetIndex]->Get_MaterialDataID();
 }
 
-void CMaterial::Apply_Material(ID3D11DeviceContext* pContext, _uint Index)
+void CMaterial::Apply_Material(ID3D11DeviceContext* pContext, _uint subsetIndex)
 {
-	if (Index >= m_MaterialDatas.size()) return;
-	m_MaterialDatas[Index]->ApplyData(pContext , m_TextureIndex);
+	if (subsetIndex >= m_MaterialDatas.size()) return;
+	m_MaterialDatas[subsetIndex]->ApplyData(pContext , m_TextureIndex);
 }
 
-HRESULT CMaterial::GetPassSignature(_uint Index, D3DX11_PASS_DESC* pOutPassDesc)
+HRESULT CMaterial::GetPassSignature(_uint subsetIndex, D3DX11_PASS_DESC* pOutPassDesc)
 {
-	if (Index >= m_MaterialDatas.size()) E_FAIL;
+	if (subsetIndex >= m_MaterialDatas.size()) E_FAIL;
 
-	return m_MaterialDatas[Index]->GetPassSignature(pOutPassDesc);
+	return m_MaterialDatas[subsetIndex]->GetPassSignature(pOutPassDesc);
 }
 
-const string& CMaterial::GetPassConstant(_uint Index)
+const string& CMaterial::GetPassConstant(_uint subsetIndex)
 {
-	return m_MaterialDatas[Index]->Get_PassConstant();
+	return m_MaterialDatas[subsetIndex]->Get_PassConstant();
 }
 
 CMaterial* CMaterial::Create()

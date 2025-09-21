@@ -14,13 +14,18 @@ protected:
 public:
 	HRESULT Initialize(ID3D11Device* pDevice, const string& levelKey, ifstream& ifs, const string& directory);
 	HRESULT CreateCBuffer(ID3D11Device* pDevice);
-	const MaterialConstants& Get_MaterialConstant() { return m_MaterialConstant; }
-	class CShader* Get_Shader() { return m_pShader; }
-	_uint  Get_ShaderID() { return m_pShader->Get_ID(); }
-	_uint  Get_MaterialDataID() { return m_DataID; }
-	const string&  Get_PassConstant() { return m_passConstant; }
+
+public:
 	void ApplyData(ID3D11DeviceContext* pContext, _uint Index);
 	HRESULT GetPassSignature(D3DX11_PASS_DESC* pOutPassDesc);
+
+public:
+	_uint  Get_ShaderID() { return m_pShader->Get_ID(); }
+	_uint  Get_MaterialDataID() { return m_DataID; }
+	class CShader* Get_Shader() { return m_pShader; }
+	const MaterialConstants& Get_MaterialConstant() { return m_MaterialConstant; }
+	const string&  Get_PassConstant() { return m_passConstant; }
+
 public:
 	virtual void Render_GUI();
 

@@ -52,14 +52,14 @@ HRESULT CMaterialData::CreateCBuffer(ID3D11Device* pDevice)
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	pDevice->CreateBuffer(&desc, nullptr, &m_pMaterialCBuffer);
-	return E_NOTIMPL;
+	return S_OK;
 }
 
-void CMaterialData::ApplyData(ID3D11DeviceContext* pContext, _uint Index)
+void CMaterialData::ApplyData(ID3D11DeviceContext* pContext, _uint textureIndex)
 {
 	for (auto& pair : m_Textures) {
-		if (Index < pair.second.size())
-			m_pShader->Bind_Value(ConvertToConstant(pair.first), pair.second[Index]->Get_SRV(), 0);
+		if (textureIndex < pair.second.size())
+			m_pShader->Bind_Value(ConvertToConstant(pair.first), pair.second[textureIndex]->Get_SRV(), 0);
 		else
 			m_pShader->Bind_Value(ConvertToConstant(pair.first), pair.second[0]->Get_SRV(), 0);
 	}

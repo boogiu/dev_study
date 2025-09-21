@@ -2,24 +2,24 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\Engine.dll</FullPath>
+      <FullPath>C:\Users\boogi\OneDrive\바탕 화면\dev_study\DX_11\Framework\Engine\Bin\Engine.dll</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\Shader_Define.cso</FullPath>
+      <FullPath>C:\Users\boogi\OneDrive\바탕 화면\dev_study\DX_11\Framework\Engine\Bin\Shader_Define.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_Mesh.cso</FullPath>
+      <FullPath>C:\Users\boogi\OneDrive\바탕 화면\dev_study\DX_11\Framework\Engine\Bin\VTX_Mesh.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_NorTex.cso</FullPath>
+      <FullPath>C:\Users\boogi\OneDrive\바탕 화면\dev_study\DX_11\Framework\Engine\Bin\VTX_NorTex.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_SkinMesh.cso</FullPath>
+      <FullPath>C:\Users\boogi\OneDrive\바탕 화면\dev_study\DX_11\Framework\Engine\Bin\VTX_SkinMesh.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_TexPos.cso</FullPath>
+      <FullPath>C:\Users\boogi\OneDrive\바탕 화면\dev_study\DX_11\Framework\Engine\Bin\VTX_TexPos.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />

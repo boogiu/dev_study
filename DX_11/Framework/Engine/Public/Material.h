@@ -26,6 +26,7 @@ public:
 protected:
     vector<class CMaterialData*> m_MaterialDatas;
     _uint m_TextureIndex = {};
+    //map<TEXTURE_TYPE, _uint> -> 각 타입별 현재 프레임 인덱스 관리
 #ifdef _DEBUG
     _bool m_bMaterialTabOpen = {false};
 #endif // _DEBUG
