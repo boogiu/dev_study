@@ -2,10 +2,13 @@
 #include <windows.h>
 #include <d3d11.h>
 
+#include "Engine_Defines.h"
 namespace Loader {
 	static constexpr unsigned int g_iWinSizeX = 1280;
 	static constexpr unsigned int g_iWinSizeY = 720;
 	static constexpr unsigned int g_iMainFrame = 144;
+	static float g_iImportPreRotate= -0.f;
+	static float g_iExportPreRotate= -180.f;
 }
 
 extern HWND g_hWnd;
@@ -20,7 +23,6 @@ using namespace Loader;
 #include "assimp/postprocess.h"
 
 #pragma pop_macro("new")
-#include "Engine_Defines.h"
 using namespace Assimp;
 
 //#include "byml/byml.h"

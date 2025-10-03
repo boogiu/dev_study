@@ -11,9 +11,19 @@ protected:
 
 public:
 	HRESULT Initialize();
-	_float TranslateAnimateMatrix( vector<_float4x4>& transfomationMatrices, _float CurrentTrackPosition);
+	_float TranslateAnimateMatrix( vector<_float4x4>& transfomationMatrices, _float CurrentTrackPosition, _float dt);
 	_float Get_Duration() { return m_fDuration; }
 	_bool isLoop() { return m_bLoop; }
+
+	_bool ConvertTo(vector<_float4x4>& transfomationMatrices,
+		 CAnimationClip& DestAnimation, 
+		_float fConvertDuration, 
+		_float PrevTrackPosition, 
+		_float ConversionTrackPosition);
+
+public:
+	class CChannel* Find_ChannelByBoneName(const string& boneName);
+
 public:
 	virtual void Render_GUI();
 	const string& Get_Name() { return m_ClipName; }

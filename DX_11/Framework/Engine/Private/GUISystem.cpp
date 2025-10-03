@@ -72,8 +72,13 @@ void CGUISystem::Set_Theme()
 	style.ScrollbarRounding = 4.0f;
 	style.ChildRounding = 4.0f;
 	style.GrabRounding = 6.0f;
-	style.FramePadding = ImVec2(4, 6);   
-	style.ItemSpacing = ImVec2(6, 4);  
+
+	style.TreeLinesFlags = ImGuiTreeNodeFlags_DrawLinesToNodes;
+	style.TreeLinesSize = 1.5f;        
+	style.TreeLinesRounding = 5.0f;      
+
+	style.FramePadding = ImVec2(4, 4);   
+	style.ItemSpacing = ImVec2(2, 4);  
 	
 	style.FrameBorderSize = 1.5f;
 	style.SelectableTextAlign = ImVec2(0.0f, 0.5f);
@@ -91,8 +96,10 @@ void CGUISystem::Set_Theme()
 	style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
 	style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
 
+	style.Colors[ImGuiCol_Header] = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
 	style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
 	style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
+
 	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 	style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
 	style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
@@ -102,7 +109,7 @@ void CGUISystem::Set_Theme()
 
 	style.Colors[ImGuiCol_Tab] = style.Colors[ImGuiCol_ChildBg];
 	style.Colors[ImGuiCol_TabActive] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-
+	style.Colors[ImGuiCol_TreeLines] = ImVec4(0.45f, 0.45f, 0.45f, 1.0f);
 }
 
 void CGUISystem::Set_Panel()
@@ -184,7 +191,20 @@ void CGUISystem::GUI_End()
 
 bool CGUISystem::Set_ProcHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	switch (message)
+	{
+	case WM_SIZE:
+		m_tGuiContext.viewPort = m_pGameInstance->Get_ClientSize();
+		m_GuiIo->DisplaySize = ImVec2(m_tGuiContext.viewPort.x, m_tGuiContext.viewPort.y);
+		break;
+	}
+
 	return ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam);
+}
+
+void CGUISystem::Register_Panel(CBasePanel* pPanel)
+{
+	m_Panels.push_back(pPanel);
 }
 
 
@@ -222,7 +242,7 @@ void CGUISystem::Free()
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
-	Safe_Release(m_pGameInstance);
+	m_pGameInstance->DestroyInstance();
 
 	for (auto& panel : m_Panels)
 		Safe_Release(panel);

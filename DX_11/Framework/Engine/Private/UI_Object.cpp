@@ -46,7 +46,7 @@ HRESULT CUI_Object::Initialize(INIT_DESC* pArg)
     return S_OK;
 }
 
-void CUI_Object::Engine_Update(_float dt)
+void CUI_Object::Post_EngineUpdate(_float dt)
 {
   
     Update_UITransform();

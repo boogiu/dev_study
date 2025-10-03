@@ -3,12 +3,12 @@
 NS_BEGIN(Engine)
 class CAnimator3D;
 NS_END
-NS_BEGIN(Loader)
 
+NS_BEGIN(Loader)
 class CModelObject :
-    public CGameObject
+    public Engine::CGameObject
 {
-private:
+protected:
     CModelObject();
     CModelObject(const CModelObject& rhs);
   virtual ~CModelObject() DEFAULT;
@@ -19,23 +19,29 @@ public:
     void Priority_Update(_float dt) override;
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
+
 public:
    void Render_GUI() override;
-private:
-    HRESULT Load_AIScene(const string& filePath);
-    HRESULT Load_Static(const string& fileName);
-    HRESULT Load_Animated(const string& fileName);
-    HRESULT Save_AIScene();
+
+protected:
+   virtual virtual HRESULT Load_AIScene(const string& filePath);
+   virtual virtual HRESULT Load_Static(const string& fileName);
+   virtual virtual HRESULT Load_Animated(const string& fileName);
+   virtual virtual HRESULT Save_AIScene();
 
     _bool HasBones();
+    void ReleasPrevModel();
 
-    void RealesPrevModel();
-private:
+public:
+    void Add_Part();
+
+protected:
     _bool IsAnimateModel = { false };
     Importer		m_Importer = {};
     const aiScene* m_pAIScene = { nullptr };
-
     CAnimator3D* m_pAnimator = { nullptr };
+
+    _float m_fMeshAngle = {};
 public:
     static CModelObject* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

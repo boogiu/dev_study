@@ -5,12 +5,15 @@ CTransform::CTransform()
 }
 
 CTransform::CTransform(const CTransform& rhs)
-	:CComponent(rhs), m_WorldMatrix{rhs.m_WorldMatrix }
+	:CComponent(rhs), m_LocalMatrix{rhs.m_LocalMatrix }, 
+	m_WorldMatrix{rhs.m_WorldMatrix}, 
+	m_WorldInversMatrix{rhs.m_WorldInversMatrix }
 {
 }
 
 HRESULT CTransform::Initialize_Prototype()
 {
+	XMStoreFloat4x4(&m_LocalMatrix, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_WorldInversMatrix, XMMatrixIdentity());
 	return S_OK;
@@ -47,7 +50,7 @@ void CTransform::Translate(_fvector momentVector)
 }
 
 
-void CTransform::Rotation(_fvector eulerVector)
+void CTransform::Rotation(_fvector eulerVector)//로테이션으로 누적해서 돌리기
 {
 	_fvector addQuaternion = XMQuaternionRotationRollPitchYawFromVector(eulerVector);
 	_fvector myQuaternion = XMLoadFloat4(&m_qRotation);
@@ -57,7 +60,7 @@ void CTransform::Rotation(_fvector eulerVector)
 	m_bDirty = true;
 }
 
-void CTransform::Rotation(_fvector vAxis, _float fRadian)
+void CTransform::Rotation(_fvector vAxis, _float fRadian) //라디안으로 축회전하기
 {
 	_fvector addQuaternion = XMQuaternionRotationAxis(vAxis, fRadian);
 	_fvector myQuaternion = XMLoadFloat4(&m_qRotation);
@@ -115,12 +118,43 @@ void CTransform::Scale(const _float3& scale)
 	return m_WorldInversMatrix;
 }
 
+ _float4x4* CTransform::Get_InverseWorldMatrix_Ptr()
+ {
+	 if (m_bDirty)
+		 Update_Transform();
+
+	 return &m_WorldInversMatrix;
+ }
+
 _vector CTransform::Dir(STATE eState)
 {
-if (m_bDirty) 
+	
+	if (m_bDirty) 
 		Update_Transform();
-	_matrix worldMat = XMLoadFloat4x4(&m_WorldMatrix);
+	
+	_matrix worldMat = XMLoadFloat4x4(&m_LocalMatrix);
 	return XMVector3Normalize(worldMat.r[static_cast<int>(eState)]);
+}
+
+void CTransform::Set_ParentTransform(CTransform* pParentTransform)
+{
+	m_pParentTransform = pParentTransform;
+}
+
+void CTransform::TranslateMatrix(_fmatrix matrix)
+{
+	_vector vScale;
+	_vector qRotation;
+	_vector vTrans;
+	if (XMMatrixDecompose(&vScale, &qRotation, &vTrans, matrix))
+	{
+		XMStoreFloat4(&m_vScale, vScale);
+		XMStoreFloat4(&m_qRotation, qRotation);
+		XMStoreFloat4(&m_vPosition, vTrans);
+	}
+
+	m_bDirty = true;
+	
 }
 
 void CTransform::Render_GUI()
@@ -180,10 +214,22 @@ void CTransform::Update_Transform()
 
 	_matrix matPos =	XMMatrixTranslation(m_vPosition.x, m_vPosition.y, m_vPosition.z);
 
-	_matrix WorldMatrix = matScale * matRot * matPos;
-	_matrix WorldInverseMatrix;
-	XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
-	XMStoreFloat4x4(&m_WorldInversMatrix, XMMatrixInverse(nullptr, WorldMatrix));
+	_matrix LocalMatrix = matScale * matRot * matPos;
+
+	XMStoreFloat4x4(&m_LocalMatrix, LocalMatrix);
+
+	_matrix combined;
+
+	if (m_pParentTransform) {
+		 combined = XMLoadFloat4x4(&m_LocalMatrix) * XMLoadFloat4x4(m_pParentTransform->Get_WorldMatrix());
+		XMStoreFloat4x4(&m_WorldMatrix, combined);
+	}
+	else {
+		 combined = XMLoadFloat4x4(&m_LocalMatrix);
+		XMStoreFloat4x4(&m_WorldMatrix, combined);
+	}
+
+	XMStoreFloat4x4(&m_WorldInversMatrix, XMMatrixInverse(nullptr, combined));
 	m_bDirty = false;
 }
 
@@ -209,5 +255,6 @@ CComponent* CTransform::Clone()
 void CTransform::Free()
 {
 	__super::Free();
+	Safe_Release(m_pParentTransform);
 }
 

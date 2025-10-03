@@ -36,7 +36,8 @@ public:
 
     void Apply(const string& m_passConstant,ID3D11DeviceContext* pContext);
 
-    HRESULT Bind_Value(const string& ConstantName, void* pData, _uint size);
+    HRESULT Bind_Value(const string& ConstantName, const SHADER_PARAM& parameter);
+
     HRESULT SetConstantBuffer(const string& ConstantName, ID3D11Buffer* pData);
 public:
     vector<string>  Get_PassList();
@@ -55,7 +56,7 @@ private:
     ID3DX11EffectTechnique* m_pTechnique = { nullptr };
 
     unordered_map<string, ID3DX11EffectPass*> m_Passes;         /*패스들 미리 저장*/
-    unordered_map<string, SHADER_VAR_DESC> m_Variables;     /*변수들 미리 저장*/
+    unordered_map<string, SHADER_VAR_DESC> m_Variables;     /*변수들 미리 저장*/ //근데 변수 안에 상수 버퍼 ㅂ변수들이 들어가. 근데 내가 아래에 저장하는거는 상수버퍼의 핸들임
     unordered_map<string, CBUFFER_DESC> m_CBuffers;             /*상수버퍼 미리 저장*/
 
 public:

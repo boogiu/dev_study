@@ -3,7 +3,7 @@
 
 NS_BEGIN(Engine)
 
-typedef struct  tagGUIContextInterface {
+typedef struct ENGINE_DLL tagGUIContextInterface {
 	class IObjectService* pObjectManager = { nullptr };
 	class ILevelService* pLevelManager = { nullptr };
 	class ICameraService* pCameraManager = { nullptr };

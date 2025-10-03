@@ -17,6 +17,8 @@ public:
     HRESULT Save_Skeletons(const string& path);
     void Save_File(ofstream& ofs);
 public:
+    void Render_GUI();
+public:
     static CAISkeleton* Create(const aiNode* pAINode);
     virtual void Free() override;
 };

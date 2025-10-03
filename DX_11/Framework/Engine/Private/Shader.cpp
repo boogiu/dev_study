@@ -19,19 +19,34 @@ HRESULT CShader::Initialize(ID3D11Device* pDevice, const string& filePath)
 	_uint		iCompileFlag = {};
 
 #ifdef _DEBUG
-	iCompileFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+	iCompileFlag = D3DCOMPILE_DEBUG
+		| D3DCOMPILE_OPTIMIZATION_LEVEL1
+		| D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 #else
 	iCompileFlag = D3DCOMPILE_OPTIMIZATION_LEVEL1;
 #endif
 
 	wstring wPath = Helper::ConvertToWideString(filePath);
 
-	HRESULT CompileHr = D3DX11CompileEffectFromFile(wPath.c_str(), nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE, iCompileFlag, 0,
-		pDevice, &m_pEffect, nullptr);
+	ID3DBlob* pErrorBlob = nullptr;
+	HRESULT CompileHr = D3DX11CompileEffectFromFile(
+		wPath.c_str(),
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		iCompileFlag,
+		0,
+		pDevice,
+		&m_pEffect,
+		&pErrorBlob
+	);
 
-	if (FAILED(CompileHr))
+	if (FAILED(CompileHr)) {
+		if (pErrorBlob) {
+			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+			pErrorBlob->Release();
+		}
 		return E_FAIL;
+	}
 
 	m_pTechnique = m_pEffect->GetTechniqueByIndex(0);
 	D3DX11_TECHNIQUE_DESC tDesc{};
@@ -85,20 +100,23 @@ void CShader::Apply(const string& m_passConstant, ID3D11DeviceContext* pContext)
 	}
 }
 
-HRESULT CShader::Bind_Value(const string& ConstantName, void* pData, _uint size)
+HRESULT CShader::Bind_Value(const string& ConstantName, const SHADER_PARAM& parameter)
 {
 	auto iter = m_Variables.find(ConstantName);
-	if(iter == m_Variables.end())
+	if (iter == m_Variables.end())
+		return E_FAIL;
+
+	if(iter->second.typeName != parameter.typeName)
 		return E_FAIL;
 
 	if (iter->second.typeName == "float4x4")
-		return Bind_Matrix(ConstantName, static_cast<const _float4x4*>(pData));
+		return Bind_Matrix(ConstantName, static_cast<const _float4x4*>(parameter.pData));
 	else if (iter->second.typeName == "Texture2D")
-		return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(pData));
+		return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
 	else if (iter->second.typeName == "Texture2DArray")
-		return Bind_ShaderResourceArray(ConstantName, static_cast<vector<CTexture*>*>(pData));
+		return Bind_ShaderResourceArray(ConstantName, static_cast<vector<CTexture*>*>(parameter.pData));
 
-	HRESULT hr = iter->second.pHandle->SetRawValue(pData, 0, size);
+	HRESULT hr = iter->second.pHandle->SetRawValue(parameter.pData, 0, parameter.iSize);
 
 	if (FAILED(hr)) {
 		return E_FAIL;

@@ -16,4 +16,5 @@ void CBasePanel::Render_GUI()
 
 void CBasePanel::Free()
 {
+	__super::Free();
 }

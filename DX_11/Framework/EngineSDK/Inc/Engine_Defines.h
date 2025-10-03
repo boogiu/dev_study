@@ -6,7 +6,8 @@
 
 #include <Effect_Inc/d3dx11effect.h>
 #include <d3dcompiler.h>
-
+#include <DirectXCollision.h>
+#include <dxgidebug.h>
 #include "DirectXTK_Inc/WICTextureLoader.h"
 #include "DirectXTK_Inc/DDSTextureLoader.h"
 #include "DirectXTK_Inc/ScreenGrab.h"
@@ -28,6 +29,8 @@
 #include <any>
 #include <iostream>
 #include <fstream>
+#include <variant>
+
 
 #include <commdlg.h> // GetSaveFileName API를 위해 필요
 #pragma comment(lib, "Comdlg32.lib") // 라이브러리 링크
@@ -63,6 +66,8 @@ using namespace Engine;
 #include <windowsx.h>
 
 #pragma warning(disable :4251) //맵 컨테이너 경고 무시
+
+#define _USING_GUI
 
 #ifdef _DEBUG
 

@@ -18,9 +18,13 @@ public:
     virtual void Render_GUI();
     virtual ImGuiContext* GetEngineImGuiContext() override;
 public:
+    virtual GUI_CONTEXT* Get_Context() override  { return &m_tGuiContext; };
+    virtual void Register_Panel(class CBasePanel* pPanel)override;
+
+public:
     virtual bool Set_ProcHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
     virtual _bool UsingUI() { return m_bUsingUI; }
-    virtual void Register_Panel(class CBasePanel* ) {}
+
 private:
     void Set_Theme();
     void Set_Panel();

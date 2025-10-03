@@ -8,6 +8,7 @@
 #include "VI_Rect.h"
 #include "VI_Cube.h"
 #include "VI_Terrain.h"
+#include "VI_Plane.h"
 
 #include "Shader.h"
 #include "Material.h"
@@ -15,6 +16,7 @@
 #include "SoundData.h"
 #include "MaterialData.h"
 #include "ModelData.h"
+#include "MaterialInstance.h"
 
 CResourceMgr::CResourceMgr(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }, m_pContext{ pContext }, m_pInstance(CGameInstance::GetInstance())
@@ -57,9 +59,9 @@ void CResourceMgr::Clear_Resource(const string& levelTag)
 	for (auto& pair : m_Resources[index].m_ModelDatas)
 			Safe_Release(pair.second);
 
-	for (auto& pair : m_Resources[index].m_MaterialDatas)
-		for (auto& material : pair.second)
-			Safe_Release(material);
+	for (auto& pair : m_Resources[index].m_MaterialInstances)
+		for(auto& materialData : pair.second)
+			Safe_Release(materialData);
 
 	m_Resources[index] = {};
 }
@@ -125,6 +127,9 @@ CVIBuffer* CResourceMgr::Load_VIBuffer(const string& levelTag, const string& buf
 		break;
 	case Engine::BUFFER_TYPE::BASIC_SPHERE:
 		break;
+	case Engine::BUFFER_TYPE::BASIC_PLANE:
+		buffer = CVI_Plane::Create(m_pDevice, bufferKey);
+		break;
 	case Engine::BUFFER_TYPE::TERRAIN:
 		buffer = CVI_Terrain::Create(m_pDevice, bufferKey, MakePath(bufferKey));
 		break;
@@ -138,48 +143,60 @@ CVIBuffer* CResourceMgr::Load_VIBuffer(const string& levelTag, const string& buf
 	return buffer;
 }
 
-const vector<CMaterialData*>& CResourceMgr::Load_MaterialData(const string& levelTag, const string& materialKey)
+vector<CMaterialInstance*> CResourceMgr::Load_MaterialFromFile(const string& levelTag, const string& fileKey)
 {
-	vector<CMaterialData*> materialDataContainer;
+	vector<CMaterialInstance*> MaterialHandles;
 
 	int index = ValidLevel(levelTag);
 	if (index == -1) {
-		MSG_BOX("Wrong Level Tag. :Load_Mesh ");
-		return materialDataContainer;
-	}
-	auto& map = m_Resources[index].m_MaterialDatas;
-	auto iter = map.find(materialKey);
-	if (iter != map.end()) return iter->second;
+		MSG_BOX("Wrong Level Tag. :Load_MaterialFromFile ");
+		return MaterialHandles;
+	} 
+	/*일단 레벨에서 꺼내봐*/
 
-	string filePath = MakePath(materialKey);
-	string directory = filesystem::path(filePath).parent_path().string() + "/";
-	ifstream ifs(filePath.c_str(), ios::binary);
+	/*머티리얼 데이터 벡터를 가진 맵*/
+	auto& map = m_Resources[index].m_MaterialInstances;
 
-	if (!ifs.is_open()) {
-		MSG_BOX("There is No File. :Load_Mesh ");
-		return vector<CMaterialData*>();
-	}
+	auto iter = map.find(fileKey);
 
-	MATERIAL_FILE_HEADER fileHeader = {};
-	ifs.read(reinterpret_cast<char*>(&fileHeader), sizeof(fileHeader));
-	for (int i = 0; i < fileHeader.MaterialDataCount; ++i) {
-		CMaterialData* newMaterial = CMaterialData::Create(m_pDevice, levelTag ,string(fileHeader.materialDataKey) + to_string(i), ifs,directory);
+	//그런 키가 없다면
+	if (iter == map.end()) {
+		ifstream ifs;
+		ifs.open(MakePath(fileKey));
 
-		if (newMaterial)
-			materialDataContainer.push_back(newMaterial);
-		else
-		{
-			ifs.close();
-			for (auto& mesh : materialDataContainer)
-				Safe_Release(mesh);
-			return vector<CMaterialData*>();
+		if (!ifs.is_open()) {
+			MSG_BOX("Wrong File path.  :Load_MaterialFromFile ");
+			return MaterialHandles;
 		}
+
+		MATERIAL_FILE_HEADER fileHeader = {};
+		ifs.read(reinterpret_cast<char*>(&fileHeader), sizeof(fileHeader));
+		vector<CMaterialData*> materialDataContainer;
+
+		string filePath = MakePath(fileHeader.materialFileKey);
+		string fileDirectory = filesystem::path(filePath).parent_path().string()+"/";
+
+		for (size_t i = 0; i < fileHeader.MaterialDataCount; i++)
+		{
+			CMaterialData* pData = CMaterialData::Create(levelTag, ifs, fileDirectory);
+			materialDataContainer.push_back(pData);
+			CMaterialInstance* pMaterialHandle = CMaterialInstance::Make_Handle(pData, m_pDevice);
+			MaterialHandles.push_back(pMaterialHandle);
+		}
+		map.emplace(fileHeader.materialFileKey, move(materialDataContainer));
 	}
 
-	ifs.close();
+	//그런 키가 있다면
+	else {
+		vector<CMaterialData*>& vector = iter->second;
+		for (auto& pData  : vector)
+		{ //순회하면서 핸들에 담아.
+			CMaterialInstance* pMaterialHandle = CMaterialInstance::Make_Handle(pData, m_pDevice);
+			MaterialHandles.push_back(pMaterialHandle);
+		}
+	}	
 
-	auto ResultIter = map.emplace(materialKey, materialDataContainer);
-	return ResultIter.first->second;
+	return MaterialHandles;
 }
 
 CShader* CResourceMgr::Load_Shader(const string& levelTag, const string& shaderKey)
@@ -225,7 +242,7 @@ CModelData* CResourceMgr::Load_ModelData(const string& levelTag, const string& M
 {
 	int index = ValidLevel(levelTag);
 	if (index == -1) {
-		MSG_BOX("Wrong Level Tag. :Load_Texture ");
+		MSG_BOX("Wrong Level Tag. :Load_ModelData ");
 		return nullptr;
 	}
 
@@ -278,17 +295,17 @@ void CResourceMgr::Load_InitialResource()
 	Add_ResourcePath("Shader_Define.hlsl",  "../../EngineSDK/Inc/Engine_Shader/Shader_Define.hlsl");
 	Add_ResourcePath("Anim.dat",  "../../Anim.dat");
 
-	m_Resources[0].m_Buffers.emplace("Engine_Default_Rect.hlsl", CVI_Rect::Create(m_pDevice, "Engine_Default_Rect"));
-	/*Load_Shader(G_GlobalLevelKey, "VTX_TexPos.hlsl");
-	Load_Shader(G_GlobalLevelKey, "VTX_Mesh.hlsl");
-	Load_Shader(G_GlobalLevelKey, "Shader_Define.hlsl");*/
-	m_Resources[0].m_Shaders.emplace("VTX_TexPos.hlsl", CShader::Create(m_pDevice, "../../EngineSDK/Inc/Engine_Shader/VTX_TexPos.hlsl", "VTX_TexPos.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_Mesh.hlsl", CShader::Create(m_pDevice, "../../EngineSDK/Inc/Engine_Shader/VTX_Mesh.hlsl", "VTX_Mesh.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_NorTex.hlsl", CShader::Create(m_pDevice, "../../EngineSDK/Inc/Engine_Shader/VTX_NorTex.hlsl", "VTX_NorTex.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_SkinMesh.hlsl", CShader::Create(m_pDevice, "../../EngineSDK/Inc/Engine_Shader/VTX_SkinMesh.hlsl", "VTX_SkinMesh.hlsl"));
-	//m_Resources[0].m_Shaders.emplace("Shader_Define.hlsl", CShader::Create(m_pDevice, "../../EngineSDK/Inc/Engine_Shader/Shader_Define.hlsl", "Shader_Define.hlsl"));
+	m_Resources[0].m_Buffers.emplace("Engine_Default_Rect", CVI_Rect::Create(m_pDevice, "Engine_Default_Rect"));
+	m_Resources[0].m_Buffers.emplace("Engine_Default_Plane", CVI_Plane::Create(m_pDevice, "Engine_Default_Plane"));
+
+	m_Resources[0].m_Shaders.emplace("VTX_TexPos.hlsl", CShader::Create(m_pDevice,		"../../EngineSDK/Inc/Engine_Shader/VTX_TexPos.hlsl", "VTX_TexPos.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Mesh.hlsl", CShader::Create(m_pDevice,			"../../EngineSDK/Inc/Engine_Shader/VTX_Mesh.hlsl", "VTX_Mesh.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_NorTex.hlsl", CShader::Create(m_pDevice,		"../../EngineSDK/Inc/Engine_Shader/VTX_NorTex.hlsl", "VTX_NorTex.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_SkinMesh.hlsl", CShader::Create(m_pDevice,	"../../EngineSDK/Inc/Engine_Shader/VTX_SkinMesh.hlsl", "VTX_SkinMesh.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Debug.hlsl", CShader::Create(m_pDevice,			"../../EngineSDK/Inc/Engine_Shader/VTX_Debug.hlsl", "VTX_Debug.hlsl"));
 	
 }
+
 
 string CResourceMgr::MakePath(const string& pathKey)
 {
@@ -296,7 +313,6 @@ string CResourceMgr::MakePath(const string& pathKey)
 	if (iter != m_KeyPath.end()) {
 		return iter->second;
 	}
-
 	return string();
 }
 

@@ -73,6 +73,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>../Bin/</OutDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>../Bin/</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -108,7 +111,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;SOLUTION_DIR=R"($(SolutionDir))"
-
+;_USING_GUI
 ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../Public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -141,12 +144,13 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;SOLUTION_DIR=R"($(SolutionDir))"
+      <PreprocessorDefinitions>ENGINE_EXPORTS;_WINDOWS;_USRDLL;SOLUTION_DIR=R"($(SolutionDir))"
 
 ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../Public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <Optimization>MinSpace</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,7 +175,12 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Public\AnimatedModel.h" />
+    <ClInclude Include="..\Public\DebugRender.h" />
+    <ClInclude Include="..\Public\IRayService.h" />
+    <ClInclude Include="..\Public\ITileService.h" />
+    <ClInclude Include="..\Public\RayReceiver.h" />
+    <ClInclude Include="..\Public\RaySystem.h" />
+    <ClInclude Include="..\Public\SkeletalModel.h" />
     <ClInclude Include="..\Public\AnimationClip.h" />
     <ClInclude Include="..\Public\Animator3D.h" />
     <ClInclude Include="..\Public\Base.h" />
@@ -179,6 +188,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\Bone.h" />
     <ClInclude Include="..\Public\Builder.h" />
     <ClInclude Include="..\Public\Channel.h" />
+    <ClInclude Include="..\Public\Child.h" />
     <ClInclude Include="..\Public\GameObjectBuilder.h" />
     <ClInclude Include="..\Public\Build_Struct.h" />
     <ClInclude Include="..\Public\Camera.h" />
@@ -224,12 +234,15 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\Material.h" />
     <ClInclude Include="..\Public\MaterialAnimator.h" />
     <ClInclude Include="..\Public\MaterialData.h" />
+    <ClInclude Include="..\Public\MaterialInstance.h" />
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\Public\Model.h" />
     <ClInclude Include="..\Public\ModelData.h" />
     <ClInclude Include="..\Public\NFD_Inc\nfd.h" />
+    <ClInclude Include="..\Public\ObjectContainer.h" />
     <ClInclude Include="..\Public\ObjectMgr.h" />
     <ClInclude Include="..\public\PipeLine.h" />
+    <ClInclude Include="..\Public\PlaneModel.h" />
     <ClInclude Include="..\Public\PrototypeMgr.h" />
     <ClInclude Include="..\Public\RenderPass.h" />
     <ClInclude Include="..\Public\RenderSystem.h" />
@@ -238,10 +251,14 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\Shader.h" />
     <ClInclude Include="..\Public\AudioSource.h" />
     <ClInclude Include="..\Public\Skeleton.h" />
+    <ClInclude Include="..\Public\SkeletonFollower.h" />
     <ClInclude Include="..\Public\SoundData.h" />
     <ClInclude Include="..\Public\AudioDevice.h" />
+    <ClInclude Include="..\Public\Sprite2D.h" />
     <ClInclude Include="..\Public\StaticModel.h" />
     <ClInclude Include="..\Public\Texture.h" />
+    <ClInclude Include="..\Public\TileBlock.h" />
+    <ClInclude Include="..\Public\TileSystem.h" />
     <ClInclude Include="..\Public\TimeMgr.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
     <ClInclude Include="..\Public\Engine_Enum.h" />
@@ -256,17 +273,22 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\UI_Object.h" />
     <ClInclude Include="..\Public\VIBuffer.h" />
     <ClInclude Include="..\Public\VI_Cube.h" />
+    <ClInclude Include="..\Public\VI_Plane.h" />
     <ClInclude Include="..\Public\VI_Rect.h" />
     <ClInclude Include="..\Public\VI_Terrain.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Private\AnimatedModel.cpp" />
+    <ClCompile Include="..\Private\DebugRender.cpp" />
+    <ClCompile Include="..\Private\RayReceiver.cpp" />
+    <ClCompile Include="..\Private\RaySystem.cpp" />
+    <ClCompile Include="..\Private\SkeletalModel.cpp" />
     <ClCompile Include="..\Private\AnimationClip.cpp" />
     <ClCompile Include="..\Private\Animator3D.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\BasePanel.cpp" />
     <ClCompile Include="..\Private\Bone.cpp" />
     <ClCompile Include="..\Private\Channel.cpp" />
+    <ClCompile Include="..\Private\Child.cpp" />
     <ClCompile Include="..\Private\Data_Packets.cpp" />
     <ClCompile Include="..\Private\GameObjectBuilder.cpp" />
     <ClCompile Include="..\Private\Camera.cpp" />
@@ -284,11 +306,14 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\Material.cpp" />
     <ClCompile Include="..\Private\MaterialAnimator.cpp" />
     <ClCompile Include="..\Private\MaterialData.cpp" />
+    <ClCompile Include="..\Private\MaterialInstance.cpp" />
     <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\Private\Model.cpp" />
     <ClCompile Include="..\Private\ModelData.cpp" />
+    <ClCompile Include="..\Private\ObjectContainer.cpp" />
     <ClCompile Include="..\Private\ObjectMgr.cpp" />
     <ClCompile Include="..\Private\PipeLine.cpp" />
+    <ClCompile Include="..\Private\PlaneModel.cpp" />
     <ClCompile Include="..\Private\PrototypeMgr.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />
     <ClCompile Include="..\Private\GraphicDevice.cpp" />
@@ -300,12 +325,16 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\Shader.cpp" />
     <ClCompile Include="..\Private\AudioSource.cpp" />
     <ClCompile Include="..\Private\Skeleton.cpp" />
+    <ClCompile Include="..\Private\SkeletonFollower.cpp" />
     <ClCompile Include="..\Private\SoundData.cpp" />
     <ClCompile Include="..\Private\AudioDevice.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\InputMgr.cpp" />
+    <ClCompile Include="..\Private\Sprite2D.cpp" />
     <ClCompile Include="..\Private\StaticModel.cpp" />
     <ClCompile Include="..\Private\Texture.cpp" />
+    <ClCompile Include="..\Private\TileBlock.cpp" />
+    <ClCompile Include="..\Private\TileSystem.cpp" />
     <ClCompile Include="..\Private\TimeMgr.cpp" />
     <ClCompile Include="..\Private\Timer.cpp" />
     <ClCompile Include="..\Private\Transform.cpp" />
@@ -314,6 +343,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\UI_Object.cpp" />
     <ClCompile Include="..\Private\VIBuffer.cpp" />
     <ClCompile Include="..\Private\VI_Cube.cpp" />
+    <ClCompile Include="..\Private\VI_Plane.cpp" />
     <ClCompile Include="..\Private\VI_Rect.cpp" />
     <ClCompile Include="..\Private\VI_Terrain.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\backends\imgui_impl_dx11.cpp" />
@@ -328,10 +358,13 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Public\Engine_Shader\Shader_Define.hlsl" />
+    <FxCompile Include="..\Public\Engine_Shader\Shader_State.hlsl" />
+    <FxCompile Include="..\Public\Engine_Shader\VTX_Debug.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_Mesh.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_NorTex.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_SkinMesh.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_TexPos.hlsl" />
+    <FxCompile Include="..\Public\Engine_Shader\VTX_Tile.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

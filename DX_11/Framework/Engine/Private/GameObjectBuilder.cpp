@@ -45,12 +45,6 @@ CGameObject* CGameObjectBuilder::Build(const string& instanceKey, _uint* id)
 		return nullptr;
 	}
 
-	if (!m_layerDesc)
-	{
-		MSG_BOX("LAYER_DESC is missing : CGameObjectBuilder ");
-		return nullptr;
-	}
-
 	//오브젝트 설명체 채우기
 	m_pObjDesc = new GAMEOBJECT_DESC;
 	m_pObjDesc->InstanceName = instanceKey;
@@ -63,26 +57,12 @@ CGameObject* CGameObjectBuilder::Build(const string& instanceKey, _uint* id)
 	if (!instance) {
 		return nullptr;
 	}
-
-	//오브젝트 레이어에 삽입
-	m_pGameInstance->Get_ObjectMgr()->Add_Object(instance, m_layerDesc);
-
+	/*즉 -> 클론 후에 레이어에서 삽입하고 있는 중임*/
+	
 	if (instance && id)
 		*id = instance->Get_ObjectID();
 
 	return instance;
-}
-
-CGameObjectBuilder& CGameObjectBuilder::Add_To_Layer(const LAYER_DESC& layer)
-{
-
-	if (!m_pGameInstance->Get_LevelMgr()->Check_ValidateLevel(layer.DestLevel)) {
-		MSG_BOX("Destination Level Tag is Invalidate : Builder");
-		return *this;
-	}
-
-	m_layerDesc = new LAYER_DESC(layer);
-	return *this;
 }
 
 CGameObjectBuilder& CGameObjectBuilder::Position(const _float3 position)

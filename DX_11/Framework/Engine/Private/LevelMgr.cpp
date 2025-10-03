@@ -77,30 +77,30 @@ HRESULT CLevelMgr::Render()
     return m_pCurrentLevel->Render();
 }
 
-void CLevelMgr::Register_Level(string imguiID, LEVEL_CREATOR creator)
+void CLevelMgr::Register_Level(const string& levelID, LEVEL_CREATOR creator)
 {
-    if (G_GlobalLevelKey == imguiID ) {
+    if (G_GlobalLevelKey == levelID ) {
         MSG_BOX(" [Global_Level] is Reserved Register Another key : CLevelMgr");
         return;
     }
-
-   auto iter =  m_LevelCreators.find(imguiID);
+    string findID = levelID;
+   auto iter =  m_LevelCreators.find(findID);
 
    if (iter != m_LevelCreators.end()) {
        MSG_BOX("Level Already Exist : CLevelMgr");
        return;
    }
 
-   m_LevelCreators.insert({ imguiID,creator });
+   m_LevelCreators.emplace(findID,creator );
 }
 
 void CLevelMgr::ClearResource()
 {
     if (!m_pCurrentLevel) return;
-    const string& imguiID = m_pCurrentLevel->Get_Key();
-    if(imguiID == G_GlobalLevelKey)return;
+    const string& levelTag = m_pCurrentLevel->Get_Key();
+    if(levelTag == G_GlobalLevelKey)return;
 
-    CGameInstance::GetInstance()->Clear_LevelResource(imguiID);
+    CGameInstance::GetInstance()->Clear_LevelResource(levelTag);
     Safe_Release(m_pCurrentLevel);
 }
 
@@ -158,6 +158,6 @@ CLevelMgr* CLevelMgr::Create()
 void CLevelMgr::Free()
 {
     __super::Free();
-
+    ClearResource();
     Safe_Release(m_pCurrentLevel);
 }

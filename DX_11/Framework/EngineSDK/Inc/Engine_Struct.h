@@ -41,6 +41,7 @@ namespace Engine
 	}LIGHT_DESC;
 
 	/*File Info Desc*/
+#pragma pack(push,1)
 	/*Model*/
 	typedef struct ENGINE_DLL tagModelFileHeader {
 		char ModelKey[MAX_PATH];
@@ -66,7 +67,7 @@ namespace Engine
 		_float4x4 TransformationMatrix = {};
 	}BONE_INFO_HEADER;
 
-	/*Mateial*/
+	/*Material*/
 	struct MaterialConstants
 	{
 		_float4 vMtrDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
@@ -77,15 +78,16 @@ namespace Engine
 	};
 
 	typedef struct ENGINE_DLL tagMaterialFileHeader {
-		char materialDataKey[MAX_PATH];
 		_uint MaterialDataCount = {};
+		char materialFileKey[MAX_PATH];
 	}MATERIAL_FILE_HEADER;
 
 	typedef struct ENGINE_DLL tagMaterialInfoHeader {
-		MaterialConstants materialConstant = {};
-		char passConstant[MAX_PATH];
-		char ShaderKey[MAX_PATH];
 		_uint TextureTypeCount = {};
+		char materialDataKey[MAX_PATH];
+		char ShaderKey[MAX_PATH];
+		char passConstant[MAX_PATH];
+		MaterialConstants materialConstant = {};
 	}MATERIAL_INFO_HEADER;
 
 	typedef struct ENGINE_DLL tagTextuerFileHeader {
@@ -117,7 +119,6 @@ namespace Engine
 		_vector vRotation;
 		_vector vTranslation;
 	};
-
 	typedef struct ENGINE_DLL tagKeyFrame
 	{
 		_float3			vScale;
@@ -137,8 +138,51 @@ namespace Engine
 			lerpedFrame.vTranslation = XMVectorLerp(XMVectorSetW(XMLoadFloat3(&vTranslation), 1.f), XMVectorSetW(XMLoadFloat3(&nextFrame.vTranslation), 1.f), fRatio);
 			return lerpedFrame;
 		}
+		_XMKeyFrame LerpKeyFram(const tagKeyFrame& nextFrame, _float nowTrackPosition, _float Distance) {
+			_XMKeyFrame lerpedFrame = {};
+			_float fRatio = nowTrackPosition / Distance;
+			lerpedFrame.vScale = XMVectorLerp(XMLoadFloat3(&vScale), XMLoadFloat3(&nextFrame.vScale), fRatio);
+			lerpedFrame.vRotation = XMQuaternionSlerp(XMLoadFloat4(&vRotation), XMLoadFloat4(&nextFrame.vRotation), fRatio);
+			lerpedFrame.vTranslation = XMVectorLerp(XMVectorSetW(XMLoadFloat3(&vTranslation), 1.f), XMVectorSetW(XMLoadFloat3(&nextFrame.vTranslation), 1.f), fRatio);
+			return lerpedFrame;
+		}
 	}KEYFRAME;
 
+	/*BoundingBox*/
+
+	typedef struct tagBoundingBoxInfo {
+		_float3 vMin = {};
+		_float3 vMax = {};
+	}BOUNDING_BOX;
+
+	/*RayInfo*/
+	typedef struct tagRayInfo {
+		_float3 vRayOrigin = {};
+		_float3 vRayDirection = {};
+		_float fMaxDistance = {};
+	}RAY;
+
+	/*RayHitInfo*/
+	typedef struct tagRayHitInfo {
+		class CGameObject* pObject = { nullptr };
+		_float fDistance = {};
+		_float3 vHittedPosition = {};
+	}RAY_HIT;
+
+	/*Tile Grid System Info*/
+	typedef struct tagTileSystemInfo {
+		_float4 OriginPoint = {}; //그리드 원점
+		/*몇개씩?*/
+		_uint iTileCountX = {};
+		_uint iTileCountY = {};
+		_uint iTileCountZ = {};
+		/*사이즈?*/
+		_uint iSizeXPerTile = {};
+		_uint iSizeYPerTile = {};
+		_uint iSizeZPerTile = {};
+
+	}TILESYSTEM_INFO;
+#pragma pack(pop)
 
 	/* Input LayOut*/
 	typedef struct ENGINE_DLL tagVertexPosition {
@@ -217,6 +261,7 @@ namespace Engine
 			{ "BLENDWEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 60, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
 	}VTXSKINMESH;
+
 }
 
 

@@ -18,11 +18,18 @@ HRESULT CObjectMgr::Initialize()
 	return S_OK;
 }
 
-void CObjectMgr::Engine_Update(_float dt)
+void CObjectMgr::Pre_EngineUpdate(_float dt)
 {
 	for (auto& pair : m_Layers)
 		for (auto& layers : pair.second)
-			layers.second->Engine_Update(dt);
+			layers.second->Pre_EngineUpdate(dt);
+}
+
+void CObjectMgr::Post_EngineUpdate(_float dt)
+{
+	for (auto& pair : m_Layers)
+		for (auto& layers : pair.second)
+			layers.second->Post_EngineUpdate(dt);
 }
 
 void CObjectMgr::Priority_Update(_float dt)
@@ -46,29 +53,78 @@ void CObjectMgr::Late_Update(_float dt)
 			layers.second->Late_Update(dt);
 }
 
-void CObjectMgr::Add_Object(CGameObject* object, const LAYER_DESC* layer)
+void CObjectMgr::Add_Object(CGameObject* object, const LAYER_DESC& layer)
 {
-	if (!m_Layers.count(layer->DestLevel)) {
+	if (!m_Layers.count(layer.LevelTag)) {
 		MSG_BOX(" wrong Destination Level  : CObjectMgr");
 		return;
 	}
 
-	auto& map = m_Layers.at(layer->DestLevel);
-	auto iter = map.find(layer->LayerTag);
-
+	auto& map = m_Layers.at(layer.LevelTag);
+	auto iter = map.find(layer.LayerTag);
+	CLayer* pDestLayer = { nullptr };
 	if (iter == map.end()) {
-		CLayer* newLayer = CLayer::Create();
-		newLayer->Add_GameObject(object);
-		map.emplace(layer->LayerTag, newLayer);
+		pDestLayer = CLayer::Create();
+		map.emplace(layer.LayerTag, pDestLayer);
 	}
 	else {
-		iter->second->Add_GameObject(object);
+		pDestLayer = iter->second;
+	}
+	Add_Object_Recursive(pDestLayer, object);
+}
+
+
+void CObjectMgr::Add_Object_Recursive(CLayer* pLayer, CGameObject* object)
+{
+	pLayer->Add_GameObject(object);
+	auto vector = object->Get_Children();
+
+	if (vector.empty()) return;
+
+	for (auto& pChild : object->Get_Children()) {
+		Add_Object_Recursive(pLayer, pChild);
+	}
+}
+
+void CObjectMgr::Remove_Object(CGameObject* object)
+{
+	_uint ObjectID = object->Get_ObjectID();
+	object->Get_Layer()->Remove_GameObject(ObjectID);
+	object->Set_Layer(nullptr);
+}
+
+void CObjectMgr::Change_Layer(const LAYER_DESC& SrcLayer, CGameObject* object, const LAYER_DESC& DstLayer)
+{
+	_uint ObjectID = object->Get_ObjectID();
+
+	auto& SrcMap = m_Layers.at(SrcLayer.LevelTag);
+	auto& DstMap = m_Layers.at(DstLayer.LevelTag);
+
+	if (!m_Layers.count(SrcLayer.LevelTag)) {
+		MSG_BOX(" wrong  Source Level Tag : CObjectMgr");
+		return;
+	}
+	if (!m_Layers.count(DstLayer.LevelTag)) {
+		MSG_BOX(" wrong  Dest Level Tag : CObjectMgr");
+		return;
+	}
+	auto SrcIter = SrcMap.find(SrcLayer.LayerTag);
+	auto DstIter = DstMap.find(DstLayer.LayerTag);
+
+	if (SrcIter == SrcMap.end() || DstIter == DstMap.end()) { //그런 레이어 없음
+		return;
+	}
+	else {
+		auto& pSrcLayer = SrcIter->second;
+		auto& pDstLayer = DstIter->second;
+		CGameObject* pObj = pSrcLayer->Pop_GameObject(ObjectID);
+		if (pObj)
+			pDstLayer->Add_GameObject(pObj);
 	}
 }
 
 void CObjectMgr::Clear(const string& LevelTag)
 {
-
 	if (!m_Layers.count(LevelTag)) {
 		MSG_BOX("There is No Same Level Tag  : CObjectMgr");
 		return;
@@ -104,6 +160,7 @@ const unordered_map<string, class CLayer*>& CObjectMgr::Get_LevelLayer(const str
 		return iter->second;
 }
 
+
 CObjectMgr* CObjectMgr::Create()
 {
 	CObjectMgr* pInstance = new CObjectMgr();
@@ -121,9 +178,7 @@ void CObjectMgr::Free()
 	__super::Free();
 
 	for (auto& pair : m_Layers) {
-		for (auto& pair2 : pair.second)
-			Safe_Release(pair2.second);
-		pair.second.clear();
+		Clear(pair.first);
 	}
 	m_Layers.clear();
 

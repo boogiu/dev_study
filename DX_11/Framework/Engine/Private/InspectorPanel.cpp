@@ -78,5 +78,6 @@ CInspectorPanel* CInspectorPanel::Create(GUI_CONTEXT* context)
 
 void CInspectorPanel::Free()
 {
+	__super::Free();
 }
 

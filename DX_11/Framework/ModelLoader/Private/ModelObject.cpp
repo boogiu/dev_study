@@ -1,13 +1,18 @@
 #include "Loader_Defines.h"
 #include "ModelObject.h"
 #include "LoadStaticModel.h"
-#include "LoadAnimatedModel.h"
+#include "LoadSkeletalModel.h"
 #include "LoadMaterial.h"
 #include "AIMaterial.h"
 #include "Helper_Func.h"
 #include "LoadAnimator3D.h"
 #include "Animator3D.h"
-
+#include "GameInstance.h"
+#include "IInputService.h"
+#include "ObjectContainer.h"
+#include "IObjectService.h"
+#include "SkeletonFollower.h"
+#include "PartsObject.h"
 CModelObject::CModelObject()
 {
 }
@@ -27,21 +32,39 @@ HRESULT CModelObject::Initialize_Prototype()
 HRESULT CModelObject::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
+	Add_Component<CObjectContainer>();
+
 	return S_OK;
 }
 
 void CModelObject::Priority_Update(_float dt)
 {
+	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
 void CModelObject::Update(_float dt)
 {
-	if (m_pAnimator)
+	if (m_pAnimator) {
 		m_pAnimator->Update_Animation(dt);
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_LEFT))
+			m_fMeshAngle += dt * 45;
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_RIGHT))
+			m_fMeshAngle -= dt * 45;
+
+		_matrix RotateMat = XMMatrixIdentity();
+		RotateMat = XMMatrixRotationX(XMConvertToRadians(m_fMeshAngle));
+
+		//m_pAnimator->Control_Bone("Armature_Spine_2", RotateMat);
+		m_pAnimator->Control_Bone("Armature_Spine_2", RotateMat);
+		//m_pAnimator->Control_Bone("Armature_Spine_3", RotateMat);
+	}
+	Get_Component<CObjectContainer>()->UpdateChild(dt);
+
 }
 
 void CModelObject::Late_Update(_float dt)
 {
+	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
 }
 
 void CModelObject::Render_GUI()
@@ -64,12 +87,17 @@ void CModelObject::Render_GUI()
 	}
 	ImGui::EndChild();
 
+
+	if (ImGui::Button("Add Part")) {
+		Add_Part();
+	}
 	__super::Render_GUI();
 }
 
 HRESULT CModelObject::Load_AIScene(const string& filePath)
 {
 	m_Importer.FreeScene();
+	ReleasPrevModel();
 
 	unsigned int iFlag = aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast;
 
@@ -77,7 +105,7 @@ HRESULT CModelObject::Load_AIScene(const string& filePath)
 	if (nullptr == m_pAIScene)
 		return E_FAIL;
 
-	string fileName = Helper::GetFileNameWithExtension(filePath);
+	string fileName = Helper::GetFileNameWithOutExtension(filePath);
 
 	CLoadMaterial* pMaterial = CLoadMaterial::Create();
 	pMaterial->Set_Owner(this);
@@ -101,39 +129,33 @@ HRESULT CModelObject::Load_AIScene(const string& filePath)
 
 HRESULT CModelObject::Load_Static(const string& fileName)
 {
-	RealesPrevModel();
-	CLoadStaticModel* pModel = CLoadStaticModel::Create();
-	pModel->Set_Owner(this);
-	m_Components.emplace(type_index(typeid(CStaticModel)), pModel);
-
+	CLoadStaticModel* pModel = Add_Component< CLoadStaticModel>();
 	pModel->Load_Model(m_pAIScene, fileName);
 	return S_OK;
 }
 
 HRESULT CModelObject::Load_Animated(const string& fileName)
 {
-	RealesPrevModel();
-	CLoadAnimatedModel* pModel = CLoadAnimatedModel::Create();
-	pModel->Set_Owner(this);
-	m_Components.emplace(type_index(typeid(CAnimatedModel)), pModel);
+	CLoadSkeletalModel* pModel = Add_Component< CLoadSkeletalModel>();
+
 	CLoadAnimator3D* pAnimator = CLoadAnimator3D::Create();
 	pAnimator->Set_Owner(this);
 	m_Components.emplace(type_index(typeid(CAnimator3D)), pAnimator);
+
 	m_pAnimator = pAnimator;
 
 	pModel->Load_Model(m_pAIScene, fileName);
-	pAnimator->Set_Data(pModel->Get_Data());
+	pAnimator->Set_Data(pModel->Get_ModelData());
 
 	return S_OK;
 }
-
 
 HRESULT CModelObject::Save_AIScene()
 {
 	HRESULT hr = {};
 
 	if (HasBones()) {
-		CLoadAnimatedModel* pModel = dynamic_cast<CLoadAnimatedModel*>(Get_Component<CAnimatedModel>());
+		CLoadSkeletalModel* pModel = dynamic_cast<CLoadSkeletalModel*>(Get_Component<CModel>());
 		hr = pModel->Save_Model();
 	}
 	else {
@@ -155,19 +177,38 @@ _bool CModelObject::HasBones()
 	for (size_t i = 0; i < m_pAIScene->mNumMeshes; ++i)
 	{
 		if (m_pAIScene->mMeshes[i]->HasBones())
-			return true; 
+			return true;
 	}
 
 	return false;
 }
 
-void CModelObject::RealesPrevModel()
+void CModelObject::ReleasPrevModel()
 {
-	Remove_Component<CStaticModel>();
-	Remove_Component<CAnimatedModel>();
+	Remove_Component<CLoadStaticModel>();
+	Remove_Component<CLoadSkeletalModel>();
 	Remove_Component<CAnimator3D>();
 	Remove_Component<CMaterial>();
+	Remove_Component<CModel>();
+	 
 	m_pAnimator = nullptr;
+}
+
+void CModelObject::Add_Part()
+{
+	IObjectService* pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
+
+	CGameObject* ModelPart = Builder::Create_Object({ "Model_Level" ,"Proto_GameObject_Part" })
+		.Build("Partsqew");
+
+	Get_Component<CObjectContainer>()->Add_Child(ModelPart);
+
+	pObjMgr->Add_Object(ModelPart, { "Model_Level","Model_Layer" });
+
+	dynamic_cast<CPartsObject*>(ModelPart)->Inject_Master(
+		Get_Component<CLoadSkeletalModel>(),
+		Get_Component<CAnimator3D>()
+	);
 }
 
 CModelObject* CModelObject::Create()

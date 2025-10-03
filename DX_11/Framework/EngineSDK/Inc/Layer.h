@@ -11,17 +11,20 @@ private:
 
 public:
 	HRESULT Add_GameObject(class CGameObject* pGameObject);
-	void Engine_Update(_float dt);
+	void Pre_EngineUpdate(_float dt);
+	void Post_EngineUpdate(_float dt);
 	void Priority_Update(_float dt);
 	void Update(_float dt);
 	void Late_Update(_float dt);
-
-	class CGameObject* Find_ObjectByID(_uint ID);
-	const vector<CGameObject*>& Get_AllObject() { return m_GameObjects; };
+	class CGameObject* Pop_GameObject(_uint ObjectID);
+	void Remove_GameObject(_uint ObjectID);
+	
+	class CGameObject* Find_ObjectByID(_uint ObjectID);
+	const vector<class CGameObject*>& Get_AllObject() { return m_GameObjects; };
 
 private:
 	vector<class CGameObject*>			m_GameObjects; /*순회용*/
-	unordered_map<_uint,class CGameObject*>			m_GameObjectsByID;
+	unordered_map<_uint, _uint>			m_IndexByID; /*오브젝트 ID / 벡터 인덱스*/
 
 public:
 	static CLayer* Create();

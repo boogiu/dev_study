@@ -15,6 +15,7 @@ public:
 	virtual HRESULT Render() override;
 	virtual void Submit_Opaque(const OPAQUE_PACKET& packet) override { m_pOpaquePass->Submit(packet); };
 	virtual void Submit_UI(const UI_PACKET& packet) override {m_pUIPass->Submit(packet);};
+	virtual void Submit_Debug(const DEBUG_PACKET& packet) override { m_pDebugPass->Submit(packet); };
 
 public:
 	HRESULT Get_InputLayout(class CModel* pModel, class CShader* pShader, _uint DrawIndex, const string& passConstant,  ID3D11InputLayout** ppInputLayout);
@@ -26,8 +27,10 @@ private:
 	class CPipeLine* m_pPipeLine = { nullptr };
 
 	unordered_map<string, ID3D11InputLayout*> m_InputLayouts;
+
 	OpaquePass* m_pOpaquePass = { nullptr};
 	UIPass* m_pUIPass = { nullptr };
+	DebugPass* m_pDebugPass = { nullptr };
 
 public:
 	static CRenderSystem* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

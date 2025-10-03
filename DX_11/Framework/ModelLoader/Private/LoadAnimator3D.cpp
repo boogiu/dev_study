@@ -15,8 +15,10 @@ CLoadAnimator3D::CLoadAnimator3D(const CLoadAnimator3D& rhs)
 
 HRESULT CLoadAnimator3D::Initialize()
 {
+
 	return S_OK;
 }
+
 
 void CLoadAnimator3D::Render_GUI()
 {
@@ -88,9 +90,30 @@ void CLoadAnimator3D::Set_Data(CModelData* pData)
 	m_TransfromationMatrices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
 	m_CombinedMatrices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
 	m_FinalMatices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
+	m_ManipulateMatrices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
+
 	for (size_t i = 0; i < m_pData->Get_BoneCount(); i++)
 	{
 		m_TransfromationMatrices[i] = m_pData->Get_TransformMatrix(i);
+	}
+
+	for (size_t i = 0; i < m_pData->Get_BoneCount(); i++)
+	{
+		int parent = m_pData->Get_BoneParentIndex(i);
+
+		if (parent == -1) {
+			m_CombinedMatrices[i] = m_TransfromationMatrices[i];
+		}
+		else {
+			_matrix ParentCombine = XMLoadFloat4x4(&m_CombinedMatrices[parent]);
+			_matrix MyTransformation = XMLoadFloat4x4(&m_TransfromationMatrices[i]);
+			XMStoreFloat4x4(&m_CombinedMatrices[i], MyTransformation * ParentCombine);
+		}
+	}
+
+	for (size_t i = 0; i < m_pData->Get_BoneCount(); i++)
+	{
+		XMStoreFloat4x4(&m_FinalMatices[i], m_pData->Get_OffsetMatrix(i) * XMLoadFloat4x4(&m_CombinedMatrices[i]));
 	}
 }
 
@@ -112,6 +135,7 @@ HRESULT CLoadAnimator3D::Add_AIAnimation(const string& filePath)
 		m_pAnimClips.push_back(pClip);
 		pClip->Set_ClipName(Helper::GetFileNameWithOutExtension(filePath));
 	}
+	
 }
 
 void CLoadAnimator3D::Release_Data()

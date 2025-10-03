@@ -15,7 +15,7 @@ public:
 	_bool Init_Engine(const ENGINE_DESC& engine);
 	void Update_Engine(_float dt);
 	void Release_Engine();
-
+	HRESULT Excute_TileSystem(const TILESYSTEM_INFO& tileInfo);
 public:
 	void Notify_LevelSet();
 	void Clear_LevelResource(const string& levelKey);
@@ -40,10 +40,12 @@ public:
 	class IObjectService* Get_ObjectMgr() { return m_pObjectManager; }
 	class IResourceService* Get_ResourceMgr() { return m_pResourceManager; }
 	class IGUIService* Get_GUISystem() { return m_pGuiSystem; }
-	class IRenderService* Get_RenderSystem() { return m_RenderSystem; }
-	class ICameraService* Get_CameraMgr() { return m_CameraManager; }
-	class IUI_Service* Get_UIMgr() { return m_UIManager; }
-	class ILightService* Get_LightMgr() { return m_LightService; }
+	class IRenderService* Get_RenderSystem() { return m_pRenderSystem; }
+	class ICameraService* Get_CameraMgr() { return m_pCameraManager; }
+	class IUI_Service* Get_UIMgr() { return m_pUIManager; }
+	class ILightService* Get_LightMgr() { return m_pLightService; }
+	class IRayService* Get_RayMgr() { return m_pRaySystem; }
+	class ITileService* Get_TileSystem() { return m_pTileSystem; }
 
 private:
 	class IGraphicService* m_pGraphicDevice = { nullptr };
@@ -55,10 +57,12 @@ private:
 	class IObjectService* m_pObjectManager = { nullptr };
 	class IResourceService* m_pResourceManager = { nullptr };
 	class IGUIService* m_pGuiSystem = { nullptr };
-	class IRenderService* m_RenderSystem = { nullptr };
-	class ICameraService* m_CameraManager = { nullptr };
-	class IUI_Service* m_UIManager = { nullptr };
-	class ILightService* m_LightService = { nullptr };
+	class IRenderService* m_pRenderSystem = { nullptr };
+	class ICameraService* m_pCameraManager = { nullptr };
+	class IUI_Service* m_pUIManager = { nullptr };
+	class ILightService* m_pLightService = { nullptr };
+	class IRayService* m_pRaySystem = { nullptr };
+	class ITileService* m_pTileSystem = { nullptr };
 #pragma endregion
 
 private:

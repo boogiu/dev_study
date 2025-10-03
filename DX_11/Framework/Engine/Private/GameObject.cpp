@@ -3,9 +3,14 @@
 #include "Builder.h"
 #include "IRenderService.h"
 #include "StaticModel.h"
-#include "AnimatedModel.h"
+#include "SkeletalModel.h"
 #include "Material.h"
 #include "Animator3D.h"
+#include "ObjectContainer.h"
+#include "Child.h"
+#include "SkeletonFollower.h"
+#include "IMeshProvider.h"
+#include "DebugRender.h"
 
 _uint CGameObject::s_NextID = 1;
 
@@ -18,9 +23,17 @@ CGameObject::CGameObject(const CGameObject& rhs)
 	:m_ObjectID(s_NextID++)
 {
 	for (auto& pair : rhs.m_Components) {
+		if (pair.first == type_index(typeid(CModel)))
+			continue;
+
 		CComponent* comp = pair.second->Clone();
 		comp->Set_Owner(this);
 		m_Components.emplace(pair.first, comp);
+
+		if (dynamic_cast<CModel*>(comp)) {
+			m_Components.emplace(type_index(typeid(CModel)), comp);
+			Safe_AddRef(comp);
+		}
 	}
 
 	m_pTransform = Get_Component<CTransform>();
@@ -31,6 +44,7 @@ HRESULT CGameObject::Initialize_Prototype()
 {
 	//원본 생성 시, 필요 초기화들 진행
 	m_pTransform = Add_Component<CTransform>();
+	Safe_AddRef(m_pTransform);
 
 	return S_OK;
 }
@@ -41,11 +55,10 @@ HRESULT CGameObject::Initialize(INIT_DESC* pArg)
 		return S_OK;
 
 	GAMEOBJECT_DESC* obj = static_cast<GAMEOBJECT_DESC*>(pArg);
-
 	for (auto& pair : m_Components)
 	{
 		auto iter = obj->CompDesc.find(pair.first);
-
+		/*각자 컴포넌트에 맞는 설명체 찾아서 넣어줌. 없으면 그냥 이니셜ㄹ라이즈*/
 		if (iter == obj->CompDesc.end())
 			pair.second->Initialize(nullptr);
 		else
@@ -56,27 +69,31 @@ HRESULT CGameObject::Initialize(INIT_DESC* pArg)
 	return S_OK;
 }
 
-void CGameObject::Engine_Update(_float dt)
+void CGameObject::Pre_EngineUpdate(_float dt)
 {
+	if (CChild* pChild = Get_Component<CChild>()) {
+		m_isRootObject = false;
+	}
+	else {
+		m_isRootObject = true;
+	}
+
+	for (auto& child : Get_Children()) {
+		child->Pre_EngineUpdate(dt);
+	}
+}
+
+void CGameObject::Post_EngineUpdate(_float dt)
+{
+	/*패킷은 용도별로 따로 만든다.*/
 	OPAQUE_PACKET packet;
 	packet.pModel = { nullptr };
 	packet.bSkinning = false;
 	packet.pMaterial = Get_Component<CMaterial>();
 	packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
 
-	if (auto pStatic = Get_Component<CStaticModel>()) {
-		packet.pModel = pStatic;
-		packet.bSkinning = false;
-	}
-	else if (auto pAnim = Get_Component<CAnimatedModel>()) {
-		packet.pModel = pAnim;
-		packet.bSkinning = true;
-		packet.pAnimator = Get_Component<CAnimator3D>();
-		if (!packet.pAnimator) return;
-	}
-	else {
-		return;
-	}
+	if (FAILED(Make_OpaquePacket(packet))) return;
+
 
 	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
 	{
@@ -85,6 +102,19 @@ void CGameObject::Engine_Update(_float dt)
 		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
 		CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
 	}
+
+
+#ifdef _DEBUG
+	DEBUG_PACKET debugPacket = {};
+	debugPacket.pModel = Get_Component<CModel>();
+	debugPacket.pDebug = Get_Component<CDebugRender>();
+	debugPacket.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+	CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Debug(debugPacket);
+#endif // _DEBUG
+
+	for (auto& child : Get_Children()) {
+		child->Post_EngineUpdate(dt);
+	}
 }
 
 void CGameObject::Render_GUI()
@@ -92,9 +122,59 @@ void CGameObject::Render_GUI()
 	m_pTransform->Render_GUI();
 	for (auto& pair : m_Components) {
 		if (pair.first == type_index(typeid(CTransform))) continue;
+		if (pair.first == type_index(typeid(CModel))) continue;
 		pair.second->Render_GUI();
 	}
 }
+
+void CGameObject::RenderHierarchy(CGameObject*& SelectedObject, bool isSelected)
+{
+	ImGui::PushID((int)m_ObjectID);
+
+	const vector<CGameObject*>& Children = Get_Children();
+
+	ImGuiTreeNodeFlags flags = 
+		ImGuiTreeNodeFlags_Framed|
+		ImGuiTreeNodeFlags_OpenOnArrow |
+		//ImGuiTreeNodeFlags_SpanFullWidth |
+		(isSelected ? ImGuiTreeNodeFlags_Selected : 0) |
+		(Children.empty() ? (ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen) : 0);
+
+	bool opened = ImGui::TreeNodeEx(m_InstanceName.c_str(), flags);
+
+	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+		SelectedObject = this;
+	if (opened && !Children.empty()) {  
+		for (auto& childObject : Children) {
+			if (!childObject) continue;
+			bool childSelected = (SelectedObject == childObject);
+			childObject->RenderHierarchy(SelectedObject, childSelected);
+		}
+
+		ImGui::TreePop();
+	}
+
+	ImGui::PopID();
+}
+
+void CGameObject::Set_Layer(CLayer* pLayer)
+{
+	m_pLayer = pLayer;
+}
+
+const vector<CGameObject*> CGameObject::Get_Children()
+{
+	vector<CGameObject*> empty;
+
+	CObjectContainer* pContainer = Get_Component<CObjectContainer>();
+	if (pContainer) {
+		return pContainer->Get_Children();
+	}
+	else {
+		return empty;
+	}
+}
+
 
 _float4x4* CGameObject::Get_WorldMatrix()
 {
@@ -106,6 +186,28 @@ _float4 CGameObject::Get_Position()
 	_float4 pos;
 	XMStoreFloat4(&pos, m_pTransform->Get_Pos());
 	return pos;
+}
+
+HRESULT CGameObject::Make_OpaquePacket(OPAQUE_PACKET& packet)
+{
+	packet.pModel = Get_Component<CModel>();
+	if (packet.pModel&&!packet.pModel->isReadyToDraw()) return E_FAIL;
+	packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel) ? true : false;
+
+	if (auto Animator = Get_Component<CAnimator3D>()) {
+		packet.pPayLoad = Animator;
+	}
+	else if (auto Follower = Get_Component<CSkeletonFollower>()) {
+		packet.pPayLoad = Follower;
+	}
+	else {
+		packet.pPayLoad = monostate{};
+	}
+
+	if (packet.pModel == nullptr) {
+		return E_FAIL;
+	}
+	return S_OK;
 }
 
 void CGameObject::Free()

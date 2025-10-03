@@ -7,6 +7,25 @@ CSkeleton::CSkeleton()
 
 HRESULT CSkeleton::InitializeFromFile(ifstream& ifs)
 {
+    SKELETON_FILE_HEADER fileHeader = {};
+    ifs.read(reinterpret_cast<char*>(&fileHeader), sizeof(SKELETON_FILE_HEADER));
+
+    for (size_t i = 0; i < fileHeader.BoneCount; i++)
+    {
+        CBone* pBone = CBone::Create(ifs);
+        m_Bones.push_back(pBone);
+        m_BoneMap.emplace(pBone->Get_Name(), i);
+    }
+
+    for (size_t i = 0; i < fileHeader.BoneCount; i++)
+    {
+        _float4x4 LoadFloat4x4 = {};
+        ifs.read(reinterpret_cast<char*>(&LoadFloat4x4), sizeof(_float4x4));
+        m_OffsetMatrices.push_back(LoadFloat4x4);
+    }
+
+
+
     return S_OK;
 }
 
@@ -20,7 +39,17 @@ _float4x4 CSkeleton::Get_TransformationMatrix(_uint BoneIndex)
      return m_Bones[BoneIndex]->Get_TransformationMatrix();
 }
 
+const vector<string> CSkeleton::Get_BoneNames()
+{
+    vector<string> names; 
 
+    for (size_t i = 0; i < m_Bones.size(); i++)
+    {
+        names.push_back(m_Bones[i]->Get_Name());
+    }
+
+    return names;
+}
 
 _int CSkeleton::Find_BoneIndexByName(const string& boneName)
 {
@@ -32,10 +61,12 @@ _int CSkeleton::Find_BoneIndexByName(const string& boneName)
         return FindBoneIndexWithPrefix(boneName);
     }
 }
+
 const string& CSkeleton::Find_BoneNameByIndex(_uint boneIndex)
 {
     return m_Bones[boneIndex]->Get_Name();
 }
+
 _int CSkeleton::FindBoneIndexWithPrefix(const string& BonePrefixName)
 {
     string prefix = "Armature_" + BonePrefixName;

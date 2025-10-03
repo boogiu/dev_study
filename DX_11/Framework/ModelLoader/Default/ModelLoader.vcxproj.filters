@@ -49,9 +49,6 @@
     <Filter Include="04. LoadResource\Skeleton\Bone">
       <UniqueIdentifier>{63527be2-5dc8-46ce-be17-c1480bcd9840}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. LoaderComponent\Model\Animated">
-      <UniqueIdentifier>{1fa6e934-d275-42d0-8571-6c3959c18459}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. LoaderComponent\Animator">
       <UniqueIdentifier>{12515238-28c5-4cc5-98de-021711326841}</UniqueIdentifier>
     </Filter>
@@ -66,6 +63,12 @@
     </Filter>
     <Filter Include="04. LoadResource\ModelData\Meshes">
       <UniqueIdentifier>{84f440a2-189e-42ab-a631-fad9febeffab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. ModelObject\BasicObject\PartsObject">
+      <UniqueIdentifier>{6dcf3c15-6b1b-4041-b4a7-438181a06f9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. LoaderComponent\Model\Skeletal">
+      <UniqueIdentifier>{1fa6e934-d275-42d0-8571-6c3959c18459}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -147,8 +150,8 @@
     <ClInclude Include="..\Public\AISkeleton.h">
       <Filter>04. LoadResource\Skeleton</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\LoadAnimatedModel.h">
-      <Filter>03. LoaderComponent\Model\Animated</Filter>
+    <ClInclude Include="..\Public\LoadSkeletalModel.h">
+      <Filter>03. LoaderComponent\Model\Skeletal</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\LoadAnimator3D.h">
       <Filter>03. LoaderComponent\Animator</Filter>
@@ -164,6 +167,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\AIMesh.h">
       <Filter>04. LoadResource\ModelData\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PartsObject.h">
+      <Filter>02. ModelObject\BasicObject\PartsObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -235,8 +241,8 @@
     <ClCompile Include="..\Private\AISkeleton.cpp">
       <Filter>04. LoadResource\Skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\LoadAnimatedModel.cpp">
-      <Filter>03. LoaderComponent\Model\Animated</Filter>
+    <ClCompile Include="..\Private\LoadSkeletalModel.cpp">
+      <Filter>03. LoaderComponent\Model\Skeletal</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LoadAnimator3D.cpp">
       <Filter>03. LoaderComponent\Animator</Filter>
@@ -252,6 +258,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AIMesh.cpp">
       <Filter>04. LoadResource\ModelData\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PartsObject.cpp">
+      <Filter>02. ModelObject\BasicObject\PartsObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

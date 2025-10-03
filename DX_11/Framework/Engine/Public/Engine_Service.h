@@ -13,3 +13,5 @@
 #include "ICameraService.h"
 #include "IUI_Service.h"
 #include "ILightService.h"
+#include "IRayService.h"
+#include "ITileService.h"

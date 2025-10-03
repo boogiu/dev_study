@@ -10,7 +10,7 @@ private:
 	CUI_Manager();
 	virtual ~CUI_Manager();
 public:
-	virtual void Engine_Update(_float dt) override;
+	virtual void Post_EngineUpdate(_float dt) override;
 	virtual void Priority_Update(_float dt) override;
 	virtual void Update(_float dt) override;
 	virtual void Late_Update(_float dt) override;

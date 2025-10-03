@@ -71,10 +71,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\Bin</OutDir>
+    <OutDir>../Bin/</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\Bin</OutDir>
+    <OutDir>../Bin/</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -110,8 +110,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../EngineSDk/Inc/;../Public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../EngineSDk/Inc/;../Public/;../../EngineSDk/Inc/GUI_Inc/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,7 +129,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../EngineSDk/Inc/;../Public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../EngineSDk/Inc/;../Public/;../../EngineSDk/Inc/GUI_Inc/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -156,7 +157,7 @@
     <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\ImZoomSlider.h" />
     <ClInclude Include="..\Public\AIModelData.h" />
     <ClInclude Include="..\Public\Free_Camera.h" />
-    <ClInclude Include="..\Public\LoadAnimatedModel.h" />
+    <ClInclude Include="..\Public\LoadSkeletalModel.h" />
     <ClInclude Include="..\Public\LoadAnimator3D.h" />
     <ClInclude Include="..\Public\AIBone.h" />
     <ClInclude Include="..\Public\AIMesh.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="..\Public\LoadStaticModel.h" />
     <ClInclude Include="..\Public\ModelLevel.h" />
     <ClInclude Include="..\Public\ModelObject.h" />
+    <ClInclude Include="..\Public\PartsObject.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Resource.h" />
@@ -188,7 +190,7 @@
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\ImSequencer.cpp" />
     <ClCompile Include="..\Private\AIModelData.cpp" />
     <ClCompile Include="..\Private\Free_Camera.cpp" />
-    <ClCompile Include="..\Private\LoadAnimatedModel.cpp" />
+    <ClCompile Include="..\Private\LoadSkeletalModel.cpp" />
     <ClCompile Include="..\Private\LoadAnimator3D.cpp" />
     <ClCompile Include="..\Private\AIBone.cpp" />
     <ClCompile Include="..\Private\AIMesh.cpp" />
@@ -201,6 +203,7 @@
     <ClCompile Include="..\Private\LoadStaticModel.cpp" />
     <ClCompile Include="..\Private\ModelLevel.cpp" />
     <ClCompile Include="..\Private\ModelObject.cpp" />
+    <ClCompile Include="..\Private\PartsObject.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@ HRESULT CAIAnimationClip::Initialize(const aiAnimation* pAIAnimation, CModelData
 	m_iNumChannels = pAIAnimation->mNumChannels;
 	m_fDuration = pAIAnimation->mDuration;
 	m_fTickPerSecond = pAIAnimation->mTicksPerSecond;
-	m_ClipName = pAIAnimation->mName.data;
+	m_ClipName = pAIAnimation->mName.C_Str();
 	
 	for (size_t i = 0; i < m_iNumChannels; i++)
 	{

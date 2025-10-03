@@ -71,9 +71,16 @@ void CPrototypeMgr::Clear(const string& LevelTag)
 		MSG_BOX("Level Tag is not appropriate : CPrototypeMgr");
 		return;
 	}
+	if (!m_Prototypes[LevelTag].empty()) {
+		for (auto& pair : m_Prototypes[LevelTag])
+		{
+			assert(pair.second != nullptr);          // nullptr 방어
+			printf("Releasing %p\n", pair.second);   // 주소 확인
 
-	for (auto& pair : m_Prototypes[LevelTag])
-		Safe_Release(pair.second);
+			Safe_Release(pair.second);
+		}
+	}
+
 	m_Prototypes[LevelTag].clear();
 }
 
@@ -103,12 +110,9 @@ void CPrototypeMgr::Free()
 {
 	__super::Free();
 
-	for (auto& pair : m_Prototypes){
-		for (auto& pair2 : pair.second) {
-			Safe_Release(pair2.second);
-		}
-		pair.second.clear();
+	for (auto& pair : m_Prototypes) {
+		Clear(pair.first);
 	}
 	m_Prototypes.clear();
-	
+
 }

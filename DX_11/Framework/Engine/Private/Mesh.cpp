@@ -18,13 +18,12 @@ HRESULT CMesh::Initialize_From_File(ID3D11Device* pDevice, ifstream& ifs, MESH_T
 {
 	MESH_INFO_HEADER infoHeader = {};
 
-
 	ifs.read(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
-	m_VIKey = infoHeader.MeshName;
+	m_VIKey = string(infoHeader.MeshName);
 	m_MaterialIndex = infoHeader.MaterialIndex;
 	m_iVertexBufferCount = 1;
 	m_iVerticesCount = infoHeader.VerticesCount;
-	m_iVertexStride = eType == MESH_TYPE::ANIM  ? sizeof(VTXSKINMESH) : sizeof(VTXMESH);
+	m_iVertexStride = eType == MESH_TYPE::ANIM ? sizeof(VTXSKINMESH) : sizeof(VTXMESH);
 	m_iIndicesCount = infoHeader.IndicesCount;
 	m_iIndexStride = 4; //byte
 	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
@@ -32,13 +31,14 @@ HRESULT CMesh::Initialize_From_File(ID3D11Device* pDevice, ifstream& ifs, MESH_T
 	m_ElementCount = eType == MESH_TYPE::ANIM ? VTXSKINMESH::iElementCount : VTXMESH::iElementCount;
 	m_ElementKey = eType == MESH_TYPE::ANIM ? VTXSKINMESH::Key : VTXMESH::Key;
 	m_ElementDesc = eType == MESH_TYPE::ANIM ? VTXSKINMESH::Elements : VTXMESH::Elements;
-	HRESULT hr = eType==MESH_TYPE::ANIM ? Create_AnimateVertex(pDevice, ifs) : Create_StaticVertex(pDevice,  ifs);
+
+	HRESULT hr = eType == MESH_TYPE::ANIM ? Create_AnimateVertex(pDevice, ifs) : Create_StaticVertex(pDevice, ifs);
 
 	if (FAILED(hr))
 		return E_FAIL;
 
 	m_indices.resize(infoHeader.IndicesCount);
-	ifs.read(reinterpret_cast<char*>(m_indices.data()), infoHeader.IndicesCount * sizeof(m_iIndexStride));
+	ifs.read(reinterpret_cast<char*>(m_indices.data()), infoHeader.IndicesCount * m_iIndexStride);
 
 	if (FAILED(Create_Index(pDevice)))
 		return E_FAIL;
@@ -54,7 +54,7 @@ HRESULT CMesh::Create_AnimateVertex(ID3D11Device* pDevice, ifstream& ifs)
 	vector<VTXSKINMESH>vertices = {};
 	vertices.resize(m_iVerticesCount);
 
-	ifs.read(reinterpret_cast<char*>(vertices.data()), m_iVerticesCount * sizeof(m_iVertexStride));
+	ifs.read(reinterpret_cast<char*>(vertices.data()), m_iVerticesCount * m_iVertexStride);
 
 	D3D11_BUFFER_DESC VBDesc;
 	VBDesc.ByteWidth = m_iVertexStride * m_iVerticesCount;
@@ -68,6 +68,19 @@ HRESULT CMesh::Create_AnimateVertex(ID3D11Device* pDevice, ifstream& ifs)
 	subData.pSysMem = vertices.data();
 
 	HRESULT hr = pDevice->CreateBuffer(&VBDesc, &subData, &m_pVB);
+
+	m_vMeshMinLocal = { FLT_MAX,FLT_MAX ,FLT_MAX };
+	m_vMeshMaxLocal = { -FLT_MAX,-FLT_MAX ,-FLT_MAX };
+	for (const auto& vertex : vertices) {
+		m_vMeshMinLocal.x = min(m_vMeshMinLocal.x, vertex.vPosition.x);
+		m_vMeshMinLocal.y = min(m_vMeshMinLocal.y, vertex.vPosition.y);
+		m_vMeshMinLocal.z = min(m_vMeshMinLocal.z, vertex.vPosition.z);
+
+		m_vMeshMaxLocal.x = max(m_vMeshMaxLocal.x, vertex.vPosition.x);
+		m_vMeshMaxLocal.y = max(m_vMeshMaxLocal.y, vertex.vPosition.y);
+		m_vMeshMaxLocal.z = max(m_vMeshMaxLocal.z, vertex.vPosition.z);
+	}
+
 	return hr;
 }
 
@@ -93,6 +106,19 @@ HRESULT CMesh::Create_StaticVertex(ID3D11Device* pDevice, ifstream& ifs)
 	subData.pSysMem = vertices.data();
 
 	HRESULT hr = pDevice->CreateBuffer(&VBDesc, &subData, &m_pVB);
+
+	m_vMeshMinLocal = { FLT_MAX,FLT_MAX ,FLT_MAX };
+	m_vMeshMaxLocal = { -FLT_MAX,-FLT_MAX ,-FLT_MAX };
+	for (const auto& vertex : vertices) {
+		m_vMeshMinLocal.x = min(m_vMeshMinLocal.x, vertex.vPosition.x);
+		m_vMeshMinLocal.y = min(m_vMeshMinLocal.y, vertex.vPosition.y);
+		m_vMeshMinLocal.z = min(m_vMeshMinLocal.z, vertex.vPosition.z);
+
+		m_vMeshMaxLocal.x = max(m_vMeshMaxLocal.x, vertex.vPosition.x);
+		m_vMeshMaxLocal.y = max(m_vMeshMaxLocal.y, vertex.vPosition.y);
+		m_vMeshMaxLocal.z = max(m_vMeshMaxLocal.z, vertex.vPosition.z);
+	}
+
 	return hr;
 }
 
@@ -119,7 +145,7 @@ HRESULT CMesh::Create_Index(ID3D11Device* pDevice)
 
 void CMesh::Render_GUI()
 {
-	
+
 }
 
 

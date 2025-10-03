@@ -38,12 +38,10 @@ HRESULT CLogoLevel::Initialize()
 //	.Build("Terrain");
 
 	Builder::Create_Object({ "Logo_Level", "Proto_GameObject_Static" })
-		.Add_To_Layer({ "Logo_Level","Layer_Object" })
 		.Position({ 0,30,10 })
 		.Build("StaticObj");
 
 	CGameObject* Camera = Builder::Create_Object({ "Logo_Level","Proto_GameObject_Camera" })
-		.Add_To_Layer({ "Logo_Level","Layer_Camera" })
 		.Camera({ (float)g_iWinSizeX / g_iWinSizeY })
 		.Position({ 0,10,0 })
 		.Build("Main_Camera");
@@ -75,7 +73,6 @@ CLogoLevel* CLogoLevel::Create(const string& LevelKey)
 
 void CLogoLevel::Free()
 {
-	m_pGameInstance->DestroyInstance();
 	__super::Free();
 }
 

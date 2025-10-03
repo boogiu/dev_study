@@ -12,6 +12,7 @@ CModelData::~CModelData()
 
 HRESULT CModelData::Initialize(const string& filePath, ID3D11Device* pDevice)
 {
+
 	ifstream ifs(filePath.c_str(), ios::binary);
 	if (!ifs.is_open()) {
 		MSG_BOX("There is No File. :CModelData ");
@@ -40,6 +41,19 @@ HRESULT CModelData::Initialize(const string& filePath, ID3D11Device* pDevice)
 	}
 
 	ifs.close();
+
+	for (auto mesh : m_Meshes) {
+		_float3 meshMin = mesh->Get_MinVertexLocal();
+		_float3 meshMax = mesh->Get_MaxVertexLocal();
+
+		m_vMinLocal.x = min(m_vMinLocal.x, meshMin.x);
+		m_vMinLocal.y = min(m_vMinLocal.y, meshMin.y);
+		m_vMinLocal.z = min(m_vMinLocal.z, meshMin.z);
+
+		m_vMaxLocal.x = max(m_vMaxLocal.x, meshMax.x);
+		m_vMaxLocal.y = max(m_vMaxLocal.y, meshMax.y);
+		m_vMaxLocal.z = max(m_vMaxLocal.z, meshMax.z);
+	}
 
 	return S_OK;
 }
@@ -81,7 +95,25 @@ const string_view CModelData::Get_ElementKey(_uint DrawIndex)
 
 void CModelData::Render_GUI()
 {
-	
+	string meshCount = "Mesh : " + to_string(m_Meshes.size());
+
+	ImGui::Text(meshCount.c_str());
+	for (auto& mesh : m_Meshes) {
+		ImGui::Text(mesh->Get_Key().c_str());
+	}
+	ImGui::Separator();
+
+	if (ImGui::Button("Bones Tab")) {
+		isGui_BoneTabOpen = !isGui_BoneTabOpen;
+	}
+	string boneCount = "Bone : " + to_string(m_pSkeleton->Get_BoneCount());
+	ImGui::Text(boneCount.c_str());
+	ImGui::SetNextWindowSize(ImVec2(500, 400));
+	if (ImGui::Begin("SkeletonBones", &isGui_BoneTabOpen ,  ImGuiWindowFlags_NoCollapse))
+	{
+		m_pSkeleton->Render_GUI();
+	}
+	ImGui::End();
 }
 
 HRESULT CModelData::Render_Mesh(ID3D11DeviceContext* pContext, _uint Index)
@@ -97,6 +129,28 @@ HRESULT CModelData::Render_Mesh(ID3D11DeviceContext* pContext, _uint Index)
 _matrix CModelData::Get_OffsetMatrix(_uint BoneIndex)
 {
 	return m_pSkeleton->Get_OffsetMatrix(BoneIndex);
+}
+
+const vector<string> CModelData::Get_BoneNames()
+{
+	return m_pSkeleton->Get_BoneNames();
+}
+
+const vector<_int> CModelData::GenerateFollowingIndices(CModelData* pMasterData)
+{
+	vector<_int> FollowingIndices;
+
+	for (string boneName : Get_BoneNames()) {
+		_int Index = pMasterData->Find_BoneIndexByName(boneName);
+		FollowingIndices.push_back(Index);
+	}
+
+	return FollowingIndices;
+}
+
+BOUNDING_BOX CModelData::Get_LocalBoundingBox()
+{
+	return BOUNDING_BOX{m_vMinLocal,m_vMaxLocal};
 }
 
 

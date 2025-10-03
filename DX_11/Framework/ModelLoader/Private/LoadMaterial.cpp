@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "Texture.h"
 #include "AIMaterial.h"
+#include "MaterialInstance.h"
 
 CLoadMaterial::CLoadMaterial()
 	:m_pDevice(CGameInstance::GetInstance()->Get_Device()),
@@ -31,18 +32,21 @@ HRESULT CLoadMaterial::Initialize()
 void CLoadMaterial::Render_GUI()
 {
 	__super::Render_GUI();
+	
 }
 
 HRESULT CLoadMaterial::Load_Material(_uint materialNum, aiMaterial* material[], const string& filePath)
 {
-	m_MaterialKey = Helper::GetFileNameWithOutExtension(filePath);
+	m_MaterialFileKey = Helper::GetFileNameWithOutExtension(filePath);
 	string Directory = filesystem::path(filePath).parent_path().string();
 
 	for (size_t i = 0; i < materialNum; i++)
 	{
-		CAIMaterial* data = CAIMaterial::Create(m_pDevice, material[i], string(m_MaterialKey + to_string(i)), Directory);
+		CAIMaterial* data = CAIMaterial::Create(material[i], Directory);
 		if (data) {
-			m_MaterialDatas.push_back(data);
+			m_AIMaterialDatas.push_back(data);
+			CMaterialInstance* pHandle = CMaterialInstance::Make_Handle(data, m_pDevice);
+			m_MaterialInstances.push_back(pHandle);
 		}
 	}
 	return S_OK;
@@ -50,28 +54,29 @@ HRESULT CLoadMaterial::Load_Material(_uint materialNum, aiMaterial* material[], 
 
 HRESULT CLoadMaterial::Save_Material()
 {
-	string path = Helper::SaveFileDialogByWinAPI(m_MaterialKey, "mat");
+	string path = Helper::SaveFileDialogByWinAPI(m_MaterialFileKey, "mat");
 	filesystem::path directory(path);
 	ofstream ofs(path.c_str(), ios::binary);
 	if (!ofs.is_open())
 		return E_FAIL;
-
+	string FileKey = m_MaterialFileKey + ".mat";
 	MATERIAL_FILE_HEADER fileHead = {};
-	strcpy_s(fileHead.materialDataKey, sizeof(fileHead.materialDataKey), m_MaterialKey.c_str());
-	fileHead.MaterialDataCount = m_MaterialDatas.size();
+	fileHead.MaterialDataCount = m_MaterialInstances.size();
+	strcpy_s(fileHead.materialFileKey, sizeof(fileHead.materialFileKey), FileKey.c_str());
 	ofs.write(reinterpret_cast<const char*>(&fileHead), sizeof(fileHead));
 
-	for (size_t i = 0; i < m_MaterialDatas.size(); i++)
-		dynamic_cast<CAIMaterial*>(m_MaterialDatas[i])->Save_MaterialData(m_pContext,ofs, directory.parent_path().string());
+	for (size_t i = 0; i < m_MaterialInstances.size(); i++) {
+		CAIMaterial* data = dynamic_cast<CAIMaterial*>(m_MaterialInstances[i]->Get_MaterialData());
+		data->Save_MaterialData(m_pContext, ofs, directory.parent_path().string());
+	}
 
 	ofs.close();
 }
 
 void CLoadMaterial::LinkShader(const string& shader)
 {
-	for (CMaterialData* pMdata : m_MaterialDatas) {
-		static_cast<CAIMaterial*>(pMdata)->LinkShader(shader);
-	}
+	for (auto& Aidata : m_AIMaterialDatas)
+		Aidata->LinkShader(shader);
 }
 
 CLoadMaterial* CLoadMaterial::Create()
@@ -94,4 +99,7 @@ void CLoadMaterial::Free()
 	__super::Free();
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+
+	for (auto& Aidata : m_AIMaterialDatas)
+		Safe_Release(Aidata);
 }

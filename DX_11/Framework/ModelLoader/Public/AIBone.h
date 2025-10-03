@@ -11,6 +11,10 @@ protected:
 public:
     HRESULT Initialize(const aiNode* pAINode, _int iParentIndex);
     void Save_File(ofstream& ofs);
+
+public:
+    void Render_GUI()override;
+
 public:
     static CAIBone* Create(const aiNode* pAINode, _int iParentIndex);
     virtual void Free() override;

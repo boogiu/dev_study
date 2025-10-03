@@ -10,7 +10,6 @@ public:
     ~CGameObjectBuilder();
 public:
     class CGameObject* Build (const string& instanceKey,_uint* id = nullptr);
-    CGameObjectBuilder& Add_To_Layer(const LAYER_DESC& layer);/*{level,layer}*/
     CGameObjectBuilder& Camera(const CAMERA_DESC& camera);
     CGameObjectBuilder& Light(const LIGHT_INIT_DESC& light);
 

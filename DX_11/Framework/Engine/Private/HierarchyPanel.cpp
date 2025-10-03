@@ -36,12 +36,13 @@ void CHierarchyPanel::Render_GUI()
 	ImGui::Begin("##Hierachy", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 	ShowLevelList();
 	ShowLayerList(nowLevel);
+	ImGui::Separator();
 	ShowObjectList();
 	ImGui::End();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
 	ImGui::SetNextWindowPos(ImVec2(m_fPosX + fPanelCX, 0));
-	ImGui::Begin("##HierachyBtn", nullptr, ImGuiWindowFlags_AlwaysAutoResize | 
+	ImGui::Begin("##HierachyBtn", nullptr, ImGuiWindowFlags_AlwaysAutoResize |
 		ImGuiWindowFlags_NoDecoration);
 	if (ImGui::Button(m_bOpened ? "<" : ">")) {
 		m_bOpened = !m_bOpened;
@@ -111,16 +112,13 @@ void CHierarchyPanel::ShowLayerList(const string& nowLevel)
 void CHierarchyPanel::ShowObjectList()
 {
 	if (!m_pContext->pSelectedLayer) return;
+	auto& ObjectVector = m_pContext->pSelectedLayer->Get_AllObject();
 
-	CLayer* layer = m_pContext->pSelectedLayer;
-
-	auto vector = ConvertObjectNameList(layer);
-
-	GUIWidget::ShowListInt(vector, [&](_uint index) {
-		CGameObject* obj = layer->Get_AllObject()[index];
-		if(!m_pContext->bLocked)
-			m_pContext->pSelectedObject = obj;
-		});
+	for (auto& Object : ObjectVector) {
+		if (!Object || !Object->Is_Root()) continue;
+		bool isSel = (m_pContext->pSelectedObject == Object);
+		Object->RenderHierarchy(m_pContext->pSelectedObject, isSel);
+	}
 }
 
 vector<string> CHierarchyPanel::ConvertObjectNameList(CLayer* layer)

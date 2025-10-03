@@ -7,7 +7,7 @@ class ENGINE_DLL IUI_Service abstract :
 protected:
     virtual  ~IUI_Service() DEFAULT;
 public:
-	virtual void Engine_Update(_float dt) PURE;
+	virtual void Post_EngineUpdate(_float dt) PURE;
 	virtual void Priority_Update(_float dt) PURE;
 	virtual void Update(_float dt) PURE;
 	virtual void Late_Update(_float dt) PURE;

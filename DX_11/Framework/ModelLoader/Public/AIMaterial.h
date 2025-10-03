@@ -6,18 +6,27 @@ class CAIMaterial :
     public CMaterialData
 {
 private:
-    CAIMaterial(const string& MaterialKey);
+    CAIMaterial();
     virtual ~CAIMaterial() DEFAULT;
 public:
-    virtual HRESULT Initialize(ID3D11Device* pDevice, const aiMaterial* pAIMaterial,const string& fileDirectory);
+    virtual HRESULT Initialize(const aiMaterial* pAIMaterial,const string& fileDirectory);
 public:
     void Save_MaterialData(ID3D11DeviceContext  * pContext,ofstream& ofs, const string& directory);
-    void Render_GUI();
+    void Render_GUI() override;
+    void Render_GUI(vector<_uint>& TextureIndexes) override;
     void LinkShader(const string& shader);
+
+private:
+    void Render_MaterialAdd();
+
 private:
     int m_currentPassIndex = {};
+    _bool MaterialTabOpened = { false };
+    int m_currentTextureTypeIndex = {};
+    vector<_uint> textureTypes;
+
 public:
-    static CAIMaterial* Create(ID3D11Device* pDevice, const aiMaterial* pAIMaterial, const string& MaterialKey, const string& fileDirectory);
+    static CAIMaterial* Create(const aiMaterial* pAIMaterial, const string& fileDirectory);
     virtual void Free() override;
 };
 

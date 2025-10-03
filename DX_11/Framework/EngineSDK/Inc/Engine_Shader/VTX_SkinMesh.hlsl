@@ -32,7 +32,7 @@ VS_OUT VS_MAIN(VS_IN In)
     
     /*월드 포지션 이전에 본 행렬*/
     float4x4 BoneMatrix =
-    (   BoneMatrices[In.vBlendIndex.x] * In.vBlendWeight.x +
+        (BoneMatrices[In.vBlendIndex.x] * In.vBlendWeight.x +
          BoneMatrices[In.vBlendIndex.y] * In.vBlendWeight.y +
          BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z +
          BoneMatrices[In.vBlendIndex.w] * blendWeightW);
@@ -83,12 +83,39 @@ PS_OUT PS_MAIN(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_BLEND(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+   //빛의 색상 * 빛의 강도 * 텍스처 색깔
+    Out.vColor = vMtrlDiffuse;
+    
+    Out.vColor.a = 0.4f;
+    Out.vColor.b += 0.05f;
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass Opaque
     {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
     }  
+
+    pass ForceBlend
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        PixelShader = compile ps_5_0 PS_BLEND();
+    }
 }
 

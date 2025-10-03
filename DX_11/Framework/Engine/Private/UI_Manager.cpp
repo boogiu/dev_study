@@ -13,11 +13,11 @@ CUI_Manager::~CUI_Manager()
 {
 }
 
-void CUI_Manager::Engine_Update(_float dt)
+void CUI_Manager::Post_EngineUpdate(_float dt)
 {
 	for (auto& pair : m_UIObjects)
 		for (auto& UI : pair.second)
-			UI->Engine_Update(dt);
+			UI->Post_EngineUpdate(dt);
 }
 
 void CUI_Manager::Priority_Update(_float dt)

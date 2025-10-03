@@ -12,7 +12,8 @@ public:
     const string& Get_Name()    { return m_BoneName; }
     _int Get_ParentIndex()           {return m_iParentBoneIndex; };
     _float4x4 Get_TransformationMatrix()           {return m_TransformationMatrix; };
-
+public:
+    virtual void Render_GUI();
 protected:
     string				m_BoneName = {};
     _float4x4			m_TransformationMatrix = {};

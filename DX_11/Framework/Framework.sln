@@ -9,6 +9,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Default\En
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelLoader", "ModelLoader\Default\ModelLoader.vcxproj", "{695F7D4B-7C99-4E0A-91FD-E9E7434F80C7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MapEditor", "MapEditor\Default\MapEditor.vcxproj", "{DA790EEB-0F2B-414F-BC51-56192DC33183}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AA5FE8A1-6BD0-46B9-B1B4-B528A1B6D104} = {AA5FE8A1-6BD0-46B9-B1B4-B528A1B6D104}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +46,14 @@ Global
 		{695F7D4B-7C99-4E0A-91FD-E9E7434F80C7}.Release|x64.Build.0 = Release|x64
 		{695F7D4B-7C99-4E0A-91FD-E9E7434F80C7}.Release|x86.ActiveCfg = Release|Win32
 		{695F7D4B-7C99-4E0A-91FD-E9E7434F80C7}.Release|x86.Build.0 = Release|Win32
+		{DA790EEB-0F2B-414F-BC51-56192DC33183}.Debug|x64.ActiveCfg = Debug|x64
+		{DA790EEB-0F2B-414F-BC51-56192DC33183}.Debug|x64.Build.0 = Debug|x64
+		{DA790EEB-0F2B-414F-BC51-56192DC33183}.Debug|x86.ActiveCfg = Debug|Win32
+		{DA790EEB-0F2B-414F-BC51-56192DC33183}.Debug|x86.Build.0 = Debug|Win32
+		{DA790EEB-0F2B-414F-BC51-56192DC33183}.Release|x64.ActiveCfg = Release|x64
+		{DA790EEB-0F2B-414F-BC51-56192DC33183}.Release|x64.Build.0 = Release|x64
+		{DA790EEB-0F2B-414F-BC51-56192DC33183}.Release|x86.ActiveCfg = Release|Win32
+		{DA790EEB-0F2B-414F-BC51-56192DC33183}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

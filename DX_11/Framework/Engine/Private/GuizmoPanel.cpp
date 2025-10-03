@@ -52,15 +52,18 @@ void CGuizmoPanel::ShowObject_Guizmo()
 		static_cast<float>(m_pContext->viewPort.y)
 	);
 
-	_float4x4 temp = *m_pContext->pSelectedObject->Get_Component<CTransform>()->Get_WorldMatrix();
+	CTransform* objTransform = m_pContext->pSelectedObject->Get_Component<CTransform>();
+	_float4x4 temp = *objTransform->Get_WorldMatrix();
 
 	ImGuizmo::Manipulate(
 		(float*)m_pContext->pCameraManager->Get_ViewMatrix(),
 		(float*)m_pContext->pCameraManager->Get_ProjMatrix(),
 		gizmoOperation,
-		ImGuizmo::LOCAL,
+		ImGuizmo::WORLD,
 		(float*)&temp
 	);
+	
+	objTransform->TranslateMatrix(XMLoadFloat4x4(&temp));
 }
 
 
@@ -75,4 +78,5 @@ CGuizmoPanel* CGuizmoPanel::Create(GUI_CONTEXT* context)
 
 void CGuizmoPanel::Free()
 {
+	__super::Free();
 }

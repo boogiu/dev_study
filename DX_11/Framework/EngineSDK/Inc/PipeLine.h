@@ -39,7 +39,7 @@ public:
     HRESULT Update_FrameBuffer(ID3D11DeviceContext* pContext);
     HRESULT Update_LightBuffer(ID3D11DeviceContext* pContext);
     HRESULT Update_ObjectBuffer(ID3D11DeviceContext* pContext, _float4x4* pMatrix);
-    HRESULT Update_SkinningBuffer(ID3D11DeviceContext* pContext, class CAnimator3D* pAnimator);
+    HRESULT Update_SkinningBuffer(ID3D11DeviceContext* pContext, const vector<_float4x4>& BoneMatrices);
 
 public:
     ID3D11Buffer* Get_FrameBuffer() { return m_pDeviceFrameBuffer; };

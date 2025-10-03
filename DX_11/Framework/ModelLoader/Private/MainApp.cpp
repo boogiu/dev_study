@@ -35,27 +35,9 @@ HRESULT CMainApp::Initialize()
 	Set_Levels();
 
 	m_pGameInstance->Get_LevelMgr()->Request_ChangeLevel("Model_Level",false);
-
-
-
+	
 	ImGui::SetCurrentContext(m_pGameInstance->Get_GUISystem()->GetEngineImGuiContext());
 
-	//// C++ 코드
-	//D3D11_RASTERIZER_DESC rasterizerDesc;
-	//ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
-
-	//rasterizerDesc.FillMode = D3D11_FILL_SOLID;       // 폴리곤 내부를 채워서 그립니다. (기본값)
-	//rasterizerDesc.CullMode = D3D11_CULL_NONE;         // ★핵심: 컬링을 하지 않습니다.
-	//rasterizerDesc.FrontCounterClockwise = FALSE;    // 시계 방향을 앞면으로 봅니다. (DirectX 기본값)
-	//// 나머지 멤버들은 필요에 따라 설정... (DepthBias, SlopeScaledDepthBias, DepthClipEnable 등)
-	//ID3D11RasterizerState* pRasterState_NoCulling = nullptr;
-	//HRESULT hr = m_pDevice->CreateRasterizerState(&rasterizerDesc, &pRasterState_NoCulling);
-	//if (FAILED(hr))
-	//{
-	//	// 에러 처리
-	//}
-
-	//m_pDeviceContext->RSSetState(pRasterState_NoCulling);
 	return S_OK;
 }
 

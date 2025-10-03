@@ -10,6 +10,9 @@ protected:
 public:
     HRESULT Initialize();
     virtual HRESULT TranslateAnimateMatrix( vector<_float4x4>& transfomationMatrices, _float CurrentTrackPosition , _bool Loop);
+
+    virtual HRESULT ConvertAnimateMatrix(vector<_float4x4>& transfomationMatrices, _float ConvertDuration, _float PrevTrackPosition,_float ConversionTrackPosition, CChannel*  NextChannel);
+
     const string& Get_Name() { return m_ChannelName; }
 
 public:

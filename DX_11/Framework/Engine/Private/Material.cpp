@@ -1,21 +1,20 @@
 #include "Material.h"
-#include "Shader.h"
-#include "Texture.h"
 #include "GameInstance.h"
 #include "IResourceService.h"
-#include "GameObject.h"
-#include "MaterialData.h"
+#include "MaterialInstance.h"
 
 CMaterial::CMaterial()
 {
 }
 
 CMaterial::CMaterial(const CMaterial& rhs)
-	:CComponent(rhs),
-	m_MaterialDatas(rhs.m_MaterialDatas)
+	:CComponent(rhs)
 {
-	for (auto& data : m_MaterialDatas)
-		Safe_AddRef(data);
+	for (auto& instance : rhs.m_MaterialInstances) {
+		CMaterialInstance* cloned = instance->Clone();
+		m_MaterialInstances.emplace_back(move(cloned));
+	}
+
 }
 
 HRESULT CMaterial::Initialize_Prototype()
@@ -31,51 +30,64 @@ HRESULT CMaterial::Initialize(COMPONENT_DESC* pArg)
 
 HRESULT CMaterial::Link_Material(const string& levelKey, const string& materialKey)
 {
-	for (CMaterialData* material : CGameInstance::GetInstance()->Get_ResourceMgr()->Load_MaterialData(levelKey, materialKey)) {
-		m_MaterialDatas.push_back(material);
-		Safe_AddRef(material);
-	}
+	m_MaterialInstances = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_MaterialFromFile(levelKey, materialKey);
+	return S_OK;
+}
+
+HRESULT CMaterial::Insert_MaterialInstance(CMaterialInstance* pInstance, _uint* outIndex)
+{
+	if(pInstance == nullptr)
+		return E_FAIL;
+
+	m_MaterialInstances.push_back(pInstance);
+	//Safe_AddRef(pInstance);
+
+	*outIndex = m_MaterialInstances.size() - 1;
 
 	return S_OK;
 }
 
 CShader* CMaterial::Get_Shader(_uint subsetIndex)
 {
-	if (subsetIndex >= m_MaterialDatas.size()) return nullptr;
+	if (subsetIndex >= m_MaterialInstances.size()) return nullptr;
 
-	return m_MaterialDatas[subsetIndex]->Get_Shader();
+	return m_MaterialInstances[subsetIndex]->Get_Shader();
 }
 
 _uint CMaterial::Get_ShaderID(_uint subsetIndex)
 {
-	if (subsetIndex >= m_MaterialDatas.size()) return 0;
+	if (subsetIndex >= m_MaterialInstances.size()) return 0;
 
-	return m_MaterialDatas[subsetIndex]->Get_ShaderID();
+	return m_MaterialInstances[subsetIndex]->Get_ShaderID();
 }
 
 _uint CMaterial::Get_MaterialDataID(_uint subsetIndex)
 {
-	if (subsetIndex >= m_MaterialDatas.size()) return 0;
+	if (subsetIndex >= m_MaterialInstances.size()) return 0;
 
-	return m_MaterialDatas[subsetIndex]->Get_MaterialDataID();
+	return m_MaterialInstances[subsetIndex]->Get_MaterialDataID();
 }
 
 void CMaterial::Apply_Material(ID3D11DeviceContext* pContext, _uint subsetIndex)
 {
-	if (subsetIndex >= m_MaterialDatas.size()) return;
-	m_MaterialDatas[subsetIndex]->ApplyData(pContext , m_TextureIndex);
-}
-
-HRESULT CMaterial::GetPassSignature(_uint subsetIndex, D3DX11_PASS_DESC* pOutPassDesc)
-{
-	if (subsetIndex >= m_MaterialDatas.size()) E_FAIL;
-
-	return m_MaterialDatas[subsetIndex]->GetPassSignature(pOutPassDesc);
+	if (subsetIndex >= m_MaterialInstances.size()) return;
+	m_MaterialInstances[subsetIndex]->ApplyData(pContext);
 }
 
 const string& CMaterial::GetPassConstant(_uint subsetIndex)
 {
-	return m_MaterialDatas[subsetIndex]->Get_PassConstant();
+	return m_MaterialInstances[subsetIndex]->Get_PassConstant();
+}
+
+CMaterialInstance* CMaterial::Find_MaterialByName(const string& MaterialName)
+{
+	auto iter = find_if(m_MaterialInstances.begin(), m_MaterialInstances.end(), [&MaterialName](CMaterialInstance* pInstance)->bool {
+			return pInstance->Get_MaterialName() == MaterialName;
+		});
+
+	if (iter == m_MaterialInstances.end()) return nullptr;
+
+	return *iter;
 }
 
 CMaterial* CMaterial::Create()
@@ -95,38 +107,38 @@ CComponent* CMaterial::Clone()
 
 void CMaterial::Free()
 {
-	for (auto& data : m_MaterialDatas)
+	for (auto& data : m_MaterialInstances)
 		Safe_Release(data);
-	m_MaterialDatas.clear();
+
+	m_MaterialInstances.clear();
 }
 
 void CMaterial::Render_GUI()
 {
-
-	if (m_MaterialDatas.empty())
+	if (m_MaterialInstances.empty())
 		return;
+
 	ImGui::SeparatorText("Material");
 	float childWidth = ImGui::GetContentRegionAvail().x;
 	const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
-	const float childHeight = (m_MaterialDatas.size() * 2) + (ImGui::GetStyle().WindowPadding.y * 4);
-
+	const float childHeight = (m_MaterialInstances.size() * 2) + (ImGui::GetStyle().WindowPadding.y * 4);
+	
 	if(ImGui::Button("Material Tabs")) {
 		m_bMaterialTabOpen = true;
 	}
-
+	
 	if(m_bMaterialTabOpen){
-		ImGui::SetNextWindowSize(ImVec2(500, 400));
+		ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 		if (ImGui::Begin("Materials", &m_bMaterialTabOpen, ImGuiWindowFlags_NoCollapse))
 		{
 		if (ImGui::BeginTabBar("##MaterialTabs"))
 		{
-			for (int i = 0; i < m_MaterialDatas.size(); ++i)
+			for (int i = 0; i < m_MaterialInstances.size(); ++i)
 			{
-				CMaterialData* pData = m_MaterialDatas[i];
-				string tab_name = "Material " + to_string(i);
-				if (ImGui::BeginTabItem(tab_name.c_str()))
+				CMaterialInstance* hMaterial = m_MaterialInstances[i];
+				if (ImGui::BeginTabItem(hMaterial->Get_MaterialName().c_str()))
 				{
-					pData->Render_GUI();
+					hMaterial->Render_GUI();
 					ImGui::EndTabItem();
 				}
 			}

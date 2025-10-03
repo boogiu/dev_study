@@ -4,7 +4,6 @@
 #include "IResourceService.h"
 #include "Shader.h"
 #include "Model.h"
-#include "Animator3D.h"
 
 CPipeLine::CPipeLine()
 {
@@ -115,10 +114,9 @@ HRESULT CPipeLine::Update_ObjectBuffer(ID3D11DeviceContext* pContext, _float4x4*
 }
 
 /*메쉬 혹은 모델 단위의 버퍼*/
-HRESULT CPipeLine::Update_SkinningBuffer(ID3D11DeviceContext* pContext, CAnimator3D* pAnimator)
+HRESULT CPipeLine::Update_SkinningBuffer(ID3D11DeviceContext* pContext, const vector<_float4x4>& BoneMatrices)
 {
-	const auto& boneMatrices = pAnimator->Get_BoneMatrices();
-	if (boneMatrices.empty())
+	if (BoneMatrices.empty())
 		return S_OK;
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -133,8 +131,8 @@ HRESULT CPipeLine::Update_SkinningBuffer(ID3D11DeviceContext* pContext, CAnimato
 	if (FAILED(hr))
 		return hr;
 
-	size_t dataSize = sizeof(_float4x4) * boneMatrices.size();
-	memcpy(mappedResource.pData, boneMatrices.data(), dataSize);
+	size_t dataSize = sizeof(_float4x4) * BoneMatrices.size();
+	memcpy(mappedResource.pData, BoneMatrices.data(), dataSize);
 	pContext->Unmap(m_pDeviceSkinningBuffer, 0);
 
 	return S_OK;

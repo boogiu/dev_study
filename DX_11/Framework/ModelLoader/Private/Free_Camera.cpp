@@ -31,7 +31,7 @@ HRESULT CFree_Camera::Initialize(INIT_DESC* pArg)
 
 void CFree_Camera::Priority_Update(_float dt)
 {
-	
+
 	m_pTransform->LookAt(XMLoadFloat3(&m_vPivot));
 
 	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down('W'))
@@ -43,12 +43,12 @@ void CFree_Camera::Priority_Update(_float dt)
 	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down('A'))
 		m_fYaw -= dt * m_fSpeed;
 	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_SPACE))
-		m_vPivot.y += dt *5;
-		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_SHIFT))
+		m_vPivot.y += dt * 5;
+	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_SHIFT))
 		m_vPivot.y -= dt * 5;
 
 
-	m_fPitch = min(max(m_fPitch, (-89.f)), (89.f));
+	m_fPitch = min(max(m_fPitch, (-89.f)), (89.f)); //xÃà È¸Àü
 	m_fYaw = min(max(m_fYaw, (-89.f)), (89.f));
 
 	if (CGameInstance::GetInstance()->Get_GUISystem()) {

@@ -15,7 +15,7 @@ namespace Engine
     enum class STATE { RIGHT, UP, LOOK, POSITION, END };
 
     enum class BUFFER_TYPE {
-        BASIC_RECT, BASIC_CUBE, BASIC_SPHERE, TERRAIN, MESH
+        BASIC_RECT, BASIC_CUBE, BASIC_SPHERE, BASIC_PLANE, TERRAIN, MESH
     };
     enum class MESH_TYPE
     {
@@ -68,6 +68,9 @@ namespace Engine
         GLTF_METALLIC_ROUGHNESS = 27,
     };
 
+    enum class TILE_NEIGHBOR { 
+        CENTET, RIGHT, RIGHT_BOTTOM,BOTTOM, BOTTOM_LEFT, LEFT, LEFT_TOP,TOP,TOP_RIGHT,END
+    };
 }
 #endif // Engine_Enum_h__
 

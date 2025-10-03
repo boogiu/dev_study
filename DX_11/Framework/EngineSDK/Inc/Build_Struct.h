@@ -12,9 +12,9 @@ namespace Engine {
 
 	typedef struct LayerAddDesc : public INIT_DESC
 	{
-		string DestLevel;
+		string LevelTag;
 		string LayerTag;
-		LayerAddDesc(const string& _destLevel, const string& _layerTag) :LayerTag(_layerTag), DestLevel(_destLevel) {}
+		LayerAddDesc(const string& _destLevel, const string& _layerTag) :LayerTag(_layerTag), LevelTag(_destLevel) {}
 		virtual ~LayerAddDesc() DEFAULT;
 	}LAYER_DESC;
 

@@ -52,3 +52,7 @@
 /.vs/Image
 *.png
 *.bmp
+*.dds
+*.model
+*.mat
+Resources/

@@ -38,36 +38,36 @@ void CInputMgr::Update()
 	m_Mouse.fDeltaY = 0.f;
 	m_Mouse.fWheelDelta = 0.f;
 
-	for (auto& imguiID : m_Keyboard) {
-		if (imguiID.CurrDown && !imguiID.PrevDown)
-			imguiID.state = KEY_STATE::TAP;
+	for (auto& Key_ID : m_Keyboard) {
+		if (Key_ID.CurrDown && !Key_ID.PrevDown)
+			Key_ID.state = KEY_STATE::TAP;
 
-		else if(imguiID.CurrDown && imguiID.PrevDown)
-			imguiID.state = KEY_STATE::HOLD;
+		else if(Key_ID.CurrDown && Key_ID.PrevDown)
+			Key_ID.state = KEY_STATE::HOLD;
 
-		else if(!imguiID.CurrDown && imguiID.PrevDown)
-			imguiID.state = KEY_STATE::AWAY;
+		else if(!Key_ID.CurrDown && Key_ID.PrevDown)
+			Key_ID.state = KEY_STATE::AWAY;
 
-		else if(!imguiID.CurrDown && !imguiID.PrevDown)
-			imguiID.state = KEY_STATE::Center;
+		else if(!Key_ID.CurrDown && !Key_ID.PrevDown)
+			Key_ID.state = KEY_STATE::Center;
 
-		imguiID.PrevDown = imguiID.CurrDown;
+		Key_ID.PrevDown = Key_ID.CurrDown;
 	}
 
-	for (auto& imguiID : m_Mouse.mouseKey) {
-		if (imguiID.CurrDown && !imguiID.PrevDown)
-			imguiID.state = KEY_STATE::TAP;
+	for (auto& Mouse_ID : m_Mouse.mouseKey) {
+		if (Mouse_ID.CurrDown && !Mouse_ID.PrevDown)
+			Mouse_ID.state = KEY_STATE::TAP;
 
-		else if (imguiID.CurrDown && imguiID.PrevDown)
-			imguiID.state = KEY_STATE::HOLD;
+		else if (Mouse_ID.CurrDown && Mouse_ID.PrevDown)
+			Mouse_ID.state = KEY_STATE::HOLD;
 
-		else if (!imguiID.CurrDown && imguiID.PrevDown)
-			imguiID.state = KEY_STATE::AWAY;
+		else if (!Mouse_ID.CurrDown && Mouse_ID.PrevDown)
+			Mouse_ID.state = KEY_STATE::AWAY;
 
-		else if (!imguiID.CurrDown && !imguiID.PrevDown)
-			imguiID.state = KEY_STATE::Center;
+		else if (!Mouse_ID.CurrDown && !Mouse_ID.PrevDown)
+			Mouse_ID.state = KEY_STATE::Center;
 
-		imguiID.PrevDown = imguiID.CurrDown;
+		Mouse_ID.PrevDown = Mouse_ID.CurrDown;
 	}
 
 	GetCursorPos(&m_pMousePos);
@@ -155,7 +155,7 @@ void CInputMgr::HandleMouseInput(const RAWMOUSE& mouse)
 	if (mouse.usButtonFlags & RI_MOUSE_WHEEL)
 	{
 		SHORT zDelta = (SHORT)mouse.usButtonData;
-		m_Mouse.fWheelDelta += zDelta / WHEEL_DELTA; //ms »Ÿ ¥‹¿ß
+		m_Mouse.fWheelDelta = zDelta / WHEEL_DELTA; //ms »Ÿ ¥‹¿ß
 	}
 }
 

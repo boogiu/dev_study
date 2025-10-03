@@ -12,7 +12,7 @@ protected:
 public:
 	virtual HRESULT Initialize_Prototype()override;
 	virtual HRESULT Initialize(INIT_DESC* pArg = nullptr)override;
-	void Engine_Update(_float dt)override;
+	void Post_EngineUpdate(_float dt)override;
 	virtual void Priority_Update(_float dt)override;
 	virtual void Update(_float dt)override;
 	virtual void Late_Update(_float dt)override;

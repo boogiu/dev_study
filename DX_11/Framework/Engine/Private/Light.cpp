@@ -67,5 +67,5 @@ CComponent* CLight::Clone()
 void CLight::Free()
 {
 	__super::Free();
-	CGameInstance::GetInstance()->Get_LightMgr()->UnRegister_Light(m_ID);
+	//CGameInstance::GetInstance()->Get_LightMgr()->UnRegister_Light(m_ID);
 }

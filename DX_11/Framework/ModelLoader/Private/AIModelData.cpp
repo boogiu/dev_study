@@ -26,8 +26,15 @@ HRESULT CAIModelData::Initialize(const aiScene* pAIScene, ID3D11Device* pDevice,
 
 void CAIModelData::Render_GUI()
 {
-	if (ImGui::Button("ShowSkeletonBones")) {
+	if (ImGui::Button("Bones Tab")) {
 		m_bShowSkeletonBones = !m_bShowSkeletonBones;
+	}
+	string boneCount = "Bone : "+ to_string(m_pSkeleton->Get_BoneCount());
+
+	ImGui::Text(boneCount.c_str());
+
+	for (auto& mesh : m_Meshes) {
+		ImGui::Text(mesh->Get_Key().c_str());
 	}
 
 	if (m_bShowSkeletonBones) {
@@ -42,12 +49,13 @@ void CAIModelData::Render_GUI()
 
 void CAIModelData::Save_File(ofstream& ofs)
 {
-	static_cast<CAISkeleton*>(m_pSkeleton)->Save_File(ofs);
 
 	for (size_t i = 0; i < m_Meshes.size(); i++)
 	{
 		static_cast<CAIMesh*>(m_Meshes[i])->Save_File(ofs);
 	}
+
+	static_cast<CAISkeleton*>(m_pSkeleton)->Save_File(ofs);
 }
 
 CAIModelData* CAIModelData::Create(const aiScene* pAIScene, ID3D11Device* pDevice, MESH_TYPE eType)

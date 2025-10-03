@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "PipeLine.h"
 #include"Material.h"
+#include"IMeshProvider.h"
 
 CRenderSystem::CRenderSystem(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:m_pDevice{pDevice},m_pContext{ pContext }
@@ -26,6 +27,10 @@ HRESULT CRenderSystem::Initialize()
 	/*RenderPass*/
 	m_pOpaquePass = OpaquePass::Create(this);
 	m_pUIPass = UIPass::Create(this);
+#ifdef _DEBUG
+	m_pDebugPass = DebugPass::Create(this);
+#endif // _DEBUG
+
 	return S_OK;
 }
 
@@ -36,6 +41,9 @@ HRESULT CRenderSystem::Render()
 
 	m_pOpaquePass->Execute(m_pContext);
 	m_pUIPass->Execute(m_pContext);
+#ifdef _DEBUG
+	m_pDebugPass->Execute(m_pContext);
+#endif // _DEBUG
 	return S_OK;
 }
 
@@ -52,6 +60,8 @@ HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CShader* pShader, _uint D
 {
 	if (!pModel || !pShader || !ppInputLayout)
 		return E_FAIL;
+
+	/*메쉬를 생성할 떄마다 레이아웃을 만드는게아닌, 버텍스구조, 셰이더 구조를 이름으로 아이디화 시켜서 같은거면 그냥 들고 있는걸 쓰는거*/
 	
 	/*모델 데이터 이름 + 셰이더 이름*/
 	string LayOutID = string(pModel->Get_ElementKey(DrawIndex)) + pShader->Get_Key();
@@ -93,6 +103,7 @@ void CRenderSystem::Free()
 
 	Safe_Release(m_pOpaquePass);
 	Safe_Release(m_pUIPass);
+	Safe_Release(m_pDebugPass);
 	
 	for (auto& pair : m_InputLayouts)
 		Safe_Release(pair.second);

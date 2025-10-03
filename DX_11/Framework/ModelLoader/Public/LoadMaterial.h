@@ -16,9 +16,10 @@ public:
     void LinkShader(const string& shader);
 
 private:
+    vector<class CAIMaterial*> m_AIMaterialDatas;
     ID3D11Device* m_pDevice = { nullptr };
     ID3D11DeviceContext* m_pContext = { nullptr };
-    string m_MaterialKey = {};
+    string m_MaterialFileKey = {};
 
 public:
     static CLoadMaterial* Create();

@@ -15,6 +15,7 @@ CAIMesh::~CAIMesh()
 
 HRESULT CAIMesh::Initialize(ID3D11Device* pDevice, const aiMesh* pAIMesh, CSkeleton* pSkeleton, MESH_TYPE eType)
 {
+	m_VIKey = pAIMesh->mName.C_Str();
 	m_iVertexBufferCount = 1;
 	m_iVerticesCount = pAIMesh->mNumVertices;
 	m_iVertexStride = eType == MESH_TYPE::ANIM ? sizeof(VTXSKINMESH) : sizeof(VTXMESH);
@@ -50,11 +51,17 @@ HRESULT CAIMesh::Create_Vertex(ID3D11Device* pDevice)
 	VBDesc.MiscFlags = 0;
 	VBDesc.StructureByteStride = m_iVertexStride;
 
+	_matrix		PreTransformMatrix = XMMatrixIdentity();
+	PreTransformMatrix = XMMatrixRotationY(XMConvertToRadians(g_iImportPreRotate));
+
 	for (size_t i = 0; i < m_iVerticesCount; i++)
 	{
 		VTXMESH mesh = {};
 		memcpy(&mesh.vPosition, &m_pAIMesh->mVertices[i], sizeof(_float3));
+		XMStoreFloat3(&mesh.vPosition, XMVector3TransformCoord(XMLoadFloat3(&mesh.vPosition), PreTransformMatrix));
 		memcpy(&mesh.vNormal, &m_pAIMesh->mNormals[i], sizeof(_float3));
+		XMStoreFloat3(&mesh.vNormal, XMVector3TransformNormal(XMLoadFloat3(&mesh.vNormal), PreTransformMatrix));
+
 		memcpy(&mesh.vTexcoord, &m_pAIMesh->mTextureCoords[0][i], sizeof(_float2));
 		memcpy(&mesh.vTangent, &m_pAIMesh->mTangents[i], sizeof(_float3));
 		m_VBMeshContainer.push_back(mesh);
@@ -84,8 +91,10 @@ HRESULT CAIMesh::Create_AnimVertex(ID3D11Device* pDevice)
 		VTXSKINMESH mesh = {};
 		memcpy(&mesh.vPosition, &m_pAIMesh->mVertices[i], sizeof(_float3));
 		memcpy(&mesh.vNormal, &m_pAIMesh->mNormals[i], sizeof(_float3));
-		memcpy(&mesh.vTexcoord, &m_pAIMesh->mTextureCoords[0][i], sizeof(_float2));
-		memcpy(&mesh.vTangent, &m_pAIMesh->mTangents[i], sizeof(_float3));
+		if (m_pAIMesh->mNumUVComponents[0] > 0) {
+			memcpy(&mesh.vTexcoord, &m_pAIMesh->mTextureCoords[0][i], sizeof(_float2));
+			memcpy(&mesh.vTangent, &m_pAIMesh->mTangents[i], sizeof(_float3));
+			}
 		m_VBSkinContainer.push_back(mesh);
 	}
 	/*만약 본의 개수가 없더라면.*/
@@ -94,7 +103,7 @@ HRESULT CAIMesh::Create_AnimVertex(ID3D11Device* pDevice)
 	for (size_t i = 0; i < NumBones; i++)
 	{
 		aiBone* pAIBone = m_pAIMesh->mBones[i];
-		string BoneName = pAIBone->mName.data;
+		string BoneName = pAIBone->mName.C_Str();
 		_int BoneIndex = m_pSkeleton->Find_BoneIndexByName(BoneName);
 		m_BoneIndices.push_back(BoneIndex);
 
@@ -138,7 +147,6 @@ HRESULT CAIMesh::Create_AnimVertex(ID3D11Device* pDevice)
 		_int BoneIndex = m_pSkeleton->Find_BoneIndexByName(m_VIKey);
 		_float4x4       OffsetMatrix;
 		XMStoreFloat4x4(&OffsetMatrix, XMMatrixIdentity());
-		/*m_OffsetMatrices.push_back(OffsetMatrix);*/
 		m_BoneIndices.push_back(BoneIndex);
 	}
 
@@ -184,7 +192,7 @@ void CAIMesh::Save_File(ofstream& ofs)
 	infoHeader.BoneCount = m_BoneIndices.size();
 	infoHeader.IndicesCount = m_iIndicesCount;
 	infoHeader.VerticesCount = m_iVerticesCount;
-	strcpy_s(infoHeader.MeshName, m_VIKey.data());
+	strcpy_s(infoHeader.MeshName, m_VIKey.c_str());
 	infoHeader.MaterialIndex = m_MaterialIndex;
 	ofs.write(reinterpret_cast<const char*>(&infoHeader), sizeof(MESH_INFO_HEADER));
 
@@ -196,19 +204,23 @@ void CAIMesh::Save_File(ofstream& ofs)
 
 	else if(m_iVertexStride == sizeof(VTXMESH)){
 		for (VTXMESH& vertex : m_VBMeshContainer) {
-			ofs.write(reinterpret_cast<const char*>(&vertex), sizeof(VTXSKINMESH));
+			_matrix		PreTransformMatrix = XMMatrixIdentity();
+			PreTransformMatrix = XMMatrixRotationY(XMConvertToRadians(g_iExportPreRotate));
+			XMStoreFloat3(&vertex.vPosition, XMVector3TransformCoord(XMLoadFloat3(&vertex.vPosition), PreTransformMatrix));
+			XMStoreFloat3(&vertex.vNormal, XMVector3TransformNormal(XMLoadFloat3(&vertex.vNormal), PreTransformMatrix));
+
+			ofs.write(reinterpret_cast<const char*>(&vertex), sizeof(VTXMESH));
 		}
 	}
 
 	for(_uint indices : m_IBContainer)
 		ofs.write(reinterpret_cast<const char*>(&indices), sizeof(_uint));
 
-	//for()
 }
 
 CAIMesh* CAIMesh::Create(ID3D11Device* pDevice, const aiMesh* pAIMesh, CSkeleton* pSkeleton, MESH_TYPE eType)
 {
-	CAIMesh* instance = new CAIMesh(pAIMesh->mName.data);
+	CAIMesh* instance = new CAIMesh(pAIMesh->mName.C_Str());
 	if (FAILED(instance->Initialize(pDevice, pAIMesh, pSkeleton, eType))) {
 		Safe_Release(instance);
 	}

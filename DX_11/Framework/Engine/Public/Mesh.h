@@ -18,6 +18,8 @@ private:
 
 public:
 	_uint Get_MaterialIndex() { return m_MaterialIndex; }
+	_float3 Get_MinVertexLocal() { return m_vMeshMinLocal; }
+	_float3 Get_MaxVertexLocal() { return m_vMeshMaxLocal; }
 
 public:
 	virtual void Render_GUI();
@@ -26,6 +28,8 @@ protected:
 	vector<_uint> m_indices;						//임시 인덱스 (함수로 따로 빼려고 하다보니 생김)
 	_uint m_MaterialIndex = {};					//어떤 머티리얼을 사용하는가??
 
+	_float3 m_vMeshMinLocal = { FLT_MAX ,FLT_MAX ,FLT_MAX };
+	_float3 m_vMeshMaxLocal = { -FLT_MAX ,-FLT_MAX ,-FLT_MAX };
 	
 public:
 	static CMesh* Create(ID3D11Device* pDevice,ifstream& ifs, MESH_TYPE eType);

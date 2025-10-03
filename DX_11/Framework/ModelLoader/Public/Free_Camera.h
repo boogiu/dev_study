@@ -19,7 +19,7 @@ public:
 private:
     _float m_fDistance = {};
     _float m_fYaw = {};
-    _float m_fPitch = {};
+    _float m_fPitch = {45.f};
     _float m_fSpeed = {40.f};
     _float3 m_vPivot = {0,0,0};
 public:

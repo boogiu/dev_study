@@ -32,6 +32,7 @@ private:
     vector<VTXMESH> m_VBMeshContainer;
     vector<_uint> m_IBContainer ;
     vector<_uint>	m_BoneIndices;		//어떤 본을 사용하는가??
+
 public:
     static CAIMesh* Create(ID3D11Device* pDevice, const aiMesh* pAIMesh, CSkeleton* pSkeleton, MESH_TYPE eType);
     virtual void Free() override;

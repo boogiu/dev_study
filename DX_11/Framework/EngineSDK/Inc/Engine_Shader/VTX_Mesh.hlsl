@@ -61,10 +61,28 @@ PS_OUT PS_MAIN(PS_IN In)
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord );
     
+   // if (vMtrlDiffuse.a < 0.3f)
+   //     discard;
     
    //ºûÀÇ »ö»ó * ºûÀÇ °­µµ * ÅØ½ºÃ³ »ö±ò
    Out.vColor = vLightDiffuse * vMtrlDiffuse * In.vShade +
        (vLightSpecular * vMtrlSpecular) * In.fSpecular;
+    
+
+    return Out;
+}
+
+PS_OUT PS_BLEND(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+   //ºûÀÇ »ö»ó * ºûÀÇ °­µµ * ÅØ½ºÃ³ »ö±ò
+    Out.vColor = vMtrlDiffuse;
+    
+    Out.vColor.a = 0.4f;
+    Out.vColor.b += 0.05f;
     
     return Out;
 }
@@ -73,8 +91,20 @@ technique11 DefaultTechnique
 {
     pass Opaque
     {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
     }  
+
+    pass ForceBlend
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        PixelShader = compile ps_5_0 PS_BLEND();
+    }
 }
 
