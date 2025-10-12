@@ -61,7 +61,7 @@ void OpaquePass::Execute(ID3D11DeviceContext* pContext)
 	/*상수 버퍼 및 SRV 세팅*/
 	pPipeLine->Begin_ObjectBuffer(pContext);
 	pPipeLine->Begin_SkinningBuffer(pContext);
-
+	  
 	for (auto& packet : m_Packets)
 	{
 		//여기서 인덱스 추가 저장해줌

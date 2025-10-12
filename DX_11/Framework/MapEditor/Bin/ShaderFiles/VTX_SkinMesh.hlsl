@@ -76,9 +76,7 @@ PS_OUT PS_MAIN(PS_IN In)
    //빛의 색상 * 빛의 강도 * 텍스처 색깔
     Out.vColor = vLightDiffuse * vMtrlDiffuse * In.vShade +
        (vLightSpecular * vMtrlSpecular) * In.fSpecular;
-    
-    if (Out.vColor.a< 0.3)
-        discard;
+
     return Out;
 }
 
