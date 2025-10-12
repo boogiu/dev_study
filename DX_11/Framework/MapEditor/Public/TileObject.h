@@ -17,11 +17,20 @@ public:
     void Late_Update(_float dt) override;
 
 public:
-    void Object_OnGrid(_uint x=0, _uint y = 0, _uint z =0);
+    void Object_OnGrid(TILE_INDEX index);
     void Set_Selected(_bool selected);
+    HRESULT Link_Data(const string& folderName,_bool Base=false);
+
+public:
+    HRESULT Save_Blocks(ofstream& ofs, _bool Base = false);
 
 public:
     void Render_GUI() override;
+
+private:
+    _float2 m_PaletteIndex = {};
+    _float2 m_TileScale = {};
+    _int m_TileIndex = {};
 
 public:
     static CTileObject* Create();

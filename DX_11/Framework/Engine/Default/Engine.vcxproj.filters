@@ -310,6 +310,9 @@
     <Filter Include="01. Utility\04. Components\StaticComponent\13. TileBlock">
       <UniqueIdentifier>{be975d1a-5766-4bec-a26c-cdd7f116f471}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\05. Resources\08. ResourceLoader">
+      <UniqueIdentifier>{902c48e6-d52e-456e-9889-eeaa46908dc5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -872,6 +875,9 @@
       <Filter>98. Default_HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Public\Engine_Shader\Shader_State.hlsl">
+      <Filter>98. Default_HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Public\Engine_Shader\VTX_Field.hlsl">
       <Filter>98. Default_HLSL</Filter>
     </FxCompile>
   </ItemGroup>

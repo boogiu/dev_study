@@ -7,20 +7,20 @@
 #include "IObjectService.h"
 #include "IProtoService.h"
 #include "IResourceService.h"
+#include "IRenderService.h"
 #include "IGUIService.h"
 #include "GUI_Context.h"
 #include "IInputService.h"
 #include "ITileService.h"
 
+#include "Layer.h"
 #include "GridObject.h"
-#include "TileObject.h"
-#include "EditorPanel.h"
-#include "MaterialData.h"
-#include "MaterialInstance.h"
 
-#include "SkeletalModel.h"
-#include "Material.h"
-#include "TileBlock.h"
+#include "TileObject.h"
+#include "FieldOutBlocks.h"
+
+#include "DirectoryPanel.h"
+#include "ControlPanel.h"
 
 IMPLEMENT_SINGLETON(CEditorSystem)
 
@@ -29,9 +29,6 @@ CEditorSystem::CEditorSystem()
 	Initialize();
 }
 
-CEditorSystem::~CEditorSystem()
-{
-}
 
 HRESULT CEditorSystem::Initialize()
 {
@@ -42,23 +39,27 @@ HRESULT CEditorSystem::Initialize()
 	m_pInputService = CGameInstance::GetInstance()->Get_InputDev();
 	m_pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
 	m_pUIContext = CGameInstance::GetInstance()->Get_GUISystem()->Get_Context();
+	m_pRenderSystem = CGameInstance::GetInstance()->Get_RenderSystem();
 
 	/*그리드 오브젝트*/
 	IProtoService* pProto = CGameInstance::GetInstance()->Get_PrototypeMgr();
 	Execute_TileSystem();
 
-	/*패널 생성*/
-	m_pPanel = CEditorPanel::Create(m_pUIContext);
-	CGameInstance::GetInstance()->Get_GUISystem()->Register_Panel(m_pPanel);
-	m_pPanel->Set_Grid(m_pGrid);
-
-
+	Create_GUIPanels();
 	/*타일 오브젝트 원형*/
 	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_Tile", CTileObject::Create());
+	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_FieldOut", CFieldOutBlocks::Create());
 
-	/*기본 타일 모델 로드*/
-	CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath("Base_0.model", "../../Resources/Models/BaseTile/Base_0.model");
-	CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath("Base_0.mat", "../../Resources/Models/BaseTile/Base_0.mat");
+	/*팔레트 우선 등록*/
+	auto pResMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
+
+	pResMgr->Add_ResourcePath("mGrass_Grd.dds", "../../Resources/Palette/mGrass_Grd.dds");
+	pResMgr->Add_ResourcePath("mGrass_GrdEdge.dds", "../../Resources/Palette/mGrass_GrdEdge.dds");
+	pResMgr->Add_ResourcePath("mGrass_Mix.dds", "../../Resources/Palette/mGrass_Mix.dds");
+	   
+	m_pRenderSystem->Add_Palette("g_PaletteTexture", pResMgr->Load_Texture(G_GlobalLevelKey, "mGrass_Grd.dds"));
+	m_pRenderSystem->Add_Palette("g_PaletteEdgeTexture", pResMgr->Load_Texture(G_GlobalLevelKey, "mGrass_GrdEdge.dds"));
+	m_pRenderSystem->Add_Palette("g_MaskTexture", pResMgr->Load_Texture(G_GlobalLevelKey, "mGrass_Mix.dds"));
 
 	return S_OK;
 }
@@ -67,84 +68,10 @@ void CEditorSystem::Update(_float dt)
 {
 	Create_Ray();
 	DragDrop_Object();
-	Select_Object();
+
 	m_pRayManager->Register_Ray(&m_tRay);
 }
 
-HRESULT CEditorSystem::Create_Object(const string& folderName)
-{
-	if (m_EditorContext.pEditingObject != nullptr) return E_FAIL;
-
-	CGameObject* pTile = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
-		.Position({ 0,0,0 })
-		.Scale({ 1,1,1 })
-		.Build(folderName);
-
-	string resourcPath = "../../Resources/Models/" + folderName;
-	_bool hasMaterial = { false };
-	_bool hasModel = { false };
-
-	for (const auto& entry : filesystem::directory_iterator(resourcPath))
-	{
-		if (!entry.exists() || !entry.is_regular_file())
-			continue;
-
-		const string filePath = filesystem::weakly_canonical(entry.path()).string();
-		string file = entry.path().filename().string();
-		string ext = entry.path().extension().string();
-
-		if (ext == ".model")
-		{
-			CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(file, filePath);
-			pTile->Get_Component<CModel>()->Link_Model(G_GlobalLevelKey, file);
-			hasModel = true;
-		}
-		else if (ext == ".mat")
-		{
-			CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(file, filePath);
-			pTile->Get_Component<CMaterial>()->Link_Material(G_GlobalLevelKey, file);
-			hasMaterial = true;
-		}
-	}
-
-	if (!hasMaterial || !hasModel)
-		Safe_Release(pTile);
-
-	else {
-		m_EditorContext.pEditingObject = pTile;
-		m_pObjMgr->Add_Object(pTile, { "Editor_Level","Tile_Layer" });
-	}
-
-	return S_OK;
-}
-
-HRESULT CEditorSystem::Create_ObjectArea(_fvector vEdgeMin, _cvector vEdgeMax)
-{
-	_uint minX, minY, minZ = {};
-	m_pTileSystem->Get_IndexByPosition(vEdgeMin, &minX, &minY, &minZ);
-
-	_uint maxX, maxY, maxZ = {};
-	m_pTileSystem->Get_IndexByPosition(vEdgeMax, &maxX, &maxY, &maxZ);
-
-
-	for (size_t i = minY; i < maxY+1; i++)
-	{
-		for (size_t j = minZ; j < maxZ; j++)
-		{
-			for (size_t k = minX; k < maxX; k++)
-			{
-				CGameObject* pTile = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" }).Build("BaseTile");
-				pTile->Get_Component<CModel>()->Link_Model(G_GlobalLevelKey, "Base_0.model");
-				pTile->Get_Component<CMaterial>()->Link_Material(G_GlobalLevelKey, "Base_0.mat");
-				auto& instances = pTile->Get_Component<CMaterial>()->Get_Material_Instance();
-				m_pObjMgr->Add_Object(pTile, { "Editor_Level","Tile_Layer" });
-				static_cast<CTileObject*>(pTile)->Object_OnGrid(k, i, j);
-			}
-		}
-	}
-
-	return S_OK;
-}
 
 void CEditorSystem::Execute_TileSystem()
 {
@@ -154,12 +81,13 @@ void CEditorSystem::Execute_TileSystem()
 	info.iSizeYPerTile = 15;
 	info.iSizeZPerTile = 10.f;
 
-	info.iTileCountX = 112;
-	info.iTileCountY = 4;
-	info.iTileCountZ = 96;
+	info.iTileCountX = 16*6*2;
+	info.iTileCountY = 4;/*0~4 -> 5칸*/
+	info.iTileCountZ = 16*6 * 2;
 
 	info.OriginPoint = { 0,0,0,1 };
 
+	/*타일 시스템 구동*/
 	CGameInstance::GetInstance()->Excute_TileSystem(info);
 	m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	m_EditorContext.ContextTileInfo = info;
@@ -168,19 +96,28 @@ void CEditorSystem::Execute_TileSystem()
 	_float GridZscale = static_cast<_float>(info.iTileCountZ * info.iSizeZPerTile);
 	_float GridYPostion = static_cast<_float>(info.iSizeYPerTile);
 
+	/*그리드 역할의 오브젝트 생성*/
 	IProtoService* pProto = CGameInstance::GetInstance()->Get_PrototypeMgr();
 	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_Grid", CGridObject::Create());
-
-	IObjectService* pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
 
 	CGameObject* pGrid = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Grid" })
 		.Position({ GridXscale / 2, 0, GridZscale / 2 })
 		.Scale({ GridXscale ,	1	, GridZscale })
-		.Build("name");
-	pObjMgr->Add_Object(pGrid, { G_GlobalLevelKey,"Global_Layer" });
+		.Build("Grid");
 
+	m_pObjMgr->Add_Object(pGrid, { G_GlobalLevelKey,"Global_Layer" });
 	m_pGrid = dynamic_cast<CGridObject*>(pGrid);
 	Safe_AddRef(m_pGrid);
+}
+
+void CEditorSystem::Create_GUIPanels()
+{
+	/*패널 생성*/
+	m_pDirectoryPanel = CDirectoryPanel::Create(m_pUIContext);
+	m_pControlPanel = CControlPanel::Create(m_pUIContext);
+	CGameInstance::GetInstance()->Get_GUISystem()->Register_Panel(m_pDirectoryPanel);
+	CGameInstance::GetInstance()->Get_GUISystem()->Register_Panel(m_pControlPanel);
+	m_pControlPanel->Set_Grid(m_pGrid);
 }
 
 void CEditorSystem::Create_Ray()
@@ -235,48 +172,149 @@ void CEditorSystem::Create_Ray()
 	m_tRay.fMaxDistance = 1550.f;
 }
 
+void CEditorSystem::Create_Base()
+{
+	auto pResMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
+	pResMgr->Add_ResourcePath("Base_0.model", "../../Resources/Models/FieldRoad/Base/Base_0/Base_0.model");
+	pResMgr->Add_ResourcePath("Base_0.mat", "../../Resources/Models/FieldRoad/Base/Base_0/Base_0.mat");
+	auto info = m_EditorContext.ContextTileInfo;
+
+	_float3 Pos = {
+		info.OriginPoint.x + info.iSizeXPerTile *info.iTileCountX * 0.5f,
+		info.OriginPoint.y - 0.1f,
+		info.OriginPoint.z + info.iSizeZPerTile * info.iTileCountZ * 0.5f,
+	};
+
+	/*베이스 타일을 생성*/
+	CGameObject* pObject =
+		Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
+		.Position(Pos)
+		.Scale({ 16 * 7,10, 16 * 6 })
+		.Build("Base_Plane", &m_BaseTileID);
+
+	m_pObjMgr->Add_Object(pObject, { "Editor_Level","Base_Layer" });
+	dynamic_cast<CTileObject*>(pObject)->Link_Data("Base_0",true);
+
+	return;
+}
+
 void CEditorSystem::DragDrop_Object()
 {
 	if (nullptr == m_EditorContext.pEditingObject) return;
-
 	CGameObject* obj = m_EditorContext.pEditingObject;
 
-	CTileObject* object = dynamic_cast<CTileObject*>(obj);
 
 	if (m_pInputService->Mouse_Hold(MOUSE_BTN::LB)) {
-		object->Get_Component<CTransform>()->Set_Pos({ m_pGrid->Get_HitPos() });
-		object->Set_Selected(true);
+		obj->Get_Component<CTransform>()->Set_Pos({ m_pGrid->Get_HitPos() });
 	}
+
 	if (m_pInputService->Mouse_Away(MOUSE_BTN::LB)) {
-		_uint x, y, z = {};
-		m_pGrid->Get_HitIndex(&x,&y,&z);
-		object->Object_OnGrid(x, y, z);
-		object->Set_Selected(false);
-		m_pPanel->Notify_CreateComplete();
+		TILE_INDEX index = m_pGrid->Get_HitIndex();
+		switch (m_EditorContext.eType)
+		{
+		case TILE: {
+			CTileObject* object = dynamic_cast<CTileObject*>(obj);
+
+			if (object)
+				object->Object_OnGrid(index);
+		}
+
+			break;
+		case FIELDOUT: {
+			CFieldOutBlocks* object = dynamic_cast<CFieldOutBlocks*>(obj);
+			if (object)
+				object->Object_OnGrid(index);
+		}
+			break;
+		default:
+			break;
+		}
+		
+
+		m_pDirectoryPanel->Notify_CreateComplete();
 		m_EditorContext.pEditingObject = nullptr;
-		//m_pUIContext->pSelectedObject = nullptr; /*지유아이랑 분리/
 	}
 }
 
-void CEditorSystem::Select_Object()
+HRESULT CEditorSystem::Save_Blocks()
 {
-	//이미 짚고 있는 것이 있으면 리턴
-	if (nullptr != m_EditorContext.pEditingObject) return;
-	if (CGameInstance::GetInstance()->Get_GUISystem()->UsingUI()) return;
 
-	if (m_pInputService->Mouse_Down(MOUSE_BTN::LB)) {
-		RAY_HIT* hitInfo = m_pRayManager->Get_FrontRayHit();
-		if (hitInfo) {
-			//m_EditorContext.pEditingObject = hitInfo->pObject;
-			//CGameInstance::GetInstance()->Get_GUISystem().
-			m_pUIContext->pSelectedObject = hitInfo->pObject;
-		}
-	}
+	string path = "../../Resources/Data/MapData.dat";
+	filesystem::path directory(path);
+
+	ofstream ofs(path.c_str(), ios::binary);
+	if (!ofs.is_open())
+		return E_FAIL;
+
+	/*타일 전체 정보 저장*/
+	TILESYSTEM_INFO systemInfo =m_EditorContext.ContextTileInfo;
+	ofs.write(reinterpret_cast<char*>(&systemInfo), sizeof(TILESYSTEM_INFO));
+
+	/*1. Base Tile*/
+	auto iter = m_pObjMgr->Get_LevelLayer("Editor_Level").find("Base_Layer");
+	if (iter == m_pObjMgr->Get_LevelLayer("Editor_Level").end())
+		return E_FAIL;
+	auto& ObjectLayer = iter->second;
+	CGameObject* pObject = ObjectLayer->Find_ObjectByID(m_BaseTileID);
+	CTileObject* pObj = dynamic_cast<CTileObject*>(pObject);
+
+	pObj->Save_Blocks(ofs, true);
+
+
+	ofs.close();
+
+	return S_OK;
+}
+
+
+HRESULT CEditorSystem::Create_Tile(const string& folderName)
+{
+	if (m_EditorContext.pEditingObject != nullptr) return E_FAIL;
+
+	/*타일을 생성*/
+	CGameObject* pObject =
+		Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
+		.Position({ 0,0,0 })
+		.Scale({ 1,1,1 })
+		.Build(folderName);
+	m_pObjMgr->Add_Object(pObject, { "Editor_Level","Block_Layer" });
+
+	dynamic_cast<CTileObject*>(pObject)->Link_Data(folderName);
+	m_EditorContext.pEditingObject = pObject;
+	m_EditorContext.eType = TILE;
+	return S_OK;
+}
+
+HRESULT CEditorSystem::Create_FieldOut(const string& folderName)
+{
+	if (m_EditorContext.pEditingObject != nullptr) return E_FAIL;
+
+	/*타일을 생성*/
+	CGameObject* pObject =
+		Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_FieldOut" })
+		.Position({ 0,0,0 })
+		.Scale({ 1,1,1 })
+		.Build(folderName);
+
+	m_pObjMgr->Add_Object(pObject, { "Editor_Level","FieldOut_Layer" });
+
+	dynamic_cast<CFieldOutBlocks*>(pObject)->Link_Data(folderName);
+	m_EditorContext.pEditingObject = pObject;
+	m_EditorContext.eType = FIELDOUT;
+	return S_OK;
+}
+
+HRESULT CEditorSystem::Delete_Object(CGameObject* pObject)
+{
+	if(pObject)
+		m_pObjMgr->Remove_Object(pObject);
+
+	return S_OK;
 }
 
 void CEditorSystem::Free()
 {
 	__super::Free();
 	Safe_Release(m_pGrid);
-	Safe_Release(m_pPanel);
+	Safe_Release(m_pDirectoryPanel);
 }

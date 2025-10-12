@@ -36,6 +36,9 @@ private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	unordered_map<string, LAYERS> m_Layers; //(레벨 태그 / (레이어 태그/레이어))
 
+	/*object Array to Delete*/
+	vector<CGameObject*> DeleteObjs;
+
 public:
 	static CObjectMgr* Create();
 	virtual void Free() override;

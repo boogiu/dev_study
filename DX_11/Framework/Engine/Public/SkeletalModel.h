@@ -30,6 +30,8 @@ public:
 
 	class CModelData* Get_ModelData() { return m_pData; };
 	virtual BOUNDING_BOX Get_LocalBoundingBox()	override;
+	virtual BOUNDING_BOX Get_WorldBoundingBox()	override;
+	virtual vector<BOUNDING_BOX> Get_MeshBoundingBox()	override;
 	const vector<_float4x4>& Get_BoneMatrices() { return m_FinalMatices; };
 	_bool isReadyToDraw()	override;
 

@@ -107,7 +107,7 @@ SHADER_PARAM* CMaterialInstance::Get_Param(const string& ConstantName)
 
 HRESULT CMaterialInstance::Override_Constant(const MaterialConstants& materialConstant)
 {
-	overrides_Constant = materialConstant; 
+	overrides_Constant = materialConstant;
 	return S_OK;
 }
 
@@ -119,7 +119,7 @@ HRESULT CMaterialInstance::Reset_Constant()
 
 HRESULT CMaterialInstance::Reset_Pass()
 {
-	override_Pass  =	m_pMaterialData->Get_PassConstant();
+	override_Pass = m_pMaterialData->Get_PassConstant();
 	return S_OK;
 }
 
@@ -154,7 +154,7 @@ CMaterialInstance* CMaterialInstance::Create_Handle(const string& materialKey, c
 		Safe_Release(hMaterial);
 	};
 
-	/*직접 생성해주었으니, 안에 넣고 나면 addRef되고, 
+	/*직접 생성해주었으니, 안에 넣고 나면 addRef되고,
 	그거 레퍼런스 카운트 하나 다운 시켜주어야 함*/
 	Safe_Release(pData);
 

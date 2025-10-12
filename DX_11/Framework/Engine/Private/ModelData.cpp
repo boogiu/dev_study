@@ -35,7 +35,6 @@ HRESULT CModelData::Initialize(const string& filePath, ID3D11Device* pDevice)
 		}
 	}
 
-
 	if (fileHeader.isAnimate) {
 		m_pSkeleton = CSkeleton::Create(ifs);
 	}
@@ -103,17 +102,21 @@ void CModelData::Render_GUI()
 	}
 	ImGui::Separator();
 
-	if (ImGui::Button("Bones Tab")) {
-		isGui_BoneTabOpen = !isGui_BoneTabOpen;
+	if (m_pSkeleton) {
+		if (ImGui::Button("Bones Tab")) {
+			isGui_BoneTabOpen = !isGui_BoneTabOpen;
+		}
+		string boneCount = "Bone : " + to_string(m_pSkeleton->Get_BoneCount());
+		ImGui::Text(boneCount.c_str());
+		ImGui::SetNextWindowSize(ImVec2(500, 400));
+		if (ImGui::Begin("SkeletonBones", &isGui_BoneTabOpen, ImGuiWindowFlags_NoCollapse))
+		{
+			m_pSkeleton->Render_GUI();
+		}
+		ImGui::End();
+
 	}
-	string boneCount = "Bone : " + to_string(m_pSkeleton->Get_BoneCount());
-	ImGui::Text(boneCount.c_str());
-	ImGui::SetNextWindowSize(ImVec2(500, 400));
-	if (ImGui::Begin("SkeletonBones", &isGui_BoneTabOpen ,  ImGuiWindowFlags_NoCollapse))
-	{
-		m_pSkeleton->Render_GUI();
-	}
-	ImGui::End();
+
 }
 
 HRESULT CModelData::Render_Mesh(ID3D11DeviceContext* pContext, _uint Index)
@@ -153,6 +156,16 @@ BOUNDING_BOX CModelData::Get_LocalBoundingBox()
 	return BOUNDING_BOX{m_vMinLocal,m_vMaxLocal};
 }
 
+BOUNDING_BOX CModelData::Get_MeshBoundingBox(_uint index)
+{
+	BOUNDING_BOX box = {};
+	if (index >= m_Meshes.size()) {
+		return box;
+	}
+	box.vMax = m_Meshes[index]->Get_MaxVertexLocal();
+	box.vMin = m_Meshes[index]->Get_MinVertexLocal();
+	return box;
+}
 
 _int CModelData::Get_BoneParentIndex(_uint i)
 {

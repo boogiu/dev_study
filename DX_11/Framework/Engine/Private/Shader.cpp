@@ -115,6 +115,8 @@ HRESULT CShader::Bind_Value(const string& ConstantName, const SHADER_PARAM& para
 		return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
 	else if (iter->second.typeName == "Texture2DArray")
 		return Bind_ShaderResourceArray(ConstantName, static_cast<vector<CTexture*>*>(parameter.pData));
+	else if (iter->second.typeName == "StructuredBuffer")
+		return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
 
 	HRESULT hr = iter->second.pHandle->SetRawValue(parameter.pData, 0, parameter.iSize);
 
@@ -173,7 +175,7 @@ HRESULT CShader::Bind_ShaderResource(const string& ConstantName, ID3D11ShaderRes
 	}
 
 	ID3DX11EffectShaderResourceVariable* pShaderVariable = iter->second.pHandle->AsShaderResource();
-	if (!pShaderVariable) {
+	if (!pShaderVariable || !pShaderVariable->IsValid()) {
 		MSG_BOX("Wrong Variable Type is Binding : CShader");
 		return E_FAIL;
 	}
@@ -184,25 +186,33 @@ HRESULT CShader::Bind_ShaderResource(const string& ConstantName, ID3D11ShaderRes
 
 HRESULT CShader::Bind_ShaderResourceArray(const string& ConstantName, vector<class CTexture*>* pTextures)
 {
+	if (!pTextures || pTextures->empty())
+		return S_OK;
+
 	auto iter = m_Variables.find(ConstantName);
 	if (iter == m_Variables.end()) {
-		MSG_BOX("Wrong Variable Name is Binding : CShader");
+		MSG_BOX("Invalid variable name :CShader ");
 		return E_FAIL;
 	}
+
 	ID3DX11EffectShaderResourceVariable* pShaderVariable = iter->second.pHandle->AsShaderResource();
 	if (!pShaderVariable) {
-		MSG_BOX("Wrong Variable Type is Binding : CShader");
+		MSG_BOX("Invalid variable type :CShader ");
 		return E_FAIL;
 	}
 
-	pTextures->size();
 	vector<ID3D11ShaderResourceView*> srvVector;
-	for (auto tex : *pTextures)
-		srvVector.push_back(tex->Get_SRV());
+	srvVector.reserve(pTextures->size());
 
-	pShaderVariable->SetResourceArray(srvVector.data(),0, srvVector.size());
+	for (auto tex : *pTextures)
+		srvVector.push_back(tex ? tex->Get_SRV() : nullptr);
+
+	if (!srvVector.empty())
+		pShaderVariable->SetResourceArray(srvVector.data(), 0, static_cast<UINT>(srvVector.size()));
+
 	return S_OK;
 }
+
 
 void CShader::ReflectShader()
 {

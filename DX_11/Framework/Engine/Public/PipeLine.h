@@ -25,9 +25,22 @@ class CPipeLine :
         _float4x4 matWorld;
     };
 
+    struct ObjectBufferArray {
+        ObjectBuffer Objects[1024]; 
+    };
+
     struct SkinningBuffer
     {
-        _float4x4 BoneMatrices[512];
+        _float4x4 SkinningBuffer[g_iMaxNumBones];
+    };
+
+    struct  TileBuffer
+    {
+        _float2 PalettePixel;       
+        _int PaletteIndex;            
+        _int PaletteEdge;             
+        _int MaskPalette;            
+        _int _Padding[3];            
     };
 
 private:
@@ -38,20 +51,42 @@ public:
     HRESULT Initialize(ID3D11Device* pDevice);
     HRESULT Update_FrameBuffer(ID3D11DeviceContext* pContext);
     HRESULT Update_LightBuffer(ID3D11DeviceContext* pContext);
-    HRESULT Update_ObjectBuffer(ID3D11DeviceContext* pContext, _float4x4* pMatrix);
-    HRESULT Update_SkinningBuffer(ID3D11DeviceContext* pContext, const vector<_float4x4>& BoneMatrices);
+
+    _uint Write_ObjectData(const _float4x4& worldMatrix);
+    HRESULT Begin_ObjectBuffer(ID3D11DeviceContext* pContext);
+    HRESULT End_ObjectBuffer(ID3D11DeviceContext* pContext);
+
+    _uint Write_SkinningBuffer(const vector<_float4x4>& BoneMatrices);
+    HRESULT Begin_SkinningBuffer(ID3D11DeviceContext* pContext);
+    HRESULT End_SkinningBuffer(ID3D11DeviceContext* pContext);
+
+    HRESULT Bind_PaletteTexture(class CShader* pShader);
+    HRESULT Add_Palette(const string& ConstantName, class CTexture* pTexture);
 
 public:
     ID3D11Buffer* Get_FrameBuffer() { return m_pDeviceFrameBuffer; };
-    ID3D11Buffer* Get_ObjectBuffer() { return m_pDeviceObjectBuffer; };
     ID3D11Buffer* Get_LightBuffer() { return m_pDeviceLightBuffer; };
-    ID3D11Buffer* Get_SkinningBuffer() { return m_pDeviceSkinningBuffer; };
+
+    ID3D11Buffer* Get_ObjectArrayBuffer() { return m_pDeviceObjectBuffer; };
+    ID3D11ShaderResourceView* Get_SkinningResource() { return m_pSkinningResource; };
 
 private:
     ID3D11Buffer* m_pDeviceFrameBuffer = {nullptr};
     ID3D11Buffer* m_pDeviceLightBuffer = {nullptr};
-    ID3D11Buffer* m_pDeviceObjectBuffer = {nullptr};
-    ID3D11Buffer* m_pDeviceSkinningBuffer = {nullptr};
+    
+    _int m_ObjectBufferCount = {};
+    ObjectBufferArray* m_pObjectBufferArray = { nullptr };
+    ID3D11Buffer* m_pDeviceObjectBuffer = { nullptr };
+    D3D11_MAPPED_SUBRESOURCE m_mappedObjectBuffer = {};
+
+    _uint m_SkinningOffset = {};
+    _float4x4* m_pSkinningArray = nullptr;
+    ID3D11Buffer* m_pDeviceSkinningBuffer = { nullptr };
+    ID3D11ShaderResourceView* m_pSkinningResource = { nullptr };
+    D3D11_MAPPED_SUBRESOURCE m_mappedSkinningBuffer = {};
+
+    /*ÆÈ·¹Æ® µî·Ï*/
+    unordered_map<string, class CTexture*> m_Palette;
 
 public:
     static CPipeLine* Create(ID3D11Device* pDevice);

@@ -25,33 +25,30 @@ VS_OUT VS_MAIN(VS_IN In)
     
     matrix matWV, matWVP;
     
-    matWV = mul(matWorld, matView);
+    matWV = mul(matWorld[TransformIndex], matView);
     matWVP = mul(matWV, matProjection);
     
-    float blendWeightW = 1.f - In.vBlendWeight.x - In.vBlendWeight.y - In.vBlendWeight.z;
-    
-    /*월드 포지션 이전에 본 행렬*/
+    float fWeightW = 1.0 - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
+
     float4x4 BoneMatrix =
-        (BoneMatrices[In.vBlendIndex.x] * In.vBlendWeight.x +
-         BoneMatrices[In.vBlendIndex.y] * In.vBlendWeight.y +
-         BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z +
-         BoneMatrices[In.vBlendIndex.w] * blendWeightW);
+        g_BoneMatrices[SkinningOffset + In.vBlendIndex.x].BoneMat * In.vBlendWeight.x +
+        g_BoneMatrices[SkinningOffset + In.vBlendIndex.y].BoneMat * In.vBlendWeight.y +
+        g_BoneMatrices[SkinningOffset + In.vBlendIndex.z].BoneMat * In.vBlendWeight.z +
+        g_BoneMatrices[SkinningOffset + In.vBlendIndex.w].BoneMat * fWeightW;
     
-     //벡터를 본 변환해줌
-    vector BonePos = mul(vector(In.vPosition, 1.f), BoneMatrix);
-    vector BoneNoraml = mul(vector(In.vNormal, 0.f), BoneMatrix);
+    vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
+    vector vNormal = mul(float4(In.vNormal, 0.f), BoneMatrix);
     
+    Out.vPosition = mul(vPosition, matWVP);
     Out.vTexcoord = In.vTexcoord;
-    Out.vPosition = mul(BonePos, matWVP);
     
-    //벡터를 월드 변환해줌 -> 빛 연산을 위해 뷰프로젝션은 안함
-    vector vWorldPos = mul(BonePos, matWorld);
-    vector vWorldNormal = mul(BoneNoraml, matWorld);
+    float4 vWorldPos = mul(vPosition, matWorld[TransformIndex]);
+    float4 vWorldNormal = mul(vNormal, matWorld[TransformIndex]);
     
     //빛의 방향의 반대와 월드노멀의 내적을 통해 그 각도를 구해줌 (최소 0을 내려가지 않도록)
     Out.vShade = saturate(max(dot(normalize(vLightDir) * -1.f, normalize(vWorldNormal)), 0.f) + (vLightAmbient * vMtrlAmbient));
-    vector vReflect = reflect(normalize(vLightDir), normalize(vWorldNormal));
-    vector vLook = vWorldPos - vCamPosition;
+    float4 vReflect = reflect(normalize(vLightDir), normalize(vWorldNormal));
+    float4 vLook = vWorldPos - vCamPosition;
     
     Out.fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), fSpecularPow * 100);
     return Out;
@@ -74,12 +71,14 @@ PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord );
+    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
    //빛의 색상 * 빛의 강도 * 텍스처 색깔
-   Out.vColor = vLightDiffuse * vMtrlDiffuse * In.vShade +
+    Out.vColor = vLightDiffuse * vMtrlDiffuse * In.vShade +
        (vLightSpecular * vMtrlSpecular) * In.fSpecular;
     
+    if (Out.vColor.a< 0.3)
+        discard;
     return Out;
 }
 
@@ -87,7 +86,7 @@ PS_OUT PS_BLEND(PS_IN In)
 {
     PS_OUT Out;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
    //빛의 색상 * 빛의 강도 * 텍스처 색깔
     Out.vColor = vMtrlDiffuse;
@@ -107,7 +106,7 @@ technique11 DefaultTechnique
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
-    }  
+    }
 
     pass ForceBlend
     {

@@ -26,7 +26,7 @@ HRESULT CHierarchyPanel::Initialize()
 void CHierarchyPanel::Render_GUI()
 {
 	const string& nowLevel = m_pContext->pLevelManager->Get_NowLevelKey();
-
+	
 	float fWincY = (float)m_pContext->viewPort.y;
 	float fPanelCX = 200;
 
@@ -36,7 +36,6 @@ void CHierarchyPanel::Render_GUI()
 	ImGui::Begin("##Hierachy", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 	ShowLevelList();
 	ShowLayerList(nowLevel);
-	ImGui::Separator();
 	ShowObjectList();
 	ImGui::End();
 
@@ -44,7 +43,7 @@ void CHierarchyPanel::Render_GUI()
 	ImGui::SetNextWindowPos(ImVec2(m_fPosX + fPanelCX, 0));
 	ImGui::Begin("##HierachyBtn", nullptr, ImGuiWindowFlags_AlwaysAutoResize |
 		ImGuiWindowFlags_NoDecoration);
-	if (ImGui::Button(m_bOpened ? "<" : ">")) {
+	if (ImGui::ArrowButton("##HierachyOpenBtn",m_bOpened ? ImGuiDir::ImGuiDir_Left : ImGuiDir::ImGuiDir_Right)) {
 		m_bOpened = !m_bOpened;
 	}
 	ImGui::End();
@@ -113,6 +112,9 @@ void CHierarchyPanel::ShowObjectList()
 {
 	if (!m_pContext->pSelectedLayer) return;
 	auto& ObjectVector = m_pContext->pSelectedLayer->Get_AllObject();
+
+	string InstanceListHeader = "Instances ("  + to_string(ObjectVector.size()) + " )";
+	ImGui::SeparatorText(InstanceListHeader.c_str());
 
 	for (auto& Object : ObjectVector) {
 		if (!Object || !Object->Is_Root()) continue;

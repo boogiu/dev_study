@@ -2,7 +2,7 @@
 #include "Base.h"
 NS_BEGIN(Engine)
 
-class CLayer final :
+class ENGINE_DLL CLayer final :
     public CBase
 {
 private:

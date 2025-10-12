@@ -7,10 +7,8 @@ public IService
 protected:
 	virtual  ~ITileService() DEFAULT;
 public:
-    virtual _int Register_Tile(class CTileBlock* tileBlock, _uint x, _uint y, _uint z)PURE;
-    virtual void UnRegister_Tile(_int Index)PURE;
-    virtual TILESYSTEM_INFO* Get_TileSystemInfo() PURE;
-    virtual void Get_IndexByPosition(_fvector vPos, _uint* x, _uint* y, _uint* z)   PURE;
-    virtual void Get_XYZByIndex(_uint Index, _uint* x, _uint* y, _uint* z)   PURE;
+	virtual TILE_INDEX Get_IndexByPosition(_float4 WorldPos) PURE;
+	virtual TILE_INDEX Register_Tile(class CTileBlock* block, TILE_INDEX index)PURE;
+
 };
 NS_END

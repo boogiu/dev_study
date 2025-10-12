@@ -19,6 +19,7 @@ public:
 	virtual void Render_GUI()override;
 	HRESULT Load_Model(const aiScene* pAiScene, const string& fileName);
 	HRESULT Save_Model();
+	HRESULT Save_Model(const string& SavePath);
 private:
 	HRESULT Release_Mesh();
 private:

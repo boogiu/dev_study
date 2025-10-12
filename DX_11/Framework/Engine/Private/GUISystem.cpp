@@ -21,11 +21,14 @@ CGUISystem::CGUISystem()
 HRESULT CGUISystem::Initialize(const ENGINE_DESC& engine, ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+	m_pContext = ImGui::CreateContext();
+
 	ImGuiIO& io = ImGui::GetIO();
 	m_GuiIo = &ImGui::GetIO();
+
 	ImFont* fonts = io.Fonts->AddFontFromFileTTF("../../Resources/font/SUIT-Bold.ttf", 16.0f, nullptr,
 		io.Fonts->GetGlyphRangesKorean()); //
+
 	io.FontDefault = fonts;
 	ImGui::StyleColorsDark();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     /*키보드 컨트롤*/
@@ -180,7 +183,7 @@ void CGUISystem::Render_GUI()
 
 ImGuiContext* CGUISystem::GetEngineImGuiContext()
 {
-	return ImGui::GetCurrentContext();
+	return m_pContext;
 }
 
 void CGUISystem::GUI_End()

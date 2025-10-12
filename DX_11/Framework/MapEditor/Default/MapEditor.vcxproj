@@ -36,11 +36,13 @@
     <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imstb_textedit.h" />
     <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imstb_truetype.h" />
     <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\ImZoomSlider.h" />
+    <ClInclude Include="..\Public\ControlPanel.h" />
     <ClInclude Include="..\Public\EditorLevel.h" />
-    <ClInclude Include="..\Public\EditorPanel.h" />
+    <ClInclude Include="..\Public\DirectoryPanel.h" />
     <ClInclude Include="..\Public\EditorSystem.h" />
     <ClInclude Include="..\Public\Editor_Defines.h" />
     <ClInclude Include="..\Public\EditorMain.h" />
+    <ClInclude Include="..\Public\FieldOutBlocks.h" />
     <ClInclude Include="..\Public\Free_Camera.h" />
     <ClInclude Include="..\Public\GridObject.h" />
     <ClInclude Include="..\Public\TileObject.h" />
@@ -66,9 +68,11 @@
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_tables.cpp" />
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_widgets.cpp" />
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\ImSequencer.cpp" />
+    <ClCompile Include="..\Private\FieldOutBlocks.cpp" />
+    <ClCompile Include="..\Private\ControlPanel.cpp" />
     <ClCompile Include="..\Private\EditorLevel.cpp" />
     <ClCompile Include="..\Private\EditorMain.cpp" />
-    <ClCompile Include="..\Private\EditorPanel.cpp" />
+    <ClCompile Include="..\Private\DirectoryPanel.cpp" />
     <ClCompile Include="..\Private\EditorSystem.cpp" />
     <ClCompile Include="..\Private\Free_Camera.cpp" />
     <ClCompile Include="..\Private\GridObject.cpp" />

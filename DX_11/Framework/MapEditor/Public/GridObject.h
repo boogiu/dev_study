@@ -4,14 +4,11 @@ NS_BEGIN(MapEditor)
 class CGridObject final:
     public CGameObject
 {
-    struct HittedIndex {
-        _uint X={};
-        _uint Y={};
-        _uint Z={};
-
+    struct HittedArea {
         _float4 vEdgeMin = {};
         _float4 vEdgeMax = {};
     };
+
 protected:
     CGridObject();
     CGridObject(const CGridObject& rhs);
@@ -26,7 +23,7 @@ public:
 
 public:
     _float3 Get_HitPos() { return m_HittedPos; };
-    void Get_HitIndex(_uint* X, _uint* Y, _uint* Z);
+    TILE_INDEX Get_HitIndex();
 public:
     void Render_GUI() override;
 
@@ -45,9 +42,9 @@ private:
     _float3 m_HittedPos = {};
     _bool isDragging = { false };
     _float3 m_DragPivotPos = {};
-    HittedIndex m_HittedIdx = {};
-
-    _uint m_NowYIndex = {};
+    HittedArea m_HittedArea = {};
+    TILE_INDEX m_HittedIndex = {};
+    TILE_INDEX m_NowIndex = {};
 public:
     static CGridObject* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

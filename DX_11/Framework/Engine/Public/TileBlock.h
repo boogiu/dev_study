@@ -5,6 +5,8 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CTileBlock :
     public CComponent
 {
+public: 
+    enum class Tile_Anchor{NONE,CENTER, LEFTTOP, RIGHTBOTTOM};
 private:
     CTileBlock();
     CTileBlock(const CTileBlock& rhs);
@@ -15,22 +17,15 @@ public:
     virtual HRESULT Initialize(COMPONENT_DESC* pArg) override;
 
 public:
-    void Set_Index(_uint Index);
-    void UpdatePosition(const TILESYSTEM_INFO& tileInfo);
-    void Set_TilePostion(_uint x, _uint y, _uint z);
-    void Get_TilePostion(_uint* x, _uint* y, _uint* z);
-    vector<CTileBlock*> Get_Neighbor();
+    TILE_INDEX On_Grid(TILE_INDEX tileIndex);
+    void Set_Index(TILE_INDEX tileIndex);
+    void Update_Position(const TILESYSTEM_INFO& systemInfo);
 
 private:
-    void CheckTileSystem(); //타일 시스템의 생성 타이밍을 조절해야 함
-
-private:
-    _int m_Index = {-1};
     class CTransform* m_pTransform = { nullptr };
     class ITileService* m_pTileSystem = { nullptr };
-    class CTexture* m_pPaletteTexture = { nullptr };
-    class CTexture* m_pEdgeTexture = { nullptr };
 
+    TILE_INDEX m_tIndex = {};
 public:
     static CTileBlock* Create();
     virtual CComponent* Clone() override;

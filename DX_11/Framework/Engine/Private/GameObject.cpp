@@ -109,7 +109,15 @@ void CGameObject::Post_EngineUpdate(_float dt)
 	debugPacket.pModel = Get_Component<CModel>();
 	debugPacket.pDebug = Get_Component<CDebugRender>();
 	debugPacket.pWorldMatrix = m_pTransform->Get_WorldMatrix();
-	CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Debug(debugPacket);
+	if (debugPacket.pDebug) {
+		for (size_t i = 0; i < debugPacket.pDebug->Get_DebugBoxCount(); i++)
+		{
+			if (!debugPacket.pModel->isDrawable(i)) continue;
+			debugPacket.DrawIndex = i;
+			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Debug(debugPacket);
+		}
+	}
+	
 #endif // _DEBUG
 
 	for (auto& child : Get_Children()) {
@@ -140,7 +148,8 @@ void CGameObject::RenderHierarchy(CGameObject*& SelectedObject, bool isSelected)
 		(isSelected ? ImGuiTreeNodeFlags_Selected : 0) |
 		(Children.empty() ? (ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen) : 0);
 
-	bool opened = ImGui::TreeNodeEx(m_InstanceName.c_str(), flags);
+	string TreeNodeName = m_InstanceName + " (" + to_string(Children.empty()? 0 : Children.size()) + ")";
+	bool opened = ImGui::TreeNodeEx(TreeNodeName.c_str(), flags);
 
 	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 		SelectedObject = this;

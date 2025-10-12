@@ -36,6 +36,7 @@ public:
 	const vector<string> Get_BoneNames();
 	const vector<_int> GenerateFollowingIndices(class CModelData* pMasterData);
 	BOUNDING_BOX Get_LocalBoundingBox();
+	BOUNDING_BOX Get_MeshBoundingBox(_uint index);
 #pragma endregion 
 	virtual void Render_GUI();
 #pragma region GUI

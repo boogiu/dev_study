@@ -2,79 +2,94 @@
 #include "Texture.h"
 #include "TileSystem.h"
 #include "GameInstance.h"
-#include "TileSystem.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "Model.h"
 
+/*이클래스는 타일 시스템이 들고 애드래프하고 있어서 여기서도 타일 시스템 애드레프하면 순환참조 일어남*/
 CTileBlock::CTileBlock()
 {
 }
 
 CTileBlock::CTileBlock(const CTileBlock& rhs)
-	:CComponent(rhs), m_pTileSystem{ rhs.m_pTileSystem }
+	:CComponent(rhs)
 {
 }
 
 HRESULT CTileBlock::Initialize_Prototype()
 {
-	m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-
-	if (m_pTileSystem == nullptr)
-		return E_FAIL;
-
 	return S_OK;
 }
 
 HRESULT CTileBlock::Initialize(COMPONENT_DESC* pArg)
 {
+	/*이니셜라이즈 당시 트랜스폼과 타일 시스템이 있는지 확인*/
 	m_pTransform = m_pOwner->Get_Component<CTransform>();
 
 	if (!m_pTransform)
 		return E_FAIL;
+
+	m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+
+	if (m_pTileSystem == nullptr)
+		return E_FAIL;
+
 	Safe_AddRef(m_pTransform);
 
 	return  S_OK;
 }
 
-void CTileBlock::Set_Index(_uint Index)
+TILE_INDEX CTileBlock::On_Grid(TILE_INDEX tileIndex)
 {
-	if (!m_pTransform) {
-		m_pTransform = m_pOwner->Get_Component<CTransform>();
+	m_pTileSystem->Register_Tile(this, tileIndex);
+	return m_tIndex;
+}
+
+void CTileBlock::Set_Index(TILE_INDEX tileIndex)
+{
+	m_tIndex = tileIndex;
+}
+
+void CTileBlock::Update_Position(const TILESYSTEM_INFO& systemInfo)
+{
+	systemInfo.OriginPoint;
+	_float tileSizeX =(systemInfo.iSizeXPerTile);
+	_float tileSizeY =(systemInfo.iSizeYPerTile);
+	_float tileSizeZ =(systemInfo.iSizeZPerTile);
+
+	/*오리진에서 오른쪽 앞으로 나아가는 방식임, 그러니까 업데이트 포지션의 기준은 왼쪽아래 모서리에 맞출 것임*/
+	/*Y는 그냥 바닥에 맞추자*/
+
+	_float3 anchor = {
+		systemInfo.OriginPoint.x + (tileSizeX * m_tIndex.IndexX),
+		systemInfo.OriginPoint.y + (tileSizeY * m_tIndex.IndexY),
+		systemInfo.OriginPoint.z + (tileSizeZ * m_tIndex.IndexZ)
+	};
+
+	_float3 worldPos = {};
+	/*그 기준은 모델의 바운딩 박스로*/
+	if (CModel* pModel = m_pOwner->Get_Component<CModel>()) {
+		BOUNDING_BOX box= pModel->Get_WorldBoundingBox();
+		_float halfSizeX = (box.vMax.x - box.vMin.x) * 0.5f;
+		_float halfSizeZ = (box.vMax.z - box.vMin.z) * 0.5f;
+		_float halfSizeY = (box.vMax.y - box.vMin.y) * 0.5f;
+
+		worldPos = {
+			anchor.x + halfSizeX,
+			anchor.y,
+			anchor.z + halfSizeZ
+		};
+
 	}
-
-	m_Index = static_cast<_int>(Index);
-}
-
-void CTileBlock::UpdatePosition(const TILESYSTEM_INFO& tileInfo)
-{
-	_uint x, y, z = {};
-
-	m_pTileSystem->Get_XYZByIndex(m_Index, &x, &y, &z);
-
-	_float newX = tileInfo.OriginPoint.x +	tileInfo.iSizeXPerTile	*0.5f	+	tileInfo.iSizeXPerTile * x;
-	_float newY = tileInfo.OriginPoint.y +	tileInfo.iSizeYPerTile * y;
-	_float newZ = tileInfo.OriginPoint.z +	tileInfo.iSizeZPerTile	*0.5f	+	tileInfo.iSizeZPerTile * z;
-
-	m_pTransform->Set_Pos({ newX ,newY, newZ });
-}
-
-void CTileBlock::Set_TilePostion(_uint x, _uint y, _uint z)
-{
-	if (m_Index != -1) {
-		m_pTileSystem->UnRegister_Tile(m_Index);
+	else {//모델 없으면 그냥 중점에 맞추는걸로
+		
 	}
-
-	m_Index = m_pTileSystem->Register_Tile(this, x, y, z);
-}
-
-void CTileBlock::Get_TilePostion(_uint* x, _uint* y, _uint* z)
-{
-	m_pTileSystem->Get_XYZByIndex(m_Index, x, y, z);
-}
-
-vector<CTileBlock*> CTileBlock::Get_Neighbor()
-{
-	return vector<CTileBlock*>();
+	worldPos = {
+			anchor.x + tileSizeX * 0.5f,
+			anchor.y,
+			anchor.z + tileSizeZ * 0.5f
+	};
+	m_pTransform->Set_Pos(worldPos);
 }
 
 CTileBlock* CTileBlock::Create()
@@ -84,7 +99,7 @@ CTileBlock* CTileBlock::Create()
 	{
 		Safe_Release(instance);
 		MSG_BOX("CTileBlock Comp Failed To Create : CTileBlock");
-	}
+	}  
 	return instance;
 }
 
@@ -97,6 +112,5 @@ void CTileBlock::Free()
 {
 	__super::Free();
 	Safe_Release(m_pTransform);
-	Safe_Release(m_pPaletteTexture);
-	Safe_Release(m_pEdgeTexture);
 }
+

@@ -14,7 +14,7 @@ VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
     matrix matWV,matWVP;
-    matWV = mul(matWorld, matView);
+    matWV = mul(matWorld[TransformIndex], matView);
     matWVP = mul(matWV, matProjection);
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     return Out;
@@ -33,10 +33,7 @@ struct PS_OUT
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out ;
-    
-    Out.vColor.ar = 1.f;
-    Out.vColor.gb = 0.f;
-    
+    Out.vColor = float4(0.5, 1, 0, 1); 
     return Out;
 }
 

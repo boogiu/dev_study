@@ -21,17 +21,22 @@ cbuffer LightBuffer : register(b1)
     vector vLightSpecular;
 };
 
-cbuffer ObjectBuffer : register(b2)
+cbuffer TransformPerDraw : register(b2)
 {
-    matrix matWorld;
-}
+    uint TransformIndex;
+};
 
-cbuffer SkinningBuffer : register(b3)
+cbuffer ObjectBufferArray : register(b3)
 {
-    matrix BoneMatrices[512];
-}
+    float4x4 matWorld[1024];
+};
 
-cbuffer MaterialBuffer : register(b4)
+cbuffer SkinningPerDraw : register(b4)
+{
+    uint SkinningOffset;
+};
+
+cbuffer MaterialBuffer : register(b6)
 {
     float4 vMtrlDiffuse;
     float4 vMtrlAmbient;
@@ -39,29 +44,41 @@ cbuffer MaterialBuffer : register(b4)
     float fSpecularPow;
 };
 
-cbuffer TileBuffer : register(b5)
+struct BoneMatrix
 {
-    int TileIndex; 
-    int NeighborIndex[4];
-    int PaletteTexSize;
-}
-
-SamplerState DefaultSampler = sampler_state
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = WRAP;
-    AddressV = WRAP;
+    matrix BoneMat;
 };
 
-SamplerState PointSampler = sampler_state
-{
-    Filter = MIN_MAG_MIP_POINT;
-    AddressU = WRAP;
-    AddressV = WRAP;
-};
+// 式式式式式式式式式式式式式 Bone SRV 式式式式式式式式式式式式式
 
-texture2D g_PaletteTexture  : register(t0);
-texture2D g_EdgeTexture      : register(t1);
-texture2D g_DiffuseTexture  : register(t2);
+StructuredBuffer<BoneMatrix> g_BoneMatrices : register(t0);
+
+// 式式式式式式式式式式式式式 Base Material 式式式式式式式式式式式式式
+Texture2D DiffuseTexture : register(t1);
+Texture2D NormalTexture : register(t2);
+Texture2D OpacityTexture : register(t3);
+Texture2D EmmisionTexture : register(t4);
+
+// 式式式式式式式式式式式式式 Orientation / Gray 式式式式式式式式式式式式式
+Texture2D AlbedoGrayTexture : register(t5);
+Texture2D NormalOryTexture : register(t6);
+Texture2D AlbedoOryTexture : register(t7);
+Texture2D EmmisionOryTexture : register(t8);
+
+// 式式式式式式式式式式式式式 Wave / Index / Scale 式式式式式式式式式式式式式
+Texture2D IndexMap : register(t9);
+Texture2D ScaleX : register(t10);
+Texture2D ScaleY : register(t11);
+Texture2D ScaleXY : register(t12);
+
+// 式式式式式式式式式式式式式 gradation / Mix 式式式式式式式式式式式式式
+Texture2D MixtureTexture : register(t13);
+Texture2D GradationTexture : register(t14);
+Texture2D GradationEdgeTexture : register(t15);
+
+// 式式式式式式式式式式式式式 Global / Mask 式式式式式式式式式式式式式
+Texture2D g_PaletteTexture : register(t16);
+Texture2D g_PaletteEdgeTexture : register(t17);
+Texture2D g_MaskTexture : register(t18);
 
 #endif // __SHADER_DEFINE_HLSL__

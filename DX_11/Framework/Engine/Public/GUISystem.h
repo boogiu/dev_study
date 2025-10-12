@@ -38,6 +38,7 @@ private:
     bool m_bActiveGUI = {true};
     bool m_bUsingUI = {false};
     class CGameInstance* m_pGameInstance = { nullptr };
+    ImGuiContext* m_pContext = { nullptr };
     GUI_CONTEXT m_tGuiContext = {};
     vector<class CBasePanel*> m_Panels;
     ImGuiIO* m_GuiIo;

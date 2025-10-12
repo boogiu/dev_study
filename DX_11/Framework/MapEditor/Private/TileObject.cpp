@@ -1,17 +1,23 @@
 #include "Editor_Defines.h"
 #include "TileObject.h"
-#include "TileBlock.h"
-#include "Model.h"
+
 #include "SkeletalModel.h"
 #include "StaticModel.h"
+
 #include "Material.h"
 #include "MaterialData.h"
-#include "DebugRender.h"
 #include "MaterialInstance.h"
+
+#include "Texture.h"
+
+#include "DebugRender.h"
+#include "TileBlock.h"
+
 #include "RayReceiver.h"
-#include "Animator3D.h"
+
 #include "GameInstance.h"
 #include "IInputService.h"
+#include "IResourceService.h"
 
 CTileObject::CTileObject()
 {
@@ -26,12 +32,9 @@ HRESULT CTileObject::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
 	Add_Component<CMaterial>();
-	//Add_Component<CStaticModel>();
-	Add_Component<CSkeletalModel>();
-	//Add_Component<CAnimator3D>();
-	Add_Component<CDebugRender>();
-	Add_Component<CTileBlock>();
+	Add_Component<CStaticModel>();
 	Add_Component<CRayReceiver>();
+	Add_Component<CTileBlock>();
 
 	return S_OK;
 }
@@ -39,6 +42,8 @@ HRESULT CTileObject::Initialize_Prototype()
 HRESULT CTileObject::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
+	m_PaletteIndex = { 0.f, 0.2f };
+
 	return S_OK;
 }
 
@@ -49,59 +54,50 @@ void CTileObject::Priority_Update(_float dt)
 
 void CTileObject::Update(_float dt)
 {
-	if (CAnimator3D* pAnimator = Get_Component<CAnimator3D>()) 
-		pAnimator->Update_Animation(dt);
+
 }
 
 void CTileObject::Late_Update(_float dt)
 {
-
 }
 
-void CTileObject::Object_OnGrid(_uint x, _uint y, _uint z)
+void CTileObject::Object_OnGrid(TILE_INDEX index)
 {
-	Get_Component<CDebugRender>()->Set_DebugBounding(Get_Component<CModel>()->Get_LocalBoundingBox());
-	Get_Component<CTileBlock>()->Set_TilePostion(x, y, z);
-
+	Get_Component<CTileBlock>()->On_Grid(index);
 }
 
 void CTileObject::Set_Selected(_bool selected)
 {
-	if (selected) {
-		CMaterial* pMaterial = Get_Component<CMaterial>();
+}
+
+HRESULT CTileObject::Link_Data(const string& folderName, _bool Base)
+{
+	HRESULT hr = Get_Component<CModel>()->Link_Model(G_GlobalLevelKey, folderName + ".model");
+	hr = Get_Component<CMaterial>()->Link_Material(G_GlobalLevelKey, folderName + ".mat");
+	CMaterial* pMaterial = Get_Component<CMaterial>();
+
+	if (Base) {
 		for (auto& instance : pMaterial->Get_Material_Instance()) {
-			instance->Override_Pass("ForceBlend");
+			instance->Override_Pass("Base");
 		}
 	}
-	else {
-		CMaterial* pMaterial = Get_Component<CMaterial>();
-		for (auto& instance : pMaterial->Get_Material_Instance()) {
-			instance->Reset_Pass();
-		}
+
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassXlu")) {
+		instance->Override_Pass("Edge");
 	}
+	return hr;
+}
+
+HRESULT CTileObject::Save_Blocks(ofstream& ofs, _bool Base)
+{
+	return S_OK;
 }
 
 
 void CTileObject::Render_GUI()
 {
 	__super::Render_GUI();
-	_uint x, y, z = {};
-	Get_Component<CTileBlock>()->Get_TilePostion(&x,&y,&z);
 
-	if (ImGui::ArrowButton("##up", ImGuiDir::ImGuiDir_Up))
-	{
-		Get_Component<CTileBlock>()->Set_TilePostion(x,y+1,z);
-	}
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("##down", ImGuiDir::ImGuiDir_Down))
-	{
-		Get_Component<CTileBlock>()->Set_TilePostion(x, y, z+1);
-	}
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("##right", ImGuiDir::ImGuiDir_Right))
-	{
-		Get_Component<CTileBlock>()->Set_TilePostion(x+1, y, z);
-	}
 }
 
 CTileObject* CTileObject::Create()
@@ -116,7 +112,7 @@ CTileObject* CTileObject::Create()
 	return instance;
 }
 
-CGameObject* CTileObject::Clone(INIT_DESC * pArg)
+CGameObject* CTileObject::Clone(INIT_DESC* pArg)
 {
 	CTileObject* instance = new CTileObject(*this);
 

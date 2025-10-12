@@ -16,7 +16,7 @@ public:
 	void Render_GUI(_float Width);
 private:
 	string m_TextureKey = {};
-	ID3D11ShaderResourceView* m_pShaderResourceView;
+	ID3D11ShaderResourceView* m_pShaderResourceView = { nullptr };
 
 public:
 	static CTexture* Create(ID3D11Device* pDevice, const wstring& filePath, const string& textureKey);

@@ -1,6 +1,6 @@
 #include "GUIWidget.h"
 
-void GUIWidget::ShowListButton(const vector<string>& vector,function<void(const string&)> callback)
+void GUIWidget::ShowListButton(const vector<string>& vector, function<void(const string&)> callback)
 {
 	for (const string& btnName : vector)
 	{
@@ -39,14 +39,14 @@ void GUIWidget::ShowListInt(const vector<string>& vector, function<void(_uint)> 
 	}
 }
 
- _vector GUIWidget::Vector4Float(const string& Name, _fvector vector, bool Editable)
+_vector GUIWidget::Vector4Float(const string& Name, _fvector vector, bool Editable)
 {
 	ImGui::Text(Name.c_str());
 	ImGui::DragFloat4(("##" + Name).c_str(), (float*)&vector, 0.1f);
 	return vector;
 }
 
-void GUIWidget::ShowCombo(const vector<string>& vector, int currentIndex, const string& key,function<void(_uint)> callback)
+void GUIWidget::ShowCombo(const vector<string>& vector, int currentIndex, const string& key, function<void(_uint)> callback)
 {
 	if (vector.empty())
 		return;
@@ -55,17 +55,17 @@ void GUIWidget::ShowCombo(const vector<string>& vector, int currentIndex, const 
 	ImGui::SetNextItemWidth(childWidth);
 
 	if (ImGui::BeginCombo(string("##" + key).c_str(), vector[currentIndex].c_str())) {
-	 for (int i = 0; i < vector.size(); ++i) {
-		 bool isSelected = (i == currentIndex);
+		for (int i = 0; i < vector.size(); ++i) {
+			bool isSelected = (i == currentIndex);
 
-		 if (ImGui::Selectable(vector[i].c_str(), isSelected)) {
-			 currentIndex = i;
-			 callback(i);
-		 }
+			if (ImGui::Selectable(vector[i].c_str(), isSelected)) {
+				currentIndex = i;
+				callback(i);
+			}
 
-		 if (isSelected)
-			 ImGui::SetItemDefaultFocus();
-	 }
-	 ImGui::EndCombo();
-}
+			if (isSelected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
 }

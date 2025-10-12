@@ -21,117 +21,89 @@ CTileSystem::CTileSystem()
 HRESULT CTileSystem::Initialize(const TILESYSTEM_INFO& tileInfo)
 {
     m_tTileInfo = tileInfo;
-    _uint TileSize = m_tTileInfo.iTileCountX* m_tTileInfo.iTileCountY* m_tTileInfo.iTileCountZ;
-    m_Blocks.resize(TileSize, nullptr);
+
+    m_TileContainer.resize(m_tTileInfo.iTileCountY);
+
+    for (BlockLayer& layer : m_TileContainer) {
+        layer.resize(m_tTileInfo.iTileCountZ * m_tTileInfo.iTileCountZ, nullptr);
+    }
 
     return S_OK;
 }
 
-
-_int CTileSystem::Register_Tile(CTileBlock* tileBlock, _uint x, _uint y, _uint z)
+TILE_INDEX CTileSystem::Get_IndexByPosition(_float4 WorldPos)
 {
-    _uint countX = m_tTileInfo.iTileCountX;
-    _uint countZ = m_tTileInfo.iTileCountZ;
-    _uint countY = m_tTileInfo.iTileCountY;
+    _float DistanceX = WorldPos.x - m_tTileInfo.OriginPoint.x;
+    _float DistanceY = WorldPos.y - m_tTileInfo.OriginPoint.y;
+    _float DistanceZ = WorldPos.z - m_tTileInfo.OriginPoint.z;
 
-    while (true)
-    {
-        _uint Index = x + z * countX + y * (countX * countZ);
+    _int    TileIndexX = static_cast<_int>(floorf(DistanceX / m_tTileInfo.iSizeXPerTile));
+    _int    TileIndexY = static_cast<_int>(floorf(DistanceY / m_tTileInfo.iSizeYPerTile));
+    _int    TileIndexZ = static_cast<_int>(floorf(DistanceZ / m_tTileInfo.iSizeZPerTile));
 
-        if (m_Blocks[Index] == nullptr) {
-            m_Blocks[Index] = tileBlock;
-            Safe_AddRef(m_Blocks[Index]);
+    TILE_INDEX index = {};
 
-            tileBlock->Set_Index(Index);
-            tileBlock->UpdatePosition(m_tTileInfo);
-            return Index;
+    if (TileIndexX < 0 || TileIndexX >= static_cast<_int>(m_tTileInfo.iTileCountX))
+        index.IndexX = -1;
+    else
+        index.IndexX = TileIndexX;
+
+    if (TileIndexY < 0 || TileIndexY >= static_cast<_int>(m_tTileInfo.iTileCountY))
+        index.IndexY = -1;
+    else
+        index.IndexY = TileIndexY;
+
+    if (TileIndexZ < 0 || TileIndexZ >= static_cast<_int>(m_tTileInfo.iTileCountZ))
+        index.IndexZ = -1;
+    else
+        index.IndexZ = TileIndexZ;
+
+    return index;
+}
+
+TILE_INDEX CTileSystem::Register_Tile(CTileBlock* block, TILE_INDEX index)
+{
+    if(!Check_ValidIndex(index))
+        return TILE_INDEX();
+
+    BlockLayer& TileLayer =  m_TileContainer[index.IndexY];
+    TILE_INDEX desireIndex = index;
+    while (true) {
+        _int XZIndex = desireIndex.IndexX + desireIndex.IndexZ * m_tTileInfo.iTileCountX;
+
+        if (nullptr == TileLayer[XZIndex]) {
+            TileLayer[XZIndex] = block;
+
+            block->Set_Index(desireIndex);
+            block->Update_Position(m_tTileInfo);
+            return desireIndex;
         }
-        x++;
-        if (x >= countX) {
-            x = 0;
-            z++;
-            if (z >= countZ) {
-                z = 0;
-                y++;
-                if (y >= countY) {
-                    MSG_BOX("There is no Empty Space To Register Tile:  CTileSystem");
-                    return -1;
-                }
+
+        if (desireIndex.IndexZ >= static_cast<_int>(m_tTileInfo.iTileCountZ))
+        {
+            return TILE_INDEX{};
+        }
+        else {
+            desireIndex.IndexX += 1;
+            if (desireIndex.IndexX >= static_cast<_int>(m_tTileInfo.iTileCountZ)) {
+                desireIndex.IndexX = 0;
+                desireIndex.IndexZ+= 1;
             }
         }
-    }
+   }
 }
 
-
-void CTileSystem::UnRegister_Tile(_int Index)
+_bool CTileSystem::Check_ValidIndex(TILE_INDEX index)
 {
-    if (Index < 0 || Index >= m_Blocks.size()) return;
+    if (index.IndexX < 0 || index.IndexX >= static_cast<_int>(m_tTileInfo.iTileCountX))
+        return false;
+    if (index.IndexY < 0 || index.IndexY >= static_cast<_int>(m_tTileInfo.iTileCountY))
+        return false;
+    if (index.IndexZ < 0 || index.IndexZ >= static_cast<_int>(m_tTileInfo.iTileCountZ))
+        return false;
 
-    Safe_Release(m_Blocks[Index]);
-    m_Blocks[Index] = nullptr;
+    return true;
 }
-
-void CTileSystem::Get_IndexByPosition(_fvector vPos, _uint* x, _uint* y, _uint* z)
-{
-    _float4 vDistanceVector = {};
-    XMStoreFloat4(&vDistanceVector, vPos - XMLoadFloat4(&m_tTileInfo.OriginPoint));
-    /*원점에서의 거리 측정*/
-
-    *x = (_uint)vDistanceVector.x / m_tTileInfo.iSizeXPerTile;  
-    *y = (_uint)vDistanceVector.y / m_tTileInfo.iSizeYPerTile;  
-    *z = (_uint)(vDistanceVector.z / m_tTileInfo.iSizeZPerTile);
-}
-
-
-void CTileSystem::Get_XYZByIndex(_uint Index, _uint* x, _uint* y, _uint* z)
-{
-    _uint YDevide = m_tTileInfo.iTileCountX * m_tTileInfo.iTileCountZ;
-    *y = Index / YDevide;
-
-    _uint XZDevide = Index % YDevide;
-
-    *z = XZDevide / m_tTileInfo.iTileCountX;
-    *x= XZDevide% m_tTileInfo.iTileCountX;
-}
-
-
-vector<CTileBlock*> CTileSystem::Get_NeighborByIndex(_uint Index)
-{
-    _uint x, y, z;
-    Get_XYZByIndex(Index, &x, &y, &z);
-
-    struct Offset { int dx, dy, dz; };
-
-    vector<CTileBlock*> neighbors;
-    neighbors.reserve(static_cast<_int>(TILE_NEIGHBOR::END));
-
-    for (size_t i = 0; i < static_cast<_int>(TILE_NEIGHBOR::END); i++)
-    {
-        int nx = static_cast<int>(x) + NeighborOffsets[i].dx;
-        int nz = static_cast<int>(z) + NeighborOffsets[i].dz;
-
-        if (nx < 0 || nx >= static_cast<int>(m_tTileInfo.iTileCountX)) continue;
-        if (nz < 0 || nz >= static_cast<int>(m_tTileInfo.iTileCountX)) continue;
-
-        _uint neighborIndex = Make_Index(nx, y, nz);
-        neighbors.push_back(m_Blocks[neighborIndex]);
-    }
-
-    return neighbors;
-}
-
-
-_uint CTileSystem::Make_Index(_uint x, _uint y, _uint z)
-{
-    _uint countX = m_tTileInfo.iTileCountX;
-    _uint countZ = m_tTileInfo.iTileCountZ;
-    _uint countY = m_tTileInfo.iTileCountY;
-
-    _uint Index = x + z * countX + y * (countX * countZ);
-
-    return Index;
-}
-
 
 CTileSystem* CTileSystem::Create(const TILESYSTEM_INFO& tileInfo)
 {
@@ -146,9 +118,4 @@ void CTileSystem::Free()
 {
     __super::Free();
 
-    for (auto& tileBlock : m_Blocks) {
-        Safe_Release(tileBlock);
-    }
-
-    m_Blocks.clear();
 }

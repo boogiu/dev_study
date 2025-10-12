@@ -89,9 +89,17 @@ HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CShader* pShader, _uint D
 	if (FAILED(hr))
 		return E_FAIL;
 	
-	m_InputLayouts.emplace(LayOutID, *ppInputLayout);
+ 	m_InputLayouts.emplace(LayOutID, *ppInputLayout);
 
 	return S_OK;
+}
+
+HRESULT CRenderSystem::Add_Palette(const string& ConstantName, CTexture* pTexture)
+{
+	if (m_pPipeLine)
+		return m_pPipeLine->Add_Palette(ConstantName,pTexture);
+	else
+		return E_FAIL;
 }
 
 void CRenderSystem::Free()

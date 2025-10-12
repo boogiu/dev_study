@@ -101,7 +101,7 @@ void CMaterialData::Render_GUI( vector<_uint>& TextureIndexs)
 		return;
 
 	for (auto& pair : m_Textures) {
-		ImGui::Text(ConvertToConstant(pair.first).c_str()); //텍스처 타입 콘스탄트로
+		ImGui::SeparatorText(ConvertToConstant(pair.first).c_str()); //텍스처 타입 콘스탄트로
 		_uint& CurrentIndex = TextureIndexs[static_cast<_uint>(pair.first)];
 		const auto& vector = pair.second; //텍스처 타입이 있는 벡터
 		for (size_t i = 0; i < vector.size(); i++)
@@ -129,16 +129,26 @@ void CMaterialData::Render_GUI( vector<_uint>& TextureIndexs)
 	}
 
 }
-
 HRESULT CMaterialData::Link_Texture(const string& levelKey, const string& textureKey, TEXTURE_TYPE eType)
 {
+	auto& textureList = m_Textures[eType];
+	for (auto* pTex : textureList)
+	{
+		if (pTex && pTex->Get_Key() == textureKey)
+		{
+			return S_OK;
+		}
+	}
+
+	// 새로운 텍스처 로드
 	CTexture* pTexture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture(levelKey, textureKey);
-	if (!pTexture) {
-		MSG_BOX("There is no Texture Key  : Link_Texture");
+	if (!pTexture)
+	{
+		MSG_BOX("There is no Texture Key : Link_Texture");
 		return E_FAIL;
 	}
 
-	m_Textures[eType].push_back(pTexture);
+	textureList.push_back(pTexture);
 	Safe_AddRef(pTexture);
 
 	return S_OK;
@@ -161,61 +171,39 @@ string CMaterialData::ConvertToConstant(TEXTURE_TYPE eType)
 	switch (eType)
 	{
 	case Engine::TEXTURE_TYPE::NONE:
-		return "NONE";
-	case Engine::TEXTURE_TYPE::DIFFUSE:
-		return "g_DiffuseTexture";
-	case Engine::TEXTURE_TYPE::SPECULAR:
-		return "g_SpecularTexture";
-	case Engine::TEXTURE_TYPE::AMBIENT:
-		return "g_AmbientTexture";
-	case Engine::TEXTURE_TYPE::EMISSIVE:
-		break;
-	case Engine::TEXTURE_TYPE::HEIGHT:
-		break;
-	case Engine::TEXTURE_TYPE::NORMALS:
-		break;
-	case Engine::TEXTURE_TYPE::SHININESS:
-		break;
+		return "";
+	case Engine::TEXTURE_TYPE::ALBEDO:
+		return "DiffuseTexture";
+	case Engine::TEXTURE_TYPE::NORMAL:
+		return "NormalTexture";
 	case Engine::TEXTURE_TYPE::OPACITY:
-		break;
-	case Engine::TEXTURE_TYPE::DISPLACEMENT:
-		break;
-	case Engine::TEXTURE_TYPE::LIGHTMAP:
-		break;
-	case Engine::TEXTURE_TYPE::REFLECTION:
-		break;
-	case Engine::TEXTURE_TYPE::BASE_COLOR:
-		break;
-	case Engine::TEXTURE_TYPE::NORMAL_CAMERA:
-		break;
-	case Engine::TEXTURE_TYPE::EMISSION_COLOR:
-		break;
-	case Engine::TEXTURE_TYPE::METALNESS:
-		break;
-	case Engine::TEXTURE_TYPE::DIFFUSE_ROUGHNESS:
-		break;
-	case Engine::TEXTURE_TYPE::AMBIENT_OCCLUSION:
-		break;
-	case Engine::TEXTURE_TYPE::UNKNOWN:
-		break;
-	case Engine::TEXTURE_TYPE::SHEEN:
-		break;
-	case Engine::TEXTURE_TYPE::CLEARCOAT:
-		break;
-	case Engine::TEXTURE_TYPE::TRANSMISSION:
-		break;
-	case Engine::TEXTURE_TYPE::MAYA_BASE:
-		break;
-	case Engine::TEXTURE_TYPE::MAYA_SPECULAR:
-		break;
-	case Engine::TEXTURE_TYPE::MAYA_SPECULAR_COLOR:
-		break;
-	case Engine::TEXTURE_TYPE::MAYA_SPECULAR_ROUGHNESS:
-		break;
-	case Engine::TEXTURE_TYPE::ANISOTROPY:
-		break;
-	case Engine::TEXTURE_TYPE::GLTF_METALLIC_ROUGHNESS:
-		break;
+		return "OpacityTexture";
+	case Engine::TEXTURE_TYPE::EMMISION:
+		return "EmmisionTexture";
+	case Engine::TEXTURE_TYPE::ALBEDO_GRAY:
+		return "AlbedoGrayTexture";
+	case Engine::TEXTURE_TYPE::NORMAL_ORY:
+		return "NormalOryTexture";
+	case Engine::TEXTURE_TYPE::ALBEDO_ORY:
+		return "AlbedoOryTexture";
+	case Engine::TEXTURE_TYPE::EMMISION_ORY:
+		return "EmmisionOryTexture";
+	case Engine::TEXTURE_TYPE::INDEXMAP:
+		return "IndexMap";
+	case Engine::TEXTURE_TYPE::SCALEX:
+		return "ScaleX";
+	case Engine::TEXTURE_TYPE::SCALEY:
+		return "ScaleY";
+	case Engine::TEXTURE_TYPE::SCALEXY:
+		return "ScaleXY";
+	case Engine::TEXTURE_TYPE::GRADATION:
+		return "GradationTexture";
+	case Engine::TEXTURE_TYPE::GRADATION_EDGE:
+		return "GradationEdgeTexture";
+	case Engine::TEXTURE_TYPE::MIX:
+		return "MixtureTexture";
+	case Engine::TEXTURE_TYPE::END:
+		return "";
 	default:
 		break;
 	}

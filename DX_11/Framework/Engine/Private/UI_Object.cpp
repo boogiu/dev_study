@@ -90,20 +90,20 @@ void CUI_Object::Rotate_Left(_float _radian)
 
 
 //Align_To(Anchor::Bottom | Anchor::Right, { 0,10 });
-_float2 CUI_Object::Align_To(UI_Anchor anchor, _float2 _pivot)
+_float2 CUI_Object::Align_To(UI_ANCHOR anchor, _float2 _pivot)
 {
     _uint anchorFlags = static_cast<_uint>(anchor);
 
-    if (anchorFlags & static_cast<_uint>(UI_Anchor::Left))
+    if (anchorFlags & static_cast<_uint>(UI_ANCHOR::Left))
         m_fX = _pivot.x + HalfX();
-    else if (anchorFlags & static_cast<_uint>(UI_Anchor::Right))
+    else if (anchorFlags & static_cast<_uint>(UI_ANCHOR::Right))
         m_fX = _pivot.x - HalfX();
     else 
         m_fX = _pivot.x;
 
-    if (anchorFlags & static_cast<_uint>(UI_Anchor::Top))
+    if (anchorFlags & static_cast<_uint>(UI_ANCHOR::Top))
         m_fY = _pivot.y + HalfY();
-    else if (anchorFlags & static_cast<_uint>(UI_Anchor::Bottom))
+    else if (anchorFlags & static_cast<_uint>(UI_ANCHOR::Bottom))
         m_fY = _pivot.y - HalfY();
     else 
         m_fY = _pivot.y;

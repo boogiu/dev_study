@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "IResourceService.h"
 #include "ModelData.h"
+#include"GameObject.h"
+#include "Transform.h"
 
 CSkeletalModel::CSkeletalModel()
 {
@@ -27,6 +29,7 @@ HRESULT CSkeletalModel::Initialize(COMPONENT_DESC* pArg)
 
 HRESULT CSkeletalModel::Link_Model(const string& levelKey, const string& modelDataKey)
 {
+	Safe_Release(m_pData);
 	m_pData = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_ModelData(levelKey, modelDataKey);
 	Safe_AddRef(m_pData);
 	m_DrawableMeshes.resize(m_pData->Get_MeshCount(), true);
@@ -101,6 +104,26 @@ _bool CSkeletalModel::isDrawable(_uint Index)
 BOUNDING_BOX CSkeletalModel::Get_LocalBoundingBox()
 {
 	return m_pData->Get_LocalBoundingBox();
+}
+
+BOUNDING_BOX CSkeletalModel::Get_WorldBoundingBox()
+{
+	BOUNDING_BOX wordlBox = m_pData->Get_LocalBoundingBox();
+	_float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix();
+	XMStoreFloat3(&wordlBox.vMin, XMVector3TransformCoord(XMLoadFloat3(&wordlBox.vMin), XMLoadFloat4x4(pWorldMat)));
+	XMStoreFloat3(&wordlBox.vMax, XMVector3TransformCoord(XMLoadFloat3(&wordlBox.vMax), XMLoadFloat4x4(pWorldMat)));
+	return wordlBox;
+}
+
+vector<BOUNDING_BOX> CSkeletalModel::Get_MeshBoundingBox()
+{
+	vector<BOUNDING_BOX> boxes;
+
+	for (size_t i = 0; i < m_pData->Get_MeshCount(); i++)
+	{
+		boxes.push_back(m_pData->Get_MeshBoundingBox(i));
+	}
+	return boxes;
 }
 
 _bool CSkeletalModel::isReadyToDraw()

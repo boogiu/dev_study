@@ -2,6 +2,9 @@
 #include "VI_Rect.h"
 #include "GameInstance.h"
 #include "IResourceService.h"
+#include "GameObject.h"
+#include "Transform.h"
+
 CPlaneModel::CPlaneModel()
 {
 }
@@ -14,12 +17,14 @@ CPlaneModel::CPlaneModel(const CPlaneModel& rhs)
 
 HRESULT CPlaneModel::Initialize_Prototype()
 {
+	m_pPlane = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_VIBuffer(G_GlobalLevelKey, "Engine_Default_Plane", BUFFER_TYPE::BASIC_PLANE);
+	Safe_AddRef(m_pPlane);
+
 	return S_OK;
 }
 
 HRESULT CPlaneModel::Initialize(COMPONENT_DESC* pArg)
 {
-	m_pPlane = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_VIBuffer(G_GlobalLevelKey, "Engine_Default_Plane", BUFFER_TYPE::BASIC_PLANE);
 	return S_OK;
 }
 
@@ -44,17 +49,17 @@ CComponent* CPlaneModel::Clone()
 
 const D3D11_INPUT_ELEMENT_DESC* CPlaneModel::Get_ElementDesc(_uint DrawIndex)
 {
-	return VTXPOSTEX::Elements;
+	return VTXNORMTEX::Elements;
 }
 
 const _uint CPlaneModel::Get_ElementCount(_uint DrawIndex)
 {
-	return VTXPOSTEX::iElementCount;
+	return VTXNORMTEX::iElementCount;
 }
 
 const string_view CPlaneModel::Get_ElementKey(_uint DrawIndex)
 {
-	return VTXPOSTEX::Key;
+	return VTXNORMTEX::Key;
 }
 
 HRESULT CPlaneModel::Draw(ID3D11DeviceContext* pContext, _uint Index)
@@ -66,7 +71,9 @@ HRESULT CPlaneModel::Draw(ID3D11DeviceContext* pContext, _uint Index)
 
 HRESULT CPlaneModel::Link_Model(const string& levelKey, const string& modelDataKey)
 {
+	Safe_Release(m_pPlane);
 	m_pPlane = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_VIBuffer(levelKey, modelDataKey, BUFFER_TYPE::BASIC_PLANE);
+	Safe_AddRef(m_pPlane);
 
 	return S_OK;
 }
@@ -89,6 +96,22 @@ _bool CPlaneModel::isDrawable(_uint Index)
 BOUNDING_BOX CPlaneModel::Get_LocalBoundingBox()
 {
 	return BOUNDING_BOX{ { -0.5f, 0.f, -0.5f, }, {0.5f,0.f ,0.5f} };
+}
+
+BOUNDING_BOX CPlaneModel::Get_WorldBoundingBox()
+{
+	BOUNDING_BOX wordlBox = {};
+	_float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix();
+	XMStoreFloat3(&wordlBox.vMin, XMVector3TransformCoord({ -0.5f, 0.f, -0.5f }, XMLoadFloat4x4(pWorldMat)));
+	XMStoreFloat3(&wordlBox.vMax, XMVector3TransformCoord({ 0.5f,0.f ,0.5f }, XMLoadFloat4x4(pWorldMat)));
+	return wordlBox;
+}
+
+vector<BOUNDING_BOX> CPlaneModel::Get_MeshBoundingBox()
+{
+	vector<BOUNDING_BOX> boxes;
+	boxes.push_back(BOUNDING_BOX{ { -0.5f, 0.f, -0.5f, }, {0.5f,0.f ,0.5f} });
+	return boxes;
 }
 
 void CPlaneModel::Render_GUI()

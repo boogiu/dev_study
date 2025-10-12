@@ -64,6 +64,29 @@ HRESULT CLoadStaticModel::Save_Model()
 	return S_OK;
 }
 
+HRESULT CLoadStaticModel::Save_Model(const string& SavePath)
+{
+	filesystem::path folderPath = filesystem::path(SavePath) / m_fileName;
+
+	filesystem::create_directories(folderPath);
+
+	filesystem::path fullSavePath = folderPath / (m_fileName + ".model");
+
+	ofstream ofs(fullSavePath.c_str(), ios::binary);
+	if (!ofs.is_open())
+		return E_FAIL;
+
+	MODEL_FILE_HEADER fileHeader = {};
+	fileHeader.isAnimate = false;
+	fileHeader.MeshCount = m_pData->Get_MeshCount();
+	strcpy_s(fileHeader.ModelKey, sizeof(fileHeader.ModelKey), m_fileName.data());
+	ofs.write(reinterpret_cast<char*>(&fileHeader), sizeof(MODEL_FILE_HEADER));
+
+	static_cast<CAIModelData*>(m_pData)->Save_File(ofs);
+	ofs.close();
+	return S_OK;
+}
+
 HRESULT CLoadStaticModel::Release_Mesh()
 {
 	Safe_Release(m_pData);

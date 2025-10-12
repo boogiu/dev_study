@@ -1,18 +1,23 @@
 #include "Loader_Defines.h"
 #include "ModelObject.h"
-#include "LoadStaticModel.h"
-#include "LoadSkeletalModel.h"
-#include "LoadMaterial.h"
-#include "AIMaterial.h"
+
 #include "Helper_Func.h"
-#include "LoadAnimator3D.h"
-#include "Animator3D.h"
 #include "GameInstance.h"
 #include "IInputService.h"
-#include "ObjectContainer.h"
 #include "IObjectService.h"
-#include "SkeletonFollower.h"
+
 #include "PartsObject.h"
+
+#include "ObjectContainer.h"
+#include "SkeletonFollower.h"
+#include "LoadAnimator3D.h"
+#include "LoadStaticModel.h"
+#include "LoadSkeletalModel.h"
+#include "Animator3D.h"
+
+#include "LoadMaterial.h"
+#include "AIMaterial.h"
+
 CModelObject::CModelObject()
 {
 }
@@ -199,8 +204,7 @@ void CModelObject::Add_Part()
 	IObjectService* pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
 
 	CGameObject* ModelPart = Builder::Create_Object({ "Model_Level" ,"Proto_GameObject_Part" })
-		.Build("Partsqew");
-
+		.Build("Parts");
 	Get_Component<CObjectContainer>()->Add_Child(ModelPart);
 
 	pObjMgr->Add_Object(ModelPart, { "Model_Level","Model_Layer" });

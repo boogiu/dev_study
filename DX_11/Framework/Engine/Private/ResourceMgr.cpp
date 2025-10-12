@@ -286,6 +286,8 @@ _int CResourceMgr::ValidLevel(const string& levelKey)
 
 void CResourceMgr::Load_InitialResource()
 {
+	/*리소스 로더 필요. 초기 로딩 너무 많이 걸림*/
+
 	m_LevelIndex.emplace(G_GlobalLevelKey, 0);
 	m_Resources.resize(1);
 	Add_ResourcePath("VTX_TexPos.hlsl",  "../../EngineSDK/Inc/Engine_Shader/VTX_TexPos.hlsl");
@@ -303,7 +305,8 @@ void CResourceMgr::Load_InitialResource()
 	m_Resources[0].m_Shaders.emplace("VTX_NorTex.hlsl", CShader::Create(m_pDevice,		"../../EngineSDK/Inc/Engine_Shader/VTX_NorTex.hlsl", "VTX_NorTex.hlsl"));
 	m_Resources[0].m_Shaders.emplace("VTX_SkinMesh.hlsl", CShader::Create(m_pDevice,	"../../EngineSDK/Inc/Engine_Shader/VTX_SkinMesh.hlsl", "VTX_SkinMesh.hlsl"));
 	m_Resources[0].m_Shaders.emplace("VTX_Debug.hlsl", CShader::Create(m_pDevice,			"../../EngineSDK/Inc/Engine_Shader/VTX_Debug.hlsl", "VTX_Debug.hlsl"));
-	
+	m_Resources[0].m_Shaders.emplace("VTX_Tile.hlsl", CShader::Create(m_pDevice,			"../../EngineSDK/Inc/Engine_Shader/VTX_Tile.hlsl", "VTX_Tile.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Field.hlsl", CShader::Create(m_pDevice,			"../../EngineSDK/Inc/Engine_Shader/VTX_Field.hlsl", "VTX_Field.hlsl"));
 }
 
 

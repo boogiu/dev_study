@@ -13,10 +13,14 @@ public:
     virtual HRESULT Initialize(COMPONENT_DESC* pArg) override;
 
 public:
-    HRESULT Render_DebugBox(ID3D11DeviceContext* pContext,class CModel* pModel );
-    void Set_DebugBounding(const BOUNDING_BOX& box);
+    HRESULT Render_DebugBox(ID3D11DeviceContext* pContext, _uint DrawIndex );
+    void Add_DebugBounding(const BOUNDING_BOX& box);
+    _uint Get_DebugBoxCount() {
+        if (m_Vertices.empty())return 0;
+        return m_Vertices.size(); }
+
 private:
-    ID3D11Buffer* m_pVB = { nullptr };
+    vector<ID3D11Buffer*> m_Vertices;
     ID3D11Buffer* m_pIB = { nullptr };
 
 public:

@@ -4,12 +4,14 @@
 #include "GameInstance.h"
 #include "IProtoService.h"
 #include "ICameraService.h"
+#include "IObjectService.h"
 
 #include "ModelObject.h"
 #include "Free_Camera.h"
-#include "Camera.h"
-#include "IObjectService.h"
 #include "PartsObject.h"
+#include "OptionUI.h"
+
+#include "Camera.h"
 
 CModelLevel::CModelLevel(const string& LevelKey)
 	: CLevel{ LevelKey },
@@ -25,6 +27,7 @@ HRESULT CModelLevel::Initialize()
 	pProtoMgr->Add_ProtoType(m_LevelKey, "Proto_GameObject_Model", CModelObject::Create());
 	pProtoMgr->Add_ProtoType(m_LevelKey, "Proto_GameObject_Camera", CFree_Camera::Create());
 	pProtoMgr->Add_ProtoType(m_LevelKey, "Proto_GameObject_Part", CPartsObject::Create());
+	pProtoMgr->Add_ProtoType(m_LevelKey, "Proto_GameObject_OptionUI", COptionUI::Create());
 	
 	CGameObject* BaseModel = Builder::Create_Object({ m_LevelKey ,"Proto_GameObject_Model" })
 		.Build("Model");
@@ -34,8 +37,12 @@ HRESULT CModelLevel::Initialize()
 		.Position({ 0,0,-10 })
 		.Build("Main_Camera");
 
+	CGameObject* Option = Builder::Create_Object({ m_LevelKey ,"Proto_GameObject_OptionUI" }).Build("Option");
+
+
 	pObjMgr->Add_Object(BaseModel, { m_LevelKey,"Model_Layer" });
 	pObjMgr->Add_Object(Camera, { m_LevelKey,"Model_Layer" });
+	pObjMgr->Add_Object(Option, { m_LevelKey,"Optional_Layer" });
 	m_pGameInstance->Get_CameraMgr()->Set_MainCam(Camera->Get_Component<CCamera>());
 
 	return S_OK;

@@ -140,23 +140,37 @@ _bool CGameInstance::HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARA
 {
 #if defined _USING_GUI
 	if (m_pGuiSystem)
-		m_pGuiSystem->Set_ProcHandler(hWnd, message, wParam, lParam);
+	{
+		_bool MessageCapture=m_pGuiSystem->Set_ProcHandler(hWnd, message, wParam, lParam);
+		if(MessageCapture)
+			return true;	// GUI에서 메시지를 먹었으면 여기서 끝
+	}
 #endif
+
+
 	switch (message)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return true;
+
 	case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
+		{
 			PostQuitMessage(0);
+			return true;
+		}
 		break;
+
 	case WM_INPUT:
-		m_pInputDevice->Process_Input(lParam);
-		break;
+		if (m_pInputDevice)
+			m_pInputDevice->Process_Input(lParam);
+		return true;
+
 	case WM_SIZE:
 		GetClientRect(hWnd, &m_ClientRect);
 		break;
+
 	default:
 		break;
 	}

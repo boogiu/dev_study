@@ -21,9 +21,9 @@ HRESULT CDebugRender::Initialize(COMPONENT_DESC* pArg)
 	return S_OK;
 }
 
-HRESULT CDebugRender::Render_DebugBox(ID3D11DeviceContext* pContext, CModel* pModel)
+HRESULT CDebugRender::Render_DebugBox(ID3D11DeviceContext* pContext, _uint DrawIndex)
 {
-	ID3D11Buffer* pVertexBuffers[] = { m_pVB };
+	ID3D11Buffer* pVertexBuffers[] = { m_Vertices[DrawIndex]};
 	_uint  pVertexStride[] = { sizeof(VTXPOS) };
 	_uint  pVertexOffset[] = { 0 };
 
@@ -31,10 +31,11 @@ HRESULT CDebugRender::Render_DebugBox(ID3D11DeviceContext* pContext, CModel* pMo
 	pContext->IASetIndexBuffer(m_pIB, DXGI_FORMAT_R16_UINT, 0);
 	pContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 	pContext->DrawIndexed(24, 0, 0);
+
 	return S_OK;
 }
 
-void CDebugRender::Set_DebugBounding(const BOUNDING_BOX& box)
+void CDebugRender::Add_DebugBounding(const BOUNDING_BOX& box)
 {
 	_float3 vMin = box.vMin;
 	_float3 vMax = box.vMax;
@@ -45,7 +46,7 @@ void CDebugRender::Set_DebugBounding(const BOUNDING_BOX& box)
 	VB.resize(8);
 
 	VB[0].vPosition = { vMin.x, vMin.y,   vMin.z };
-	VB[1].vPosition = {  vMax.x,  vMin.y, vMin.z };
+	VB[1].vPosition = { vMax.x,  vMin.y, vMin.z };
 	VB[2].vPosition = { vMax.x, vMax.y, vMin.z };
 	VB[3].vPosition = { vMin.x, vMax.y,  vMin.z };
 
@@ -65,31 +66,36 @@ void CDebugRender::Set_DebugBounding(const BOUNDING_BOX& box)
 	D3D11_SUBRESOURCE_DATA subData;
 	subData.pSysMem = VB.data();
 
-	HRESULT hr = CGameInstance::GetInstance()->Get_Device()->CreateBuffer(&VBDesc, &subData, &m_pVB);
+	ID3D11Buffer* pVB;
+	HRESULT hr = CGameInstance::GetInstance()->Get_Device()->CreateBuffer(&VBDesc, &subData, &pVB);
 
-	D3D11_BUFFER_DESC IDDesc;
-	IDDesc.ByteWidth = sizeof(_ushort) * 24;
-	IDDesc.Usage = D3D11_USAGE_DEFAULT;
-	IDDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IDDesc.CPUAccessFlags = 0;
-	IDDesc.MiscFlags = 0;
-	IDDesc.StructureByteStride = sizeof(_ushort);
-	vector<_ushort> IB;
-	IB.resize(24,0);
-	int i = 0;
+	if (nullptr == m_pIB) {
+		D3D11_BUFFER_DESC IDDesc;
+		IDDesc.ByteWidth = sizeof(_ushort) * 24;
+		IDDesc.Usage = D3D11_USAGE_DEFAULT;
+		IDDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		IDDesc.CPUAccessFlags = 0;
+		IDDesc.MiscFlags = 0;
+		IDDesc.StructureByteStride = sizeof(_ushort);
+		vector<_ushort> IB;
+		IB.resize(24, 0);
+		int i = 0;
 
-	IB[i++] = 0;	IB[i++] = 1;		IB[i++] = 1;	IB[i++] = 2;		IB[i++] = 2;	IB[i++] = 3;		IB[i++] = 3;	IB[i++] = 0;
-	IB[i++] = 4;	IB[i++] = 5;		IB[i++] = 5;	IB[i++] = 6;		IB[i++] = 6;	IB[i++] = 7;		IB[i++] = 7;	IB[i++] = 4;
-	IB[i++] = 0;	IB[i++] = 4;		IB[i++] = 1;	IB[i++] = 5;		IB[i++] = 2;	IB[i++] = 6;		IB[i++] = 3;	IB[i++] = 7;
+		IB[i++] = 0;	IB[i++] = 1;		IB[i++] = 1;	IB[i++] = 2;		IB[i++] = 2;	IB[i++] = 3;		IB[i++] = 3;	IB[i++] = 0;
+		IB[i++] = 4;	IB[i++] = 5;		IB[i++] = 5;	IB[i++] = 6;		IB[i++] = 6;	IB[i++] = 7;		IB[i++] = 7;	IB[i++] = 4;
+		IB[i++] = 0;	IB[i++] = 4;		IB[i++] = 1;	IB[i++] = 5;		IB[i++] = 2;	IB[i++] = 6;		IB[i++] = 3;	IB[i++] = 7;
 
-	D3D11_SUBRESOURCE_DATA subIndexData = {};
-	subIndexData.pSysMem = IB.data();
-	hr = CGameInstance::GetInstance()->Get_Device()->CreateBuffer(&IDDesc, &subIndexData, &m_pIB);
+		D3D11_SUBRESOURCE_DATA subIndexData = {};
+		subIndexData.pSysMem = IB.data();
+		hr = CGameInstance::GetInstance()->Get_Device()->CreateBuffer(&IDDesc, &subIndexData, &m_pIB);
+	}
+	
+	if (FAILED(hr)) {
+		Safe_Release(pVB);
+		Safe_Release(m_pIB);
+	}
 
-	m_pVB->SetPrivateData(WKPDID_D3DDebugObjectName,
-		sizeof("DebugBoxVB") - 1, "DebugBoxVB");
-	m_pIB->SetPrivateData(WKPDID_D3DDebugObjectName,
-		sizeof("DebugBoxIB") - 1, "DebugBoxIB");
+	m_Vertices.push_back(pVB);
 }
 
 CDebugRender* CDebugRender::Create()
@@ -111,6 +117,8 @@ CComponent* CDebugRender::Clone()
 void CDebugRender::Free()
 {
 	__super::Free();
-	Safe_Release(m_pVB);
+	for (auto& vertex : m_Vertices) {
+		Safe_Release(vertex);
+	}
 	Safe_Release(m_pIB);
 }

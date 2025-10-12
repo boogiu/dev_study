@@ -8,49 +8,62 @@ CAIMaterial::CAIMaterial()
 {
 }
 
+
 HRESULT CAIMaterial::Initialize(const aiMaterial* pAIMaterial, const string& fileDirectory)
 {
-	m_MaterialKey=pAIMaterial->GetName().C_Str();
-
-	for (size_t i = 0; i < MAX_TEXTURE_TYPE_VALUE; i++)
+	m_MaterialKey = pAIMaterial->GetName().C_Str();
+	for (const auto& entry : filesystem::directory_iterator(fileDirectory))
 	{
-		size_t texCount = pAIMaterial->GetTextureCount(static_cast<aiTextureType>(i));
+		if (!entry.is_regular_file()) continue;
 
-		for (size_t j = 0; j < texCount; j++)
-		{
-			aiString     strTexturePath;
-			pAIMaterial->GetTexture(static_cast<aiTextureType>(i), j, &strTexturePath);
+		string filePath = entry.path().string();
+		string fileName = entry.path().stem().string(); // 확장자 제외
+		string ext = entry.path().extension().string();
 
-			string extention = filesystem::path(strTexturePath.C_Str()).extension().string(); //".png"
-			string fileName = Helper::GetFileNameWithOutExtension(strTexturePath.C_Str()); //"avsAlv" or "avsALv.0"
-			string BaseName = Helper::GetFileBaseName(fileName);
+		if (ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".bmp" && ext != ".dds")
+			continue;
 
-			string filePath = fileDirectory + "\\" + BaseName + extention;
-			/*일단 베이스 네임으로(인덱스 제외 후) 검색*/
-			if (filesystem::exists(filePath)) { //있으면 로드
-				CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(BaseName + extention, filePath);
-				Link_Texture(G_GlobalLevelKey, BaseName + extention, static_cast<TEXTURE_TYPE>(i));
-			}
+		string lowerFile = Helper::ToLower(fileName);
+		string lowerMat = Helper::ToLower(m_MaterialKey);
 
-			/*순회 검색 시작*/
-			_uint Index = {};
+		auto StartsWith = [](const std::string& str, const std::string& prefix)
+			{
+				return str.rfind(prefix, 0) == 0; // prefix가 맨 앞에 있으면 true
+			};
 
-			while (true) {
-				string targetName = BaseName + "." + to_string(Index);
-				string IndexedPath = fileDirectory + "\\" + targetName + extention;
+		auto EndsWith = [](const std::string& str, const std::string& suffix)
+			{
+				if (str.length() < suffix.length()) return false;
+				return std::equal(suffix.rbegin(), suffix.rend(), str.rbegin());
+			};
 
-				if (filesystem::exists(IndexedPath)) { //있으면 로드
-					CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(targetName + extention, IndexedPath);
-					Link_Texture(G_GlobalLevelKey, targetName + extention, static_cast<TEXTURE_TYPE>(i));
-					Index++;
-				}
-				else {
-					break;
-				}
-			}
-		}
+		// 정확히 "mat_"로 시작하는 파일만 허용
+		if (!StartsWith(lowerFile, lowerMat + "_"))
+			continue;
+
+		TEXTURE_TYPE textureType = TEXTURE_TYPE::NONE;
+
+		if (EndsWith(lowerFile, "_grdedge"))   textureType = TEXTURE_TYPE::GRADATION_EDGE;
+		else if (EndsWith(lowerFile, "_grd"))  textureType = TEXTURE_TYPE::GRADATION;
+		else if (EndsWith(lowerFile, "_mix"))  textureType = TEXTURE_TYPE::MIX;
+		else if (EndsWith(lowerFile, "_albgry")) textureType = TEXTURE_TYPE::ALBEDO_GRAY;
+		else if (EndsWith(lowerFile, "_nrmory")) textureType = TEXTURE_TYPE::NORMAL_ORY;
+		else if (EndsWith(lowerFile, "_nrm"))  textureType = TEXTURE_TYPE::NORMAL;
+		else if (EndsWith(lowerFile, "_albory")) textureType = TEXTURE_TYPE::ALBEDO_ORY;
+		else if (EndsWith(lowerFile, "_alb"))  textureType = TEXTURE_TYPE::ALBEDO;
+		else if (EndsWith(lowerFile, "_emiory")) textureType = TEXTURE_TYPE::EMMISION_ORY;
+		else if (EndsWith(lowerFile, "_emi"))  textureType = TEXTURE_TYPE::EMMISION;
+		else if (EndsWith(lowerFile, "_op"))   textureType = TEXTURE_TYPE::OPACITY;
+		else if (EndsWith(lowerFile, "_ind"))  textureType = TEXTURE_TYPE::INDEXMAP;
+		else if (EndsWith(lowerFile, "_sclxy")) textureType = TEXTURE_TYPE::SCALEXY;
+		else if (EndsWith(lowerFile, "_sclx")) textureType = TEXTURE_TYPE::SCALEX;
+		else if (EndsWith(lowerFile, "_scly")) textureType = TEXTURE_TYPE::SCALEY;
+		else
+			continue; // 일치하는 접미어가 없으면 스킵
+
+		CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(fileName, filePath);
+		Link_Texture(G_GlobalLevelKey, fileName, textureType);
 	}
-
 	m_passConstant = "Opaque";
 
 	for (size_t i = 0; i < MAX_TEXTURE_TYPE_VALUE; i++)
@@ -58,15 +71,21 @@ HRESULT CAIMaterial::Initialize(const aiMaterial* pAIMaterial, const string& fil
 		if (ConvertToConstant(static_cast<TEXTURE_TYPE>(i)).empty()) continue;
 		textureTypes.push_back(i);
 	}
+
 	return S_OK;
 }
 
-void CAIMaterial::Save_MaterialData(ID3D11DeviceContext* pContext, ofstream& ofs, const string& directory)
+
+void CAIMaterial::Save_MaterialData(ID3D11DeviceContext* pContext, ofstream& ofs, const string& directory, const string& overrideKey)
 {
 	MATERIAL_INFO_HEADER infoHead = {};
 	strcpy_s(infoHead.materialDataKey, sizeof(infoHead.materialDataKey), m_MaterialKey.c_str());
 	strcpy_s(infoHead.passConstant, sizeof(infoHead.passConstant), m_passConstant.c_str());
-	strcpy_s(infoHead.ShaderKey, sizeof(infoHead.ShaderKey), m_pShader->Get_Key().c_str());
+	if(overrideKey.empty()&& m_pShader)
+		strcpy_s(infoHead.ShaderKey, sizeof(infoHead.ShaderKey), m_pShader->Get_Key().c_str());
+	else {
+		strcpy_s(infoHead.ShaderKey, sizeof(infoHead.ShaderKey), overrideKey.c_str());
+	}
 	memcpy(&infoHead.materialConstant, &m_DefaultMaterialConstant, sizeof(MaterialConstants));
 
 	infoHead.TextureTypeCount = m_Textures.size();

@@ -42,7 +42,7 @@ void CAIBone::Save_File(ofstream& ofs)
 
 void CAIBone::Render_GUI()
 {
-	
+	__super::Render_GUI();
 }
 
 

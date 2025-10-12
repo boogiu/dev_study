@@ -17,7 +17,10 @@ public:
 public:
 	HRESULT Load_Model(const aiScene* pAIScene, const string& fileName);
 	HRESULT Save_Model();
+	HRESULT Save_Model(const string& SavePath);
 
+public:
+	void Render_GUI() override;
 private:
 	HRESULT Release_Mesh();
 private:

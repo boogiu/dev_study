@@ -16,6 +16,7 @@ namespace Engine {
 
 	typedef struct DrawBasePacket {
 		_float4x4* pWorldMatrix;
+		_uint TransformIndex = {};
 	}BASE_PACKET;
 
 	typedef struct DrawPriorityPacket {
@@ -32,6 +33,7 @@ namespace Engine {
 
 		_uint DrawIndex = {}; /*몇번째 메시 그리는데?*/
 		_uint MaterialIndex = {};/*그 메시는 뭐쓰는데*/
+		_uint SkinningOffset = {};
 
 		class CModel* pModel = { nullptr };
 		class CMaterial* pMaterial = { nullptr };
@@ -41,7 +43,7 @@ namespace Engine {
 		RENDERKEY GetKey() const;
 	}OPAQUE_PACKET;
 
-	typedef struct DrawUIPacket {
+	typedef struct DrawUIPacket : BASE_PACKET {
 		_uint DrawIndex = {};
 		_uint MaterialIndex = {};
 		_float4x4* pWorldMatrix;
@@ -50,10 +52,10 @@ namespace Engine {
 		class CMaterial* pMaterial = { nullptr };
 	}UI_PACKET;
 
-	typedef struct DrawDebugPacket {
-		_float4x4* pWorldMatrix;
+	typedef struct DrawDebugPacket : BASE_PACKET {
 		class CModel* pModel = { nullptr };
 		class CDebugRender* pDebug = { nullptr };
+		_uint DrawIndex = {}; /*몇번째 메시 그리는데?*/
 	}DEBUG_PACKET;
 
 	/*Audio*/

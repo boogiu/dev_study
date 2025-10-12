@@ -169,7 +169,7 @@ namespace Engine
 		_float3 vHittedPosition = {};
 	}RAY_HIT;
 
-	/*Tile Grid System Info*/
+	/*Tile Grid System*/
 	typedef struct tagTileSystemInfo {
 		_float4 OriginPoint = {}; //그리드 원점
 		/*몇개씩?*/
@@ -177,11 +177,27 @@ namespace Engine
 		_uint iTileCountY = {};
 		_uint iTileCountZ = {};
 		/*사이즈?*/
-		_uint iSizeXPerTile = {};
-		_uint iSizeYPerTile = {};
-		_uint iSizeZPerTile = {};
-
+		_float iSizeXPerTile = {};
+		_float iSizeYPerTile = {};
+		_float iSizeZPerTile = {};
 	}TILESYSTEM_INFO;
+
+	typedef struct tagTileIndex {
+		_int IndexX = {-1};
+		_int IndexY = {-1};
+		_int IndexZ = {-1};
+	}TILE_INDEX;
+
+	typedef struct tagTileInfoHeader {
+		TILE_INDEX index = {};
+		_float2 PaletteIndex = {};
+		TILE_TYPE eType = {};
+	}TILE_FILE_INFO;
+
+	typedef struct tagTileInstanceInfo {
+	
+	}TILE_INSTANCE;
+
 #pragma pack(pop)
 
 	/* Input LayOut*/

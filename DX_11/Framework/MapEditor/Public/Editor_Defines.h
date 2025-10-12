@@ -8,6 +8,7 @@
 namespace MapEditor {
 	static constexpr unsigned int g_iWinSizeX = 1920;
 	static constexpr unsigned int g_iWinSizeY = 960;
+
 	static constexpr unsigned int g_iMainFrame = 144;
 }
 

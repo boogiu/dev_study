@@ -21,9 +21,12 @@ public:
 	virtual _uint Get_MeshCount() PURE;
 	virtual _uint Get_MaterialIndex(_uint Index) PURE;
 	virtual _bool isDrawable(_uint Index) PURE;
-
-	virtual BOUNDING_BOX Get_LocalBoundingBox()	PURE;
 	virtual _bool isReadyToDraw()	PURE;
+
+public:
+	virtual BOUNDING_BOX Get_LocalBoundingBox()	PURE;
+	virtual vector<BOUNDING_BOX> Get_MeshBoundingBox()	PURE;
+	virtual BOUNDING_BOX Get_WorldBoundingBox()	PURE;
 public:
 	virtual void Free() override;
 };

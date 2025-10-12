@@ -23,15 +23,15 @@ VS_OUT VS_MAIN(VS_IN In)
     
     matrix matWV, matWVP;
     
-    matWV = mul(matWorld, matView);
+    matWV = mul(matWorld[TransformIndex],matView);
     matWVP = mul(matWV, matProjection);
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     Out.vTexcoord = In.vTexcoord;
     
     //노멀 벡터를 월드 변환해줌
-    vector vWorldNormal = mul(vector(In.vNormal, 0.f), matWorld);
-    vector vWorldPos = mul(vector(In.vPosition, 1.f), matWorld);
+    vector vWorldNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
+    vector vWorldPos = mul(vector(In.vPosition, 1.f), matWorld[TransformIndex]);
     
     //빛의 방향의 반대와 월드노멀의 내적을 통해 그 각도를 구해줌 (최소 0을 내려가지 않도록)
     Out.vShade = saturate(max(dot(normalize(vLightDir) * -1.f, normalize(vWorldNormal)), 0.f) + (vLightAmbient * vMtrlAmbient));
@@ -41,6 +41,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), fSpecularPow * 100);
     return Out;
 }
+
 
 struct PS_IN
 {
@@ -59,7 +60,7 @@ PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord );
+    vector vMtrlDiffuse = DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
     
    // if (vMtrlDiffuse.a < 0.3f)
    //     discard;
@@ -68,7 +69,6 @@ PS_OUT PS_MAIN(PS_IN In)
    Out.vColor = vLightDiffuse * vMtrlDiffuse * In.vShade +
        (vLightSpecular * vMtrlSpecular) * In.fSpecular;
     
-
     return Out;
 }
 
@@ -76,7 +76,7 @@ PS_OUT PS_BLEND(PS_IN In)
 {
     PS_OUT Out;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
     
    //빛의 색상 * 빛의 강도 * 텍스처 색깔
     Out.vColor = vMtrlDiffuse;

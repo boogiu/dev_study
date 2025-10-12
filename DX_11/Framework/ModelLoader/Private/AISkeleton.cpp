@@ -72,15 +72,6 @@ void CAISkeleton::Save_File(ofstream& ofs)
 
 }
 
-void CAISkeleton::Render_GUI()
-{
-
-	for (size_t i = 0; i < m_Bones.size(); i++)
-	{
-		if (m_Bones[i]->Get_ParentIndex() == -1)
-			m_Bones[i]->Render_GUI();
-	}
-}
 
 CAISkeleton* CAISkeleton::Create(const aiNode* pAINode)
 {

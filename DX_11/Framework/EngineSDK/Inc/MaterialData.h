@@ -4,6 +4,7 @@
 
 NS_BEGIN(Engine)
 using TEXTUERS = vector<class CTexture*>;
+//using ShaderSelector = std::function<string(const string MaterialKey)>;
 
 class ENGINE_DLL CMaterialData :
 	public CBase
@@ -51,6 +52,8 @@ public:
 	static CMaterialData* Create(const string& materialKey, const string& DefualtpassConstant);
 	virtual void Free() override;
 	static _uint s_NextID;
+public:
+
 };
 
 NS_END

@@ -16,7 +16,7 @@ VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
     matrix matWV,matWVP;
-    matWV = mul(matWorld, matView);
+    matWV = mul(matWorld[TransformIndex], matView);
     matWVP = mul(matWV, matProjection);
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
@@ -29,7 +29,7 @@ VS_OUT VS_ORTHO(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
     matrix matWV, matWVP;
-    matWVP = mul(matWorld, matOrthograph);
+    matWVP = mul(matWorld[TransformIndex], matOrthograph);
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     Out.vTexcoord = In.vTexcoord;
     
@@ -49,7 +49,7 @@ struct PS_OUT
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out ;
-    Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vColor = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
     if (Out.vColor.a < 0.3f)
         discard;
@@ -67,6 +67,8 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN(); 
     }
+
+
     pass UI
     {
         SetRasterizerState(RS_Default);

@@ -22,14 +22,13 @@ struct VS_OUT
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
-    matrix matWV, matWVP;
-    matWV = mul(matWorld, matView);
-    matWVP = mul(matWV, matProjection);
-   
+    float4x4 matWV = mul(matWorld[TransformIndex], matView);
+    float4x4 matWVP = mul(matWV, matProjection);
+     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
-    Out.vWorldPosition = mul(float4(In.vPosition, 1.f), matWorld);
+    Out.vWorldPosition = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]);
     Out.vTexcoord = In.vTexcoord;
-    
+   
     return Out;
 }
 
@@ -49,18 +48,18 @@ struct PS_OUT
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out;
-    float2 newTexcoord = float2(In.vTexcoord.x * XScale, In.vTexcoord.y * ZScale);
-    vector GridCol = g_DiffuseTexture.Sample(PointSampler, newTexcoord);
+    float2 newTexcoord = float2(In.vTexcoord.x * XScale / 16, In.vTexcoord.y * ZScale / 16);
+    vector GridCol = DiffuseTexture.Sample(PointSampler, newTexcoord);
             
     Out.vColor = GridCol;
     
-    float insideX = step(vEdgeMin.x, In.vWorldPosition.x) * step(In.vWorldPosition.x, vEdgeMax.x); //안에 있음면 1나옴(a보다 b가 작으면 0이됨)
+    float insideX = step(vEdgeMin.x, In.vWorldPosition.x) * step(In.vWorldPosition.x, vEdgeMax.x);  //안에 있음면 1나옴(a보다 b가 작으면 0이됨)
     float insideZ = step(vEdgeMin.z, In.vWorldPosition.z) * step(In.vWorldPosition.z, vEdgeMax.z);
     
     float inside = insideX * insideZ;
-    Out.vColor = lerp(GridCol, float4(1, 1, 1, 1), inside);
+    Out.vColor = lerp(GridCol, float4(0.2f, 0.2f, 0.2f, 1), inside);
+    Out.vColor.a = 0.4f;
     
-    Out.vColor.a = 0.2f;
     return Out;
 }
 
@@ -70,8 +69,8 @@ technique11 DefaultTechnique
     pass Opaque
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
     }

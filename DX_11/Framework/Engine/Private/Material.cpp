@@ -30,6 +30,9 @@ HRESULT CMaterial::Initialize(COMPONENT_DESC* pArg)
 
 HRESULT CMaterial::Link_Material(const string& levelKey, const string& materialKey)
 {
+	for (auto& data : m_MaterialInstances)
+		Safe_Release(data);
+
 	m_MaterialInstances = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_MaterialFromFile(levelKey, materialKey);
 	return S_OK;
 }
@@ -72,6 +75,21 @@ void CMaterial::Apply_Material(ID3D11DeviceContext* pContext, _uint subsetIndex)
 {
 	if (subsetIndex >= m_MaterialInstances.size()) return;
 	m_MaterialInstances[subsetIndex]->ApplyData(pContext);
+}
+
+CMaterialInstance* CMaterial::Get_MaterialInstanceByName(const string& MaterialName)
+{
+	if (m_MaterialInstances.empty()) 
+		return nullptr;
+
+	auto iter = find_if(m_MaterialInstances.begin(), m_MaterialInstances.end(),
+		[&](CMaterialInstance* pInstance)->bool{
+			return pInstance->Get_MaterialName() == MaterialName;
+		});
+
+	if (iter == m_MaterialInstances.end()) return nullptr;
+
+	return *iter;
 }
 
 const string& CMaterial::GetPassConstant(_uint subsetIndex)

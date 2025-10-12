@@ -36,12 +36,13 @@ HRESULT CMesh::Initialize_From_File(ID3D11Device* pDevice, ifstream& ifs, MESH_T
 
 	if (FAILED(hr))
 		return E_FAIL;
-
+	
 	m_indices.resize(infoHeader.IndicesCount);
-	ifs.read(reinterpret_cast<char*>(m_indices.data()), infoHeader.IndicesCount * m_iIndexStride);
+	ifs.read(reinterpret_cast<char*>(m_indices.data()), m_iIndicesCount * m_iIndexStride);
 
 	if (FAILED(Create_Index(pDevice)))
 		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -92,7 +93,7 @@ HRESULT CMesh::Create_StaticVertex(ID3D11Device* pDevice, ifstream& ifs)
 	vector<VTXMESH>vertices = {};
 	vertices.resize(m_iVerticesCount);
 
-	ifs.read(reinterpret_cast<char*>(vertices.data()), m_iVerticesCount * sizeof(m_iVertexStride));
+	ifs.read(reinterpret_cast<char*>(vertices.data()), m_iVerticesCount * m_iVertexStride);
 
 	D3D11_BUFFER_DESC VBDesc;
 	VBDesc.ByteWidth = m_iVertexStride * m_iVerticesCount;

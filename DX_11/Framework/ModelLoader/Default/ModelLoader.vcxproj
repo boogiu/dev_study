@@ -171,6 +171,7 @@
     <ClInclude Include="..\Public\LoadStaticModel.h" />
     <ClInclude Include="..\Public\ModelLevel.h" />
     <ClInclude Include="..\Public\ModelObject.h" />
+    <ClInclude Include="..\Public\OptionUI.h" />
     <ClInclude Include="..\Public\PartsObject.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="ModelLoader.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="..\Private\LoadStaticModel.cpp" />
     <ClCompile Include="..\Private\ModelLevel.cpp" />
     <ClCompile Include="..\Private\ModelObject.cpp" />
+    <ClCompile Include="..\Private\OptionUI.cpp" />
     <ClCompile Include="..\Private\PartsObject.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
   </ItemGroup>

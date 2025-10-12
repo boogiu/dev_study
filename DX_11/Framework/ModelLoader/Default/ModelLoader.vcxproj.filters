@@ -70,6 +70,9 @@
     <Filter Include="03. LoaderComponent\Model\Skeletal">
       <UniqueIdentifier>{1fa6e934-d275-42d0-8571-6c3959c18459}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. ModelObject\OptionUI">
+      <UniqueIdentifier>{7455d6d4-bcb4-4f2a-8e22-7fc18b6186a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -171,6 +174,9 @@
     <ClInclude Include="..\Public\PartsObject.h">
       <Filter>02. ModelObject\BasicObject\PartsObject</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\OptionUI.h">
+      <Filter>02. ModelObject\OptionUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="ModelLoader.ico">
@@ -261,6 +267,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\PartsObject.cpp">
       <Filter>02. ModelObject\BasicObject\PartsObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\OptionUI.cpp">
+      <Filter>02. ModelObject\OptionUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

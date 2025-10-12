@@ -12,6 +12,7 @@
 #include "DebugRender.h"
 #include "ITileService.h"
 #include "IGUIService.h"
+
 /*ClientManager*/
 #include "EditorSystem.h"
 
@@ -36,7 +37,7 @@ HRESULT CGridObject::Initialize_Prototype()
 	CPlaneModel* pModel = Add_Component<CPlaneModel>();
 	Add_Component<CMaterial>();
 	Add_Component<CRayReceiver>()->Set_ReturnType(false);
-
+	m_NowIndex.IndexY = 0;
 	return S_OK;
 }
 
@@ -50,7 +51,7 @@ HRESULT CGridObject::Initialize(INIT_DESC* pArg)
 	_uint Index = {};
 	pMaterial->Insert_MaterialInstance(customInstance, &Index);
 	customInstance->Get_MaterialData()->Link_Shader(G_GlobalLevelKey, "VTX_PlaneGrid.hlsl");
-	customInstance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "TileCell.png", TEXTURE_TYPE::DIFFUSE);
+	customInstance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "TileCell.png", TEXTURE_TYPE::ALBEDO);
 	SHADER_PARAM ScaleXParam = {};
 	ScaleXParam.iSize = sizeof(_uint);
 	ScaleXParam.pData = &m_iScaleX;
@@ -67,12 +68,12 @@ HRESULT CGridObject::Initialize(INIT_DESC* pArg)
 
 	SHADER_PARAM vMinParam = {};
 	vMinParam.iSize = sizeof(_float4);
-	vMinParam.pData = &m_HittedIdx.vEdgeMin;
+	vMinParam.pData = &m_HittedArea.vEdgeMin;
 	vMinParam.typeName = "float4";
 
 	SHADER_PARAM vMaxParam = {};
 	vMaxParam.iSize = sizeof(_float4);
-	vMaxParam.pData = &m_HittedIdx.vEdgeMax;
+	vMaxParam.pData = &m_HittedArea.vEdgeMax;
 	vMaxParam.typeName = "float4";
 
 	customInstance->Set_Param("vEdgeMin", vMinParam);
@@ -83,32 +84,32 @@ HRESULT CGridObject::Initialize(INIT_DESC* pArg)
 
 void CGridObject::Priority_Update(_float dt)
 {
-	if (CGameInstance::GetInstance()->Get_GUISystem()->UsingUI()) return;
-
 	/*자신의 크기 ()*/
 	TILESYSTEM_INFO contextInfo = CEditorSystem::GetInstance()->Get_Context()->ContextTileInfo;
 
+	if(CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_DOWN))
+		m_NowIndex.IndexY -= 1;
+	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_UP))
+		m_NowIndex.IndexY += 1;
 
-	_float deltaW = CGameInstance::GetInstance()->Get_InputDev()->Mouse_DeltaW();
+	if (m_HittedIndex.IndexY < 0)
+		m_NowIndex.IndexY = 0;
 
-	_int StepDelta = static_cast<_int>(deltaW);
-	m_NowYIndex += StepDelta;
+	if (m_HittedIndex.IndexY >= contextInfo.iTileCountY)
+		m_NowIndex.IndexY = contextInfo.iTileCountY - 1;
 
-	if (m_NowYIndex < 0)
-		m_NowYIndex = 0;
 
-	if (m_NowYIndex > contextInfo.iTileCountY)
-		m_NowYIndex = contextInfo.iTileCountY;
+	Get_Component<CTransform>()->Set_Pos({ Get_Position().x, 
+		static_cast<_float>(contextInfo.iSizeYPerTile) * m_NowIndex.IndexY
+		,Get_Position().z });
 
-	Get_Component<CTransform>()->Set_Pos({ Get_Position().x, static_cast<_float>(contextInfo.iSizeYPerTile) * m_NowYIndex,Get_Position().z });
 }
 
 void CGridObject::Update(_float dt)
 {
-
 	CRayReceiver* pReceiver = Get_Component<CRayReceiver>();
 	_bool isHit = { false };
-	_float3 rayPos =  pReceiver->Get_RayHittedPos(&isHit);
+	_float3 rayPos = pReceiver->Get_RayHittedPos(&isHit);
 
 	if (isHit) {
 		m_HittedPos = rayPos;
@@ -119,29 +120,21 @@ void CGridObject::Update(_float dt)
 	m_iScaleX = contextInfo.iTileCountX;
 	m_iScaleZ = contextInfo.iTileCountZ;
 
-	CGameInstance::GetInstance()->Get_TileSystem()->Get_IndexByPosition(
-		XMLoadFloat3(&m_HittedPos),
-		& m_HittedIdx.X,
-			& m_HittedIdx.Y,
-			& m_HittedIdx.Z);
-
-			Check_Dragging(contextInfo);
+	m_HittedIndex =CGameInstance::GetInstance()->Get_TileSystem()->Get_IndexByPosition({ m_HittedPos.x,m_HittedPos.y,m_HittedPos.z ,0});
+	Check_Dragging(contextInfo);
 }
 
 void CGridObject::Late_Update(_float dt)
 {
 }
 
-void CGridObject::Get_HitIndex(_uint* X, _uint* Y, _uint* Z)
+TILE_INDEX CGridObject::Get_HitIndex()
 {
-	*X = m_HittedIdx.X;
-	*Y = m_HittedIdx.Y;
-	*Z = m_HittedIdx.Z;
+	return m_HittedIndex;
 }
 
 void CGridObject::Render_GUI()
 {
-
 	ImVec2 windowPos = ImVec2((float)g_iWinSizeX - 850, 0);
 	ImGui::SetNextWindowPos(ImVec2(windowPos), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(340, 100), ImGuiCond_Once);
@@ -151,21 +144,19 @@ void CGridObject::Render_GUI()
 	ImGui::InputFloat3("##Position", reinterpret_cast<float*>(&m_HittedPos), "%.2f", ImGuiInputTextFlags_ReadOnly);
 
 	_int Idx[3] = {
-			static_cast<_int>(m_HittedIdx.X),
-			static_cast<_int>(m_HittedIdx.Y),
-			static_cast<_int>(m_HittedIdx.Z)
+			(m_HittedIndex.IndexX),
+			(m_HittedIndex.IndexZ)
 	};
 
 	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Hitted_Index : ");
 	ImGui::SameLine();
-	ImGui::InputInt3("##Index", Idx, ImGuiInputTextFlags_ReadOnly);
+	ImGui::InputInt2("##Index", Idx, ImGuiInputTextFlags_ReadOnly);
 
-	_int yLayer = static_cast<_int>(m_NowYIndex);
+	_int yLayer = static_cast<_int>(m_HittedIndex.IndexY);
 	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Now Y Layer : ");
 	ImGui::SameLine();
 	ImGui::InputInt("##Index", &yLayer);
 
-	m_NowYIndex = static_cast<_uint>(yLayer);
 	ImGui::End();
 }
 
@@ -184,49 +175,43 @@ void CGridObject::Check_Dragging(TILESYSTEM_INFO ContextInfo)
 			isDragging = true;
 		}
 	}
-	else if(!CGameInstance::GetInstance()->Get_InputDev()->Mouse_Away(MOUSE_BTN::LB)) {
+	else if (!CGameInstance::GetInstance()->Get_InputDev()->Mouse_Away(MOUSE_BTN::LB)) {
 		isDragging = false;
 	}
 
 	if (!isDragging) {
-		m_HittedIdx.vEdgeMax = {
-			ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * (m_HittedIdx.X + 1),
+		m_HittedArea.vEdgeMax = {
+			ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * (m_HittedIndex.IndexX + 1),
 			ContextInfo.OriginPoint.y,
-			ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * (m_HittedIdx.Z + 1),
+			ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * (m_HittedIndex.IndexZ + 1),
 			1.f
 		};
 
-		m_HittedIdx.vEdgeMin = {
-				ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * m_HittedIdx.X,
+		m_HittedArea.vEdgeMin = {
+				ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * m_HittedIndex.IndexX,
 				ContextInfo.OriginPoint.y ,
-				ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * m_HittedIdx.Z,
+				ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * m_HittedIndex.IndexZ,
 				1.f
 		};
 	}
+
 	else {
 		if (m_DragPivotPos.x > m_HittedPos.x) { //이전 위치가 현재 위치보다 크면-> 맥시멈 갱신 x
-			m_HittedIdx.vEdgeMin.x = ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * m_HittedIdx.X;
+			m_HittedArea.vEdgeMin.x = ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * m_HittedIndex.IndexX;
 		}
 		else {//이전 위치가 현재 위치보다 작으면-> 미니멈 갱신 x
-			m_HittedIdx.vEdgeMax.x = ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * (m_HittedIdx.X + 1);
+			m_HittedArea.vEdgeMax.x = ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * (m_HittedIndex.IndexX + 1);
 		}
 		if (m_DragPivotPos.z > m_HittedPos.z) {
-			m_HittedIdx.vEdgeMin.z = ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * m_HittedIdx.Z;
+			m_HittedArea.vEdgeMin.z = ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * m_HittedIndex.IndexZ;
 		}
 		else {
-			m_HittedIdx.vEdgeMax.z = ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * (m_HittedIdx.Z + 1);
+			m_HittedArea.vEdgeMax.z = ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * (m_HittedIndex.IndexZ + 1);
 		}
-		m_HittedIdx.vEdgeMax.y = ContextInfo.OriginPoint.y;
-		m_HittedIdx.vEdgeMin.y = ContextInfo.OriginPoint.y;
+		m_HittedArea.vEdgeMax.y = ContextInfo.OriginPoint.y;
+		m_HittedArea.vEdgeMin.y = ContextInfo.OriginPoint.y;
 	}
 
-
-	if (isDragging && CGameInstance::GetInstance()->Get_InputDev()->Mouse_Away(MOUSE_BTN::LB)){
-		CEditorSystem::GetInstance()->Create_ObjectArea(
-			XMLoadFloat4(&m_HittedIdx.vEdgeMin),
-			XMLoadFloat4(&m_HittedIdx.vEdgeMax)
-		);
-	}
 }
 
 CGridObject* CGridObject::Create()

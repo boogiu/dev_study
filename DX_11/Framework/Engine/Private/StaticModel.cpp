@@ -3,8 +3,8 @@
 #include "IResourceService.h"
 #include "IRenderService.h"
 #include "ModelData.h"
-
-
+#include"GameObject.h"
+#include "Transform.h"
 
 CStaticModel::CStaticModel()
 {
@@ -29,7 +29,9 @@ HRESULT CStaticModel::Initialize(COMPONENT_DESC* pArg)
 
 HRESULT CStaticModel::Link_Model(const string& levelKey, const string& modelDataKey)
 {
+    Safe_Release(m_pData);
     m_pData = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_ModelData(levelKey, modelDataKey);
+    Safe_AddRef(m_pData);
     m_DrawableMeshes.resize(m_pData->Get_MeshCount(), true);
     return S_OK;
 }
@@ -69,11 +71,41 @@ BOUNDING_BOX CStaticModel::Get_LocalBoundingBox()
     return m_pData->Get_LocalBoundingBox();
 }
 
+BOUNDING_BOX CStaticModel::Get_WorldBoundingBox()
+{
+    BOUNDING_BOX wordlBox = m_pData->Get_LocalBoundingBox();
+    _float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix();
+    XMStoreFloat3(&wordlBox.vMin, XMVector3TransformCoord(XMLoadFloat3(&wordlBox.vMin), XMLoadFloat4x4(pWorldMat)));
+    XMStoreFloat3(&wordlBox.vMax, XMVector3TransformCoord(XMLoadFloat3(&wordlBox.vMax), XMLoadFloat4x4(pWorldMat)));
+    return wordlBox;
+}
+
+vector<BOUNDING_BOX> CStaticModel::Get_MeshBoundingBox()
+{
+    vector<BOUNDING_BOX> boxes;
+
+    for (size_t i = 0; i < m_pData->Get_MeshCount(); i++)
+    {
+        boxes.push_back(m_pData->Get_MeshBoundingBox(i));
+    }
+    return boxes;
+}
+
 HRESULT CStaticModel::Draw(ID3D11DeviceContext* pContext, _uint Index)
 {
     return m_pData->Render_Mesh(pContext, Index);
 }
+void CStaticModel::Render_GUI()
+{
+    ImGui::SeparatorText("Animate Model");
+    float childWidth = ImGui::GetContentRegionAvail().x;
+    const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
+    const float childHeight = (textLineHeight * (m_pData->Get_MeshCount() + 4)) + (ImGui::GetStyle().WindowPadding.y * 2);
 
+    ImGui::BeginChild("##Animate ModelChild", ImVec2{ 0, childHeight }, true);
+    m_pData->Render_GUI();
+    ImGui::EndChild();
+}
 CStaticModel* CStaticModel::Create()
 {
     CStaticModel* instance = new CStaticModel();

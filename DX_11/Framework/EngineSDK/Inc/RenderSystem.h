@@ -16,11 +16,11 @@ public:
 	virtual void Submit_Opaque(const OPAQUE_PACKET& packet) override { m_pOpaquePass->Submit(packet); };
 	virtual void Submit_UI(const UI_PACKET& packet) override {m_pUIPass->Submit(packet);};
 	virtual void Submit_Debug(const DEBUG_PACKET& packet) override { m_pDebugPass->Submit(packet); };
+	virtual HRESULT Add_Palette(const string& ConstantName, class CTexture* pTexture) override;
 
 public:
 	HRESULT Get_InputLayout(class CModel* pModel, class CShader* pShader, _uint DrawIndex, const string& passConstant,  ID3D11InputLayout** ppInputLayout);
 	class CPipeLine* Get_Pipeline() { return m_pPipeLine; }
-
 private:
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = {nullptr};

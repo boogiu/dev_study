@@ -1,6 +1,8 @@
 #pragma once
 #include "ITileService.h"
 NS_BEGIN(Engine)
+using BlockLayer = vector<class CTileBlock*>;
+
 class  CTileSystem :
     public ITileService
 {
@@ -13,20 +15,16 @@ public:
 
 public:
     HRESULT Initialize(const TILESYSTEM_INFO& tileInfo);
+    virtual TILE_INDEX Get_IndexByPosition(_float4 WorldPos) override;
+    virtual TILE_INDEX Register_Tile(class CTileBlock* block, TILE_INDEX index)override;
 
-    virtual _int Register_Tile(class CTileBlock* tileBlock, _uint x, _uint y, _uint z)override;
-    virtual void UnRegister_Tile(_int Index)override;
-
-    virtual TILESYSTEM_INFO* Get_TileSystemInfo()override { return &m_tTileInfo; }
-    virtual void Get_IndexByPosition(_fvector vPos, _uint* x, _uint* y, _uint* z)override;
-    virtual void Get_XYZByIndex(_uint Index, _uint* x, _uint* y, _uint* z)override;
-    vector<CTileBlock*> Get_NeighborByIndex(_uint Index);
 private:
-    _uint Make_Index(_uint x, _uint y, _uint z);
+    _bool Check_ValidIndex(TILE_INDEX index);
 private:
-    vector<class CTileBlock*> m_Blocks;
     TILESYSTEM_INFO m_tTileInfo = {};
+    vector<BlockLayer> m_TileContainer;
 
+    vector<TILE_INSTANCE> m_TileInstances;
 public:
     static CTileSystem* Create(const TILESYSTEM_INFO& tileInfo);
     virtual void Free() override;

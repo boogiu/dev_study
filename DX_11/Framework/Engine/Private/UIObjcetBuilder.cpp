@@ -101,7 +101,7 @@ CUIObjcetBuilder& CUIObjcetBuilder::Scale(const _float2 scale)
 	m_pObjDesc->fSizeY = scale.y;
 	return *this;
 }
-CUIObjcetBuilder& CUIObjcetBuilder::Set_Anchor(UI_Anchor eAnchor, _float2 vPivot)
+CUIObjcetBuilder& CUIObjcetBuilder::Set_Anchor(UI_ANCHOR eAnchor, _float2 vPivot)
 {
 		m_eAnchor = eAnchor;
 		m_vPivot = vPivot;

@@ -22,15 +22,15 @@ VS_OUT VS_MAIN(VS_IN In)
     
     matrix matWV, matWVP;
     
-    matWV = mul(matWorld, matView);
+    matWV = mul(matWorld[TransformIndex], matView);
     matWVP = mul(matWV, matProjection);
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     Out.vTexcoord = In.vTexcoord;
     
     //노멀 벡터를 월드 변환해줌
-    vector vWorldNormal = mul(vector(In.vNormal, 0.f), matWorld);
-    vector vWorldPos = mul(vector(In.vPosition, 0.f), matWorld);
+    vector vWorldNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
+    vector vWorldPos = mul(vector(In.vPosition, 0.f), matWorld[TransformIndex]);
     
     //빛의 방향의 반대와 월드노멀의 내적을 통해 그 각도를 구해줌 (최소 0을 내려가지 않도록)
     Out.vShade = saturate(max(dot(normalize(vLightDir) * -1.f, normalize(vWorldNormal)), 0.f) + (vLightAmbient * vMtrlAmbient));
@@ -60,7 +60,7 @@ PS_OUT PS_MAIN(PS_IN In)
     PS_OUT Out;
     
     //이거는 래핑한다는뜻, 30을 곱해서 반복적인 타일을 만들어주는 것
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord * 30.f);
+    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord * 30.f);
     if (vMtrlDiffuse.a < 0.3f)
         discard;
     

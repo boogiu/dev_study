@@ -16,8 +16,7 @@ public:
     void Set_Offset(_uint Index, _float4x4 offset);
     HRESULT Save_Skeletons(const string& path);
     void Save_File(ofstream& ofs);
-public:
-    void Render_GUI();
+
 public:
     static CAISkeleton* Create(const aiNode* pAINode);
     virtual void Free() override;

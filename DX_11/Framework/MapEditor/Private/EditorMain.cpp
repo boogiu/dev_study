@@ -35,11 +35,12 @@ HRESULT CEditorMain::Initialize()
 		m_pDeviceContext = m_pGameInstance->Get_Context();
 	}
 
-	Set_Levels();
+	ImGui::SetCurrentContext(m_pGameInstance->Get_GUISystem()->GetEngineImGuiContext());
 
+	Set_Levels();
 	m_pGameInstance->Get_LevelMgr()->Request_ChangeLevel("Editor_Level", false);
 	CEditorLevel::PreLoad_Level();
-	ImGui::SetCurrentContext(m_pGameInstance->Get_GUISystem()->GetEngineImGuiContext());
+	
 
 	m_pSystem = CEditorSystem::GetInstance();
 	return S_OK;

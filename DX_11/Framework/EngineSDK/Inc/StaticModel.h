@@ -26,7 +26,11 @@ public:
 
     class CModelData* Get_ModelData() { return m_pData; };
     virtual BOUNDING_BOX Get_LocalBoundingBox()	override;
+    virtual BOUNDING_BOX Get_WorldBoundingBox()	override;
+    virtual vector<BOUNDING_BOX> Get_MeshBoundingBox()	override;
     _bool isReadyToDraw()	override { return m_pData != nullptr; };
+public:
+    void Render_GUI();
 
 protected:
     vector<_bool> m_DrawableMeshes;

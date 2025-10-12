@@ -17,12 +17,12 @@ CVI_Plane::~CVI_Plane()
 
 HRESULT CVI_Plane::Initialize(ID3D11Device* pDevice)
 {
-	m_ElementCount = VTXPOSTEX::iElementCount;
-	m_ElementKey = VTXPOSTEX::Key;
-	m_ElementDesc = VTXPOSTEX::Elements;
+	m_ElementCount = VTXNORMTEX::iElementCount;
+	m_ElementKey = VTXNORMTEX::Key;
+	m_ElementDesc = VTXNORMTEX::Elements;
 	m_iVertexBufferCount = 1;
 	m_iVerticesCount = 4;
-	m_iVertexStride = sizeof(VTXPOSTEX);
+	m_iVertexStride = sizeof(VTXNORMTEX);
 	m_iIndicesCount = 6;
 	m_iIndexStride = 2; //byte
 	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
@@ -47,22 +47,26 @@ HRESULT CVI_Plane::Create_Vertex(ID3D11Device* pDevice)
 	VBDesc.MiscFlags = 0;
 	VBDesc.StructureByteStride = m_iVertexStride;
 
-	VTXPOSTEX* m_VBContainer = new VTXPOSTEX[m_iVerticesCount];
+	VTXNORMTEX* m_VBContainer = new VTXNORMTEX[m_iVerticesCount];
 	ZeroMemory(m_VBContainer, m_iVertexStride * m_iVerticesCount);
 
 	_float s = 0.5;
 
 	m_VBContainer[0].vPosition = _float3(-s, 0.f, s);
 	m_VBContainer[0].vTexcoord = _float2(0.f, 0.f);
+	m_VBContainer[0].vNormal = _float3(0.f, 1.f, 0.f);
 
 	m_VBContainer[1].vPosition = _float3(s, 0.f, s);
 	m_VBContainer[1].vTexcoord = _float2(1.f, 0.f);
+	m_VBContainer[1].vNormal = _float3(0.f, 1.f, 0.f);
 
 	m_VBContainer[2].vPosition = _float3(s, 0.f, -s);
 	m_VBContainer[2].vTexcoord = _float2(1.f, 1.f);
+	m_VBContainer[2].vNormal = _float3(0.f, 1.f, 0.f);
 
 	m_VBContainer[3].vPosition = _float3(-s, 0.f, -s);
 	m_VBContainer[3].vTexcoord = _float2(0.f, 1.f);
+	m_VBContainer[3].vNormal = _float3(0.f, 1.f, 0.f);
 
 	D3D11_SUBRESOURCE_DATA subData;
 	subData.pSysMem = m_VBContainer;
