@@ -51,7 +51,7 @@ void CTileObject::Priority_Update(_float dt)
 	_ubyte neighBorState= Get_Component<CTileBlock>()->Get_NeigborState();
 
 	if (neighBorState == 0) {
-
+		//사방에 아무것도 없음
 	}
 }
 
