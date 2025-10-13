@@ -31,9 +31,6 @@
     <Filter Include="03. EditorSystem">
       <UniqueIdentifier>{6ac9d7da-752c-4919-a919-5b191a1c31e7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. MapObject\BlockObject">
-      <UniqueIdentifier>{6134bc13-30aa-44d1-b877-628b30596361}</UniqueIdentifier>
-    </Filter>
     <Filter Include="05. GUI_Panel">
       <UniqueIdentifier>{73476cbb-6643-479f-a604-37f7ab2d722c}</UniqueIdentifier>
     </Filter>
@@ -45,6 +42,12 @@
     </Filter>
     <Filter Include="02. MapObject\GridObject">
       <UniqueIdentifier>{b1b3eaf0-90f3-4a57-91c5-a85579151221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. MapObject\StructureObject">
+      <UniqueIdentifier>{2deaefc3-11f1-4115-9124-6c8d28dcbb4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. MapObject\FieldOutObject">
+      <UniqueIdentifier>{6134bc13-30aa-44d1-b877-628b30596361}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -135,7 +138,10 @@
       <Filter>02. MapObject\GridObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\FieldOutBlocks.h">
-      <Filter>02. MapObject\BlockObject</Filter>
+      <Filter>02. MapObject\FieldOutObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\StructureObject.h">
+      <Filter>02. MapObject\StructureObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -202,7 +208,7 @@
       <Filter>02. MapObject\TileObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\FieldOutBlocks.cpp">
-      <Filter>02. MapObject\BlockObject</Filter>
+      <Filter>02. MapObject\FieldOutObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\DirectoryPanel.cpp">
       <Filter>05. GUI_Panel\RayCastPanel</Filter>
@@ -212,6 +218,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\GridObject.cpp">
       <Filter>02. MapObject\GridObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\StructureObject.cpp">
+      <Filter>02. MapObject\StructureObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

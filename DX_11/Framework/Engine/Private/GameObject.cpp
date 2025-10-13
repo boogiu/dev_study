@@ -222,8 +222,10 @@ HRESULT CGameObject::Make_OpaquePacket(OPAQUE_PACKET& packet)
 void CGameObject::Free()
 {
 	__super::Free();
-	for (auto& pair : m_Components)
+	for (auto& pair : m_Components) {
+		pair.second->Set_Active(false);
 		Safe_Release(pair.second);
+	}
 
 	Safe_Release(m_pTransform);
 }

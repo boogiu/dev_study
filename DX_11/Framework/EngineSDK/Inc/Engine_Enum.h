@@ -26,7 +26,7 @@ namespace Engine
 
     enum class RENDER_PASS { RENDER_PRIORITY, RENDER_OPAQUE, RENDER_TRANSPARENT, RENDER_UI, RG_END };
 
-    enum class UI_ANCHOR : unsigned int {
+    enum class ANCHOR : unsigned int {
         Center = 0,
         Left = 1,				// 0001
         Right = 2,			// 0010
@@ -34,7 +34,15 @@ namespace Engine
         Bottom = 8		// 1000
     };
 
+    inline ANCHOR operator | (ANCHOR a, ANCHOR b) {
+        return static_cast<ANCHOR>(static_cast<unsigned int>(a) | static_cast<unsigned int>(b));
+    }
+    inline ANCHOR operator & (ANCHOR a, ANCHOR b) {
+        return static_cast<ANCHOR>(static_cast<unsigned int>(a) & static_cast<unsigned int>(b));
+    }
+
     enum class TILE_TYPE {
+            NONE,
             GRASS,
             WATER,
             ROAD

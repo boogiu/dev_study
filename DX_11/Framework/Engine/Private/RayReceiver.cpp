@@ -25,18 +25,18 @@ HRESULT CRayReceiver::Initialize(COMPONENT_DESC* pArg)
 	if (m_pTransform == nullptr || m_pModel == nullptr) {
 		m_pTransform = m_pOwner->Get_Component<CTransform>();
 		m_pModel = m_pOwner->Get_Component<CModel>();
-		Safe_AddRef(m_pTransform);
-		Safe_AddRef(m_pModel);
 	}
 	return S_OK;
 }
 
 _bool CRayReceiver::OnRayHit(RAY* ray, RAY_HIT* HittedInfo)
 {
+	if (!m_bActive) return false;
+	if (ray == nullptr) return false;
+
 	m_tHitInfo = {};
 	m_bIsHit = false;
 
-	if (ray == nullptr) return false;
 	Check_VaildComponent();
 
 	if (!m_pTransform || !m_pModel) return false;
@@ -130,8 +130,6 @@ void CRayReceiver::Check_VaildComponent()
 	if (m_pTransform == nullptr || m_pModel == nullptr) {
 		m_pTransform = m_pOwner->Get_Component<CTransform>();
 		m_pModel = m_pOwner->Get_Component<CModel>();
-		Safe_AddRef(m_pTransform);
-		Safe_AddRef(m_pModel);
 	}
 }
 
@@ -158,8 +156,6 @@ void CRayReceiver::Free()
 {
 	__super::Free();
 	//CGameInstance::GetInstance()->Get_RayMgr()->UnRegister_RayReceiver(m_ID);
-	Safe_Release(m_pTransform);
-	Safe_Release(m_pModel);
 }
 
 /*

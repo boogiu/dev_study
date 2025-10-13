@@ -82,6 +82,7 @@ void CRaySystem::Update(_float dt)
 		[&](const RAY_HIT a, const RAY_HIT b) {
 			return a.fDistance < b.fDistance;
 		});
+	
 }
 
 CGameObject* CRaySystem::Get_HittedObject()

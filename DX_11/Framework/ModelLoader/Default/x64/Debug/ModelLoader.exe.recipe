@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\dev_study\DX_11\Framework\ModelLoader\Bin\ModelLoader.exe</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\ModelLoader\Bin\ModelLoader.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

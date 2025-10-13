@@ -15,7 +15,8 @@ class CEditorSystem :
 	public CBase
 {
 	DECLARE_SINGLETON(CEditorSystem);
-	enum ObjType {TILE, FIELDOUT};
+public:
+	enum ObjType {TILE, FIELDOUT,STRUCTURE};
 
 public:
 	struct Editor_Context {
@@ -38,15 +39,17 @@ public:
 
 	HRESULT Create_Tile(const string& folderName);
 	HRESULT Create_FieldOut(const string& folderName);
-
-	HRESULT Save_Blocks();
+	HRESULT Create_MapObject(const string& folderName, ObjType eType);
 	void Create_Base();
+
+public:
+	HRESULT Load_MapData();
+	HRESULT Save_MapData();
 
 private:
 	void Execute_TileSystem();
 	void Create_GUIPanels();
 	void Create_Ray();
-
 	void DragDrop_Object();
 
 private:

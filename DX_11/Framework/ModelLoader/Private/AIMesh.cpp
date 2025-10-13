@@ -62,8 +62,10 @@ HRESULT CAIMesh::Create_Vertex(ID3D11Device* pDevice)
 		memcpy(&mesh.vNormal, &m_pAIMesh->mNormals[i], sizeof(_float3));
 		XMStoreFloat3(&mesh.vNormal, XMVector3TransformNormal(XMLoadFloat3(&mesh.vNormal), PreTransformMatrix));
 
-		memcpy(&mesh.vTexcoord, &m_pAIMesh->mTextureCoords[0][i], sizeof(_float2));
-		memcpy(&mesh.vTangent, &m_pAIMesh->mTangents[i], sizeof(_float3));
+		if (m_pAIMesh->mNumUVComponents[0] > 0) {
+			memcpy(&mesh.vTexcoord, &m_pAIMesh->mTextureCoords[0][i], sizeof(_float2));
+			memcpy(&mesh.vTangent, &m_pAIMesh->mTangents[i], sizeof(_float3));
+		}
 		m_VBMeshContainer.push_back(mesh);
 	}
 

@@ -44,10 +44,13 @@ void CDirectoryPanel::Render_GUI()
 	if (ImGui::RadioButton("Tile", m_eMode == TILE)) {
 		m_eMode = TILE;
 	}
-	
 	ImGui::SameLine();
 	if (ImGui::RadioButton("FieldOut", m_eMode == FIELDOUT)) {
 		m_eMode = FIELDOUT;
+	}	
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Structure", m_eMode == STRUCTURE)) {
+		m_eMode = STRUCTURE;
 	}
 
 	ImGui::Separator();
@@ -124,9 +127,11 @@ void CDirectoryPanel::Create_Tile(const string& name)
 	switch (m_eMode)
 	{
 	case MapEditor::CDirectoryPanel::TILE:
-		hr = CEditorSystem::GetInstance()->Create_Tile(name); break;
+		hr = CEditorSystem::GetInstance()->Create_MapObject(name,CEditorSystem::TILE); break;
 	case MapEditor::CDirectoryPanel::FIELDOUT:
-		hr = CEditorSystem::GetInstance()->Create_FieldOut(name); break;
+		hr = CEditorSystem::GetInstance()->Create_MapObject(name, CEditorSystem::FIELDOUT); break;
+	case MapEditor::CDirectoryPanel::STRUCTURE:
+		hr = CEditorSystem::GetInstance()->Create_MapObject(name, CEditorSystem::STRUCTURE); break;
 	default:
 		break;
 	}

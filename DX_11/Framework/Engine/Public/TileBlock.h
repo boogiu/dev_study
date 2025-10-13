@@ -5,8 +5,6 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CTileBlock :
     public CComponent
 {
-public: 
-    enum class Tile_Anchor{NONE,CENTER, LEFTTOP, RIGHTBOTTOM};
 private:
     CTileBlock();
     CTileBlock(const CTileBlock& rhs);
@@ -17,15 +15,21 @@ public:
     virtual HRESULT Initialize(COMPONENT_DESC* pArg) override;
 
 public:
-    TILE_INDEX On_Grid(TILE_INDEX tileIndex);
+    void Update_Position( TILESYSTEM_INFO& systemInfo);
+    _ubyte Get_NeigborState();
+
+public:
+    TILE_INDEX On_Grid(TILE_INDEX tileIndex, TILE_TYPE eType = TILE_TYPE::NONE);
     void Set_Index(TILE_INDEX tileIndex);
-    void Update_Position(const TILESYSTEM_INFO& systemInfo);
+    TILE_INDEX Get_Index() { return m_tIndex; };
 
 private:
     class CTransform* m_pTransform = { nullptr };
     class ITileService* m_pTileSystem = { nullptr };
 
     TILE_INDEX m_tIndex = {};
+    TILE_TYPE m_eType = {};
+
 public:
     static CTileBlock* Create();
     virtual CComponent* Clone() override;
@@ -34,3 +38,4 @@ public:
 };
 
 NS_END
+

@@ -18,7 +18,7 @@ class CDirectoryPanel :
 	{
 		TILE,
 		FIELDOUT,
-
+		STRUCTURE
 	};
 private:
 	CDirectoryPanel(GUI_CONTEXT* context);

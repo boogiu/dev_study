@@ -18,7 +18,7 @@ public:
 	void Late_Update(_float dt);
 	class CGameObject* Pop_GameObject(_uint ObjectID);
 	void Remove_GameObject(_uint ObjectID);
-	
+	_uint Get_ObjectCount() { return m_IndexByID.size(); };
 	class CGameObject* Find_ObjectByID(_uint ObjectID);
 	const vector<class CGameObject*>& Get_AllObject() { return m_GameObjects; };
 

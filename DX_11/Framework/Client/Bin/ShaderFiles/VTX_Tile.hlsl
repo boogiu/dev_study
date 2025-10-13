@@ -1,7 +1,5 @@
 #include "Shader_Define.hlsl"
 
-float2 PalettePixel = { 0.5f,0.54f};
-int Scale = 100;
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -13,7 +11,6 @@ struct VS_OUT
     float4 vPosition : SV_Position;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
-    
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -61,18 +58,16 @@ PS_OUT PS_MAIN(PS_IN In)
   }
     else if (hasDiffuse > 0.2 && hasGradation > 0.2f)
   {
-      BaseColor = lerp(Diffuse, Gradation, Mixture.a);
-  }
+        BaseColor = Diffuse;
+    }
     
     else if (hasDiffuse < 0.2f && hasGradation < 0.2f)
     {
         discard;
     }
-
- // --- 오파시티 적용 ---
+    
  vector Mtrl = BaseColor;
  
- // --- 최종 알파 확인 ---
     if (Mtrl.a < 0.2f )
      discard;
     
@@ -80,54 +75,52 @@ PS_OUT PS_MAIN(PS_IN In)
     return Out;
 }
 
-
 PS_OUT PS_BASE(PS_IN In)
 {
     PS_OUT Out;
-    vector Mask = g_MaskTexture.Sample(LinearSampler, In.vTexcoord);
-    vector Mask2 = g_MaskTexture.Sample(LinearSampler, In.vTexcoord * 100);
+
+    float2 worldSize = vMax - vMin;
+    float2 WorldUV = (In.vWorldPos.xz - vMin) / worldSize;
+    float2 uv = frac(WorldUV * repeatCount);
+
+    vector Mask = g_MaskTexture.Sample(LinearSampler, uv);
+    vector Mask2 = g_MaskTexture.Sample(LinearSampler, WorldUV);
+
     vector Palette = g_PaletteTexture.Sample(DefaultSampler, float2(PalettePixel.x, PalettePixel.y));
-    vector Palette2 = g_PaletteTexture.Sample(LinearSampler, float2(PalettePixel.x + (1 - Mask.r) * Mask.b, PalettePixel.y));
-   
-    vector Grd = (Palette * (1 - Mask2.a) + (Palette2) * (Mask2.a));
+    vector Palette2 = g_PaletteTexture.Sample(LinearSampler, float2(PalettePixel.x + (1 - Mask2.r) *  Mask2.b, PalettePixel.y));
+
+    vector Grd = (Palette * (1 - Mask.a) + (Palette2) * (Mask.a));
 
     Out.vColor = Grd;
     
     return Out;
 }
 
-
 PS_OUT PS_EDGE(PS_IN In)
 {
-    /*여기서 월드 포지션의 X/Z를 가져옴*/
-    /*기준이 되는 평면의 최소 / 최대를 가져오고,
-    내 최소와 최대를 기준으로 잘라서 조각을 가져와서 마스킹*/
-    /*월드 플레인에 대한 정보를 업데이트 */
-    
     PS_OUT Out;
-    float2 WorldMin = float2(960 - (16 * 7 * 10), 960 - (16 * 6 * 10));
-    float2 WorldMax = float2(960 + (16 * 7 * 10), 960+ (16 * 6 * 10));
-    
-    float2 worldXZ = In.vWorldPos.xz;
-    float2 uv = (worldXZ - WorldMin) / (WorldMax - WorldMin);
-    
+    float2 worldSize = vMax - vMin;
+    float2 WorldUV = (In.vWorldPos.xz - vMin) / worldSize;
+
+    float2 uv = frac(WorldUV * repeatCount);
+
+    vector Mask = g_MaskTexture.Sample(LinearSampler, uv);
+    vector Mask2 = g_MaskTexture.Sample(LinearSampler, WorldUV);
+
     vector Palette = g_PaletteTexture.Sample(DefaultSampler, float2(PalettePixel.x, PalettePixel.y));
+    vector Palette2 = g_PaletteTexture.Sample(LinearSampler, float2(PalettePixel.x + (1 - Mask2.r) * Mask2.b, PalettePixel.y));
+    
     vector Opacity = OpacityTexture.Sample(LinearSampler, In.vTexcoord);
-    
-    vector Mask = g_MaskTexture.Sample(LinearSampler, In.vTexcoord);
-    vector Mask2 = g_MaskTexture.Sample(LinearSampler, uv);
-    
-    vector Palette2 = g_PaletteTexture.Sample(LinearSampler, float2(PalettePixel.x + (1 - Mask.r) * Mask.b, PalettePixel.y));
-   
-    vector Grd = (Opacity.a)* (Palette * (1 - Mask2.a) + (Palette) * (Mask2.a));
-    
-    if (Grd.a< 0.2f)
+
+    vector Grd = (Opacity.a) * (Palette * (1 - Mask.a) + (Palette2) * (Mask.a));
+
+    if (Grd.a < 0.2f)
         discard;
 
     Out.vColor = Grd;
     return Out;
-
 }
+
 
 technique11 DefaultTechnique
 {

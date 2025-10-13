@@ -20,6 +20,7 @@ public:
 	virtual void Change_Layer(const LAYER_DESC& SrcLayer, class CGameObject* object, const LAYER_DESC& DstLayer) PURE;
 
 	virtual const unordered_map<string, class CLayer*>& Get_LevelLayer(const string& LevelTag)PURE;
+	virtual  CLayer* Get_Layer(const LAYER_DESC& SrcLayer) PURE;
 
 	virtual void Clear(const string& LevelTag)PURE;
 	virtual HRESULT Sync_To_Level()PURE;

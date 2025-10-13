@@ -1,14 +1,13 @@
 #pragma once
 #include "GameObject.h"
 NS_BEGIN(MapEditor)
-
-class CFieldOutBlocks :
+class CStructureObject :
     public CGameObject
 {
 private:
-    CFieldOutBlocks();
-    CFieldOutBlocks(const CFieldOutBlocks& rhs);
-    virtual ~CFieldOutBlocks() DEFAULT;
+    CStructureObject();
+    CStructureObject(const CStructureObject& rhs);
+    virtual ~CStructureObject() DEFAULT;
 
 public:
     HRESULT Initialize_Prototype() override;
@@ -34,8 +33,9 @@ private:
     string ModelName = {};
     string MaterialName = {};
     _bool OnGrid = { false };
+
 public:
-    static CFieldOutBlocks* Create();
+    static CStructureObject* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;
     virtual void Free();
 };

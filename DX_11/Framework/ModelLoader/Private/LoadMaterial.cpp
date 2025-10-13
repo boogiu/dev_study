@@ -37,8 +37,9 @@ void CLoadMaterial::Render_GUI()
 
 HRESULT CLoadMaterial::Load_Material(_uint materialNum, aiMaterial* material[], const string& filePath)
 {
-	for (auto& Aidata : m_MaterialInstances)
-		Safe_Release(Aidata);
+	for (auto& MatData : m_MaterialInstances)
+		Safe_Release(MatData);
+
 	m_AIMaterialDatas.clear();
 	m_MaterialInstances.clear();
 

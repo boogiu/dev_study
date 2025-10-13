@@ -39,9 +39,10 @@ HRESULT CTileBlock::Initialize(COMPONENT_DESC* pArg)
 	return  S_OK;
 }
 
-TILE_INDEX CTileBlock::On_Grid(TILE_INDEX tileIndex)
+TILE_INDEX CTileBlock::On_Grid(TILE_INDEX tileIndex, TILE_TYPE eType)
 {
 	m_pTileSystem->Register_Tile(this, tileIndex);
+	m_eType = eType;
 	return m_tIndex;
 }
 
@@ -50,26 +51,26 @@ void CTileBlock::Set_Index(TILE_INDEX tileIndex)
 	m_tIndex = tileIndex;
 }
 
-void CTileBlock::Update_Position(const TILESYSTEM_INFO& systemInfo)
+void CTileBlock::Update_Position(TILESYSTEM_INFO& systemInfo)
 {
-	systemInfo.OriginPoint;
-	_float tileSizeX =(systemInfo.iSizeXPerTile);
-	_float tileSizeY =(systemInfo.iSizeYPerTile);
-	_float tileSizeZ =(systemInfo.iSizeZPerTile);
+
+	_float tileSizeX = systemInfo.SizePerTile().x;
+	_float tileSizeY = systemInfo.SizePerTile().y;
+	_float tileSizeZ = systemInfo.SizePerTile().z;
 
 	/*오리진에서 오른쪽 앞으로 나아가는 방식임, 그러니까 업데이트 포지션의 기준은 왼쪽아래 모서리에 맞출 것임*/
 	/*Y는 그냥 바닥에 맞추자*/
 
 	_float3 anchor = {
-		systemInfo.OriginPoint.x + (tileSizeX * m_tIndex.IndexX),
-		systemInfo.OriginPoint.y + (tileSizeY * m_tIndex.IndexY),
-		systemInfo.OriginPoint.z + (tileSizeZ * m_tIndex.IndexZ)
+		systemInfo.vWorldMin.x + (tileSizeX * m_tIndex.IndexX),
+		systemInfo.vWorldMin.y + (tileSizeY * m_tIndex.IndexY),
+		systemInfo.vWorldMin.z + (tileSizeZ * m_tIndex.IndexZ)
 	};
 
 	_float3 worldPos = {};
 	/*그 기준은 모델의 바운딩 박스로*/
 	if (CModel* pModel = m_pOwner->Get_Component<CModel>()) {
-		BOUNDING_BOX box= pModel->Get_WorldBoundingBox();
+		BOUNDING_BOX box = pModel->Get_WorldBoundingBox();
 		_float halfSizeX = (box.vMax.x - box.vMin.x) * 0.5f;
 		_float halfSizeZ = (box.vMax.z - box.vMin.z) * 0.5f;
 		_float halfSizeY = (box.vMax.y - box.vMin.y) * 0.5f;
@@ -82,15 +83,36 @@ void CTileBlock::Update_Position(const TILESYSTEM_INFO& systemInfo)
 
 	}
 	else {//모델 없으면 그냥 중점에 맞추는걸로
-		
+		worldPos = {
+		anchor.x + tileSizeX * 0.5f,
+		anchor.y,
+		anchor.z + tileSizeZ * 0.5f
+		};
 	}
-	worldPos = {
-			anchor.x + tileSizeX * 0.5f,
-			anchor.y,
-			anchor.z + tileSizeZ * 0.5f
-	};
+
 	m_pTransform->Set_Pos(worldPos);
 }
+
+_ubyte CTileBlock::Get_NeigborState()
+{
+	vector<class CTileBlock*> TileNeighbor = m_pTileSystem->Get_NeighborByIndex(m_tIndex);
+	vector<_bool> neighborExist;
+
+	_uint FlagShift = 0;
+	_ubyte Result = 0;
+
+	for (size_t i = 0; i < TileNeighbor.size(); i++)
+	{
+		if (i == 4) continue;
+		if (TileNeighbor[i] && TileNeighbor[i]->m_eType == m_eType)
+				Result |= (1 << FlagShift);
+
+		FlagShift++;
+	}
+
+	return Result;
+}
+
 
 CTileBlock* CTileBlock::Create()
 {
@@ -99,7 +121,7 @@ CTileBlock* CTileBlock::Create()
 	{
 		Safe_Release(instance);
 		MSG_BOX("CTileBlock Comp Failed To Create : CTileBlock");
-	}  
+	}
 	return instance;
 }
 

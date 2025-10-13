@@ -37,7 +37,6 @@ HRESULT CGridObject::Initialize_Prototype()
 	CPlaneModel* pModel = Add_Component<CPlaneModel>();
 	Add_Component<CMaterial>();
 	Add_Component<CRayReceiver>()->Set_ReturnType(false);
-	m_NowIndex.IndexY = 0;
 	return S_OK;
 }
 
@@ -79,6 +78,8 @@ HRESULT CGridObject::Initialize(INIT_DESC* pArg)
 	customInstance->Set_Param("vEdgeMin", vMinParam);
 	customInstance->Set_Param("vEdgeMax", vMaxParam);
 
+	m_NowIndex.IndexY = 0;
+
 	return S_OK;
 }
 
@@ -87,20 +88,22 @@ void CGridObject::Priority_Update(_float dt)
 	/*자신의 크기 ()*/
 	TILESYSTEM_INFO contextInfo = CEditorSystem::GetInstance()->Get_Context()->ContextTileInfo;
 
-	if(CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_DOWN))
-		m_NowIndex.IndexY -= 1;
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_UP))
-		m_NowIndex.IndexY += 1;
+	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_DOWN)) {
+		if (m_NowIndex.IndexY == 0)
+			m_NowIndex.IndexY = 0;
+		else
+			m_NowIndex.IndexY -= 1;
+	}
 
-	if (m_HittedIndex.IndexY < 0)
-		m_NowIndex.IndexY = 0;
-
-	if (m_HittedIndex.IndexY >= contextInfo.iTileCountY)
-		m_NowIndex.IndexY = contextInfo.iTileCountY - 1;
-
+	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_UP)) {
+		if (m_NowIndex.IndexY == contextInfo.iTileCountY-1)
+			m_NowIndex.IndexY = contextInfo.iTileCountY - 1;
+		else
+			m_NowIndex.IndexY += 1;
+	}
 
 	Get_Component<CTransform>()->Set_Pos({ Get_Position().x, 
-		static_cast<_float>(contextInfo.iSizeYPerTile) * m_NowIndex.IndexY
+		static_cast<_float>(contextInfo.SizePerTile().y) * m_NowIndex.IndexY
 		,Get_Position().z });
 
 }
@@ -181,35 +184,35 @@ void CGridObject::Check_Dragging(TILESYSTEM_INFO ContextInfo)
 
 	if (!isDragging) {
 		m_HittedArea.vEdgeMax = {
-			ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * (m_HittedIndex.IndexX + 1),
-			ContextInfo.OriginPoint.y,
-			ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * (m_HittedIndex.IndexZ + 1),
+			ContextInfo.vWorldMin.x + ContextInfo.SizePerTile().x * (m_HittedIndex.IndexX + 1),
+			ContextInfo.vWorldMin.y,
+			ContextInfo.vWorldMin.z + ContextInfo.SizePerTile().z * (m_HittedIndex.IndexZ + 1),
 			1.f
 		};
 
 		m_HittedArea.vEdgeMin = {
-				ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * m_HittedIndex.IndexX,
-				ContextInfo.OriginPoint.y ,
-				ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * m_HittedIndex.IndexZ,
+					ContextInfo.vWorldMin.x + ContextInfo.SizePerTile().x  * m_HittedIndex.IndexX,
+					ContextInfo.vWorldMin.y,
+					ContextInfo.vWorldMin.z + ContextInfo.SizePerTile().z  * m_HittedIndex.IndexZ,
 				1.f
 		};
 	}
 
 	else {
 		if (m_DragPivotPos.x > m_HittedPos.x) { //이전 위치가 현재 위치보다 크면-> 맥시멈 갱신 x
-			m_HittedArea.vEdgeMin.x = ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * m_HittedIndex.IndexX;
+			m_HittedArea.vEdgeMin.x = ContextInfo.vWorldMin.x + ContextInfo.SizePerTile().x  * m_HittedIndex.IndexX;
 		}
 		else {//이전 위치가 현재 위치보다 작으면-> 미니멈 갱신 x
-			m_HittedArea.vEdgeMax.x = ContextInfo.OriginPoint.x + ContextInfo.iSizeXPerTile * (m_HittedIndex.IndexX + 1);
+			m_HittedArea.vEdgeMax.x = ContextInfo.vWorldMin.x + ContextInfo.SizePerTile().x * (m_HittedIndex.IndexX + 1);
 		}
 		if (m_DragPivotPos.z > m_HittedPos.z) {
-			m_HittedArea.vEdgeMin.z = ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * m_HittedIndex.IndexZ;
+			m_HittedArea.vEdgeMin.z = ContextInfo.vWorldMin.z + ContextInfo.SizePerTile().z* m_HittedIndex.IndexZ;
 		}
 		else {
-			m_HittedArea.vEdgeMax.z = ContextInfo.OriginPoint.z + ContextInfo.iSizeZPerTile * (m_HittedIndex.IndexZ + 1);
+			m_HittedArea.vEdgeMax.z = ContextInfo.vWorldMin.z + ContextInfo.SizePerTile().z * (m_HittedIndex.IndexZ + 1);
 		}
-		m_HittedArea.vEdgeMax.y = ContextInfo.OriginPoint.y;
-		m_HittedArea.vEdgeMin.y = ContextInfo.OriginPoint.y;
+		m_HittedArea.vEdgeMax.y = ContextInfo.vWorldMin.y;
+		m_HittedArea.vEdgeMin.y = ContextInfo.vWorldMin.y;
 	}
 
 }

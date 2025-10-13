@@ -18,7 +18,7 @@ public:
  
 private:
 
-    _float m_fSpeed = {90.f};
+    _float m_fSpeed = {150.f};
     _float m_fMouseSensitive = {10.f};
 
     _float2 m_vCurrentRotate = {};

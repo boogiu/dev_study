@@ -44,7 +44,7 @@ void CControlPanel::Render_GUI()
 	ImGui::Button("Structure Blocks");
 	
 	if (ImGui::Button("SaveMapDatas")) {
-		CEditorSystem::GetInstance()->Save_Blocks();
+		CEditorSystem::GetInstance()->Save_MapData();
 	}
 
 	ImGui::End();

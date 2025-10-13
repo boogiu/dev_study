@@ -40,7 +40,7 @@ public:
 	_float2 RB() { return   {m_fX + HalfX(), m_fY + HalfY()}; }
 
 	
-	_float2 Align_To(UI_ANCHOR pivot, _float2 _pivot);
+	_float2 Align_To(ANCHOR pivot, _float2 _pivot);
 
 protected:
 	_float m_WinSizeX = {};

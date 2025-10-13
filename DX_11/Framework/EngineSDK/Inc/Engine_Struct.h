@@ -171,15 +171,40 @@ namespace Engine
 
 	/*Tile Grid System*/
 	typedef struct tagTileSystemInfo {
-		_float4 OriginPoint = {}; //그리드 원점
 		/*몇개씩?*/
 		_uint iTileCountX = {};
 		_uint iTileCountY = {};
 		_uint iTileCountZ = {};
-		/*사이즈?*/
-		_float iSizeXPerTile = {};
-		_float iSizeYPerTile = {};
-		_float iSizeZPerTile = {};
+
+		/*전체 크기*/
+		_float3 vWorldMin = {};
+		_float3 vWorldMax = {};
+
+	public:
+		_float3 SizePerTile() {
+			return _float3{
+				(vWorldMax.x - vWorldMin.x)/ iTileCountX,
+				(vWorldMax.y - vWorldMin.y)/ iTileCountY,
+				(vWorldMax.z - vWorldMin.z)/ iTileCountZ
+			};
+		};
+
+		_float3 HalfPoint() {
+			return _float3{
+				(vWorldMax.x + vWorldMin.x)*0.5f,
+				(vWorldMax.y + vWorldMin.y)*0.5f,
+				(vWorldMax.z + vWorldMin.z)*0.5f
+			};
+		};
+
+		_float3 WorldSize() {
+			return _float3{
+				(vWorldMax.x - vWorldMin.x) ,
+				(vWorldMax.y - vWorldMin.y) ,
+				(vWorldMax.z - vWorldMin.z) 
+			};
+		};
+
 	}TILESYSTEM_INFO;
 
 	typedef struct tagTileIndex {
@@ -188,15 +213,21 @@ namespace Engine
 		_int IndexZ = {-1};
 	}TILE_INDEX;
 
-	typedef struct tagTileInfoHeader {
-		TILE_INDEX index = {};
-		_float2 PaletteIndex = {};
-		TILE_TYPE eType = {};
-	}TILE_FILE_INFO;
+	typedef struct tagMapFileHeader {
+		TILESYSTEM_INFO tileInfo = {};
+		_uint iFieldOutCount = {};
+		_uint iTileCount = {};
+		_uint iStructureCount = {};
+	}MAP_FILE_HEADER;
 
-	typedef struct tagTileInstanceInfo {
-	
-	}TILE_INSTANCE;
+	typedef struct tagMapObjectHeader {
+		TILE_INDEX Index = {};
+		_float4 vWorldPos = {};
+		char ModelName[MAX_PATH];
+		char MaterialName[MAX_PATH];
+		char ModelPath[MAX_PATH];
+		char MaterialPath[MAX_PATH];
+	}MAP_OBJECT_HEADER;
 
 #pragma pack(pop)
 

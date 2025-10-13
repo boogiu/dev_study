@@ -44,6 +44,16 @@ cbuffer MaterialBuffer : register(b6)
     float fSpecularPow;
 };
 
+cbuffer TileSystemInfo : register(b7)
+{
+    float2 vMin = float2(400.0f, 480.0f);
+    float2 vMax = float2(1520.0f, 1440.0f);
+    float2 WorldSize;
+    float repeatCount = 100.0f;
+    float2 PalettePixel = { 0.5f, 0.54f };
+};
+
+
 struct BoneMatrix
 {
     matrix BoneMat;

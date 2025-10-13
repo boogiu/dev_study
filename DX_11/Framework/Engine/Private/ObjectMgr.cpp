@@ -20,12 +20,13 @@ HRESULT CObjectMgr::Initialize()
 
 void CObjectMgr::Pre_EngineUpdate(_float dt)
 {
-	for (auto pObject :DeleteObjs)
+	for (auto pObject : DeleteObjs)
 	{
 		_uint ObjectID = pObject->Get_ObjectID();
 		pObject->Get_Layer()->Remove_GameObject(ObjectID);
 		pObject->Set_Layer(nullptr);
 	}
+
 	DeleteObjs.clear();
 
 	for (auto& pair : m_Layers)
@@ -67,7 +68,7 @@ void CObjectMgr::Add_Object(CGameObject* object, const LAYER_DESC& layer)
 		MSG_BOX(" wrong Destination Level  : CObjectMgr");
 		return;
 	}
-	if (nullptr ==  object) return;
+	if (nullptr == object) return;
 
 	auto& map = m_Layers.at(layer.LevelTag);
 	auto iter = map.find(layer.LayerTag);
@@ -165,6 +166,20 @@ const unordered_map<string, class CLayer*>& CObjectMgr::Get_LevelLayer(const str
 		return unordered_map<string, class CLayer*>();
 	else
 		return iter->second;
+}
+
+CLayer* CObjectMgr::Get_Layer(const LAYER_DESC& SrcLayer)
+{
+	auto iter = m_Layers.find(SrcLayer.LevelTag);
+	if (iter == m_Layers.end())
+		return nullptr;
+	else {
+		auto LayerIter = iter->second.find(SrcLayer.LayerTag);
+		if (LayerIter != iter->second.end()) {
+			return LayerIter->second;
+		}
+	}
+	return nullptr;
 }
 
 

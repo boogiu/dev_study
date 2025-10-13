@@ -14,7 +14,7 @@ class ENGINE_DLL CUIObjcetBuilder
         CUIObjcetBuilder& Position(const _float2 position);
         CUIObjcetBuilder& Rotate(const _float rotate);
         CUIObjcetBuilder& Scale(const _float2 scale);
-        CUIObjcetBuilder& Set_Anchor(UI_ANCHOR eAnchor, _float2 vPivot);
+        CUIObjcetBuilder& Set_Anchor(ANCHOR eAnchor, _float2 vPivot);
 
     private:
         class CGameInstance* m_pGameInstance = { nullptr };
@@ -23,7 +23,7 @@ class ENGINE_DLL CUIObjcetBuilder
         UI_DESC* m_pObjDesc = { nullptr };
 
         _bool m_bPivoted = { false };
-        UI_ANCHOR m_eAnchor = { UI_ANCHOR::Center};
+        ANCHOR m_eAnchor = { ANCHOR::Center};
         _float2 m_vPivot = {};
         unordered_map<type_index, COMPONENT_DESC*> m_CompDesc;
 };

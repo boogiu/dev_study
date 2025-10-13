@@ -29,6 +29,8 @@ public:
 	virtual void Clear(const string& LevelTag) override;
 	virtual HRESULT Sync_To_Level() override;
 	virtual const unordered_map<string, class CLayer*>& Get_LevelLayer(const string& LevelTag) override;
+	virtual  CLayer* Get_Layer(const LAYER_DESC& SrcLayer) override;
+
 private:
 	 void Add_Object_Recursive(CLayer* pLayer, class CGameObject* object);
 
