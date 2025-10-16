@@ -34,9 +34,6 @@
     <Filter Include="05. GUI_Panel">
       <UniqueIdentifier>{73476cbb-6643-479f-a604-37f7ab2d722c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="05. GUI_Panel\RayCastPanel">
-      <UniqueIdentifier>{dbe55b4a-e544-42af-a9af-b322285073b6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="05. GUI_Panel\ControlPanel">
       <UniqueIdentifier>{173b2f5c-4bcc-4370-b70a-1bd852bc4f0d}</UniqueIdentifier>
     </Filter>
@@ -48,6 +45,9 @@
     </Filter>
     <Filter Include="02. MapObject\FieldOutObject">
       <UniqueIdentifier>{6134bc13-30aa-44d1-b877-628b30596361}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05. GUI_Panel\DirectoryPanel">
+      <UniqueIdentifier>{dbe55b4a-e544-42af-a9af-b322285073b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -129,7 +129,7 @@
       <Filter>02. MapObject\TileObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\DirectoryPanel.h">
-      <Filter>05. GUI_Panel\RayCastPanel</Filter>
+      <Filter>05. GUI_Panel\DirectoryPanel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ControlPanel.h">
       <Filter>05. GUI_Panel\ControlPanel</Filter>
@@ -211,7 +211,7 @@
       <Filter>02. MapObject\FieldOutObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\DirectoryPanel.cpp">
-      <Filter>05. GUI_Panel\RayCastPanel</Filter>
+      <Filter>05. GUI_Panel\DirectoryPanel</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ControlPanel.cpp">
       <Filter>05. GUI_Panel\ControlPanel</Filter>

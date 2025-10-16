@@ -69,12 +69,12 @@ void CLevelMgr::Update(_float dt)
     m_pCurrentLevel->Update();
 }
 
-HRESULT CLevelMgr::Render()
+HRESULT CLevelMgr::Render(ID3D11DeviceContext* pContext)
 {
     if (nullptr == m_pCurrentLevel)
         return E_FAIL;
 
-    return m_pCurrentLevel->Render();
+    return m_pCurrentLevel->Render(pContext);
 }
 
 void CLevelMgr::Register_Level(const string& levelID, LEVEL_CREATOR creator)

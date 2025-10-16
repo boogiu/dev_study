@@ -14,7 +14,6 @@ CMaterial::CMaterial(const CMaterial& rhs)
 		CMaterialInstance* cloned = instance->Clone();
 		m_MaterialInstances.emplace_back(move(cloned));
 	}
-
 }
 
 HRESULT CMaterial::Initialize_Prototype()

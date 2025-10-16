@@ -17,6 +17,7 @@
 #include "MaterialData.h"
 #include "ModelData.h"
 #include "MaterialInstance.h"
+#include "AnimationClip.h"
 
 CResourceMgr::CResourceMgr(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }, m_pContext{ pContext }, m_pInstance(CGameInstance::GetInstance())
@@ -212,6 +213,9 @@ CShader* CResourceMgr::Load_Shader(const string& levelTag, const string& shaderK
 
 	if (iter != map.end()) return iter->second;
 
+	if (MakePath(shaderKey).empty()) {
+		MSG_BOX("There is No Key : Load_Shader");
+	}
 	CShader* pData = CShader::Create(m_pDevice, MakePath(shaderKey), shaderKey);
 	map.emplace(shaderKey, pData);
 
@@ -234,6 +238,28 @@ CTexture* CResourceMgr::Load_Texture(const string& levelTag, const string& textu
 	wstring path = Helper::ConvertToWideString(MakePath(textureKey));
 	CTexture* pData = CTexture::Create(m_pDevice, path, textureKey);
 	map.emplace(textureKey, pData);
+
+	return pData;
+}
+
+CAnimationClip* CResourceMgr::Load_AnimClip(const string& levelTag,  const string& AnimClipKey, const string& Subject)
+{
+	int index = ValidLevel(levelTag);
+	if (index == -1) {
+		MSG_BOX("Wrong Level Tag. :Load_AnimClip ");
+		return nullptr;
+	}
+
+	auto& map = m_Resources[index].m_Animations;
+ 	auto iter = map.find(AnimClipKey + "_" + Subject);
+
+	if (iter != map.end()) {
+		if(iter->second->Get_Subject() == Subject)
+			return iter->second;
+	}
+
+	CAnimationClip* pData = CAnimationClip::Create(MakePath(AnimClipKey), AnimClipKey, Subject);
+	map.emplace(AnimClipKey + "_" + Subject, pData);
 
 	return pData;
 }
@@ -290,23 +316,26 @@ void CResourceMgr::Load_InitialResource()
 
 	m_LevelIndex.emplace(G_GlobalLevelKey, 0);
 	m_Resources.resize(1);
-	Add_ResourcePath("VTX_TexPos.hlsl",  "../../EngineSDK/Inc/Engine_Shader/VTX_TexPos.hlsl");
-	Add_ResourcePath("VTX_Mesh.hlsl",  "../../EngineSDK/Inc/Engine_Shader/VTX_Mesh.hlsl");
-	Add_ResourcePath("VTX_NorTex.hlsl",  "../../EngineSDK/Inc/Engine_Shader/VTX_NorTex.hlsl");
-	Add_ResourcePath("VTX_SkinMesh.hlsl",  "../../EngineSDK/Inc/Engine_Shader/VTX_SkinMesh.hlsl");
-	Add_ResourcePath("Shader_Define.hlsl",  "../../EngineSDK/Inc/Engine_Shader/Shader_Define.hlsl");
+	Add_ResourcePath("VTX_TexPos.hlsl",  "../Bin/ShaderFiles/VTX_TexPos.hlsl");
+	Add_ResourcePath("VTX_Mesh.hlsl",  "../Bin/ShaderFiles/VTX_Mesh.hlsl");
+	Add_ResourcePath("VTX_NorTex.hlsl",  "../Bin/ShaderFiles/VTX_NorTex.hlsl");
+	Add_ResourcePath("VTX_SkinMesh.hlsl",  "../Bin/ShaderFiles/VTX_SkinMesh.hlsl");
+	Add_ResourcePath("VTX_Debug.hlsl",  "../Bin/ShaderFiles/VTX_Debug.hlsl");
+	Add_ResourcePath("VTX_Tile.hlsl",  "../Bin/ShaderFiles/VTX_Tile.hlsl");
+	Add_ResourcePath("VTX_Field.hlsl",  "../Bin/ShaderFiles/VTX_Field.hlsl");
+
 	Add_ResourcePath("Anim.dat",  "../../Anim.dat");
 
 	m_Resources[0].m_Buffers.emplace("Engine_Default_Rect", CVI_Rect::Create(m_pDevice, "Engine_Default_Rect"));
 	m_Resources[0].m_Buffers.emplace("Engine_Default_Plane", CVI_Plane::Create(m_pDevice, "Engine_Default_Plane"));
 
-	m_Resources[0].m_Shaders.emplace("VTX_TexPos.hlsl", CShader::Create(m_pDevice,		"../../EngineSDK/Inc/Engine_Shader/VTX_TexPos.hlsl", "VTX_TexPos.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_Mesh.hlsl", CShader::Create(m_pDevice,			"../../EngineSDK/Inc/Engine_Shader/VTX_Mesh.hlsl", "VTX_Mesh.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_NorTex.hlsl", CShader::Create(m_pDevice,		"../../EngineSDK/Inc/Engine_Shader/VTX_NorTex.hlsl", "VTX_NorTex.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_SkinMesh.hlsl", CShader::Create(m_pDevice,	"../../EngineSDK/Inc/Engine_Shader/VTX_SkinMesh.hlsl", "VTX_SkinMesh.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_Debug.hlsl", CShader::Create(m_pDevice,			"../../EngineSDK/Inc/Engine_Shader/VTX_Debug.hlsl", "VTX_Debug.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_Tile.hlsl", CShader::Create(m_pDevice,			"../../EngineSDK/Inc/Engine_Shader/VTX_Tile.hlsl", "VTX_Tile.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_Field.hlsl", CShader::Create(m_pDevice,			"../../EngineSDK/Inc/Engine_Shader/VTX_Field.hlsl", "VTX_Field.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_TexPos.hlsl", CShader::Create(m_pDevice,		"../Bin/ShaderFiles/VTX_TexPos.hlsl", "VTX_TexPos.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Mesh.hlsl", CShader::Create(m_pDevice,			"../Bin/ShaderFiles/VTX_Mesh.hlsl", "VTX_Mesh.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_NorTex.hlsl", CShader::Create(m_pDevice,		"../Bin/ShaderFiles/VTX_NorTex.hlsl", "VTX_NorTex.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_SkinMesh.hlsl", CShader::Create(m_pDevice,	"../Bin/ShaderFiles/VTX_SkinMesh.hlsl", "VTX_SkinMesh.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Debug.hlsl", CShader::Create(m_pDevice,			"../Bin/ShaderFiles/VTX_Debug.hlsl", "VTX_Debug.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Tile.hlsl", CShader::Create(m_pDevice,				"../Bin/ShaderFiles/VTX_Tile.hlsl", "VTX_Tile.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Field.hlsl", CShader::Create(m_pDevice,				"../Bin/ShaderFiles/VTX_Field.hlsl", "VTX_Field.hlsl"));
 }
 
 

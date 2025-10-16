@@ -18,16 +18,19 @@ protected:
     CAnimator3D(const CAnimator3D& rhs);
     ~CAnimator3D() DEFAULT;
 
-
 public:
     HRESULT Initialize_Prototype() override;
     HRESULT Initialize(COMPONENT_DESC* pArg) override;
 
 public:
     void LinkAnimate_Model(const string& LevelKey, const string& ModelKey);
+    HRESULT Add_AnimClips(const string& LevelKey, const string& AnimKey, const string& Subject,_bool Loop = false);
+
+public:
     virtual void Update_Animation(_float dt);
     const vector<_float4x4>& Get_BoneMatrices() { return m_FinalMatices; };
     virtual void Chane_Animation(_uint index, _float convertDuration = 0.2f);
+    virtual HRESULT Chane_Animation(string animName, _float convertDuration = 0.2f);
 
 public:
     void Control_Bone(const string& boneName, _fmatrix BoneMatrix);
@@ -46,6 +49,7 @@ protected:
     ANIMATOR_STATE m_eState = {};
 
     _uint m_iCurrentClipIndex = {};
+
     _uint m_iNextClipIndex = {}; //다음 애니메이션 전환 용
     _float m_fConvertDuration = {}; //다음 애니메이션 전환 용
     _float m_fPrevTrackPosition = {}; //다음 애니메이션 전환 용
@@ -56,7 +60,11 @@ protected:
     vector<_float4x4> m_ManipulateMatrices = {};
     vector<_float4x4> m_CombinedMatrices = {};
     vector<_float4x4> m_FinalMatices = {};
+
     vector<class CAnimationClip*> m_pAnimClips;
+    vector<_bool> m_pAnimLoops;
+    unordered_map<string, _uint> m_pAnimNames;
+
 
 public:
     static CAnimator3D* Create();

@@ -22,8 +22,6 @@ CAnimator3D::CAnimator3D(const CAnimator3D& rhs)
 
 HRESULT CAnimator3D::Initialize_Prototype()
 {
-	if (!m_pData) return E_FAIL;
-
 	return S_OK;
 }
 
@@ -34,6 +32,7 @@ HRESULT CAnimator3D::Initialize(COMPONENT_DESC* pArg)
 
 void CAnimator3D::LinkAnimate_Model(const string& LevelKey, const string& ModelKey)
 {
+	Safe_Release(m_pData);
 	m_pData = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_ModelData(LevelKey, ModelKey);
 	Safe_AddRef(m_pData);
 	_float4x4 IdentityMatrix;
@@ -64,9 +63,26 @@ void CAnimator3D::LinkAnimate_Model(const string& LevelKey, const string& ModelK
 	}
 }
 
+HRESULT CAnimator3D::Add_AnimClips(const string& LevelKey, const string& AnimKey, const string& Subject, _bool Loop)
+{
+	if (m_pAnimNames.count(AnimKey))
+		return S_OK;
+
+	CAnimationClip* pClips = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_AnimClip(LevelKey, AnimKey, Subject);
+
+	if (!pClips)
+		return E_FAIL;
+
+	m_pAnimClips.push_back(pClips);
+	m_pAnimNames.emplace(AnimKey, m_pAnimClips.size()-1);
+	m_pAnimLoops.push_back(Loop);
+	return S_OK;
+}
+
 void CAnimator3D::Update_Animation(_float dt)
 {
 	if (m_pAnimClips.empty()) return;
+
 	switch (m_eState)
 	{
 	case Engine::CAnimator3D::ANIMATOR_STATE::RUNNING:
@@ -85,11 +101,27 @@ void CAnimator3D::Update_Animation(_float dt)
 void CAnimator3D::Chane_Animation(_uint index, _float convertDuration)
 {
 	if (index >= m_pAnimClips.size()) return;
+
 	m_eState = ANIMATOR_STATE::CONVERTING;
 	m_fPrevTrackPosition = m_fCurrentTrackPosition;
 	m_fCurrentTrackPosition = 0;
 	m_iNextClipIndex = index;
 	m_fConvertDuration = convertDuration;
+}
+
+HRESULT CAnimator3D::Chane_Animation(string animName, _float convertDuration)
+{
+	auto iter = m_pAnimNames.find(animName);
+
+	if (iter==m_pAnimNames.end()) return E_FAIL;
+
+	m_eState = ANIMATOR_STATE::CONVERTING;
+	m_fPrevTrackPosition = m_fCurrentTrackPosition;
+	m_fCurrentTrackPosition = 0;
+	m_iNextClipIndex = iter->second;
+	m_fConvertDuration = convertDuration;
+
+	return S_OK;
 }
 
 void CAnimator3D::Control_Bone(const string& boneName, _fmatrix BoneMatrix)
@@ -113,7 +145,7 @@ void CAnimator3D::Control_BoneByIndex(_uint Index, _fmatrix BoneMatrix)
 void CAnimator3D::Animation_Run(_float dt)
 {
 	auto& nowClip = m_pAnimClips[m_iCurrentClipIndex];
-	m_fCurrentTrackPosition = nowClip->TranslateAnimateMatrix(m_TransfromationMatrices, m_fCurrentTrackPosition, dt);
+	m_fCurrentTrackPosition = nowClip->TranslateAnimateMatrix(m_TransfromationMatrices, m_fCurrentTrackPosition, dt, m_pAnimLoops[m_iCurrentClipIndex]);
 }
 
 void CAnimator3D::Animation_Convert(_float dt)
@@ -161,6 +193,38 @@ void CAnimator3D::BuildBone()
 
 void CAnimator3D::Render_GUI()
 {
+	ImGui::SeparatorText("Animator 3D");
+	float childWidth = ImGui::GetContentRegionAvail().x;
+	const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
+	const float childHeight = (textLineHeight * 5) + (ImGui::GetStyle().WindowPadding.y * 2);
+
+	ImGui::BeginChild("##Animator 3DChild", ImVec2{ 0, childHeight }, true);
+	for (size_t i = 0; i < m_pAnimClips.size(); i++)
+	{
+		bool isSelected = (m_iCurrentClipIndex == i);
+		ImGui::PushID((int)i);
+		
+		if (ImGui::Selectable(m_pAnimClips[i]->Get_Name().c_str(), isSelected, 0, ImVec2{ childWidth * 0.50f, textLineHeight }))
+		{
+			Chane_Animation(i);
+		}
+		ImGui::PopID();
+		ImGui::SameLine();
+
+		ImGui::PushID(("##" + m_pAnimClips[i]->Get_Name() + "Loop").c_str());
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 0));
+		if (ImGui::Button(string(m_pAnimLoops[i] ? "Do Once" : "Do Loop").c_str(), ImVec2{ childWidth * 0.35f, textLineHeight + 4 }))
+			(m_pAnimLoops[i])=!(m_pAnimLoops[i]);
+		ImGui::PopStyleVar();
+		ImGui::PopID();
+
+
+		if (isSelected) {
+			ImGui::SetItemDefaultFocus(); // 선택된 항목에 포커스
+		}
+	}
+	ImGui::EndChild();
+
 }
 
 CAnimator3D* CAnimator3D::Create()

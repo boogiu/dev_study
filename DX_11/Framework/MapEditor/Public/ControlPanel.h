@@ -17,9 +17,11 @@ public:
 		virtual void Set_Grid(class CGridObject* pGrid);
 public:
 	virtual void Render_GUI() override;
-
+private:
+	void Render_BrushTab();
 private:
 	class CGridObject* m_pGrid = { nullptr };
+	_bool m_BrushTabOpen = { false };
 
 public:
 	static CControlPanel* Create(GUI_CONTEXT* context);

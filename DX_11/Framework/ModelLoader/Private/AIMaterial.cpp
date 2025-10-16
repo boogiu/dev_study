@@ -37,7 +37,27 @@ HRESULT CAIMaterial::Initialize(const aiMaterial* pAIMaterial, const string& fil
 				return std::equal(suffix.rbegin(), suffix.rend(), str.rbegin());
 			};
 
-		// 정확히 "mat_"로 시작하는 파일만 허용
+		auto EndsWithFlexible = [](const std::string& str, const std::string& suffix)
+			{
+				if (str.length() < suffix.length()) return false;
+
+				// 기본 접미사 위치 찾기
+				size_t pos = str.rfind(suffix);
+				if (pos == std::string::npos) return false;
+
+				// suffix가 문자열 끝 근처에 있어야 함
+				size_t suffixEnd = pos + suffix.length();
+
+				// suffix 바로 뒤에 오는 문자가 . _ 숫자 이거나 문자열 끝이면 허용
+				if (suffixEnd == str.length()) return true; // 정확히 끝
+
+				char next = str[suffixEnd];
+				if (next == '.' || next == '_' || (next >= '0' && next <= '9'))
+					return true;
+
+				return false;
+			};
+
 		if (!StartsWith(lowerFile, lowerMat + "_"))
 			continue;
 
@@ -45,12 +65,13 @@ HRESULT CAIMaterial::Initialize(const aiMaterial* pAIMaterial, const string& fil
 
 		if (EndsWith(lowerFile, "_grdedge"))   textureType = TEXTURE_TYPE::GRADATION_EDGE;
 		else if (EndsWith(lowerFile, "_grd"))  textureType = TEXTURE_TYPE::GRADATION;
-		else if (EndsWith(lowerFile, "_mix"))  textureType = TEXTURE_TYPE::MIX;
+		else if (EndsWithFlexible(lowerFile, "_mix"))  textureType = TEXTURE_TYPE::MIX;
+		else if (EndsWith(lowerFile, "_spc"))  textureType = TEXTURE_TYPE::SPECULAR;
 		else if (EndsWith(lowerFile, "_albgry")) textureType = TEXTURE_TYPE::ALBEDO_GRAY;
 		else if (EndsWith(lowerFile, "_nrmory")) textureType = TEXTURE_TYPE::NORMAL_ORY;
-		else if (EndsWith(lowerFile, "_nrm"))  textureType = TEXTURE_TYPE::NORMAL;
+		else if (EndsWithFlexible(lowerFile, "_nrm"))  textureType = TEXTURE_TYPE::NORMAL;
 		else if (EndsWith(lowerFile, "_albory")) textureType = TEXTURE_TYPE::ALBEDO_ORY;
-		else if (EndsWith(lowerFile, "_alb"))  textureType = TEXTURE_TYPE::ALBEDO;
+		else if (EndsWithFlexible(lowerFile, "_alb"))  textureType = TEXTURE_TYPE::ALBEDO;
 		else if (EndsWith(lowerFile, "_emiory")) textureType = TEXTURE_TYPE::EMMISION_ORY;
 		else if (EndsWith(lowerFile, "_emi"))  textureType = TEXTURE_TYPE::EMMISION;
 		else if (EndsWith(lowerFile, "_op"))   textureType = TEXTURE_TYPE::OPACITY;
@@ -79,6 +100,7 @@ HRESULT CAIMaterial::Initialize(const aiMaterial* pAIMaterial, const string& fil
 void CAIMaterial::Save_MaterialData(ID3D11DeviceContext* pContext, ofstream& ofs, const string& directory, const string& overrideKey)
 {
 	MATERIAL_INFO_HEADER infoHead = {};
+
 	strcpy_s(infoHead.materialDataKey, sizeof(infoHead.materialDataKey), m_MaterialKey.c_str());
 	strcpy_s(infoHead.passConstant, sizeof(infoHead.passConstant), m_passConstant.c_str());
 	if(overrideKey.empty()&& m_pShader)
@@ -97,12 +119,13 @@ void CAIMaterial::Save_MaterialData(ID3D11DeviceContext* pContext, ofstream& ofs
 		texHeader.typeID = static_cast<_uint>(pair.first);
 		ofs.write(reinterpret_cast<const char*>(&texHeader), sizeof(TEXTURE_FILE_HEADER));
 
-		for (auto& tex : pair.second) {
+		for (size_t i = 0; i < pair.second.size(); i++)
+		{
 			TEXTURE_INFO_HEADER texInfo = {};
-			string textureKey = Helper::GetFileNameWithOutExtension(tex->Get_Key()) + ".dds";
+			string textureKey = Helper::GetFileNameWithOutExtension(pair.second[i]->Get_Key()) + "."+to_string(i) + ".dds";
 			strcpy_s(texInfo.TextureKey, sizeof(texInfo.TextureKey), textureKey.c_str());
 			ofs.write(reinterpret_cast<const char*>(&texInfo), sizeof(texInfo));
-			if (FAILED(Helper::SaveTextureToDDs(pContext, directory + "\\" + textureKey, tex->Get_SRV()))) {
+			if (FAILED(Helper::SaveTextureToDDs(pContext, directory + "\\" + textureKey, pair.second[i]->Get_SRV()))) {
 				MSG_BOX("DDS SAVE FAILED : Save_MaterialData");
 			}
 		}

@@ -111,12 +111,18 @@ HRESULT CLoadSkeletalModel::Save_Model(const string& SavePath)
 void CLoadSkeletalModel::Render_GUI()
 {
 	__super::Render_GUI();
+	string ID = "HideMesh : ";
+	for (size_t i = 0; i < m_pData->Get_MeshCount(); i++)
+	{
 
-	if (ImGui::Button("Hide1")) {
-		if (m_DrawableMeshes.size() >= 1) {
-			m_DrawableMeshes[0] = false;
+		if (ImGui::Button((ID + to_string(i)).c_str()))
+		{
+			if (m_DrawableMeshes.size() >= 1) {
+				m_DrawableMeshes[i] = !m_DrawableMeshes[i];
+			}
 		}
 	}
+	
 }
 
 HRESULT CLoadSkeletalModel::Release_Mesh()

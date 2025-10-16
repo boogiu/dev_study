@@ -65,7 +65,9 @@ HRESULT CStructureObject::Link_Data(const string& folderName)
 	HRESULT hr = Get_Component<CModel>()->Link_Model(G_GlobalLevelKey, folderName + ".model");
 	CMaterial* pMaterial = Get_Component<CMaterial>();
 	hr = pMaterial->Link_Material(G_GlobalLevelKey, folderName + ".mat");
-
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
+		instance->Override_Pass("Base");
+	}
 	if (SUCCEEDED(hr)) {
 		ModelName = folderName + ".model";
 		MaterialName = folderName + ".mat";
@@ -88,6 +90,9 @@ HRESULT CStructureObject::Load_Object(MAP_OBJECT_HEADER ObjHeader)
 	CMaterial* pMaterial = Get_Component<CMaterial>();
 	hr = pMaterial->Link_Material(G_GlobalLevelKey, MaterialName);
 
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
+		instance->Override_Pass("Base");
+	}
 	return hr;
 }
 

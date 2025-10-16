@@ -26,15 +26,16 @@ void CLoadAnimator3D::Render_GUI()
 	float childWidth = ImGui::GetContentRegionAvail().x;
 	const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
 	const float childHeight = (textLineHeight * 5) + (ImGui::GetStyle().WindowPadding.y * 2);
-	
-	if (ImGui::Button("Add_Clip",ImVec2 { childWidth*0.45f, 0 }))
+
+	if (ImGui::Button("Add_Clip", ImVec2{ childWidth * 0.45f, 0 }))
 	{
-		string path = Helper::OpenFile_Dialogue();
-		Add_AIAnimation(path);
+		LoadPathes = Helper::OpenMultiFiles();
+		nowIndex = 0;
 	}
 
+
 	ImGui::SameLine();
-	if (ImGui::Button("Save Clips", ImVec2{ childWidth* 0.45f, 0 })) {
+	if (ImGui::Button("Save Clips", ImVec2{ childWidth * 0.45f, 0 })) {
 		Save_Animations();
 	}
 
@@ -43,19 +44,29 @@ void CLoadAnimator3D::Render_GUI()
 	for (size_t i = 0; i < m_pAnimClips.size(); i++)
 	{
 		bool isSelected = (m_iCurrentClipIndex == i);
-		ImGui::PushID((int)i); 
+		ImGui::PushID((int)i);
 		string key = "Anim_" + to_string(i);
-		if (ImGui::Selectable(key.c_str(), isSelected,0, ImVec2{ childWidth *0.50f, textLineHeight }))
+		if (ImGui::Selectable(key.c_str(), isSelected, 0, ImVec2{ childWidth * 0.50f, textLineHeight }))
 		{
 			Chane_Animation(i);
 		}
 		ImGui::PopID();
-		ImGui::SameLine();
 
 		ImGui::PushID(("##" + key + "Loop").c_str());
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 0));
-		if (ImGui::Button(string(m_pAnimClips[i]->isLoop() ? "Once" : "Loop").c_str(), ImVec2{childWidth * 0.25f, textLineHeight+4}))
-			static_cast<CAIAnimationClip*>(m_pAnimClips[i])->Change_Loop();
+
+		if (ImGui::Button(string(m_pAnimLoops[i] ? "Do Once" : "Do Loop").c_str(), ImVec2{ childWidth * 0.35f, textLineHeight + 4 })) {
+			(m_pAnimLoops[i]) = !(m_pAnimLoops[i]);
+		}
+		ImGui::SameLine();
+
+		if (ImGui::Checkbox(string("MDL trans ##" + key).c_str(),
+			static_cast<CAIAnimationClip*>(m_pAnimClips[i])->isRemove_RootTrans())
+			)
+		{
+			static_cast<CAIAnimationClip*>(m_pAnimClips[i])->Remove_AnimTransform();
+		}
+
 		ImGui::PopStyleVar();
 		ImGui::PopID();
 
@@ -117,6 +128,18 @@ void CLoadAnimator3D::Set_Data(CModelData* pData)
 	}
 }
 
+void CLoadAnimator3D::Update_Load()
+{
+	if (nowIndex >= 0) {
+		Add_AIAnimation(LoadPathes[nowIndex]);
+		if (nowIndex >= LoadPathes.size()) {
+			nowIndex = -1;
+			LoadPathes.clear();
+		}
+	}
+
+}
+
 
 HRESULT CLoadAnimator3D::Add_AIAnimation(const string& filePath)
 {
@@ -133,9 +156,12 @@ HRESULT CLoadAnimator3D::Add_AIAnimation(const string& filePath)
 	{
 		CAIAnimationClip* pClip = CAIAnimationClip::Create(m_pAIScene->mAnimations[i], m_pData);
 		m_pAnimClips.push_back(pClip);
+		m_pAnimNames.emplace(Helper::GetFileNameWithOutExtension(filePath), m_pAnimClips.size() - 1);
+		m_pAnimLoops.push_back(pClip->isLoop());
 		pClip->Set_ClipName(Helper::GetFileNameWithOutExtension(filePath));
 	}
-	
+
+	nowIndex += 1;
 }
 
 void CLoadAnimator3D::Release_Data()

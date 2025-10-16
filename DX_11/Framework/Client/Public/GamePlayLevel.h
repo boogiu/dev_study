@@ -2,27 +2,36 @@
 #include "Level.h"
 
 NS_BEGIN(Engine)
-    class CGameInstance;
+class CGameInstance;
+class IProtoService;
+class IObjectService;
 NS_END
 
 NS_BEGIN(Client)
 class CGamePlayLevel :
-    public CLevel
+	public CLevel
 {
-    private:
-        CGamePlayLevel(const string& LevelKey);
-        virtual ~CGamePlayLevel() DEFAULT;
+private:
+	CGamePlayLevel(const string& LevelKey);
+	virtual ~CGamePlayLevel() DEFAULT;
 
-    public:
-        virtual HRESULT Initialize() override;
-        virtual void Update() override;
-        virtual HRESULT Render()override;
+public:
+	virtual HRESULT Initialize() override;
+	virtual void Update() override;
+	virtual HRESULT Render()override;
+	HRESULT Render(ID3D11DeviceContext* pContext)override;
 
-    private:
-        CGameInstance* m_pGameInstance = { nullptr };
-    public:
-        static CGamePlayLevel* Create(const string& LevelKey);
-        virtual void Free() override;
+public:
+	static void PreLoad_Level();
+
+private:
+	CGameInstance* m_pGameInstance = { nullptr };
+	IProtoService* m_pProtoManager = { nullptr };
+	IObjectService* m_pObjectManager = { nullptr };
+
+public:
+	static CGamePlayLevel* Create(const string& LevelKey);
+	virtual void Free() override;
 
 };
 

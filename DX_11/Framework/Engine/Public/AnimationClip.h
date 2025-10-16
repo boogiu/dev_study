@@ -2,16 +2,18 @@
 #include "Base.h"
 
 NS_BEGIN(Engine)
+
 class ENGINE_DLL CAnimationClip :
     public CBase
 {
 protected:
+    CAnimationClip(const string& Subject);
     CAnimationClip();
     virtual ~CAnimationClip() DEFAULT;
 
 public:
-	HRESULT Initialize();
-	_float TranslateAnimateMatrix( vector<_float4x4>& transfomationMatrices, _float CurrentTrackPosition, _float dt);
+	HRESULT Initialize(const string& animationPath);
+	_float TranslateAnimateMatrix( vector<_float4x4>& transfomationMatrices, _float CurrentTrackPosition, _float dt, _bool isLoop);
 	_float Get_Duration() { return m_fDuration; }
 	_bool isLoop() { return m_bLoop; }
 
@@ -24,9 +26,11 @@ public:
 public:
 	class CChannel* Find_ChannelByBoneName(const string& boneName);
 
+	const string& Get_Name() { return m_ClipName; }
+	const string& Get_Subject() { return m_Subject; }
+
 public:
 	virtual void Render_GUI();
-	const string& Get_Name() { return m_ClipName; }
 
 protected:
 	_bool					m_bLoop = { false };
@@ -34,10 +38,11 @@ protected:
 	_float					m_fTickPerSecond = {}; //¼Óµµ
 	_uint					m_iNumChannels = {};
 	string				m_ClipName = {};
+	string				m_Subject = {};
 	vector<class CChannel*> m_Channels;
 
 public:
-    static CAnimationClip* Create();
+    static CAnimationClip* Create(const string& animationPath, const string& animClipKey, const string& Subject);
 	virtual void Free();
 };
 NS_END

@@ -151,31 +151,37 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\BaseField.h" />
+    <ClInclude Include="..\Public\ClientHelper.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
+    <ClInclude Include="..\Public\FieldOut.h" />
     <ClInclude Include="..\Public\Free_Camera.h" />
     <ClInclude Include="..\Public\GamePlayLevel.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\LoadingLevel.h" />
     <ClInclude Include="..\Public\LogoLevel.h" />
     <ClInclude Include="..\Public\MainApp.h" />
-    <ClInclude Include="..\Public\StaticObject.h" />
-    <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\MapLoader.h" />
+    <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\Public\Target_Camera.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\BaseField.cpp" />
+    <ClCompile Include="..\Private\ClientHelper.cpp" />
+    <ClCompile Include="..\Private\FieldOut.cpp" />
     <ClCompile Include="..\Private\Free_Camera.cpp" />
     <ClCompile Include="..\Private\GamePlayLevel.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\LoadingLevel.cpp" />
     <ClCompile Include="..\Private\LogoLevel.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
-    <ClCompile Include="..\Private\StaticObject.cpp" />
-    <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\MapLoader.cpp" />
+    <ClCompile Include="..\Private\Player.cpp" />
+    <ClCompile Include="..\Private\Target_Camera.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -10,16 +10,17 @@ class CDirectoryPanel :
     public CBasePanel
 {
 	enum FolderType {PARENT,LEAF};
+
 	struct FolderInfo{
 		FolderType eType;
 		string strName;
 	};
 	enum  Mode
 	{
-		TILE,
 		FIELDOUT,
 		STRUCTURE
 	};
+
 private:
 	CDirectoryPanel(GUI_CONTEXT* context);
 	virtual ~CDirectoryPanel();
@@ -32,7 +33,7 @@ public:
 private:
 	void Render_Folders();
 private:
-	void Create_Tile(const string& name);
+	void Create_MapObject(const string& name);
 
 private:
 	void LookUp_Directory(const string& path);
@@ -52,7 +53,7 @@ private:
 	vector<FolderInfo> m_ContentInfos;
 	 _bool m_bLeafFolder = { false };
 	 
-	 Mode m_eMode = TILE;
+	 Mode m_eMode = FIELDOUT;
 public:
 	static CDirectoryPanel* Create(GUI_CONTEXT* context);
 	virtual void Free();

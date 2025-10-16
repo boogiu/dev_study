@@ -40,11 +40,6 @@ void CDirectoryPanel::Render_GUI()
 	ImGui::Begin("Model Files", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 
 	ImGui::Separator();
-
-	if (ImGui::RadioButton("Tile", m_eMode == TILE)) {
-		m_eMode = TILE;
-	}
-	ImGui::SameLine();
 	if (ImGui::RadioButton("FieldOut", m_eMode == FIELDOUT)) {
 		m_eMode = FIELDOUT;
 	}	
@@ -52,11 +47,8 @@ void CDirectoryPanel::Render_GUI()
 	if (ImGui::RadioButton("Structure", m_eMode == STRUCTURE)) {
 		m_eMode = STRUCTURE;
 	}
-
 	ImGui::Separator();
-
 	Render_Folders();
-
 	ImGui::End();
 }
 
@@ -98,7 +90,7 @@ void CDirectoryPanel::Render_Folders()
 					LookUp_Directory(m_strDirectory);
 				}
 				else {
-					Create_Tile(name);
+					Create_MapObject(name);
 				}
 			}
 
@@ -115,7 +107,7 @@ void CDirectoryPanel::Render_Folders()
 	ImGui::Dummy(ImVec2(0.0f, m_fIconSize));
 }
 
-void CDirectoryPanel::Create_Tile(const string& name)
+void CDirectoryPanel::Create_MapObject(const string& name)
 {
 	if (m_bItemCreated) return;
 
@@ -126,8 +118,6 @@ void CDirectoryPanel::Create_Tile(const string& name)
 
 	switch (m_eMode)
 	{
-	case MapEditor::CDirectoryPanel::TILE:
-		hr = CEditorSystem::GetInstance()->Create_MapObject(name,CEditorSystem::TILE); break;
 	case MapEditor::CDirectoryPanel::FIELDOUT:
 		hr = CEditorSystem::GetInstance()->Create_MapObject(name, CEditorSystem::FIELDOUT); break;
 	case MapEditor::CDirectoryPanel::STRUCTURE:
@@ -148,6 +138,9 @@ void CDirectoryPanel::LookUp_Directory(const string& path)
 	for (const auto& entry : filesystem::directory_iterator(path))
 	{
 		if (!entry.is_directory())
+			continue;
+		string folderName = entry.path().filename().string();
+		if (folderName == "FieldRoad")
 			continue;
 
 		FolderInfo info = {};

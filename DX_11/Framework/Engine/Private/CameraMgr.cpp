@@ -3,6 +3,7 @@
 #include "IAudioService.h"
 #include "GameInstance.h"
 #include"GameObject.h"
+
 CCameraMgr::CCameraMgr()
 {
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixIdentity());
@@ -13,6 +14,7 @@ CCameraMgr::CCameraMgr()
 
 void CCameraMgr::Set_MainCam(CCamera* pCamCom)
 {
+
 	Safe_Release(m_pMainCam);
 	m_pMainCam = pCamCom;
 

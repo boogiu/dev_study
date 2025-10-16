@@ -16,10 +16,12 @@ public:
 
 public:
     void Update_Position( TILESYSTEM_INFO& systemInfo);
-    _ubyte Get_NeigborState();
+    _uint Get_NeigborState();
+    _uint Get_NeigborCount();
 
 public:
-    TILE_INDEX On_Grid(TILE_INDEX tileIndex, TILE_TYPE eType = TILE_TYPE::NONE);
+    TILE_INDEX On_Grid(TILE_INDEX tileIndex, string tileType, _bool CanFail = false);
+
     void Set_Index(TILE_INDEX tileIndex);
     TILE_INDEX Get_Index() { return m_tIndex; };
 
@@ -28,13 +30,12 @@ private:
     class ITileService* m_pTileSystem = { nullptr };
 
     TILE_INDEX m_tIndex = {};
-    TILE_TYPE m_eType = {};
+    string m_eType = {};
 
 public:
     static CTileBlock* Create();
     virtual CComponent* Clone() override;
     virtual void Free() override;
-
 };
 
 NS_END

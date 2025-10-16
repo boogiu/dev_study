@@ -67,8 +67,13 @@ PS_OUT PS_MAIN(PS_IN In)
   Out.vColor = vLightDiffuse * vMtrlDiffuse * In.vShade +
      (vLightSpecular * vMtrlSpecular) * In.fSpecular;
     
-    if(Out.vColor.a < 0.2)
-        discard;
+    if (Out.vColor.a < 0.2)
+    {
+        Out.vColor = float4(0.2f, .2f, 0.2f, 0.2f);
+
+        //discard;
+    }
+    
     return Out;
 }
 
@@ -119,6 +124,21 @@ PS_OUT PS_EDGE(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_WATER(PS_IN In)
+{
+    PS_OUT Out;
+
+    vector vSample = DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
+
+    // Blue 채널만 사용
+    float blue = vSample.b;
+
+    // 파란색 톤으로 보이게
+    Out.vColor = float4(0, 0, blue, 1.0)  ; // baseColor × intensity
+    return Out;
+}
+
+
 technique11 DefaultTechnique
 {
     pass Opaque
@@ -147,5 +167,12 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_EDGE();
     }
-
+    pass Water
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        PixelShader = compile ps_5_0 PS_WATER();
+    }
 }

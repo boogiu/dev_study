@@ -41,18 +41,25 @@ namespace Engine
         return static_cast<ANCHOR>(static_cast<unsigned int>(a) & static_cast<unsigned int>(b));
     }
 
-    enum class TILE_TYPE {
-            NONE,
-            GRASS,
-            WATER,
-            ROAD
+    enum class NEIGHBOR_INDEX : unsigned int {
+        UPLEFT = 1<<0, 
+        UP = 1 << 1,
+        UPRIGHT = 1 << 2,
+        LEFT = 1 << 3,
+        CENTER = 1 << 4,
+        RIGHT = 1 << 5,
+        DOWNLEFT = 1 <<6,
+        DOWN = 1 << 7,
+        DOWNRIGHT = 1 << 8,
+        END =0
     };
 
-    enum class TILE_FLAG : unsigned int{
-        NONE = 0,
-        WALKABLE = 1 << 0,   // 0000 0001
-        DIGGABLE = 1 << 1,      // 0000 0010
-    };
+    inline NEIGHBOR_INDEX operator | (NEIGHBOR_INDEX a, NEIGHBOR_INDEX b) {
+        return static_cast<NEIGHBOR_INDEX>(static_cast<unsigned int>(a) | static_cast<unsigned int>(b));
+    }
+    inline NEIGHBOR_INDEX operator & (NEIGHBOR_INDEX a, NEIGHBOR_INDEX b) {
+        return static_cast<NEIGHBOR_INDEX>(static_cast<unsigned int>(a) & static_cast<unsigned int>(b));
+    }
 
     enum class LIGHT_TYPE { DIRECTIONAL, POINT, SPOTLIGHT };
 
@@ -75,7 +82,8 @@ namespace Engine
         GRADATION = 13,
         GRADATION_EDGE = 14,
         MIX = 15,
-        END = 16
+        SPECULAR = 16,
+        END = 17
     };
 
     enum class TILE_NEIGHBOR { 

@@ -14,3 +14,15 @@ extern HINSTANCE g_hInstance;
 
 using namespace Client;
 
+enum class TILE_FLAG : unsigned int {
+    NONE = 0,
+    WALKABLE = 1 << 0,   // 0000 0001
+    DIGGABLE = 1 << 1,      // 0000 0010
+};
+
+inline TILE_FLAG operator | (TILE_FLAG a, TILE_FLAG b) {
+    return static_cast<TILE_FLAG>(static_cast<unsigned int>(a) | static_cast<unsigned int>(b));
+}
+inline TILE_FLAG operator & (TILE_FLAG a, TILE_FLAG b) {
+    return static_cast<TILE_FLAG>(static_cast<unsigned int>(a) & static_cast<unsigned int>(b));
+}

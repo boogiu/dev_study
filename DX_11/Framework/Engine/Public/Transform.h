@@ -24,6 +24,8 @@ public:
 	void Scale(const _float3& scale);
 
 	void LookAt(_fvector vAt);
+	void Override_Rotation(_fvector vAxis, _float fRadian);
+	void Reset_Rotation();
 
 public:
 	_vector Get_Pos() { return XMLoadFloat4(&m_vPosition); };
@@ -32,6 +34,7 @@ public:
 	 _vector Dir(STATE eState);
 
 	 _float4x4* Get_WorldMatrix();
+	 _float4x4* Get_LocalMatrix();
 	 _float4x4 Get_InverseWorldMatrix();
 	 _float4x4* Get_InverseWorldMatrix_Ptr();
 
@@ -43,7 +46,7 @@ public:
 
 private:
 	void Update_Transform();
-
+	_bool Check_Dirty();
 private:
 	_bool m_bDirty = {};
 

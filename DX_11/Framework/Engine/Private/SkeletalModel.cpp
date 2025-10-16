@@ -11,7 +11,10 @@ CSkeletalModel::CSkeletalModel()
 
 CSkeletalModel::CSkeletalModel(const CSkeletalModel& rhs)
 	:CModel(rhs), m_pData(rhs.m_pData),
-	m_DrawableMeshes(rhs.m_DrawableMeshes)
+	m_DrawableMeshes(rhs.m_DrawableMeshes),
+	m_TransfromationMatrices(rhs.m_TransfromationMatrices),
+	m_CombinedMatrices(rhs.m_CombinedMatrices),
+	m_FinalMatices(rhs.m_FinalMatices)
 {
 	Safe_AddRef(m_pData);
 }
@@ -39,6 +42,7 @@ HRESULT CSkeletalModel::Link_Model(const string& levelKey, const string& modelDa
 	m_TransfromationMatrices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
 	m_CombinedMatrices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
 	m_FinalMatices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
+
 	for (size_t i = 0; i < m_pData->Get_BoneCount(); i++)
 	{
 		m_TransfromationMatrices[i] = m_pData->Get_TransformMatrix(i);

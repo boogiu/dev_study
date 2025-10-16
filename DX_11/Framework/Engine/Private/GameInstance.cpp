@@ -187,8 +187,8 @@ HRESULT CGameInstance::Draw_Begin(_float4* pColor)
 
 HRESULT CGameInstance::Draw()
 {
-	m_pLevelManager->Render();
 	m_pRenderSystem->Render();
+	m_pLevelManager->Render(m_pDeviceContext);
 
 #if defined _USING_GUI
 	m_pGuiSystem->Render_GUI();

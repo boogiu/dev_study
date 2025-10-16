@@ -28,7 +28,7 @@ public:
 	_uint Get_BoneCount();
 	_int Find_BoneIndexByName(const string& BoneName);
 	const string& Find_BoneNameByIndex(_uint BoneIndex);
-
+	_bool isRootBone(_uint BoneIndex);
 	_int Get_BoneParentIndex(_uint i);
 	_float4x4 Get_TransformMatrix(_uint BoneIndex);
 	_matrix Get_OffsetMatrix(_uint BoneIndex);
@@ -37,6 +37,7 @@ public:
 	const vector<_int> GenerateFollowingIndices(class CModelData* pMasterData);
 	BOUNDING_BOX Get_LocalBoundingBox();
 	BOUNDING_BOX Get_MeshBoundingBox(_uint index);
+
 #pragma endregion 
 	virtual void Render_GUI();
 #pragma region GUI

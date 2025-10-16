@@ -16,6 +16,7 @@ public:
     CGameObjectBuilder& Position(const _float3 position);
     CGameObjectBuilder& Rotate(const _float3 rotate);
     CGameObjectBuilder& Scale(const _float3 scale);
+    CGameObjectBuilder& Add_ObjDesc(GAMEOBJECT_DESC* pArg);
 
 private:
     class CGameInstance* m_pGameInstance = { nullptr };

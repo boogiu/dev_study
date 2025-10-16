@@ -50,6 +50,8 @@ void CModelObject::Priority_Update(_float dt)
 void CModelObject::Update(_float dt)
 {
 	if (m_pAnimator) {
+		
+		dynamic_cast<CLoadAnimator3D*>(m_pAnimator)->Update_Load();
 		m_pAnimator->Update_Animation(dt);
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_LEFT))
 			m_fMeshAngle += dt * 45;
@@ -205,6 +207,7 @@ void CModelObject::Add_Part()
 
 	CGameObject* ModelPart = Builder::Create_Object({ "Model_Level" ,"Proto_GameObject_Part" })
 		.Build("Parts");
+
 	Get_Component<CObjectContainer>()->Add_Child(ModelPart);
 
 	pObjMgr->Add_Object(ModelPart, { "Model_Level","Model_Layer" });

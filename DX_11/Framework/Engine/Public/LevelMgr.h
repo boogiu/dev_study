@@ -14,7 +14,7 @@ public:
     HRESULT Initialize();
     virtual  HRESULT Request_ChangeLevel(string levelID, _bool Load = true) override;/*레벨 체인지 요청*/
     virtual void Update(_float dt)override;
-    virtual HRESULT Render()override;
+    virtual HRESULT Render(ID3D11DeviceContext* pContext)override;
 
 public :
     virtual void Register_Level(const string& levelID, LEVEL_CREATOR creator)override; /*레벨 생성자 등록*/

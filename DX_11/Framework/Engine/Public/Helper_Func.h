@@ -8,6 +8,7 @@ namespace Helper
 	ENGINE_DLL string OpenFile_Dialogue();
 	ENGINE_DLL string OpenFolder_Dialogue();
 	ENGINE_DLL vector<string> OpenMultiFolders();
+	ENGINE_DLL vector<string> OpenMultiFiles();
 	ENGINE_DLL string SaveFileDialog();
 	ENGINE_DLL string SaveFileDialog(const string& fileName, const string& filter);
 	ENGINE_DLL string SaveFileDialogByWinAPI(const string& fileName, const string& filterStr);

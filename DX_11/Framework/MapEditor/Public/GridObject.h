@@ -24,6 +24,9 @@ public:
 public:
     _float3 Get_HitPos() { return m_HittedPos; };
     TILE_INDEX Get_HitIndex();
+    _float3 Get_MinEdge() { return _float3{ m_HittedArea.vEdgeMin.x,m_HittedArea.vEdgeMin.y,m_HittedArea.vEdgeMin.z}; };
+    _float3 Get_MaxEdge() { return _float3{ m_HittedArea.vEdgeMax.x,m_HittedArea.vEdgeMax.y,m_HittedArea.vEdgeMax.z}; };
+
 public:
     void Render_GUI() override;
 

@@ -1,28 +1,54 @@
 #include "AnimationClip.h"
 #include "Channel.h"
 
+CAnimationClip::CAnimationClip(const string& Subject)
+	:m_Subject(Subject)
+{
+}
+
 CAnimationClip::CAnimationClip()
 {
 }
 
-HRESULT CAnimationClip::Initialize()
+HRESULT CAnimationClip::Initialize(const string& animationPath)
 {
+	ifstream ifs(animationPath.c_str(), ios::binary);
+
+	if (!ifs.is_open())
+		return E_FAIL;
+
+	ANIMATION_CLIP_HEADER ClipHeader = {};
+	ifs.read(reinterpret_cast<char*>(&ClipHeader), sizeof(ANIMATION_CLIP_HEADER));
+
+	m_bLoop = ClipHeader.bLoop;
+	m_ClipName = ClipHeader.ClipName;
+	m_fDuration = ClipHeader.fDuration;
+	m_fTickPerSecond = ClipHeader.fTickPerSecond;
+	m_iNumChannels= ClipHeader.iNumChannels;
+	for (size_t i = 0; i < ClipHeader.iNumChannels; i++)
+	{
+		if (CChannel* pChannel = CChannel::Create(ifs))
+			if(pChannel)
+			m_Channels.push_back(pChannel);
+	}
+
+	ifs.close();
 	return S_OK;
 }
 
-_float CAnimationClip::TranslateAnimateMatrix(vector<_float4x4>& transfomationMatrices, _float CurrentTrackPosition, _float dt)
+_float CAnimationClip::TranslateAnimateMatrix(vector<_float4x4>& transfomationMatrices, _float CurrentTrackPosition, _float dt, _bool isLoop)
 {
 
 	_float RealTrackPosition = CurrentTrackPosition + dt * m_fTickPerSecond;
 
-	if (m_bLoop) {
+	if (isLoop) {
 		if (RealTrackPosition > m_fDuration)
 			return 0;
 	}
 
 	for (size_t i = 0; i < m_iNumChannels; i++)
 	{
-		m_Channels[i]->TranslateAnimateMatrix(transfomationMatrices, RealTrackPosition, m_bLoop);
+		m_Channels[i]->TranslateAnimateMatrix(transfomationMatrices, RealTrackPosition, isLoop);
 	}
 
 	return RealTrackPosition;
@@ -64,10 +90,10 @@ void CAnimationClip::Render_GUI()
 
 }
 
-CAnimationClip* CAnimationClip::Create()
+CAnimationClip* CAnimationClip::Create(const string& animationPath, const string& animClipKey, const string& Subject)
 {
-	CAnimationClip* instance = new CAnimationClip();
-	if (FAILED(instance->Initialize())) {
+	CAnimationClip* instance = new CAnimationClip(Subject);
+	if (FAILED(instance->Initialize(animationPath))) {
 		Safe_Release(instance);
 	}
 	return instance;

@@ -22,17 +22,35 @@ CGameObject::CGameObject()
 CGameObject::CGameObject(const CGameObject& rhs)
 	:m_ObjectID(s_NextID++)
 {
+	/*트랜스폼은 가장 먼저.*/
+	type_index transform = type_index(typeid(CTransform));
+
+	auto iter = rhs.m_Components.find(transform);
+
+	if (iter != rhs.m_Components.end()) {
+		CComponent* myTransform = iter->second->Clone();
+		myTransform->Set_Owner(this);
+		m_Components.emplace(transform, myTransform);
+	}
+
+
 	for (auto& pair : rhs.m_Components) {
+
+		if (pair.first == type_index(typeid(CTransform)))
+			continue;
+
 		if (pair.first == type_index(typeid(CModel)))
 			continue;
 
-		CComponent* comp = pair.second->Clone();
-		comp->Set_Owner(this);
-		m_Components.emplace(pair.first, comp);
+		else {
+			CComponent* comp = pair.second->Clone();
+			comp->Set_Owner(this);
+			m_Components.emplace(pair.first, comp);
 
-		if (dynamic_cast<CModel*>(comp)) {
-			m_Components.emplace(type_index(typeid(CModel)), comp);
-			Safe_AddRef(comp);
+			if (dynamic_cast<CModel*>(comp)) {
+				m_Components.emplace(type_index(typeid(CModel)), comp);
+				Safe_AddRef(comp);
+			}
 		}
 	}
 
@@ -51,6 +69,12 @@ HRESULT CGameObject::Initialize_Prototype()
 
 HRESULT CGameObject::Initialize(INIT_DESC* pArg)
 {
+
+	if (!m_pTransform) {
+		m_pTransform = Add_Component<CTransform>();
+		Safe_AddRef(m_pTransform);
+	}
+
 	if (pArg == nullptr)
 		return S_OK;
 

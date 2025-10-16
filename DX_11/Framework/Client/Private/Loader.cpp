@@ -1,6 +1,7 @@
 #include "Client_Defines.h"
 #include "Loader.h"
 #include "LogoLevel.h"
+#include "GamePlayLevel.h"
 
 CLoader::CLoader()
 {
@@ -39,7 +40,10 @@ HRESULT CLoader::Loading()
     EnterCriticalSection(&m_CriticalSection);
     /*로딩 로직*/
     if (m_sNextLevel == "Logo_Level")
-        CLogoLevel::PreLoad_Level();
+        CLogoLevel::PreLoad_Level();    
+
+    if (m_sNextLevel == "GamePlay_Level")
+        CGamePlayLevel::PreLoad_Level();
 
     LeaveCriticalSection(&m_CriticalSection);
 

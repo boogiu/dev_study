@@ -1,13 +1,26 @@
 #pragma once
 #include "GameObject.h"
+
 NS_BEGIN(Client)
-class CTerrain :
+class CFieldOut :
     public CGameObject
 {
+public:
+    typedef struct tagFieldOutDesc : public GAMEOBJECT_DESC
+    {
+        TILE_INDEX Index = {};
+        string LevelTag;
+        string ModelName;
+        string MaterialName;
+
+        tagFieldOutDesc() DEFAULT;
+        virtual ~tagFieldOutDesc() DEFAULT;
+    }FIELDOUT_DESC;
+
 private:
-    CTerrain();
-    CTerrain(const CTerrain& rhs);
-    virtual ~CTerrain() override;
+    CFieldOut();
+    CFieldOut(const CFieldOut& rhs);
+    virtual ~CFieldOut() DEFAULT;
 
 public:
     HRESULT Initialize_Prototype() override;
@@ -18,9 +31,9 @@ public:
     virtual void Render_GUI();
 
 private:
-
+    void Override_Pass();
 public:
-    static CTerrain* Create();
+    static CFieldOut* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;
     void Free() override;
 };

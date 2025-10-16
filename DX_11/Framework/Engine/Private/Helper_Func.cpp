@@ -154,6 +154,65 @@ ENGINE_DLL vector<string> Helper::OpenMultiFolders()
 	return result;
 }
 
+ENGINE_DLL vector<string> Helper::OpenMultiFiles()
+{
+	vector<string> result;
+	IFileOpenDialog* pFileOpen = nullptr;//(COM객체로 동작 COM 객체를 가리키는 인터페이스 )
+
+	HRESULT Initialize = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);//(현재 스레드에서 환경 준비)
+	if (FAILED(Initialize)) {
+		MSG_BOX("Failed To Initialize Com Interface : CoInitializeEx");
+		return result;
+	}
+
+	HRESULT hr = CoCreateInstance(
+		CLSID_FileOpenDialog,      // 만들고 싶은 COM 클래스의 고유 ID
+		NULL,                      // Aggregation 안 함 (대부분 NULL)
+		CLSCTX_ALL,                // 실행 컨텍스트 (in-proc, out-of-proc 등)
+		IID_IFileOpenDialog,       // 요청할 인터페이스의 ID
+		reinterpret_cast<void**>(&pFileOpen) // 인터페이스 포인터 반환받을 변수
+	);
+
+	if (FAILED(hr)) {
+		MSG_BOX("Failed To CReate Com Interface : CoCreateInstance");
+		return result;
+	}
+
+	DWORD dwOptions;
+	pFileOpen->GetOptions(&dwOptions);
+	pFileOpen->SetOptions(dwOptions | FOS_FILEMUSTEXIST | FOS_PATHMUSTEXIST | FOS_ALLOWMULTISELECT);
+	HRESULT openDialogue = pFileOpen->Show(0);
+
+	if (SUCCEEDED(openDialogue)) {
+		IShellItemArray* pItemArray = { nullptr };  // 이것도 컴객체임 IFileOpenDialog가 반환하는 결과 배열
+		HRESULT openResult = pFileOpen->GetResults(&pItemArray);
+
+		if (SUCCEEDED(openResult)) {
+			DWORD itemCount = 0;
+			pItemArray->GetCount(&itemCount);
+
+			for (DWORD i = 0; i < itemCount; i++)
+			{
+				IShellItem* pItem = { nullptr };
+				if (SUCCEEDED(pItemArray->GetItemAt(i, &pItem)))
+				{
+					PWSTR pszFilePath = { nullptr };
+					if (SUCCEEDED(pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath))) {//사용자가 선택한 파일이나 폴더 하나(ㅈㄹ대경로 기준으로)
+						result.push_back(ConvertToString(pszFilePath));
+						CoTaskMemFree(pszFilePath);// 할당한 메모리를 해제
+					}
+					pItem->Release();
+				}
+			}
+			pItemArray->Release();
+		}
+	}
+	pFileOpen->Release();
+
+	CoUninitialize();
+
+	return result;
+}
 string Helper::SaveFileDialog()
 {
 	string savePath = "";

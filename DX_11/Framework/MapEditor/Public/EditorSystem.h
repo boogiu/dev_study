@@ -16,12 +16,16 @@ class CEditorSystem :
 {
 	DECLARE_SINGLETON(CEditorSystem);
 public:
-	enum ObjType {TILE, FIELDOUT,STRUCTURE};
+	enum Mode { EditObj, BrushTile };
+	enum ObjType {FIELDOUT,STRUCTURE};
 
 public:
 	struct Editor_Context {
+		ObjType eType = { FIELDOUT };
+		Mode eMode = { EditObj };
+
 		CGameObject* pEditingObject = {nullptr};
-		ObjType eType = {};
+		string baseType = {};
 		TILESYSTEM_INFO ContextTileInfo = {};
 	};
 
@@ -36,9 +40,6 @@ public:
 public:
 	Editor_Context* Get_Context() { return &m_EditorContext; }
 	HRESULT Delete_Object(class CGameObject* pObject);
-
-	HRESULT Create_Tile(const string& folderName);
-	HRESULT Create_FieldOut(const string& folderName);
 	HRESULT Create_MapObject(const string& folderName, ObjType eType);
 	void Create_Base();
 
@@ -51,6 +52,7 @@ private:
 	void Create_GUIPanels();
 	void Create_Ray();
 	void DragDrop_Object();
+	void Brushing_Tiles();
 
 private:
 	POINT m_MousePt = {};
@@ -71,8 +73,10 @@ private:
 	const _float4x4* m_pViewMat = { nullptr };
 	const _float4x4* m_pProjMat = { nullptr };
 
-	/*BaseObject*/
+	/*GridObject*/
 	class CGridObject* m_pGrid = { nullptr };
+	_float3 m_GridMinEdge = {};
+	_float3 m_GridMaxEdge = {};
 
 	/*GUI Panel*/
 	class CDirectoryPanel* m_pDirectoryPanel = { nullptr };

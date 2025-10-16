@@ -82,9 +82,12 @@ void CTransform::AddScale( _fvector scale)
 
 void CTransform::Set_Pos(const _float3& position)
 {
-	_fvector newPosition = XMVectorSetW(XMLoadFloat3(&position), 1.f);
-	XMStoreFloat4(&m_vPosition, newPosition);
-	m_bDirty = true;
+	if (XMVector3NotEqual(XMLoadFloat4(&m_vPosition), XMVectorSet(position.x, position.y, position.z, 1.f)))
+	{
+		_fvector newPosition = XMVectorSetW(XMLoadFloat3(&position), 1.f);
+		XMStoreFloat4(&m_vPosition, newPosition);
+		m_bDirty = true;
+	}
 }
 
 void CTransform::Rotate(const _float3& _eular)
@@ -104,23 +107,31 @@ void CTransform::Scale(const _float3& scale)
 
  _float4x4* CTransform::Get_WorldMatrix()
 {
-	if (m_bDirty) 
+	if (Check_Dirty()) 
 		Update_Transform();
 	
 	return &m_WorldMatrix;
 }
 
+ _float4x4* CTransform::Get_LocalMatrix()
+ {
+	 if (Check_Dirty())
+		 Update_Transform();
+
+	 return &m_LocalMatrix;
+ }
+
  _float4x4 CTransform::Get_InverseWorldMatrix()
 {
-	if (m_bDirty)
-		Update_Transform();
+	 if (Check_Dirty())
+		 Update_Transform();
 	
 	return m_WorldInversMatrix;
 }
 
  _float4x4* CTransform::Get_InverseWorldMatrix_Ptr()
  {
-	 if (m_bDirty)
+	 if (Check_Dirty())
 		 Update_Transform();
 
 	 return &m_WorldInversMatrix;
@@ -128,8 +139,7 @@ void CTransform::Scale(const _float3& scale)
 
 _vector CTransform::Dir(STATE eState)
 {
-	
-	if (m_bDirty) 
+	if (Check_Dirty())
 		Update_Transform();
 	
 	_matrix worldMat = XMLoadFloat4x4(&m_LocalMatrix);
@@ -154,7 +164,6 @@ void CTransform::TranslateMatrix(_fmatrix matrix)
 	}
 
 	m_bDirty = true;
-	
 }
 
 void CTransform::Render_GUI()
@@ -204,9 +213,26 @@ void CTransform::LookAt(_fvector vAt)
 	m_bDirty = true;
 }
 
+void CTransform::Override_Rotation(_fvector vAxis, _float fRadian)
+{
+	_fvector newQuaternion = XMQuaternionRotationAxis(vAxis, fRadian);
+	_vector finalQuaternion = XMQuaternionNormalize(newQuaternion);
+	XMStoreFloat4(&m_qRotation, finalQuaternion);
+	m_bDirty = true;
+}
+
+void CTransform::Reset_Rotation()
+{
+	m_qRotation = { 0.f,0.f,0.f,0.f };
+	m_bDirty = true;
+}
+
 
 void CTransform::Update_Transform()
 {
+	//if (m_pParentTransform && m_pParentTransform->m_bDirty)
+	//	m_pParentTransform->Update_Transform();
+
 	_matrix matScale =	XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z);
 
 	_vector vQuaternion = XMLoadFloat4(&m_qRotation);
@@ -220,7 +246,7 @@ void CTransform::Update_Transform()
 
 	_matrix combined;
 
-	if (m_pParentTransform) {
+	if (m_pParentTransform ){
 		 combined = XMLoadFloat4x4(&m_LocalMatrix) * XMLoadFloat4x4(m_pParentTransform->Get_WorldMatrix());
 		XMStoreFloat4x4(&m_WorldMatrix, combined);
 	}
@@ -231,6 +257,14 @@ void CTransform::Update_Transform()
 
 	XMStoreFloat4x4(&m_WorldInversMatrix, XMMatrixInverse(nullptr, combined));
 	m_bDirty = false;
+}
+
+_bool CTransform::Check_Dirty()
+{
+	if (m_pParentTransform) {
+		return m_bDirty || m_pParentTransform->m_bDirty;
+	}
+		return m_bDirty;
 }
 
 

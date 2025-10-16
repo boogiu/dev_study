@@ -4,15 +4,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\Default\Client.vcxproj", "{B65A5C86-1052-460D-82E9-7DE37A4EECE4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AA5FE8A1-6BD0-46B9-B1B4-B528A1B6D104} = {AA5FE8A1-6BD0-46B9-B1B4-B528A1B6D104}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Default\Engine.vcxproj", "{AA5FE8A1-6BD0-46B9-B1B4-B528A1B6D104}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelLoader", "ModelLoader\Default\ModelLoader.vcxproj", "{695F7D4B-7C99-4E0A-91FD-E9E7434F80C7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MapEditor", "MapEditor\Default\MapEditor.vcxproj", "{DA790EEB-0F2B-414F-BC51-56192DC33183}"
-	ProjectSection(ProjectDependencies) = postProject
-		{AA5FE8A1-6BD0-46B9-B1B4-B528A1B6D104} = {AA5FE8A1-6BD0-46B9-B1B4-B528A1B6D104}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

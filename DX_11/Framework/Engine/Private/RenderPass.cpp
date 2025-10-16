@@ -12,6 +12,8 @@
 #include "DebugRender.h"
 #include "SkeletalModel.h"
 
+#include "TileSystem.h"
+
 RenderPass::RenderPass(CRenderSystem* pRenderSystem)
 	:m_pRenderSystem(pRenderSystem)
 {
@@ -58,6 +60,11 @@ void OpaquePass::Execute(ID3D11DeviceContext* pContext)
 	/*패킷이 비어 있으면 리턴*/
 	if (m_Packets.empty())
 		return;
+	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+
+	if (TileSystem)
+		TileSystem->Render_Tiles(pContext);
+
 	/*상수 버퍼 및 SRV 세팅*/
 	pPipeLine->Begin_ObjectBuffer(pContext);
 	pPipeLine->Begin_SkinningBuffer(pContext);
@@ -147,6 +154,7 @@ void UIPass::Submit(UI_PACKET packet)
 #pragma region DEBUG_PASS
 void DebugPass::Execute(ID3D11DeviceContext* pContext)
 {
+
 	CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
 	if (pCurShader == nullptr) {
 		pCurShader = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Shader(G_GlobalLevelKey, "VTX_Debug.hlsl");
@@ -183,6 +191,7 @@ void DebugPass::Execute(ID3D11DeviceContext* pContext)
 	}
 
 	m_Packets.clear();
+
 }
 
 void DebugPass::Submit(DEBUG_PACKET packet)

@@ -16,9 +16,10 @@ public:
     void Late_Update(_float dt) override;
  
 private:
-    _float fLerpPercent = 10.f;
-    _float fMouseSensitive = 0.1f;
-    _float2 m_vRotationVelocity = { 0.f, 0.f };
+    _float m_fSpeed = { 150.f };
+    _float m_fMouseSensitive = { 10.f };
+
+    _float2 m_vCurrentRotate = {};
 public:
     static CFree_Camera* Create();
     virtual void Free() override;

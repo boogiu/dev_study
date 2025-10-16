@@ -83,7 +83,9 @@ HRESULT CFieldOutBlocks::Link_Data(const string& folderName)
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
 		instance->Override_Pass("Base");
 	}
-
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaterfall")) {
+		instance->Override_Pass("Water");
+	}
 	if (SUCCEEDED(hr)) {
 		ModelName = folderName + ".model";
 		MaterialName = folderName + ".mat";
@@ -115,6 +117,9 @@ HRESULT CFieldOutBlocks::Load_Object(MAP_OBJECT_HEADER ObjHeader)
 	}
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
 		instance->Override_Pass("Base");
+	}	
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaterfall")) {
+		instance->Override_Pass("Water");
 	}
 
 

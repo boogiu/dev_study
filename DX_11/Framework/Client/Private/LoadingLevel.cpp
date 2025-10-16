@@ -15,8 +15,8 @@ CLoadingLevel::~CLoadingLevel()
 
 HRESULT CLoadingLevel::Initialize()
 {
-	string imguiID =CGameInstance::GetInstance()->Get_LevelMgr()->Get_NextLevel();
-	m_pLoader = CLoader::Create(imguiID);
+	string LevelID =CGameInstance::GetInstance()->Get_LevelMgr()->Get_NextLevel();
+	m_pLoader = CLoader::Create(LevelID);
 
 	if (!m_pLoader)
 		return E_FAIL;
@@ -35,7 +35,6 @@ void CLoadingLevel::Update()
 HRESULT CLoadingLevel::Render()
 {
 	SetWindowText(g_hWnd, TEXT("로딩레벨입니다."));
-
 	return S_OK;
 }
 

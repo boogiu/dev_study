@@ -39,9 +39,9 @@ HRESULT CTileBlock::Initialize(COMPONENT_DESC* pArg)
 	return  S_OK;
 }
 
-TILE_INDEX CTileBlock::On_Grid(TILE_INDEX tileIndex, TILE_TYPE eType)
+TILE_INDEX CTileBlock::On_Grid(TILE_INDEX tileIndex, string eType, _bool CanFail)
 {
-	m_pTileSystem->Register_Tile(this, tileIndex);
+	m_pTileSystem->Register_Tile(this, tileIndex, CanFail);
 	m_eType = eType;
 	return m_tIndex;
 }
@@ -93,24 +93,32 @@ void CTileBlock::Update_Position(TILESYSTEM_INFO& systemInfo)
 	m_pTransform->Set_Pos(worldPos);
 }
 
-_ubyte CTileBlock::Get_NeigborState()
+_uint CTileBlock::Get_NeigborState()
 {
 	vector<class CTileBlock*> TileNeighbor = m_pTileSystem->Get_NeighborByIndex(m_tIndex);
-	vector<_bool> neighborExist;
-
-	_uint FlagShift = 0;
-	_ubyte Result = 0;
+	_uint Result = 0;
 
 	for (size_t i = 0; i < TileNeighbor.size(); i++)
 	{
-		if (i == 4) continue;
+		if (TileNeighbor[i] == this) continue;
 		if (TileNeighbor[i] && TileNeighbor[i]->m_eType == m_eType)
-				Result |= (1 << FlagShift);
-
-		FlagShift++;
+				Result |= (1 << i);
 	}
 
 	return Result;
+}
+
+_uint CTileBlock::Get_NeigborCount()
+{
+	vector<class CTileBlock*> TileNeighbor = m_pTileSystem->Get_NeighborByIndex(m_tIndex);
+	_uint Count = {};
+	for (size_t i = 0; i < TileNeighbor.size(); i++)
+	{
+		if (TileNeighbor[i] == this) continue;
+		if (TileNeighbor[i] && TileNeighbor[i]->m_eType == m_eType)
+			Count++;
+	}
+	return Count;
 }
 
 

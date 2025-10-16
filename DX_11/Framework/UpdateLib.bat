@@ -30,8 +30,6 @@ xcopy /y "%BASE%Engine\Bin\fmodL.dll"      "%BASE%MapEditor\Bin\"
 xcopy /y "%BASE%Engine\Bin\fmod.dll"      "%BASE%MapEditor\Bin\"
 
 
-
-
 REM ==========================================================
 
 xcopy /y /s /e /i "%BASE%Engine\Public\"      "%BASE%EngineSDK\Inc\"

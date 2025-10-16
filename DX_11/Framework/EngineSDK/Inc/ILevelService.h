@@ -12,7 +12,7 @@ public:
     virtual HRESULT Request_ChangeLevel(string levelKey, _bool Load = true) PURE;
 
     virtual void Update(_float dt)PURE;
-    virtual HRESULT Render()PURE;
+    virtual HRESULT Render(ID3D11DeviceContext* pContext)PURE;
 
     virtual void Register_Level(const string& levelID, LEVEL_CREATOR creator)PURE;
     virtual _uint Get_LevelCount() PURE;

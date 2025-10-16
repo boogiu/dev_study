@@ -109,9 +109,10 @@ namespace Engine
 	}ANIMATION_CLIP_HEADER;
 
 	typedef struct ENGINE_DLL tagAnimationChannelHeader {
+		_bool				isRootBoneChannel = { false };
 		_uint				iBoneIndex = {};
 		_uint				iNumKeyFrames = {};
-		char			BoneName[MAX_PATH];
+		char				BoneName[MAX_PATH];
 	}ANIMATION_CHANNEL_HEADER;
 
 	struct _XMKeyFrame {
@@ -119,6 +120,7 @@ namespace Engine
 		_vector vRotation;
 		_vector vTranslation;
 	};
+
 	typedef struct ENGINE_DLL tagKeyFrame
 	{
 		_float3			vScale;
@@ -145,6 +147,18 @@ namespace Engine
 			lerpedFrame.vRotation = XMQuaternionSlerp(XMLoadFloat4(&vRotation), XMLoadFloat4(&nextFrame.vRotation), fRatio);
 			lerpedFrame.vTranslation = XMVectorLerp(XMVectorSetW(XMLoadFloat3(&vTranslation), 1.f), XMVectorSetW(XMLoadFloat3(&nextFrame.vTranslation), 1.f), fRatio);
 			return lerpedFrame;
+		}
+
+		tagKeyFrame& operator=(const tagKeyFrame& rhs)
+		{
+			if (this == &rhs) return *this;
+
+			vScale = rhs.vScale;
+			vRotation = rhs.vRotation;
+			vTranslation = rhs.vTranslation;
+			fTrackPosition = rhs.fTrackPosition;
+
+			return *this;
 		}
 	}KEYFRAME;
 
@@ -220,6 +234,16 @@ namespace Engine
 		_uint iStructureCount = {};
 	}MAP_FILE_HEADER;
 
+	typedef struct tagMapBaseHeader {
+		TILESYSTEM_INFO tileInfo = {};
+		_float4 vWorldPos = {};
+		_float3 vWorldScale = {};
+		char ModelName[MAX_PATH];
+		char MaterialName[MAX_PATH];
+		char ModelPath[MAX_PATH];
+		char MaterialPath[MAX_PATH];
+	}MAP_BASE_HEADER;
+
 	typedef struct tagMapObjectHeader {
 		TILE_INDEX Index = {};
 		_float4 vWorldPos = {};
@@ -228,6 +252,28 @@ namespace Engine
 		char ModelPath[MAX_PATH];
 		char MaterialPath[MAX_PATH];
 	}MAP_OBJECT_HEADER;
+
+	typedef struct  tagMapTileHeader {
+		_bool Is_Base = { false };
+		_float fRotation = {};
+		_uint CurState = {};
+		TILE_INDEX Index = {};
+		char BaseTypeName[MAX_PATH];
+	}MAP_TILE_HEADER;
+
+	typedef struct tagAutoTileFileHeader {
+		_uint RuleCount = {};
+	}AUTO_TILE_HEADER;
+
+	typedef struct tagAutoTileDesc {
+		_float rotation;                     
+		NEIGHBOR_INDEX Connectable;         
+		NEIGHBOR_INDEX NeverConnectable;     
+	}AUTO_TILE_DESC;
+
+	typedef struct tagAutoTile {
+
+	}AUTO_TILE;
 
 #pragma pack(pop)
 
@@ -238,9 +284,21 @@ namespace Engine
 		static constexpr string_view  Key = "VTXPOS";
 		static constexpr unsigned int iElementCount = { 1 };
 		static constexpr D3D11_INPUT_ELEMENT_DESC		Elements[iElementCount] = {
-			{"POSITION",        0,      DXGI_FORMAT_R32G32B32A32_FLOAT,         0,      0,		D3D11_INPUT_PER_VERTEX_DATA,	0},
+			{"POSITION",        0,      DXGI_FORMAT_R32G32B32_FLOAT,         0,      0,		D3D11_INPUT_PER_VERTEX_DATA,	0},
 		};
 	}VTXPOS;
+
+	typedef struct ENGINE_DLL tagVertexPositionColor {
+		XMFLOAT3		vPosition;
+		XMFLOAT4		vColor;
+
+		static constexpr string_view  Key = "VTXCOL";
+		static constexpr unsigned int iElementCount = { 2};
+		static constexpr D3D11_INPUT_ELEMENT_DESC		Elements[iElementCount] = {
+			{"POSITION",        0,      DXGI_FORMAT_R32G32B32_FLOAT,         0,      0,		D3D11_INPUT_PER_VERTEX_DATA,	0},
+			{"COLOR",        0,      DXGI_FORMAT_R32G32B32A32_FLOAT,         0,     12,		D3D11_INPUT_PER_VERTEX_DATA,	0},
+		};
+	}VTXCOL;
 
 	typedef struct ENGINE_DLL tagVertexPositionTexcoord
 	{

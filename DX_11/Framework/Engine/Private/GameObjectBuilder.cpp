@@ -46,14 +46,19 @@ CGameObject* CGameObjectBuilder::Build(const string& instanceKey, _uint* id)
 	}
 
 	//오브젝트 설명체 채우기
-	m_pObjDesc = new GAMEOBJECT_DESC;
+	if(!m_pObjDesc)
+		m_pObjDesc = new GAMEOBJECT_DESC;
+
 	m_pObjDesc->InstanceName = instanceKey;
 
 	for (auto& pair : m_CompDesc)
 		m_pObjDesc->CompDesc[pair.first] = pair.second;
 
 	//프로토 매니저에서 가져오기
-	CGameObject* instance = m_pGameInstance->Get_PrototypeMgr()->Clone_Prototype(m_CloneDesc->OriginLevel, m_CloneDesc->protoTag, m_pObjDesc);
+	CGameObject* instance = m_pGameInstance->Get_PrototypeMgr()->Clone_Prototype(
+		m_CloneDesc->OriginLevel, m_CloneDesc->protoTag, 
+		m_pObjDesc);
+
 	if (!instance) {
 		return nullptr;
 	}
@@ -109,6 +114,12 @@ CGameObjectBuilder& CGameObjectBuilder::Scale(const _float3 scale)
 
 	TRANSFORM_DESC* pDesc = static_cast<TRANSFORM_DESC*>(iter->second);
 	pDesc->vInitialScale = scale;
+	return *this;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::Add_ObjDesc(GAMEOBJECT_DESC* pArg)
+{
+	m_pObjDesc = pArg;
 	return *this;
 }
 

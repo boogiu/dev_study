@@ -77,6 +77,14 @@ const string& CModelData::Find_BoneNameByIndex(_uint BoneIndex)
 	return m_pSkeleton->Find_BoneNameByIndex(BoneIndex);
 }
 
+_bool CModelData::isRootBone(_uint BoneIndex)
+{
+	if (m_pSkeleton->Get_BoneParentIndex(BoneIndex) == -1)
+		return true;
+	else
+		return false;
+}
+
 const D3D11_INPUT_ELEMENT_DESC* CModelData::Get_ElementDesc(_uint DrawIndex)
 {
 	return m_Meshes[DrawIndex]->Get_ElementDesc();
@@ -106,15 +114,17 @@ void CModelData::Render_GUI()
 		if (ImGui::Button("Bones Tab")) {
 			isGui_BoneTabOpen = !isGui_BoneTabOpen;
 		}
+		if(isGui_BoneTabOpen){
 		string boneCount = "Bone : " + to_string(m_pSkeleton->Get_BoneCount());
 		ImGui::Text(boneCount.c_str());
 		ImGui::SetNextWindowSize(ImVec2(500, 400));
+		
 		if (ImGui::Begin("SkeletonBones", &isGui_BoneTabOpen, ImGuiWindowFlags_NoCollapse))
 		{
 			m_pSkeleton->Render_GUI();
 		}
 		ImGui::End();
-
+		}
 	}
 
 }

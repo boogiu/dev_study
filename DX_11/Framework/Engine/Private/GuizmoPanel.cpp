@@ -62,8 +62,9 @@ void CGuizmoPanel::ShowObject_Guizmo()
 		ImGuizmo::WORLD,
 		(float*)&temp
 	);
-	
-	objTransform->TranslateMatrix(XMLoadFloat4x4(&temp));
+
+	if (ImGuizmo::IsUsing())
+		objTransform->TranslateMatrix(XMLoadFloat4x4(&temp));
 }
 
 

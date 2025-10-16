@@ -1,13 +1,13 @@
 #pragma once
-#include "UI_Object.h"
+#include "GameObject.h"
 NS_BEGIN(Client)
-class CBackGround final:
-    public CUI_Object
+class CPlayer :
+    public CGameObject
 {
 private:
-    CBackGround();
-    CBackGround(const CBackGround& rhs);
-    virtual ~CBackGround() override;
+    CPlayer();
+    CPlayer(const CPlayer& rhs);
+    virtual ~CPlayer() override;
 
 public:
     HRESULT Initialize_Prototype() override;
@@ -15,13 +15,13 @@ public:
     void Priority_Update(_float dt) override;
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
-    
-private:
+    virtual void Render_GUI();
 
+private:
+    _bool Can_Walk = { false };
 public:
-    static CBackGround* Create();
+    static CPlayer* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;
     void Free() override;
 };
-
 NS_END

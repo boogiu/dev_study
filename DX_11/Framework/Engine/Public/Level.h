@@ -12,6 +12,7 @@ protected:
 public:
     virtual HRESULT Initialize() PURE;
     virtual void Update() PURE;
+    virtual HRESULT Render(ID3D11DeviceContext* pContext);
     virtual HRESULT Render() PURE;
     const string& Get_Key() { return m_LevelKey; }
 protected:

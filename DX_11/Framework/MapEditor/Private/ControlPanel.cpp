@@ -3,7 +3,9 @@
 #include "GridObject.h"
 
 #include "EditorSystem.h"
+#include "TileObject.h"
 
+vector<string> tileType = {"Base_0","RoadDarkSoil","RoadSoil","RoadSand","RoadBrick","RoadFanPattern","RoadStone","RoadTile", "RoadWood"};
 
 CControlPanel::CControlPanel(GUI_CONTEXT* context)
 	:CBasePanel{ context }
@@ -30,23 +32,31 @@ void CControlPanel::Render_GUI()
 	if (m_pGrid)
 		m_pGrid->Render_GUI();
 
-	ImVec2 windowPos = ImVec2((float)650, 0);
+	ImVec2 windowPos = ImVec2((float)250, 0);
 	ImGui::SetNextWindowPos(ImVec2(windowPos), ImGuiCond_Once);
-	ImGui::Begin("EditMode", 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
+	const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
+	ImGui::Begin("Editor Control",0,ImGuiWindowFlags_NoDecoration);
 
-	if (ImGui::Button("BasePlane")) {
+	ImGui::BeginChild("##Mode Btn", ImVec2{ 200, textLineHeight*2 }, true);
+	if (ImGui::Button("EditMode")) {
+		m_BrushTabOpen = false;
+		CEditorSystem::GetInstance()->Get_Context()->eMode = CEditorSystem::EditObj;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("BrushMode")) {
+		m_BrushTabOpen = true;
+		CEditorSystem::GetInstance()->Get_Context()->eMode = CEditorSystem::BrushTile;
+	}
+	ImGui::EndChild();
+
+	ImGui::BeginChild("##Save Btn", ImVec2{ 200, textLineHeight * 2 }, true);
+	if (ImGui::Button("Create_Base")) {
 		CEditorSystem::GetInstance()->Create_Base();
 	}
-
-	/*어떤 오브젝트 생성 중인지 확인*/
-	ImGui::Button("Terrain Blocks"); 
-	ImGui::SameLine();
-	ImGui::Button("Structure Blocks");
-	
 	if (ImGui::Button("SaveMapDatas")) {
 		CEditorSystem::GetInstance()->Save_MapData();
 	}
-
+	ImGui::EndChild();
 	ImGui::End();
 
 	if (m_pContext->pSelectedObject) {
@@ -57,6 +67,41 @@ void CControlPanel::Render_GUI()
 		}
 		ImGui::End();
 	}
+
+	if (m_BrushTabOpen) 
+		Render_BrushTab();
+}
+
+void CControlPanel::Render_BrushTab()
+{
+
+	CEditorSystem::Editor_Context* pContext = CEditorSystem::GetInstance()->Get_Context();
+	ImGui::SetNextWindowSize(ImVec2(300, 200));
+	ImVec2 windowPos = ImVec2((float)550, 0);
+
+	ImGui::Begin("Brush Control", &m_BrushTabOpen);
+	float childWidth = ImGui::GetContentRegionAvail().x;//->이건 넓이 설정
+	string front = pContext->baseType.empty() ? tileType[0] : pContext->baseType;
+	ImGui::SetNextItemWidth(childWidth);
+	if (ImGui::BeginCombo("##TileTypeCombo", front.c_str()))
+	{
+		for (int i = 0; i < tileType.size(); ++i) {
+			bool isSelected = (tileType[i] == pContext->baseType);
+
+			if (ImGui::Selectable(tileType[i].c_str(), isSelected)) {
+				pContext->baseType = tileType[i];
+			}
+
+			if (isSelected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+
+	if (ImGui::Button("Save Rule File")) {
+		CTileObject::Save_RuleFile();
+	}
+	ImGui::End();
 }
 
 CControlPanel* CControlPanel::Create(GUI_CONTEXT* context)

@@ -202,6 +202,8 @@ string CMaterialData::ConvertToConstant(TEXTURE_TYPE eType)
 		return "GradationEdgeTexture";
 	case Engine::TEXTURE_TYPE::MIX:
 		return "MixtureTexture";
+	case Engine::TEXTURE_TYPE::SPECULAR:
+		return "SpecularTexture";
 	case Engine::TEXTURE_TYPE::END:
 		return "";
 	default:

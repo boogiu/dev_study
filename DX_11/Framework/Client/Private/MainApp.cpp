@@ -7,6 +7,7 @@
 
 #include "LoadingLevel.h"
 #include "LogoLevel.h"
+#include "GamePlayLevel.h"
 
 //		D3D11_FILTER Filter;
 //		D3D11_TEXTURE_ADDRESS_MODE AddressU;
@@ -69,7 +70,7 @@ void CMainApp::Set_Levels() //레벨 등록 함수 ->등록 끝내면
 {
 	m_pGameInstance->Get_LevelMgr()->Register_Level("Loading_Level", []()->CLevel* {return CLoadingLevel::Create("Loading_Level"); });
 	m_pGameInstance->Get_LevelMgr()->Register_Level("Logo_Level", []()->CLevel* {return CLogoLevel::Create("Logo_Level"); });
-
+	m_pGameInstance->Get_LevelMgr()->Register_Level("GamePlay_Level", []()->CLevel* {return CGamePlayLevel::Create("GamePlay_Level"); });
 	/*이후로 계속*/
 
 	m_pGameInstance->Get_LevelMgr()->Set_LoadingLevel("Loading_Level"); //로딩 레벨을 설정함
