@@ -14,6 +14,8 @@
 #include "ICameraService.h"
 #include "Camera.h"
 
+#include "PlayerStateMachine.h"
+
 CPlayer::CPlayer()
 {
 }
@@ -43,41 +45,51 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	Get_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", "PlayerBody.model");
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_WatchCStd.anim", "Player", true);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Move_Walk_F.anim", "Player", true);
-	Get_Component<CAnimator3D>()->Chane_Animation("Act_WatchCStd.anim");
+
+	m_pStateMachine = CPlayerStateMachine::Create(this);
 
 	return S_OK;
 }
 
 void CPlayer::Priority_Update(_float dt)
 {
-	_float4 NowMove = Get_Position();
+	
 
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_DOWN)) {
-		NowMove.z += 1.f;
-	}
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_UP)) {
-		NowMove.z -= 1.f;
-	}
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_LEFT)) {
-		NowMove.x += 1.f;
-	}
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_RIGHT)) {
-		NowMove.x -= 1.f;
-	}
-	//m_pTransform->LookAt(XMLoadFloat4(&NowMove));
-
-	Can_Walk = CGameInstance::GetInstance()->Get_TileSystem()->Check_TileFlagByPosition(NowMove, static_cast<_uint>(TILE_FLAG::WALKABLE));
-
-	if (Can_Walk) {
-		//m_pTransform->Translate(m_pTransform->Dir(STATE::LOOK));
-		m_pTransform->Set_Pos({ NowMove.x, NowMove.y, NowMove.z });
-	}
-
+	//_float4 NowMove = Get_Position();
+	//
+	//if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_DOWN)) {
+	//	NowMove.z += 1.f;
+	//}
+	//
+	//
+	//
+	//if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_LEFT)) {
+	//	NowMove.x += 1.f;
+	//}
+	//if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_RIGHT)) {
+	//	NowMove.x -= 1.f;
+	//}
+	////m_pTransform->LookAt(XMLoadFloat4(&NowMove));
+	//
+	//auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
+	//Can_Walk = TileSys->Check_TileFlagByPosition(NowMove, static_cast<_uint>(TILE_FLAG::WALKABLE));
+	//
+	//if (Can_Walk) {
+	//	//m_pTransform->Translate(m_pTransform->Dir(STATE::LOOK));
+	//	TILE_INDEX prevIndex = TileSys->Get_IndexByPosition(Get_Position());
+	//	TileSys->Remove_TileFlagByIndex(prevIndex, static_cast<_uint>(TILE_FLAG::ONPLAYER));
+	//
+	//	m_pTransform->Set_Pos({ NowMove.x, NowMove.y, NowMove.z });
+	//
+	//	TILE_INDEX index = TileSys->Get_IndexByPosition(NowMove);
+	//	TileSys->Add_TileFlagByIndex(index, static_cast<_uint>(TILE_FLAG::ONPLAYER));
+	//}
+	//
 }
 
 void CPlayer::Update(_float dt)
 {
-	Get_Component<CAnimator3D>()->Update_Animation(dt);
+	m_pStateMachine->Update(dt);
 }
 
 void CPlayer::Late_Update(_float dt)
@@ -118,4 +130,5 @@ CGameObject* CPlayer::Clone(INIT_DESC* pArg)
 void CPlayer::Free()
 {
 	__super::Free();
+	Safe_Release(m_pStateMachine);
 }

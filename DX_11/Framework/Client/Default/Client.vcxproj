@@ -163,6 +163,7 @@
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MapLoader.h" />
     <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\Public\PlayerStateMachine.h" />
     <ClInclude Include="..\Public\Target_Camera.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapLoader.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
+    <ClCompile Include="..\Private\PlayerStateMachine.cpp" />
     <ClCompile Include="..\Private\Target_Camera.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>

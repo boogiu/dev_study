@@ -227,6 +227,11 @@ namespace Engine
 		_int IndexZ = {-1};
 	}TILE_INDEX;
 
+	struct TILE_INFO {
+		_uint TileFlag = {};												//타일 타입 비트 플래그
+		class CTileBlock* pTileBlock = { nullptr };		//실제 배치된 타일
+	};
+
 	typedef struct tagMapFileHeader {
 		TILESYSTEM_INFO tileInfo = {};
 		_uint iFieldOutCount = {};
@@ -299,6 +304,18 @@ namespace Engine
 			{"COLOR",        0,      DXGI_FORMAT_R32G32B32A32_FLOAT,         0,     12,		D3D11_INPUT_PER_VERTEX_DATA,	0},
 		};
 	}VTXCOL;
+
+	typedef struct ENGINE_DLL tagVertexTileDebuf {
+		XMFLOAT3		vPosition;
+		_int		iTileOffset;
+
+		static constexpr string_view  Key = "VTXTILE";
+		static constexpr unsigned int iElementCount = { 2 };
+		static constexpr D3D11_INPUT_ELEMENT_DESC		Elements[iElementCount] = {
+			{"POSITION",        0,      DXGI_FORMAT_R32G32B32_FLOAT,         0,      0,		D3D11_INPUT_PER_VERTEX_DATA,	0},
+			{"TEXCOORD",        0,      DXGI_FORMAT_R32_SINT,         0,     12,		D3D11_INPUT_PER_VERTEX_DATA,	0},
+		};
+	}VTXTILE;
 
 	typedef struct ENGINE_DLL tagVertexPositionTexcoord
 	{

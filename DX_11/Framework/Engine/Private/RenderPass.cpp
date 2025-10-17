@@ -60,11 +60,7 @@ void OpaquePass::Execute(ID3D11DeviceContext* pContext)
 	/*패킷이 비어 있으면 리턴*/
 	if (m_Packets.empty())
 		return;
-	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-
-	if (TileSystem)
-		TileSystem->Render_Tiles(pContext);
-
+	
 	/*상수 버퍼 및 SRV 세팅*/
 	pPipeLine->Begin_ObjectBuffer(pContext);
 	pPipeLine->Begin_SkinningBuffer(pContext);
@@ -159,7 +155,12 @@ void DebugPass::Execute(ID3D11DeviceContext* pContext)
 	if (pCurShader == nullptr) {
 		pCurShader = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Shader(G_GlobalLevelKey, "VTX_Debug.hlsl");
 	}
-
+#ifdef _DEBUG
+	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
+	if (TileSys) {
+		TileSys->Render_Tiles(pContext, pPipeLine);
+	}
+#endif // _DEBUG
 	if (m_Packets.empty())
 		return;
 

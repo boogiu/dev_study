@@ -17,7 +17,8 @@ public:
     void Add_DebugBounding(const BOUNDING_BOX& box);
     _uint Get_DebugBoxCount() {
         if (m_Vertices.empty())return 0;
-        return m_Vertices.size(); }
+        return m_Vertices.size(); 
+    }
 
 private:
     vector<ID3D11Buffer*> m_Vertices;

@@ -123,6 +123,9 @@
     <ClInclude Include="..\Public\Target_Camera.h">
       <Filter>02. GameObjects\01. Camera\TargetCam</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PlayerStateMachine.h">
+      <Filter>02. GameObjects\00. Player\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -171,6 +174,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Target_Camera.cpp">
       <Filter>02. GameObjects\01. Camera\TargetCam</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerStateMachine.cpp">
+      <Filter>02. GameObjects\00. Player\State</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

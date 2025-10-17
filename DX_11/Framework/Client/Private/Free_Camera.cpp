@@ -18,13 +18,13 @@ HRESULT CFree_Camera::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
 	Add_Component<CCamera>();
-
 	return S_OK;
 }
 
 HRESULT CFree_Camera::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
+	m_pTransform->LookAt({ 0,0,0 });
 	return S_OK;
 }
 
@@ -76,6 +76,7 @@ void CFree_Camera::Priority_Update(_float dt)
 
 	if (abs(m_vCurrentRotate.y) > 0.003f)//X축 회전 -> 기준 벡터는 월드 라이트
 		m_pTransform->Rotation(WorldRight, XMConvertToRadians(m_vCurrentRotate.y));
+
 }
 
 void CFree_Camera::Update(_float dt)

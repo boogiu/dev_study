@@ -281,6 +281,12 @@ HRESULT CEditorSystem::Load_MapData()
 	CGameInstance::GetInstance()->Excute_TileSystem(m_EditorContext.ContextTileInfo);
 	m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 
+	{
+		auto BasePlane = m_pObjMgr->Get_Layer({ "Editor_Level","Base_Plane" });
+		MAP_BASE_HEADER BaseHeader = {};
+		ifs.read(reinterpret_cast<char*>(&BaseHeader), sizeof(MAP_BASE_HEADER));
+	}
+
 	for (size_t i = 0; i < MapFile.iFieldOutCount; i++)
 	{
 		MAP_OBJECT_HEADER ObjHeader = {};

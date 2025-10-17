@@ -4,6 +4,10 @@ NS_BEGIN(Client)
 class CPlayer :
     public CGameObject
 {
+public:
+    enum class Player_State {
+        IDLE, MOVE
+    };
 private:
     CPlayer();
     CPlayer(const CPlayer& rhs);
@@ -18,7 +22,7 @@ public:
     virtual void Render_GUI();
 
 private:
-    _bool Can_Walk = { false };
+    class CPlayerStateMachine* m_pStateMachine= { nullptr };
 public:
     static CPlayer* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

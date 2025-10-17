@@ -16,8 +16,9 @@ using namespace Client;
 
 enum class TILE_FLAG : unsigned int {
     NONE = 0,
-    WALKABLE = 1 << 0,   // 0000 0001
-    DIGGABLE = 1 << 1,      // 0000 0010
+    ONPLAYER = 1 << 0,  
+    WALKABLE = 1 << 1,   
+    DIGGABLE = 1 << 2,    
 };
 
 inline TILE_FLAG operator | (TILE_FLAG a, TILE_FLAG b) {

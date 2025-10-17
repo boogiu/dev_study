@@ -21,11 +21,13 @@ public:
 	_uint Get_ObjectCount() { return m_IndexByID.size(); };
 	class CGameObject* Find_ObjectByID(_uint ObjectID);
 	const vector<class CGameObject*>& Get_AllObject() { return m_GameObjects; };
-
+public:
+	void Set_RenderState(_bool render) { m_isRender = render; };
 private:
 	vector<class CGameObject*>			m_GameObjects; /*순회용*/
 	unordered_map<_uint, _uint>			m_IndexByID; /*오브젝트 ID / 벡터 인덱스*/
 
+	_bool m_isRender = { true };
 public:
 	static CLayer* Create();
 	virtual void Free() override;

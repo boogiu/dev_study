@@ -44,6 +44,8 @@ void CLayer::Pre_EngineUpdate(_float dt)
 
 void CLayer::Post_EngineUpdate(_float dt)
 {
+	if (!m_isRender) return;
+
 	for (auto& pGameObject : m_GameObjects)
 		if (pGameObject && pGameObject->Is_Root())
 			pGameObject->Post_EngineUpdate(dt);

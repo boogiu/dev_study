@@ -53,15 +53,18 @@ cbuffer TileSystemInfo : register(b7)
     float2 PalettePixel = { 0.5f, 0.54f };
 };
 
-
 struct BoneMatrix
 {
     matrix BoneMat;
 };
 
-// 式式式式式式式式式式式式式 Bone SRV 式式式式式式式式式式式式式
-
-StructuredBuffer<BoneMatrix> g_BoneMatrices : register(t0);
+struct TileIndex
+{
+    int x;
+    int y;
+    int z;
+    float4 vColor;
+};
 
 // 式式式式式式式式式式式式式 Base Material 式式式式式式式式式式式式式
 Texture2D DiffuseTexture : register(t1);
@@ -91,5 +94,9 @@ Texture2D GradationEdgeTexture : register(t16);
 Texture2D g_PaletteTexture : register(t17);
 Texture2D g_PaletteEdgeTexture : register(t18);
 Texture2D g_MaskTexture : register(t19);
+
+// 式式式式式式式式式式式式式  SRV 式式式式式式式式式式式式式
+StructuredBuffer<BoneMatrix> g_BoneMatrices : register(t0);
+StructuredBuffer<TileIndex> g_TileIndecies : register(t20);
 
 #endif // __SHADER_DEFINE_HLSL__

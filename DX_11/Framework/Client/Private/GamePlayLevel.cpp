@@ -6,6 +6,7 @@
 #include "IObjectService.h"
 #include "IResourceService.h"
 #include "IRenderService.h"
+#include "IInputService.h"
 
 #include "Builder.h"
 #include "Player.h"
@@ -18,6 +19,7 @@
 #include "ClientHelper.h"
 
 #include "ITileService.h"
+#include "Layer.h"
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
     :CLevel{ LevelKey },
@@ -46,6 +48,7 @@ HRESULT CGamePlayLevel::Initialize()
 
     CGameObject* pFreeCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_FreeCamera" })
         .Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
+        .Position({ 550,10,550 })
         .Build("Free_Cam");
 
     m_pObjectManager->Add_Object(pPlayer, { "GamePlay_Level", "Player_Layer" });
@@ -53,26 +56,46 @@ HRESULT CGamePlayLevel::Initialize()
     m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 
     CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
+
+#ifdef _DEBUG
+
+    CGameInstance::GetInstance()->Get_TileSystem()->RegisterColorRule("Player_Walkable", [](const TILE_INFO& info) {
+
+        if ((static_cast<_uint>(TILE_FLAG::ONPLAYER) & info.TileFlag) != 0) {
+            return _float4(0.f, 0.f, 1.f, 1.f);
+        }
+
+        if ((static_cast<_uint>(TILE_FLAG::WALKABLE) & info.TileFlag) != 0) {
+            return _float4(0.f, 1.f, 0.f, 0.8f);
+        }
+        else
+            return _float4(0.f, 0.f, 0.f, 0.3f);
+        });
+
+    CGameInstance::GetInstance()->Get_TileSystem()->SetActiveColorRule("Player_Walkable");
+#endif // _DEBUG
+
+    m_pObjectManager->Get_Layer({ "GamePlay_Level","Field_Layer" })->Set_RenderState(false);
     return S_OK;
 }
 
 void CGamePlayLevel::Update()
 {
+#ifdef _DEBUG
+    if (m_pGameInstance->Get_InputDev()->Key_Down(VK_F1)) {
+        CGameInstance::GetInstance()->Get_TileSystem()->Set_DebugRender(false);
+    }
+#endif // _DEBUG
 }
 
 HRESULT CGamePlayLevel::Render()
 {
+    SetWindowText(g_hWnd, TEXT("GamePlayLevel."));
     return S_OK;
 }
 
 HRESULT CGamePlayLevel::Render(ID3D11DeviceContext* pContext)
 {
-    SetWindowText(g_hWnd, TEXT("GamePlayLevel."));
-
-        auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-
-        if (TileSystem)
-            TileSystem->Render_Tiles(pContext);
 
     return S_OK;
 }
