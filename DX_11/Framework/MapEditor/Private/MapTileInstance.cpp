@@ -281,6 +281,9 @@ void CMapTileInstance::Render_GUI()
 			ImVec2(0, 0), ImVec2(1, 1));
 	}
 
+	if (ImGui::Button("Clear")) {
+		m_Tiles.clear();
+	}
 	ImGui::End();
 }
 

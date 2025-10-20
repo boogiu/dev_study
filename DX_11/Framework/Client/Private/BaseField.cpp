@@ -224,6 +224,7 @@ void CBaseField::Override_Pass()
 	for (auto& instance : pMaterial->Get_Material_Instance()) {
 		instance->Override_Pass("Instancing");
 		instance->Set_Param("g_TileAlbedo", TileAlbedo);
+		instance->Set_Param("g_TilePalette", TilePalette);
 	}
 
 	for (auto& instance : pMaterial->Get_Material_Instance()) {
@@ -231,7 +232,6 @@ void CBaseField::Override_Pass()
 	}
 	if (pMaterial->Get_MaterialInstanceByName("mGrassXlu")) {
 		pMaterial->Get_MaterialInstanceByName("mGrassXlu")->Override_Pass("Edge");
-		pMaterial->Get_MaterialInstanceByName("mGrassXlu")->Set_Param("g_TilePalette", TilePalette);
 	}
 }
 

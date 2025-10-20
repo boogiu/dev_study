@@ -65,9 +65,6 @@ void CShader::Apply(const string& m_passConstant, ID3D11DeviceContext* pContext)
 	auto iter = m_Passes.find(m_passConstant);
 	if (iter != m_Passes.end()) {
 		HRESULT hr = iter->second->Apply(0, pContext);
-			if (FAILED(hr)) {
-				int i = 0;
-			}
 	}
 }
 

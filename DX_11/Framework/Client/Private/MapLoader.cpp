@@ -38,22 +38,22 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 		MAP_OBJECT_HEADER objHeader = {};
 		ifs.read(reinterpret_cast<char*>(&objHeader), sizeof(MAP_OBJECT_HEADER));
 
-		pRcsMgr->Add_ResourcePath(objHeader.ModelName, objHeader.ModelPath);
-		pRcsMgr->Add_ResourcePath(objHeader.MaterialName, objHeader.MaterialPath);
-
-		CFieldOut::FIELDOUT_DESC* ObjDesc = new CFieldOut::FIELDOUT_DESC;
-		ObjDesc->ModelName = objHeader.ModelName;
-		ObjDesc->MaterialName = objHeader.MaterialName;
-		ObjDesc->Index = objHeader.Index;
-		ObjDesc->LevelTag = Desc.LevelTag;
-
-		CGameObject* pFieldOut =
-			Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldOut" })
-			.Position({ objHeader.vWorldPos.x,objHeader.vWorldPos.y,objHeader.vWorldPos.z })
-			.Add_ObjDesc(ObjDesc)
-			.Build(objHeader.ModelName);
-
-		pObjMgr->Add_Object(pFieldOut, Desc);
+	//pRcsMgr->Add_ResourcePath(objHeader.ModelName, objHeader.ModelPath);
+	//pRcsMgr->Add_ResourcePath(objHeader.MaterialName, objHeader.MaterialPath);
+	//
+	//CFieldOut::FIELDOUT_DESC* ObjDesc = new CFieldOut::FIELDOUT_DESC;
+	//ObjDesc->ModelName = objHeader.ModelName;
+	//ObjDesc->MaterialName = objHeader.MaterialName;
+	//ObjDesc->Index = objHeader.Index;
+	//ObjDesc->LevelTag = Desc.LevelTag;
+	//
+	//CGameObject* pFieldOut =
+	//	Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldOut" })
+	//	.Position({ objHeader.vWorldPos.x,objHeader.vWorldPos.y,objHeader.vWorldPos.z })
+	//	.Add_ObjDesc(ObjDesc)
+	//	.Build(objHeader.ModelName);
+	//
+	//pObjMgr->Add_Object(pFieldOut, Desc);
 	}
 
 	for (size_t i = 0; i < mapFileHeader.iStructureCount; i++)

@@ -61,8 +61,6 @@ HRESULT CGamePlayLevel::Initialize()
     m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 
     CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
-    m_pObjectManager->Get_Layer({ "GamePlay_Level","Field_Layer" })->Set_RenderState(false);
-
     return S_OK;
 }
 
@@ -142,8 +140,8 @@ void CGamePlayLevel::PreLoad_Level()
 
     CMapLoader::Load_MapData("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });
    
-    auto pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
-    pObjMgr->Get_Layer({ "GamePlay_Level","Field_Layer" })->Set_RenderState(false);
+   //auto pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
+   //pObjMgr->Get_Layer({ "GamePlay_Level", "Field_Layer" })->Set_RenderState(false);
 
  }
 
