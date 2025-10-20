@@ -47,7 +47,8 @@ public:
 	_bool Is_Root() { return m_isRootObject; };
 
 private:
-	HRESULT Make_OpaquePacket(OPAQUE_PACKET& packet);
+	HRESULT Make_OpaquePacket();
+	HRESULT Make_InstancePacket();
 
 
 protected:

@@ -5,9 +5,9 @@ CTransform::CTransform()
 }
 
 CTransform::CTransform(const CTransform& rhs)
-	:CComponent(rhs), m_LocalMatrix{rhs.m_LocalMatrix }, 
-	m_WorldMatrix{rhs.m_WorldMatrix}, 
-	m_WorldInversMatrix{rhs.m_WorldInversMatrix }
+	:CComponent(rhs), m_LocalMatrix{ rhs.m_LocalMatrix },
+	m_WorldMatrix{ rhs.m_WorldMatrix },
+	m_WorldInversMatrix{ rhs.m_WorldInversMatrix }
 {
 }
 
@@ -25,18 +25,19 @@ HRESULT CTransform::Initialize(COMPONENT_DESC* pArg)
 		return S_OK;
 
 	TRANSFORM_DESC* desc = static_cast<TRANSFORM_DESC*>(pArg);
-	
+
 	_fvector position = XMVectorSetW(XMLoadFloat3(&desc->vInitialPosition), 1.f);
-	XMStoreFloat4(&m_vPosition,position);
+	XMStoreFloat4(&m_vPosition, position);
 	_fvector scale = XMVectorSetW(XMLoadFloat3(&desc->vInitialScale), 0.f);
 	XMStoreFloat4(&m_vScale, scale);
 
 	/*오일러로 받아서 -> 쿼터니언으로*/
 	_fvector euler = XMVectorSetW(XMLoadFloat3(&desc->vInitialEulerVector), 0.f);
-	_fvector  quaternion= XMQuaternionRotationRollPitchYawFromVector(euler);
+	_fvector  quaternion = XMQuaternionRotationRollPitchYawFromVector(euler);
 	XMStoreFloat4(&m_qRotation, quaternion);
 
-	m_bDirty = true;
+	MarkDirty();
+
 	return S_OK;
 }
 
@@ -46,7 +47,8 @@ void CTransform::Translate(_fvector momentVector)
 	vPos += momentVector;
 
 	XMStoreFloat4(&m_vPosition, vPos);
-	m_bDirty = true;
+	MarkDirty();
+
 }
 
 
@@ -55,9 +57,10 @@ void CTransform::Rotation(_fvector eulerVector)//로테이션으로 누적해서 돌리기
 	_fvector addQuaternion = XMQuaternionRotationRollPitchYawFromVector(eulerVector);
 	_fvector myQuaternion = XMLoadFloat4(&m_qRotation);
 	_fvector newQuaternion = XMQuaternionMultiply(myQuaternion, addQuaternion);
-	_vector finalQuaternion= XMQuaternionNormalize(newQuaternion);
+	_vector finalQuaternion = XMQuaternionNormalize(newQuaternion);
 	XMStoreFloat4(&m_qRotation, finalQuaternion);
-	m_bDirty = true;
+	MarkDirty();
+
 }
 
 void CTransform::Rotation(_fvector vAxis, _float fRadian) //라디안으로 축회전하기
@@ -67,17 +70,19 @@ void CTransform::Rotation(_fvector vAxis, _float fRadian) //라디안으로 축회전하�
 	_fvector newQuaternion = XMQuaternionMultiply(addQuaternion, myQuaternion);
 	_vector finalQuaternion = XMQuaternionNormalize(newQuaternion);
 	XMStoreFloat4(&m_qRotation, finalQuaternion);
-	m_bDirty = true;
+	MarkDirty();
+
 }
 
 
-void CTransform::AddScale( _fvector scale)
+void CTransform::AddScale(_fvector scale)
 {
 	_vector nowScale = XMLoadFloat4(&m_vScale);
 	nowScale += scale;
 
 	XMStoreFloat4(&m_vScale, nowScale);
-	m_bDirty = true;
+	MarkDirty();
+
 }
 
 void CTransform::Set_Pos(const _float3& position)
@@ -86,7 +91,8 @@ void CTransform::Set_Pos(const _float3& position)
 	{
 		_fvector newPosition = XMVectorSetW(XMLoadFloat3(&position), 1.f);
 		XMStoreFloat4(&m_vPosition, newPosition);
-		m_bDirty = true;
+		MarkDirty();
+
 	}
 }
 
@@ -95,53 +101,55 @@ void CTransform::Rotate(const _float3& _eular)
 	_fvector euler = XMVectorSetW(XMLoadFloat3(&_eular), 0.f);
 	_fvector  quaternion = XMQuaternionRotationRollPitchYawFromVector(euler);
 	XMStoreFloat4(&m_qRotation, quaternion);
-	m_bDirty = true;
+	MarkDirty();
+
 }
 
 void CTransform::Scale(const _float3& scale)
 {
 	_fvector newScale = XMVectorSetW(XMLoadFloat3(&scale), 0.f);
 	XMStoreFloat4(&m_vScale, newScale);
-	m_bDirty = true;
+	MarkDirty();
+
 }
 
- _float4x4* CTransform::Get_WorldMatrix()
+_float4x4* CTransform::Get_WorldMatrix()
 {
-	if (Check_Dirty()) 
+	if (Check_Dirty())
 		Update_Transform();
-	
+
 	return &m_WorldMatrix;
 }
 
- _float4x4* CTransform::Get_LocalMatrix()
- {
-	 if (Check_Dirty())
-		 Update_Transform();
-
-	 return &m_LocalMatrix;
- }
-
- _float4x4 CTransform::Get_InverseWorldMatrix()
+_float4x4* CTransform::Get_LocalMatrix()
 {
-	 if (Check_Dirty())
-		 Update_Transform();
-	
+	if (Check_Dirty())
+		Update_Transform();
+
+	return &m_LocalMatrix;
+}
+
+_float4x4 CTransform::Get_InverseWorldMatrix()
+{
+	if (Check_Dirty())
+		Update_Transform();
+
 	return m_WorldInversMatrix;
 }
 
- _float4x4* CTransform::Get_InverseWorldMatrix_Ptr()
- {
-	 if (Check_Dirty())
-		 Update_Transform();
+_float4x4* CTransform::Get_InverseWorldMatrix_Ptr()
+{
+	if (Check_Dirty())
+		Update_Transform();
 
-	 return &m_WorldInversMatrix;
- }
+	return &m_WorldInversMatrix;
+}
 
 _vector CTransform::Dir(STATE eState)
 {
 	if (Check_Dirty())
 		Update_Transform();
-	
+
 	_matrix worldMat = XMLoadFloat4x4(&m_LocalMatrix);
 	return XMVector3Normalize(worldMat.r[static_cast<int>(eState)]);
 }
@@ -149,6 +157,8 @@ _vector CTransform::Dir(STATE eState)
 void CTransform::Set_ParentTransform(CTransform* pParentTransform)
 {
 	m_pParentTransform = pParentTransform;
+	MarkDirty();
+
 }
 
 void CTransform::TranslateMatrix(_fmatrix matrix)
@@ -163,7 +173,8 @@ void CTransform::TranslateMatrix(_fmatrix matrix)
 		XMStoreFloat4(&m_vPosition, vTrans);
 	}
 
-	m_bDirty = true;
+	MarkDirty();
+
 }
 
 void CTransform::Render_GUI()
@@ -173,9 +184,9 @@ void CTransform::Render_GUI()
 	const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
 	const float childHeight = (textLineHeight * 8) + (ImGui::GetStyle().WindowPadding.y * 2);
 
-	ImGui::BeginChild("##TransformChild", ImVec2{ 0, childHeight}, true);
+	ImGui::BeginChild("##TransformChild", ImVec2{ 0, childHeight }, true);
 	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Position");
-	ImGui::InputFloat3("##Position", reinterpret_cast<float*>(&m_vPosition),"%.1f", ImGuiInputTextFlags_ReadOnly);
+	ImGui::InputFloat3("##Position", reinterpret_cast<float*>(&m_vPosition), "%.1f", ImGuiInputTextFlags_ReadOnly);
 	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Rotation");
 	ImGui::InputFloat4("##Rotation", reinterpret_cast<float*>(&m_qRotation), "%.1f", ImGuiInputTextFlags_ReadOnly);
 	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Scale");
@@ -210,7 +221,8 @@ void CTransform::LookAt(_fvector vAt)
 	_vector vQuaternion = XMQuaternionRotationMatrix(vRotmat);
 	XMStoreFloat4(&m_qRotation, vQuaternion);
 
-	m_bDirty = true;
+	MarkDirty();
+
 }
 
 void CTransform::Override_Rotation(_fvector vAxis, _float fRadian)
@@ -218,27 +230,28 @@ void CTransform::Override_Rotation(_fvector vAxis, _float fRadian)
 	_fvector newQuaternion = XMQuaternionRotationAxis(vAxis, fRadian);
 	_vector finalQuaternion = XMQuaternionNormalize(newQuaternion);
 	XMStoreFloat4(&m_qRotation, finalQuaternion);
-	m_bDirty = true;
+	MarkDirty();
+
 }
 
 void CTransform::Reset_Rotation()
 {
 	m_qRotation = { 0.f,0.f,0.f,0.f };
-	m_bDirty = true;
+	MarkDirty();
 }
 
 
 void CTransform::Update_Transform()
 {
-	//if (m_pParentTransform && m_pParentTransform->m_bDirty)
-	//	m_pParentTransform->Update_Transform();
+	if (m_pParentTransform && m_pParentTransform->m_bDirty)
+		m_pParentTransform->Update_Transform();
 
-	_matrix matScale =	XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z);
+	_matrix matScale = XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z);
 
 	_vector vQuaternion = XMLoadFloat4(&m_qRotation);
 	_matrix matRot = XMMatrixRotationQuaternion(vQuaternion);
 
-	_matrix matPos =	XMMatrixTranslation(m_vPosition.x, m_vPosition.y, m_vPosition.z);
+	_matrix matPos = XMMatrixTranslation(m_vPosition.x, m_vPosition.y, m_vPosition.z);
 
 	_matrix LocalMatrix = matScale * matRot * matPos;
 
@@ -246,12 +259,12 @@ void CTransform::Update_Transform()
 
 	_matrix combined;
 
-	if (m_pParentTransform ){
-		 combined = XMLoadFloat4x4(&m_LocalMatrix) * XMLoadFloat4x4(m_pParentTransform->Get_WorldMatrix());
+	if (m_pParentTransform) {
+		combined = XMLoadFloat4x4(&m_LocalMatrix) * XMLoadFloat4x4(m_pParentTransform->Get_WorldMatrix());
 		XMStoreFloat4x4(&m_WorldMatrix, combined);
 	}
 	else {
-		 combined = XMLoadFloat4x4(&m_LocalMatrix);
+		combined = XMLoadFloat4x4(&m_LocalMatrix);
 		XMStoreFloat4x4(&m_WorldMatrix, combined);
 	}
 
@@ -261,11 +274,22 @@ void CTransform::Update_Transform()
 
 _bool CTransform::Check_Dirty()
 {
-	if (m_pParentTransform) {
-		return m_bDirty || m_pParentTransform->m_bDirty;
+	if (m_pParentTransform)
+	{
+		if (m_ParentVersionCounter != m_pParentTransform->m_VersionCounter) {
+			m_ParentVersionCounter = m_pParentTransform->m_VersionCounter;
+			return true;
+		}
 	}
-		return m_bDirty;
+	return m_bDirty;
 }
+
+void CTransform::MarkDirty()
+{
+	m_bDirty = true;
+	m_VersionCounter++;
+}
+
 
 
 CTransform* CTransform::Create()

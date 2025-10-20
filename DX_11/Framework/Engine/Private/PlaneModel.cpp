@@ -90,7 +90,12 @@ _uint CPlaneModel::Get_MaterialIndex(_uint Index)
 
 _bool CPlaneModel::isDrawable(_uint Index)
 {
-	return true;
+	return isDrawing;
+}
+
+void CPlaneModel::SetDrawable(_uint Index, _bool isDraw)
+{
+	isDrawing = isDraw;
 }
 
 BOUNDING_BOX CPlaneModel::Get_LocalBoundingBox()

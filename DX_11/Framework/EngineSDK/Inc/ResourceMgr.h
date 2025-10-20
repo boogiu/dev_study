@@ -39,17 +39,6 @@ public:
 	virtual string Get_ResourcePath(const string& resourceKey) override;
 	virtual HRESULT Add_ResourcePath(const string& resourceKey, const string& resourcePath) override;
 
-	/*머티리얼의 문제*/
-	/*1.		다른 모델/메쉬 임에도 머티리얼 데이터 키가 겹치는 경우가 많을 것으로 예상됨*/
-	/*2.		머티리얼 데이터 안에 있는 텍스처(디퓨즈,노멀)들이 여러개씩 있어서 각각의 인덱스를 설정해주어야 함*/
-	/*3.		지형처럼 텍스처가 매핑되어 있지 않은 머티리얼의 경우, 직접 그 데이터 안에 머티리얼 텍스처를 매핑해주어야 함.*/
-
-
-	/*해결 방법 고안*/
-	/*1.		머티리얼은 그냥 파일 단위 로드로 진행 한다. 해당 파일에 속한 데이터들을 벡터로 관리하다가 넘겨준다*/
-	/*2.		머티리얼 데이터를 반환할 때 오버라이드 구조체를 함께 넘겨서 텍스처의 인덱스를 관리해준다. */
-	/*3.		지형처럼 특정 텍스처가 매핑되는 것은 맵툴과 같은 사항을 활용해 완전한 파일로 만들어서 로딩한다...?*/
-
 private:
 	_int ValidLevel(const string& levelKey);
 	void Load_InitialResource();

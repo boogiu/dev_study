@@ -66,6 +66,14 @@ _bool CStaticModel::isDrawable(_uint Index)
     return m_DrawableMeshes[Index];
 }
 
+void CStaticModel::SetDrawable(_uint Index, _bool isDraw)
+{
+    if (Index >= m_DrawableMeshes.size())
+        return;
+
+    m_DrawableMeshes[Index] = isDraw;
+}
+
 BOUNDING_BOX CStaticModel::Get_LocalBoundingBox()
 {
     return m_pData->Get_LocalBoundingBox();
@@ -106,6 +114,7 @@ void CStaticModel::Render_GUI()
     m_pData->Render_GUI();
     ImGui::EndChild();
 }
+
 CStaticModel* CStaticModel::Create()
 {
     CStaticModel* instance = new CStaticModel();

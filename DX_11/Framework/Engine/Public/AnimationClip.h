@@ -13,9 +13,13 @@ protected:
 
 public:
 	HRESULT Initialize(const string& animationPath);
-	_float TranslateAnimateMatrix( vector<_float4x4>& transfomationMatrices, _float CurrentTrackPosition, _float dt, _bool isLoop);
 	_float Get_Duration() { return m_fDuration; }
 	_bool isLoop() { return m_bLoop; }
+
+	_float TranslateAnimateMatrix( vector<_float4x4>& transfomationMatrices,
+		_float CurrentTrackPosition,
+		_float dt,
+		_bool isLoop);
 
 	_bool ConvertTo(vector<_float4x4>& transfomationMatrices,
 		 CAnimationClip& DestAnimation, 

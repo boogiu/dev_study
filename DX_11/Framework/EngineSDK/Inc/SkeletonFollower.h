@@ -18,9 +18,10 @@ public:
 
     HRESULT Link_MyModel(class CSkeletalModel* pModel);
     HRESULT Link_MasterModel(class CSkeletalModel* pMasterModel);
-
     void Set_MasterAnimator(class CAnimator3D* pAnimator);
-
+    HRESULT ReLink_WithMaster();
+public:
+    
     virtual void Sync_Bones(_float dt);
     const vector<_float4x4>& Get_BoneMatrices() { return m_ReflectedMatices; };
 

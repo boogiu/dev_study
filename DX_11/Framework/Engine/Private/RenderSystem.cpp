@@ -26,6 +26,7 @@ HRESULT CRenderSystem::Initialize()
 
 	/*RenderPass*/
 	m_pOpaquePass = OpaquePass::Create(this);
+	m_pInstancePass = InstancePass::Create(this);
 	m_pUIPass = UIPass::Create(this);
 #ifdef _DEBUG
 	m_pDebugPass = DebugPass::Create(this);
@@ -40,6 +41,7 @@ HRESULT CRenderSystem::Render()
 	m_pPipeLine->Update_LightBuffer(m_pContext);
 
 	m_pOpaquePass->Execute(m_pContext);
+	m_pInstancePass->Execute(m_pContext);
 	m_pUIPass->Execute(m_pContext);
 #ifdef _DEBUG
 	m_pDebugPass->Execute(m_pContext);
@@ -110,6 +112,7 @@ void CRenderSystem::Free()
 	Safe_Release(m_pPipeLine);
 
 	Safe_Release(m_pOpaquePass);
+	Safe_Release(m_pInstancePass);
 	Safe_Release(m_pUIPass);
 	Safe_Release(m_pDebugPass);
 	

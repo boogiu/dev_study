@@ -38,6 +38,23 @@ public:
 };
 #pragma endregion
 
+
+#pragma region INSTANCE_PASS
+class InstancePass final : public RenderPass {
+private:
+	InstancePass(class CRenderSystem* pRenderSystem) :RenderPass{ pRenderSystem } {};
+	virtual ~InstancePass() DEFAULT;
+public:
+	void Execute(ID3D11DeviceContext* pContext) override;
+	void Submit(INSTANCE_PACKET packet);
+private:
+	vector<INSTANCE_PACKET> m_Packets;
+public:
+	static InstancePass* Create(class CRenderSystem* pRenderSystem) { return new InstancePass(pRenderSystem); }
+	virtual void Free() override { __super::Free(); m_Packets.clear(); };
+};
+#pragma endregion
+
 #pragma region UI_PASS
 class UIPass final : public RenderPass {
 private:

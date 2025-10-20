@@ -53,7 +53,7 @@ private:
 	void Create_Ray();
 	void DragDrop_Object();
 	void Brushing_Tiles();
-
+	_float4 ConvertMaterial(string Type);
 private:
 	POINT m_MousePt = {};
 
@@ -78,6 +78,7 @@ private:
 	_float3 m_GridMinEdge = {};
 	_float3 m_GridMaxEdge = {};
 
+	class CMapTileInstance* m_pTile = { nullptr };
 	/*GUI Panel*/
 	class CDirectoryPanel* m_pDirectoryPanel = { nullptr };
 	class CControlPanel* m_pControlPanel = { nullptr };

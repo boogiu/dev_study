@@ -51,7 +51,7 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 		CGameObject* pObject =
 			Builder::Create_Object({ Desc.LevelTag, "GameObject_BaseField" })
 			.Position({ pos.x,mapFileHeader.tileInfo.vWorldMin.y,pos.z })
-			.Scale(BaseHeader.vWorldScale)
+			//.Scale(BaseHeader.vWorldScale)
 			.Add_ObjDesc(ObjDesc)
 			.Build("Base_Plane");
 

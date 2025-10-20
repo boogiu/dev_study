@@ -19,6 +19,13 @@ public:
 	virtual const _uint Get_ElementCount()															{ return m_ElementCount; };
 	virtual const string_view Get_ElementKey()												{ return m_ElementKey; };
 
+public:
+	virtual _uint Get_VertexStride()																	{ return m_iVertexStride; };
+	virtual _uint Get_VertexCount()																	{ return m_iVerticesCount; };
+	virtual _uint Get_IndexCount()																	{ return m_iIndicesCount; };
+	virtual ID3D11Buffer* Get_VertexBuffer()												{ return m_pVB; };
+	virtual ID3D11Buffer* Get_IndexBuffer()													{ return m_pIB; };
+
 protected:
 	virtual HRESULT Create_Vertex(ID3D11Device* pDevice);
 	virtual HRESULT Create_Index(ID3D11Device* pDevice);

@@ -49,6 +49,9 @@
     <Filter Include="05. GUI_Panel\DirectoryPanel">
       <UniqueIdentifier>{dbe55b4a-e544-42af-a9af-b322285073b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. MapObject\MapTileInstance">
+      <UniqueIdentifier>{3489f5a4-4ac0-4387-8220-656f5578e4a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc">
@@ -143,6 +146,9 @@
     <ClInclude Include="..\Public\StructureObject.h">
       <Filter>02. MapObject\StructureObject</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MapTileInstance.h">
+      <Filter>02. MapObject\MapTileInstance</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">
@@ -221,6 +227,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\StructureObject.cpp">
       <Filter>02. MapObject\StructureObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapTileInstance.cpp">
+      <Filter>02. MapObject\MapTileInstance</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

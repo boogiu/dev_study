@@ -80,6 +80,22 @@ PS_OUT PS_MAIN(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_SKIN(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vMtrlDiffuse -=  float4(0.06, 0.23, 0.38, 0.f);
+    if (vMtrlDiffuse.a < 0.3)
+    {
+        discard;
+    }
+    Out.vColor = vMtrlDiffuse;
+    
+    return Out;
+}
+
 PS_OUT PS_BLEND(PS_IN In)
 {
     PS_OUT Out;
@@ -105,6 +121,15 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
     }
+
+    pass SkinShader
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        PixelShader = compile ps_5_0 PS_SKIN();
+    } 
 
     pass ForceBlend
     {

@@ -1,7 +1,7 @@
 #include "VI_Cube.h"
 
-CVI_Cube::CVI_Cube(const string& imguiID)
-    :CVIBuffer{ imguiID }
+CVI_Cube::CVI_Cube(const string& bufferID)
+    :CVIBuffer{ bufferID }
 {
 }
 
@@ -112,9 +112,9 @@ HRESULT CVI_Cube::Create_Index(ID3D11Device* pDevice)
 
 }
 
-CVI_Cube* CVI_Cube::Create(ID3D11Device* pDevice, const string& imguiID)
+CVI_Cube* CVI_Cube::Create(ID3D11Device* pDevice, const string& bufferID)
 {
-    CVI_Cube* instance = new CVI_Cube(imguiID);
+    CVI_Cube* instance = new CVI_Cube(bufferID);
     if (FAILED(instance->Initialize(pDevice))) {
         MSG_BOX("Failed to Created : CVIBuffer_Rect");
         Safe_Release(instance);

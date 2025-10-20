@@ -9,6 +9,7 @@ protected:
 public:
     virtual HRESULT Render() PURE;
     virtual void Submit_Opaque(const OPAQUE_PACKET& packet) PURE;
+    virtual void Submit_Instance(const INSTANCE_PACKET& packet) PURE;
     virtual void Submit_UI(const UI_PACKET& packet) PURE;
     virtual void Submit_Debug(const DEBUG_PACKET& packet) PURE;
     virtual HRESULT Add_Palette(const string& ConstantName, class CTexture* pTexture) PURE;

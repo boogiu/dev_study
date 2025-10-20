@@ -87,7 +87,8 @@ CChannel* CAnimationClip::Find_ChannelByBoneName(const string& boneName)
 
 void CAnimationClip::Render_GUI()
 {
-
+	for (auto& channel : m_Channels)
+		channel->Render_GUI();
 }
 
 CAnimationClip* CAnimationClip::Create(const string& animationPath, const string& animClipKey, const string& Subject)

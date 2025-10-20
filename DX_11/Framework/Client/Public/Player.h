@@ -5,6 +5,11 @@ class CPlayer :
     public CGameObject
 {
 public:
+    typedef struct tagPlayerPartsDesc : GAMEOBJECT_DESC {
+        CGameObject* pPlayer = { nullptr };
+    }PLAYER_PARTS_DESC;
+
+public:
     enum class Player_State {
         IDLE, MOVE
     };
@@ -20,6 +25,10 @@ public:
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
     virtual void Render_GUI();
+
+private:
+    void Add_AnimationClips();
+    void Add_PartObjects();
 
 private:
     class CPlayerStateMachine* m_pStateMachine= { nullptr };

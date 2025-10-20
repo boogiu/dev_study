@@ -115,9 +115,6 @@
     <Filter Include="01. Utility\04. Components\StaticComponent\10. Audio">
       <UniqueIdentifier>{73b31627-22e9-4136-9f5e-93330472dae8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\04. Components\StaticComponent\06. Sprite2D">
-      <UniqueIdentifier>{eb3bb8ca-e34a-4820-931f-6138f9334a45}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\04. Components\StaticComponent\07. Animator3D">
       <UniqueIdentifier>{f64efe90-8369-484d-b5cc-45b7bbf97977}</UniqueIdentifier>
     </Filter>
@@ -156,21 +153,6 @@
     </Filter>
     <Filter Include="01. Utility\05. Resources">
       <UniqueIdentifier>{477b53bf-d03b-4163-8b11-5b6229193acc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\01. VIBuffer">
-      <UniqueIdentifier>{f6c4535e-e114-4f91-806f-596c177c486f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\01. VIBuffer\VI_Rect">
-      <UniqueIdentifier>{79e28e40-d36b-41fe-925e-85313b8af44c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\01. VIBuffer\VI_Cube">
-      <UniqueIdentifier>{3a74939d-c4fe-46d4-918a-f1df0a362d1b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\01. VIBuffer\VI_Terrain">
-      <UniqueIdentifier>{5ce578f1-59ff-4a61-b2a2-9059309c6598}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\05. Resources\01. VIBuffer\VI_Plane">
-      <UniqueIdentifier>{0c79f9f6-0cbf-4f40-b38e-d18cf23f1a20}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Utility\05. Resources\02. Texture">
       <UniqueIdentifier>{ed80865b-cb31-4472-8efc-a13b4f549275}</UniqueIdentifier>
@@ -313,6 +295,30 @@
     <Filter Include="01. Utility\05. Resources\08. ResourceLoader">
       <UniqueIdentifier>{902c48e6-d52e-456e-9889-eeaa46908dc5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Components\StaticComponent\06. Sprite2D">
+      <UniqueIdentifier>{eb3bb8ca-e34a-4820-931f-6138f9334a45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\RuntimeComponent\04. BoneFollower">
+      <UniqueIdentifier>{72739a02-f3a4-491c-94a8-fd5117168ab4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\10. VIBuffer">
+      <UniqueIdentifier>{f6c4535e-e114-4f91-806f-596c177c486f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\10. VIBuffer\VI_Rect">
+      <UniqueIdentifier>{79e28e40-d36b-41fe-925e-85313b8af44c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\10. VIBuffer\VI_Cube">
+      <UniqueIdentifier>{3a74939d-c4fe-46d4-918a-f1df0a362d1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\10. VIBuffer\VI_Terrain">
+      <UniqueIdentifier>{5ce578f1-59ff-4a61-b2a2-9059309c6598}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\10. VIBuffer\VI_Plane">
+      <UniqueIdentifier>{0c79f9f6-0cbf-4f40-b38e-d18cf23f1a20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\StaticComponent\03. Model\InstanceModel">
+      <UniqueIdentifier>{281a2512-160c-49d9-9730-044c89c82ff4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -364,10 +370,10 @@
       <Filter>01. Utility\04. Components\StaticComponent\02. Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer.cpp">
-      <Filter>01. Utility\05. Resources\01. VIBuffer</Filter>
+      <Filter>01. Utility\10. VIBuffer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VI_Rect.cpp">
-      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Rect</Filter>
+      <Filter>01. Utility\10. VIBuffer\VI_Rect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ResourceMgr.cpp">
       <Filter>01. Utility\05. Resources\00. Resource_Manager</Filter>
@@ -417,9 +423,6 @@
     <ClCompile Include="..\Private\Model.cpp">
       <Filter>01. Utility\04. Components\StaticComponent\03. Model</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\RenderSystem.cpp">
-      <Filter>01. Utility\06. RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Material.cpp">
       <Filter>01. Utility\04. Components\StaticComponent\04. Material</Filter>
     </ClCompile>
@@ -436,7 +439,7 @@
       <Filter>01. Utility\07. CameraSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VI_Cube.cpp">
-      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Cube</Filter>
+      <Filter>01. Utility\10. VIBuffer\VI_Cube</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\GuizmoPanel.cpp">
       <Filter>00. System\03. GUI\GUI_Panel\GuizmoPanel</Filter>
@@ -448,7 +451,7 @@
       <Filter>01. Utility\03. GameObject\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VI_Terrain.cpp">
-      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Terrain</Filter>
+      <Filter>01. Utility\10. VIBuffer\VI_Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AudioSource.cpp">
       <Filter>01. Utility\04. Components\StaticComponent\10. Audio</Filter>
@@ -529,7 +532,7 @@
       <Filter>01. Utility\04. Components\StaticComponent\03. Model\PlaneModel</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VI_Plane.cpp">
-      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Plane</Filter>
+      <Filter>01. Utility\10. VIBuffer\VI_Plane</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\RayReceiver.cpp">
       <Filter>01. Utility\04. Components\StaticComponent\11. RayReceiver</Filter>
@@ -545,6 +548,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\TileSystem.cpp">
       <Filter>01. Utility\09. TileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BoneFollower.cpp">
+      <Filter>01. Utility\04. Components\RuntimeComponent\04. BoneFollower</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InstanceModel.cpp">
+      <Filter>01. Utility\04. Components\StaticComponent\03. Model\InstanceModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RenderSystem.cpp">
+      <Filter>01. Utility\06. RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -642,10 +654,10 @@
       <Filter>01. Utility\04. Components\StaticComponent\02. Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer.h">
-      <Filter>01. Utility\05. Resources\01. VIBuffer</Filter>
+      <Filter>01. Utility\10. VIBuffer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VI_Rect.h">
-      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Rect</Filter>
+      <Filter>01. Utility\10. VIBuffer\VI_Rect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ResourceMgr.h">
       <Filter>01. Utility\05. Resources\00. Resource_Manager</Filter>
@@ -717,7 +729,7 @@
       <Filter>01. Utility\98. Services\11. CameraService</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VI_Cube.h">
-      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Cube</Filter>
+      <Filter>01. Utility\10. VIBuffer\VI_Cube</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\GuizmoPanel.h">
       <Filter>00. System\03. GUI\GUI_Panel\GuizmoPanel</Filter>
@@ -729,7 +741,7 @@
       <Filter>01. Utility\03. GameObject\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VI_Terrain.h">
-      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Terrain</Filter>
+      <Filter>01. Utility\10. VIBuffer\VI_Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AudioSource.h">
       <Filter>01. Utility\04. Components\StaticComponent\10. Audio</Filter>
@@ -828,7 +840,7 @@
       <Filter>01. Utility\04. Components\StaticComponent\03. Model\PlaneModel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VI_Plane.h">
-      <Filter>01. Utility\05. Resources\01. VIBuffer\VI_Plane</Filter>
+      <Filter>01. Utility\10. VIBuffer\VI_Plane</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\RayReceiver.h">
       <Filter>01. Utility\04. Components\StaticComponent\11. RayReceiver</Filter>
@@ -850,6 +862,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\ITileService.h">
       <Filter>01. Utility\98. Services\15. ITileService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BoneFollower.h">
+      <Filter>01. Utility\04. Components\RuntimeComponent\04. BoneFollower</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InstanceModel.h">
+      <Filter>01. Utility\04. Components\StaticComponent\03. Model\InstanceModel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_Layouts.h">
+      <Filter>99. Defines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

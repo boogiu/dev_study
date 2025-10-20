@@ -105,6 +105,14 @@ _bool CSkeletalModel::isDrawable(_uint Index)
 	return m_DrawableMeshes[Index];
 }
 
+void CSkeletalModel::SetDrawable(_uint Index, _bool isDraw)
+{
+	if (Index >= m_DrawableMeshes.size())
+		return;
+
+	m_DrawableMeshes[Index] = isDraw;
+}
+
 BOUNDING_BOX CSkeletalModel::Get_LocalBoundingBox()
 {
 	return m_pData->Get_LocalBoundingBox();

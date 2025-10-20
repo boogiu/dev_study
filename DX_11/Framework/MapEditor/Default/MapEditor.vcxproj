@@ -45,6 +45,7 @@
     <ClInclude Include="..\Public\FieldOutBlocks.h" />
     <ClInclude Include="..\Public\Free_Camera.h" />
     <ClInclude Include="..\Public\GridObject.h" />
+    <ClInclude Include="..\Public\MapTileInstance.h" />
     <ClInclude Include="..\Public\StructureObject.h" />
     <ClInclude Include="..\Public\TileObject.h" />
     <ClInclude Include="framework.h" />
@@ -77,6 +78,7 @@
     <ClCompile Include="..\Private\EditorSystem.cpp" />
     <ClCompile Include="..\Private\Free_Camera.cpp" />
     <ClCompile Include="..\Private\GridObject.cpp" />
+    <ClCompile Include="..\Private\MapTileInstance.cpp" />
     <ClCompile Include="..\Private\StructureObject.cpp" />
     <ClCompile Include="..\Private\TileObject.cpp" />
     <ClCompile Include="MapEditor.cpp" />

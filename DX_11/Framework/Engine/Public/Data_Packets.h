@@ -43,6 +43,15 @@ namespace Engine {
 		RENDERKEY GetKey() const;
 	}OPAQUE_PACKET;
 
+	/*인스턴싱 패킷*/
+	typedef struct DrawInstancePacket : BASE_PACKET {
+		_uint DrawIndex = {};			/*몇번째 메시 그리는데?*/
+		_uint MaterialIndex = {};		/*그 메시는 뭐쓰는데*/
+
+		class CInstanceModel* pModel = { nullptr };
+		class CMaterial* pMaterial = { nullptr };
+	}INSTANCE_PACKET;
+
 	typedef struct DrawUIPacket : BASE_PACKET {
 		_uint DrawIndex = {};
 		_uint MaterialIndex = {};

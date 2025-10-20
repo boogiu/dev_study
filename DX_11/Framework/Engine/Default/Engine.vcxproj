@@ -175,7 +175,10 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\BoneFollower.h" />
     <ClInclude Include="..\Public\DebugRender.h" />
+    <ClInclude Include="..\Public\Engine_Layouts.h" />
+    <ClInclude Include="..\Public\InstanceModel.h" />
     <ClInclude Include="..\Public\IRayService.h" />
     <ClInclude Include="..\Public\ITileService.h" />
     <ClInclude Include="..\Public\RayReceiver.h" />
@@ -278,7 +281,9 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\VI_Terrain.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\BoneFollower.cpp" />
     <ClCompile Include="..\Private\DebugRender.cpp" />
+    <ClCompile Include="..\Private\InstanceModel.cpp" />
     <ClCompile Include="..\Private\RayReceiver.cpp" />
     <ClCompile Include="..\Private\RaySystem.cpp" />
     <ClCompile Include="..\Private\SkeletalModel.cpp" />

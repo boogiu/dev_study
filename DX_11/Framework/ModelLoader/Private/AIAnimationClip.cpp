@@ -16,9 +16,10 @@ HRESULT CAIAnimationClip::Initialize(const aiAnimation* pAIAnimation, CModelData
 	for (size_t i = 0; i < m_iNumChannels; i++)
 	{
 		CAIChannel* pChannel = CAIChannel::Create(pAIAnimation->mChannels[i],  pData);
+		if(pChannel)
 		m_Channels.push_back(pChannel);
 	}
-
+	m_iNumChannels = m_Channels.size();
 	return S_OK;
 }
 

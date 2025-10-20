@@ -11,6 +11,7 @@
 #include "SkeletonFollower.h"
 #include "IMeshProvider.h"
 #include "DebugRender.h"
+#include "InstanceModel.h"
 
 _uint CGameObject::s_NextID = 1;
 
@@ -110,21 +111,12 @@ void CGameObject::Pre_EngineUpdate(_float dt)
 void CGameObject::Post_EngineUpdate(_float dt)
 {
 	/*패킷은 용도별로 따로 만든다.*/
-	OPAQUE_PACKET packet;
-	packet.pModel = { nullptr };
-	packet.bSkinning = false;
-	packet.pMaterial = Get_Component<CMaterial>();
-	packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
 
-	if (FAILED(Make_OpaquePacket(packet))) return;
-
-
-	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
-	{
-		if (!packet.pModel->isDrawable(i)) continue;
-		packet.DrawIndex = i;
-		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
-		CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
+	if (Get_Component<CInstanceModel>()) {
+		Make_InstancePacket();
+	}
+	else {
+		Make_OpaquePacket();
 	}
 
 
@@ -221,8 +213,14 @@ _float4 CGameObject::Get_Position()
 	return pos;
 }
 
-HRESULT CGameObject::Make_OpaquePacket(OPAQUE_PACKET& packet)
+HRESULT CGameObject::Make_OpaquePacket()
 {
+	OPAQUE_PACKET packet;
+	packet.pModel = { nullptr };
+	packet.bSkinning = false;
+	packet.pMaterial = Get_Component<CMaterial>();
+	packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+
 	packet.pModel = Get_Component<CModel>();
 	if (packet.pModel&&!packet.pModel->isReadyToDraw()) return E_FAIL;
 	packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel) ? true : false;
@@ -240,6 +238,32 @@ HRESULT CGameObject::Make_OpaquePacket(OPAQUE_PACKET& packet)
 	if (packet.pModel == nullptr) {
 		return E_FAIL;
 	}
+
+	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
+	{
+		if (!packet.pModel->isDrawable(i)) continue;
+		packet.DrawIndex = i;
+		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
+		CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
+	}
+
+	return S_OK;
+}
+
+HRESULT CGameObject::Make_InstancePacket()
+{
+	INSTANCE_PACKET packet;
+	packet.pModel = Get_Component<CInstanceModel>();
+	packet.pMaterial = Get_Component<CMaterial>();
+
+	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
+	{
+		if (!packet.pModel->isDrawable(i)) continue;
+		packet.DrawIndex = i;
+		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
+		CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Instance(packet);
+	}
+
 	return S_OK;
 }
 

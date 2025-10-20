@@ -35,6 +35,7 @@ void CAIModelData::Render_GUI()
 
 	for (auto& mesh : m_Meshes) {
 		ImGui::Text(mesh->Get_Key().c_str());
+		ImGui::Text(to_string(mesh->Get_VertexCount()).c_str());
 	}
 
 	if (m_bShowSkeletonBones) {

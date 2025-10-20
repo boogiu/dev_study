@@ -20,13 +20,5 @@ public:
 	virtual HRESULT Remove_TileFlagByIndex(TILE_INDEX index, _uint flag) PURE;
 	virtual _uint Get_TileFlagByIndex(TILE_INDEX index) PURE;
 	virtual _bool Check_TileFlagByPosition(_float4 WorldPos, _uint flag) PURE;
-
-#ifdef _DEBUG
-	virtual HRESULT Render_Tiles(ID3D11DeviceContext* pContext, class CPipeLine* pPipeLine) PURE;    
-	virtual void RegisterColorRule(const string& name, function<_float4(const TILE_INFO&)> func)PURE;
-	virtual void   Set_DebugRender(_bool bDebug) PURE;
-
-	virtual void SetActiveColorRule(const string& name)PURE;
-#endif // _DEBUG
 };
 NS_END

@@ -23,6 +23,7 @@ public:
     virtual _uint Get_MeshCount() override;
     virtual _uint Get_MaterialIndex(_uint Index) override;
     virtual _bool isDrawable(_uint Index) override;
+    virtual void SetDrawable(_uint Index, _bool isDraw) override;
 
     class CModelData* Get_ModelData() { return m_pData; };
     virtual BOUNDING_BOX Get_LocalBoundingBox()	override;

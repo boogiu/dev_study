@@ -103,7 +103,7 @@ _int CObjectContainer::Find_IndexByID(_uint ObjectID)
 	}
 }
 
-_int CObjectContainer::Add_Child(CGameObject* pObject)
+_int CObjectContainer::Add_Child(CGameObject* pObject, _bool SyncTransform )
 {
 	if (nullptr == pObject) return -1;
 
@@ -134,7 +134,7 @@ _int CObjectContainer::Add_Child(CGameObject* pObject)
 	
 
 	CChild* child = pObject->Add_Component<CChild>(m_pOwner);
-	child->Sync_To_Parent();
+	child->Sync_To_Parent(SyncTransform);
 
 	string name = pObject->Get_InstanceName();
 	m_ChildrensName.emplace(ObjectID, name);

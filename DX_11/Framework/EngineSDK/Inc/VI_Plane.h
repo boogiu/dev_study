@@ -6,7 +6,7 @@ class ENGINE_DLL CVI_Plane final :
 	public CVIBuffer
 {
 protected:
-	CVI_Plane(const string& imguiID);
+	CVI_Plane(const string& bufferID);
 	CVI_Plane(const CVI_Plane& rhs);
 	virtual ~CVI_Plane();
 
@@ -18,7 +18,7 @@ private:
 	virtual HRESULT Create_Index(ID3D11Device* pDevice) override;
 
 public:
-	static CVI_Plane* Create(ID3D11Device* pDevice, const string& imguiID);
+	static CVI_Plane* Create(ID3D11Device* pDevice, const string& bufferID);
 	virtual void Free() override;
 
 };

@@ -1,7 +1,7 @@
 #include "VI_Plane.h"
 
-CVI_Plane::CVI_Plane(const string& imguiID)
-	:CVIBuffer{ imguiID }
+CVI_Plane::CVI_Plane(const string& bufferID)
+	:CVIBuffer{ bufferID }
 {
 }
 
@@ -101,9 +101,9 @@ HRESULT CVI_Plane::Create_Index(ID3D11Device* pDevice)
 	return hr;
 }
 
-CVI_Plane* CVI_Plane::Create(ID3D11Device* pDevice, const string& imguiID)
+CVI_Plane* CVI_Plane::Create(ID3D11Device* pDevice, const string& bufferID)
 {
-	CVI_Plane* instance = new CVI_Plane(imguiID);
+	CVI_Plane* instance = new CVI_Plane(bufferID);
 	if (FAILED(instance->Initialize(pDevice))) {
 		MSG_BOX("Failed to Created : CVIBuffer_Rect");
 		Safe_Release(instance);

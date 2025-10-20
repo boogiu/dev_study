@@ -48,6 +48,11 @@ HRESULT CMainApp::Initialize()
 	Set_Levels();
 
 	m_pGameInstance->Get_LevelMgr()->Request_ChangeLevel("Logo_Level"); //로고 레벨로 시작!
+
+#ifdef  _USING_GUI
+	ImGui::SetCurrentContext(m_pGameInstance->Get_GUISystem()->GetEngineImGuiContext());
+#endif //  _USING_GUI
+
 	return S_OK;
 }
 

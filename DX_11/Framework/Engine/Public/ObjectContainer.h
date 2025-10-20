@@ -22,7 +22,7 @@ public:
     _int Find_IndexByName(const string& ObjectName);
     _int Find_IndexByID(_uint ObjectID);
 
-    _int Add_Child(class CGameObject* pObject);
+    _int Add_Child(class CGameObject* pObject, _bool SyncTransform = true);
     void Destroy_Child(_uint ChildIndex);
     void Dettach_Child(_uint ChildIndex);
 

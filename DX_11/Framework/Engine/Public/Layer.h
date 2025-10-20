@@ -25,7 +25,8 @@ public:
 	void Set_RenderState(_bool render) { m_isRender = render; };
 private:
 	vector<class CGameObject*>			m_GameObjects; /*순회용*/
-	unordered_map<_uint, _uint>			m_IndexByID; /*오브젝트 ID / 벡터 인덱스*/
+	unordered_map<_uint, _uint>				m_IndexByID; /*오브젝트 ID / 벡터 인덱스*/
+	/*오브젝트 아이디, 해당 레이어 상의 인덱스*/
 
 	_bool m_isRender = { true };
 public:

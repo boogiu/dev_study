@@ -11,7 +11,7 @@ private:
 public:
     HRESULT Initialize_Prototype();
     HRESULT Initialize(COMPONENT_DESC* pArg) override;
-    void Sync_To_Parent();
+    void Sync_To_Parent(_bool SyncTransform);
 private:
     void Set_Parent(class CGameObject* pParent);
     void Dettach_Parent();

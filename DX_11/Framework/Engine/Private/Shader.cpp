@@ -85,7 +85,7 @@ HRESULT CShader::Bind_Value(const string& ConstantName, const SHADER_PARAM& para
 	else if (iter->second.typeName == "Texture2D")
 		return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
 	else if (iter->second.typeName == "Texture2DArray")
-		return Bind_ShaderResourceArray(ConstantName, static_cast<vector<CTexture*>*>(parameter.pData));
+		return Bind_ShaderResourceArray(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
 	else if (iter->second.typeName == "StructuredBuffer")
 		return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
 
@@ -155,9 +155,9 @@ HRESULT CShader::Bind_ShaderResource(const string& ConstantName, ID3D11ShaderRes
 	return S_OK;
 }
 
-HRESULT CShader::Bind_ShaderResourceArray(const string& ConstantName, vector<class CTexture*>* pTextures)
+HRESULT CShader::Bind_ShaderResourceArray(const string& ConstantName, ID3D11ShaderResourceView* pSRVArr)
 {
-	if (!pTextures || pTextures->empty())
+	if (!pSRVArr || ConstantName.empty())
 		return S_OK;
 
 	auto iter = m_Variables.find(ConstantName);
@@ -172,15 +172,11 @@ HRESULT CShader::Bind_ShaderResourceArray(const string& ConstantName, vector<cla
 		return E_FAIL;
 	}
 
-	vector<ID3D11ShaderResourceView*> srvVector;
-	srvVector.reserve(pTextures->size());
-
-	for (auto tex : *pTextures)
-		srvVector.push_back(tex ? tex->Get_SRV() : nullptr);
-
-	if (!srvVector.empty())
-		pShaderVariable->SetResourceArray(srvVector.data(), 0, static_cast<UINT>(srvVector.size()));
-
+	HRESULT hr = pShaderVariable->SetResource(pSRVArr);
+	if (FAILED(hr)) {
+		MSG_BOX("Failed to bind Shader Resource : CShader");
+		return hr;
+	}
 	return S_OK;
 }
 

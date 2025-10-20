@@ -11,10 +11,18 @@ HRESULT CAIChannel::Initialize(const aiNodeAnim* pAIChannel, CModelData* pData)
 	m_ChannelName = pAIChannel->mNodeName.data;
 	m_iNumKeyFrames = max(pAIChannel->mNumPositionKeys, pAIChannel->mNumScalingKeys);
 	m_iNumKeyFrames = max(m_iNumKeyFrames, pAIChannel->mNumRotationKeys);
-	m_iBoneIndex = pData->Find_BoneIndexByName(m_ChannelName);
+
+	_int Index = pData->Find_BoneIndexByName(m_ChannelName);
+	if (Index == -1)
+		return E_FAIL;
+
+	m_iBoneIndex = static_cast<_uint> (pData->Find_BoneIndexByName(m_ChannelName));
 	m_boneName = pData->Find_BoneNameByIndex(m_iBoneIndex);
 	m_isRoot = pData->isRootBone(m_iBoneIndex);
 
+	if (m_boneName.find("Skirt") != string::npos) {
+		int i = 0;
+	}
 
 	if (m_boneName.find("Armature_Root")!=string::npos) {
 		m_isModelRoot = true;

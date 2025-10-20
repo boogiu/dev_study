@@ -32,13 +32,13 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 void CTarget_Camera::Priority_Update(_float dt)
 {
 	_float4 target_Pos = m_pTarget->Get_Position();
-	m_pTransform->Set_Pos({target_Pos.x,target_Pos.y + 30,target_Pos.z + 30});
+	m_pTransform->Set_Pos({target_Pos.x,target_Pos.y + 40,target_Pos.z + 30});
 	m_pTransform->LookAt({target_Pos.x,target_Pos.y ,target_Pos.z});
 }
 
 void CTarget_Camera::Update(_float dt)
 {
-	//_float4 targetPos = m_pTarget->Get_Position();
+	_float4 targetPos = m_pTarget->Get_Position();
 }
 
 void CTarget_Camera::Late_Update(_float dt)

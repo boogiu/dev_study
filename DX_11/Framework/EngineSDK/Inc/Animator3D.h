@@ -28,13 +28,22 @@ public:
 
 public:
     virtual void Update_Animation(_float dt);
+
     const vector<_float4x4>& Get_BoneMatrices() { return m_FinalMatices; };
+    const vector<_float4x4>& Get_CombinedBoneMatrices() { return m_CombinedMatrices; };
     virtual void Chane_Animation(_uint index, _float convertDuration = 0.2f);
     virtual HRESULT Chane_Animation(string animName, _float convertDuration = 0.2f);
+
+    _bool isCurrentAnimEnd();
+    string Get_CurrentAnimName();
 
 public:
     void Control_Bone(const string& boneName, _fmatrix BoneMatrix);
     void Control_BoneByIndex(_uint Index, _fmatrix BoneMatrix);
+
+public:
+    _float4x4 Get_BoneMatrix(const string& boneName);
+    _float4x4 Get_BoneMatrix(_uint Index);
 
 protected:
     void Animation_Run(_float dt);

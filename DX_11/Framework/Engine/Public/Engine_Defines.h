@@ -59,6 +59,7 @@ using json = nlohmann::json;
 #include "Engine_Typedef.h"
 #include "Engine_Function.h"
 #include "Engine_Struct.h"
+#include "Engine_Layouts.h"
 #include "Build_Struct.h"
 #include "Data_Packets.h"
 using namespace Engine;

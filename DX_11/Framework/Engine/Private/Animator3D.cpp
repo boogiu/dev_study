@@ -115,6 +115,9 @@ HRESULT CAnimator3D::Chane_Animation(string animName, _float convertDuration)
 
 	if (iter==m_pAnimNames.end()) return E_FAIL;
 
+	if(iter->second == m_iCurrentClipIndex)return E_FAIL;
+	if(m_eState == ANIMATOR_STATE::CONVERTING)return E_FAIL;
+
 	m_eState = ANIMATOR_STATE::CONVERTING;
 	m_fPrevTrackPosition = m_fCurrentTrackPosition;
 	m_fCurrentTrackPosition = 0;
@@ -122,6 +125,22 @@ HRESULT CAnimator3D::Chane_Animation(string animName, _float convertDuration)
 	m_fConvertDuration = convertDuration;
 
 	return S_OK;
+}
+
+_bool CAnimator3D::isCurrentAnimEnd()
+{
+	if(m_eState == ANIMATOR_STATE::CONVERTING)
+		return false; //전환 중이면 끝나지 않은 것
+
+	else
+	{
+		return m_fCurrentTrackPosition > m_pAnimClips[m_iCurrentClipIndex]->Get_Duration();
+	}
+}
+
+string CAnimator3D::Get_CurrentAnimName()
+{
+	return m_pAnimClips[m_iCurrentClipIndex]->Get_Name();
 }
 
 void CAnimator3D::Control_Bone(const string& boneName, _fmatrix BoneMatrix)
@@ -139,6 +158,23 @@ void CAnimator3D::Control_BoneByIndex(_uint Index, _fmatrix BoneMatrix)
 	if (Index >= m_ManipulateMatrices.size()) return;
 	else {
 		XMStoreFloat4x4(&m_ManipulateMatrices[Index], BoneMatrix);
+	}
+}
+
+_float4x4 CAnimator3D::Get_BoneMatrix(const string& boneName)
+{
+	_int Index = m_pData->Find_BoneIndexByName(boneName);
+	if (Index == -1)  return _float4x4{};
+	else {
+		return m_FinalMatices[Index];
+	}
+}
+
+_float4x4 CAnimator3D::Get_BoneMatrix(_uint Index)
+{
+	if (Index >= m_ManipulateMatrices.size()) return _float4x4{};
+	else {
+		return m_FinalMatices[Index];
 	}
 }
 
@@ -181,10 +217,14 @@ void CAnimator3D::BuildBone()
 		}
 		else {
 			_matrix ParentCombine = XMLoadFloat4x4(&m_CombinedMatrices[parent]);
-			_matrix MyTransformation = XMLoadFloat4x4(&m_ManipulateMatrices[i]) *XMLoadFloat4x4(&m_TransfromationMatrices[i]);
+			_matrix MyTransformation = 
+				XMLoadFloat4x4(&m_ManipulateMatrices[i]) 
+				*XMLoadFloat4x4(&m_TransfromationMatrices[i]);
+
 			XMStoreFloat4x4(&m_CombinedMatrices[i], MyTransformation * ParentCombine);
 		}
 	}
+
 	for (size_t i = 0; i < m_pData->Get_BoneCount(); i++)
 	{
 		XMStoreFloat4x4(&m_FinalMatices[i], m_pData->Get_OffsetMatrix(i) * XMLoadFloat4x4(&m_CombinedMatrices[i]));

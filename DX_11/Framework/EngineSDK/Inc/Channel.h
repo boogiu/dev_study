@@ -27,6 +27,7 @@ protected:
     _uint				m_iBoneIndex = {};
     _uint				m_iNumKeyFrames = {};
     vector<KEYFRAME>	m_KeyFrames;
+    KEYFRAME nowFrame = {};
 
 public:
     static CChannel* Create(ifstream& ifs);

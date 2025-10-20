@@ -11,7 +11,7 @@
 #include "IResourceService.h"
 #include "DebugRender.h"
 #include "SkeletalModel.h"
-
+#include "InstanceModel.h"
 #include "TileSystem.h"
 
 RenderPass::RenderPass(CRenderSystem* pRenderSystem)
@@ -116,6 +116,48 @@ void OpaquePass::Submit(OPAQUE_PACKET packet)
 
 #pragma endregion
 
+#pragma region INSTANCE_PASS
+
+void InstancePass::Execute(ID3D11DeviceContext* pContext)
+{
+ 	CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
+	pCurShader = { nullptr };
+
+	/*패킷이 비어 있으면 리턴*/
+	if (m_Packets.empty())
+		return;
+
+	/*드로우콜 시작*/
+	for (auto& packet : m_Packets)
+	{
+		if (packet.pMaterial->Get_Shader(packet.MaterialIndex) != pCurShader) {
+			pCurShader = packet.pMaterial->Get_Shader(packet.MaterialIndex);
+
+			ID3D11InputLayout* pLayout;
+			m_pRenderSystem->Get_InputLayout(packet.pModel, pCurShader, packet.DrawIndex,
+				packet.pMaterial->GetPassConstant(packet.MaterialIndex), &pLayout);
+			pContext->IASetInputLayout(pLayout);
+
+			packet.pMaterial->Apply_Material(pContext, packet.MaterialIndex);
+			pCurShader->SetConstantBuffer("FrameBuffer", pPipeLine->Get_FrameBuffer());
+			pCurShader->SetConstantBuffer("LightBuffer", pPipeLine->Get_LightBuffer());
+			pPipeLine->Bind_PaletteTexture(pCurShader);
+		}
+		packet.pModel->Bind_Buffer(pContext, packet.DrawIndex);
+		packet.pModel->Draw(pContext, packet.DrawIndex);
+	}
+
+	m_Packets.clear();
+}
+
+void InstancePass::Submit(INSTANCE_PACKET packet)
+{
+	if (packet.pModel == nullptr || packet.pMaterial == nullptr) return;
+		m_Packets.push_back(packet);
+}
+#pragma endregion
+
+
 #pragma region UI_PASS
 void UIPass::Execute(ID3D11DeviceContext* pContext)
 {
@@ -155,12 +197,6 @@ void DebugPass::Execute(ID3D11DeviceContext* pContext)
 	if (pCurShader == nullptr) {
 		pCurShader = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Shader(G_GlobalLevelKey, "VTX_Debug.hlsl");
 	}
-#ifdef _DEBUG
-	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
-	if (TileSys) {
-		TileSys->Render_Tiles(pContext, pPipeLine);
-	}
-#endif // _DEBUG
 	if (m_Packets.empty())
 		return;
 

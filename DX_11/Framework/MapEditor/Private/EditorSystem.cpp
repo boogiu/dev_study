@@ -19,6 +19,7 @@
 #include "TileObject.h"
 #include "FieldOutBlocks.h"
 #include "StructureObject.h"
+#include "MapTileInstance.h"
 
 #include "DirectoryPanel.h"
 #include "ControlPanel.h"
@@ -48,6 +49,7 @@ HRESULT CEditorSystem::Initialize()
 	CTileObject::PrepareForTile("../../Resources/Models/FieldRoad/");
 	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_FieldOut", CFieldOutBlocks::Create());
 	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_Structure", CStructureObject::Create());
+	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_TileInstance", CMapTileInstance::Create());
 
 
 	/*팔레트 우선 등록*/
@@ -96,6 +98,18 @@ void CEditorSystem::Execute_TileSystem()
 	m_pObjMgr->Add_Object(pGrid, { G_GlobalLevelKey,"Global_Layer" });
 	m_pGrid = dynamic_cast<CGridObject*>(pGrid);
 	Safe_AddRef(m_pGrid);
+
+
+	CGameObject* pTile = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_TileInstance" })
+		.Position(m_EditorContext.ContextTileInfo.HalfPoint())
+		.Scale(m_EditorContext.ContextTileInfo.WorldSize())
+		.Build("MapTile");
+
+	m_pObjMgr->Add_Object(pTile, { "Editor_Level","Base_Plane" });
+
+	m_pTile = dynamic_cast<CMapTileInstance*>(pTile);
+	Safe_AddRef(m_pTile);
+
 }
 
 void CEditorSystem::Create_GUIPanels()
@@ -241,18 +255,44 @@ void CEditorSystem::Brushing_Tiles()
 		);
 
 		for (TILE_INDEX index : indexArea) {
-			CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
-			objDesc->TypeName = m_EditorContext.baseType;
-			objDesc->index = index;
-			CGameObject* pObject = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
-				.Position({ 0,0,0 })
-				.Scale({ 1,1,1 })
-				.Add_ObjDesc(objDesc)
-				.Build(m_EditorContext.baseType);
-			m_pObjMgr->Add_Object(pObject, { "Editor_Level","Tile_Layer" });
+			_float4 vPos = m_pTileSystem->Get_PositionByIndex(index, ANCHOR::Center);
+			m_pTile->Add_Tile(vPos, ConvertMaterial(m_EditorContext.baseType));
 		}
 
 	}
+}
+
+_float4 CEditorSystem::ConvertMaterial(string Type)
+{
+	if (Type == "Base_0") {
+		return _float4{-1,0,0,0};
+	}
+	if (Type == "RoadDarkSoil") {
+		return _float4{ -1,3,0,0 };
+	}
+	if (Type == "RoadSoil") {
+		return _float4{ -1,6,0,0 };
+	}
+	if (Type == "RoadSand") {
+		return _float4{ -1,5,0,0 };
+	}
+	if (Type == "RoadBrick") {
+		return _float4{ 0,2,0,0 };
+	}
+	if (Type == "RoadFanPattern") {
+		return _float4{ 1,4,0,0 };
+	}
+	if (Type == "RoadStone") {
+		return _float4{ 2,7,0,0 };
+	}
+	if (Type == "RoadTile") {
+		return _float4{ 3,9,0,0 };
+	}
+	if (Type == "RoadWood") {
+		return _float4{ 4,10,0,0 };
+	}
+
+	return { 0,0,0,0 };
 }
 
 HRESULT CEditorSystem::Load_MapData()
@@ -330,21 +370,21 @@ HRESULT CEditorSystem::Load_MapData()
 		MAP_TILE_HEADER Tile_Header = {};
 		ifs.read(reinterpret_cast<char*>(&Tile_Header), sizeof(MAP_TILE_HEADER));
 
-		CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
-		objDesc->TypeName = string(Tile_Header.BaseTypeName);
-		objDesc->index = Tile_Header.Index;
+		//CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
+		//objDesc->TypeName = string(Tile_Header.BaseTypeName);
+		//objDesc->index = Tile_Header.Index;
 
-		CGameObject* pObject =
-			Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
-			.Position({ 0,0,0 })
-			.Scale({ 1,1,1 })
-			.Add_ObjDesc(objDesc)
-			.Build(objDesc->TypeName);
+		//CGameObject* pObject =
+		//	Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
+		//	.Position({ 0,0,0 })
+		//	.Scale({ 1,1,1 })
+		//	.Add_ObjDesc(objDesc)
+		//	.Build(objDesc->TypeName);
 
-		if (pObject)
-			m_pObjMgr->Add_Object(pObject, { "Editor_Level","Tile_Layer" });
-		else
-			Safe_Release(pObject);
+		//if (pObject)
+		//	m_pObjMgr->Add_Object(pObject, { "Editor_Level","Tile_Layer" });
+		//else
+		//	Safe_Release(pObject);
 	}
 
 	ifs.close();
@@ -488,5 +528,6 @@ void CEditorSystem::Free()
 {
 	__super::Free();
 	Safe_Release(m_pGrid);
+	Safe_Release(m_pTile);
 	Safe_Release(m_pDirectoryPanel);
 }

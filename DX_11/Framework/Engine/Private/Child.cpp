@@ -23,12 +23,13 @@ HRESULT CChild::Initialize(COMPONENT_DESC* pArg)
 	return S_OK;
 }
 
-void CChild::Sync_To_Parent()
+void CChild::Sync_To_Parent(_bool SyncTransform)
 {
 	CTransform* myTransform = m_pOwner->Get_Component<CTransform>();
 	CTransform* ParentTransform =m_pParent->Get_Component<CTransform>();
 
-	myTransform->Set_ParentTransform(ParentTransform);
+	if(SyncTransform)
+		myTransform->Set_ParentTransform(ParentTransform);
 }
 
 void CChild::Set_Parent(CGameObject* pParent)

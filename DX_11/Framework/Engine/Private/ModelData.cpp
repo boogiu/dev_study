@@ -152,7 +152,7 @@ const vector<string> CModelData::Get_BoneNames()
 const vector<_int> CModelData::GenerateFollowingIndices(CModelData* pMasterData)
 {
 	vector<_int> FollowingIndices;
-
+	/*마스터 데이터에서 내 이름과 같은 것이 있으면 넣는다. 없으면 -1이 들어간다*/
 	for (string boneName : Get_BoneNames()) {
 		_int Index = pMasterData->Find_BoneIndexByName(boneName);
 		FollowingIndices.push_back(Index);

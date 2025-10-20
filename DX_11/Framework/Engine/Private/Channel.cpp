@@ -56,6 +56,10 @@ HRESULT CChannel::TranslateAnimateMatrix(vector<_float4x4>& transfomationMatrice
 		keyFrame = m_KeyFrames[iCurrentKeyIndex].LerpKeyFram(m_KeyFrames[iCurrentKeyIndex + 1], CurrentTrackPosition);
 	}
 
+	XMStoreFloat3(&nowFrame.vTranslation, keyFrame.vTranslation);
+	XMStoreFloat3(&nowFrame.vScale, keyFrame.vScale);
+	XMStoreFloat4(&nowFrame.vRotation, keyFrame.vRotation);
+
 	_matrix TransformationMatrix = XMMatrixAffineTransformation(keyFrame.vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), keyFrame.vRotation, keyFrame.vTranslation);
 	XMStoreFloat4x4(&transfomationMatrices[m_iBoneIndex], TransformationMatrix);
 	return S_OK;
@@ -101,6 +105,30 @@ HRESULT CChannel::ConvertAnimateMatrix(vector<_float4x4>& transfomationMatrices,
 
 void CChannel::Render_GUI()
 {
+	string key = "Channel : " + m_ChannelName;
+	ImGui::Text(key.c_str());
+
+	if (ImGui::IsItemHovered()) {
+		ImGui::BeginTooltip();
+
+		ImGui::Text("Position:  %.3f, %.3f, %.3f",
+			nowFrame.vTranslation.x,
+			nowFrame.vTranslation.y,
+			nowFrame.vTranslation.z);
+
+		ImGui::Text("Scale:     %.3f, %.3f, %.3f",
+			nowFrame.vScale.x,
+			nowFrame.vScale.y,
+			nowFrame.vScale.z);
+
+		ImGui::Text("Rotation:  %.3f, %.3f, %.3f, %.3f",
+			nowFrame.vRotation.x,
+			nowFrame.vRotation.y,
+			nowFrame.vRotation.z,
+			nowFrame.vRotation.w);
+
+		ImGui::EndTooltip();
+	}
 }
 
 CChannel* CChannel::Create(ifstream& ifs)

@@ -37,37 +37,9 @@ private:
     _bool Check_ValidIndex(TILE_INDEX index);
     TILE_INFO Find_Info(TILE_INDEX index);
 
-#ifdef _DEBUG
-public:
-    HRESULT Render_Tiles(ID3D11DeviceContext* pContext, class CPipeLine* pPipeLine);
-    void RegisterColorRule(const string& name, function<_float4(const TILE_INFO&)> func);
-    void SetActiveColorRule(const string& name); 
-    void Set_DebugRender(_bool bDebug) { m_bDebug = bDebug; };
-
-private:
-    HRESULT Ready_DebugBuffer();
-    void Update_DebugColor(ID3D11DeviceContext* pContext);
-    _float4 Get_TileDebugColor(const TILE_INDEX& index);
-#endif // _DEBUG
-
 private:
     TILESYSTEM_INFO m_tTileInfo = {};
     vector<BlockLayer> m_TileContainer;
-
-#ifdef _DEBUG
-    _uint IB_Count = {};
-    ID3D11Buffer* m_pVB = { nullptr };
-    ID3D11Buffer* m_pIB = { nullptr };
-    ID3D11Buffer* m_TileIndicesBuffer = { nullptr };
-    ID3D11ShaderResourceView* m_pTileIndexResource = { nullptr };
-
-    ID3D11InputLayout* m_pLayout = { nullptr };
-    class CShader* m_pDebugShader = { nullptr };
-    unordered_map<string, function<_float4(const TILE_INFO&)>> m_DebugColorRules;
-    string m_ActiveRuleName;
-    _bool m_bDebug;
-    vector<DEBUG_TILE> pDebugIndex;
-#endif // _DEBUG
 
 public:
     static CTileSystem* Create(const TILESYSTEM_INFO& tileInfo);

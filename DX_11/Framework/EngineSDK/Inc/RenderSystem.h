@@ -14,6 +14,7 @@ private:
 public: 
 	virtual HRESULT Render() override;
 	virtual void Submit_Opaque(const OPAQUE_PACKET& packet) override { m_pOpaquePass->Submit(packet); };
+	virtual void Submit_Instance(const INSTANCE_PACKET& packet) override { m_pInstancePass->Submit(packet); };
 	virtual void Submit_UI(const UI_PACKET& packet) override {m_pUIPass->Submit(packet);};
 	virtual void Submit_Debug(const DEBUG_PACKET& packet) override { m_pDebugPass->Submit(packet); };
 	virtual HRESULT Add_Palette(const string& ConstantName, class CTexture* pTexture) override;
@@ -29,6 +30,7 @@ private:
 	unordered_map<string, ID3D11InputLayout*> m_InputLayouts;
 
 	OpaquePass* m_pOpaquePass = { nullptr};
+	InstancePass* m_pInstancePass = { nullptr};
 	UIPass* m_pUIPass = { nullptr };
 	DebugPass* m_pDebugPass = { nullptr };
 

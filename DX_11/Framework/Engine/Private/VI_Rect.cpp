@@ -1,7 +1,7 @@
 #include "VI_Rect.h"
 
-CVI_Rect::CVI_Rect(const string& imguiID)
-	:CVIBuffer{ imguiID }
+CVI_Rect::CVI_Rect(const string& bufferID)
+	:CVIBuffer{ bufferID }
 {
 }
 
@@ -96,9 +96,9 @@ HRESULT CVI_Rect::Create_Index(ID3D11Device* pDevice)
 	return hr;
 }
 
-CVI_Rect* CVI_Rect::Create(ID3D11Device* pDevice,const string& imguiID)
+CVI_Rect* CVI_Rect::Create(ID3D11Device* pDevice,const string& bufferID)
 {
-	CVI_Rect* instance = new CVI_Rect(imguiID);
+	CVI_Rect* instance = new CVI_Rect(bufferID);
 	if (FAILED(instance->Initialize(pDevice))) {
 		MSG_BOX("Failed to Created : CVIBuffer_Rect");
 		Safe_Release(instance);

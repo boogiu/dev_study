@@ -47,18 +47,23 @@ public:
 private:
 	void Update_Transform();
 	_bool Check_Dirty();
+	void MarkDirty();
+
 private:
 	_bool m_bDirty = {};
+	_uint m_VersionCounter = {  };
 
 	_float4 m_vPosition = {};
 	_float4 m_vScale = { 1.f,1.f, 1.f, 0.f };
 	_float4 m_qRotation = {};	
 
-	_float4x4 m_WorldMatrix = {};
-	CTransform*  m_pParentTransform= { nullptr };
-
 	_float4x4 m_LocalMatrix = {};
 	_float4x4 m_WorldInversMatrix = {};
+	_float4x4 m_WorldMatrix = {};
+
+	CTransform*  m_pParentTransform= { nullptr };
+	_uint m_ParentVersionCounter = {  };
+
 
 public:
 	static CTransform* Create();
