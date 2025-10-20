@@ -141,6 +141,10 @@ void CGamePlayLevel::PreLoad_Level()
 
 
     CMapLoader::Load_MapData("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });
+   
+    auto pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
+    pObjMgr->Get_Layer({ "GamePlay_Level","Field_Layer" })->Set_RenderState(false);
+
  }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)

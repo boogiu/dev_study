@@ -33,31 +33,6 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 	pProto->Add_ProtoType(Desc.LevelTag, "GameObject_BaseField", CBaseField::Create());
 	pProto->Add_ProtoType(Desc.LevelTag, "GameObject_FieldOut", CFieldOut::Create());
 
-	{
-
-		MAP_BASE_HEADER BaseHeader = {};
-		ifs.read(reinterpret_cast<char*>(&BaseHeader), sizeof(MAP_BASE_HEADER));
-
-		pRcsMgr->Add_ResourcePath(BaseHeader.ModelName, BaseHeader.ModelPath);
-		pRcsMgr->Add_ResourcePath(BaseHeader.MaterialName, BaseHeader.MaterialPath);
-
-		_float4 pos = { BaseHeader.vWorldPos };
-
-		CBaseField::BASEFIELD_DESC* ObjDesc = new CBaseField::BASEFIELD_DESC;
-		ObjDesc->ModelName = BaseHeader.ModelName;
-		ObjDesc->MaterialName = BaseHeader.MaterialName;
-		ObjDesc->LevelTag = Desc.LevelTag;
-
-		CGameObject* pObject =
-			Builder::Create_Object({ Desc.LevelTag, "GameObject_BaseField" })
-			.Position({ pos.x,mapFileHeader.tileInfo.vWorldMin.y,pos.z })
-			//.Scale(BaseHeader.vWorldScale)
-			.Add_ObjDesc(ObjDesc)
-			.Build("Base_Plane");
-
-		pObjMgr->Add_Object(pObject, { Desc.LevelTag,"Base_Plane" });
-	}
-
 	for (size_t i = 0; i < mapFileHeader.iFieldOutCount; i++)
 	{
 		MAP_OBJECT_HEADER objHeader = {};
@@ -86,10 +61,21 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 		MAP_OBJECT_HEADER objHeader = {};
 		ifs.read(reinterpret_cast<char*>(&objHeader), sizeof(MAP_OBJECT_HEADER));
 	}
+
+	CGameObject* pBaseField =
+		Builder::Create_Object({ Desc.LevelTag, "GameObject_BaseField" })
+		.Position({ 0,0,0 })
+		.Build("Base_Plane");
+
+	pObjMgr->Add_Object(pBaseField, { Desc.LevelTag,"Base_Field" });
+
+	CBaseField* pBaseFieldCast = dynamic_cast<CBaseField*>(pBaseField);
 	for (size_t i = 0; i < mapFileHeader.iTileCount; i++)
 	{
-		MAP_TILE_HEADER mapTileHeader = {};
-		ifs.read(reinterpret_cast<char*>(&mapTileHeader), sizeof(MAP_TILE_HEADER));
+		INSTANCE_TILE instanceTile = {};
+		ifs.read(reinterpret_cast<char*>(&instanceTile), sizeof(INSTANCE_TILE));
+
+		pBaseFieldCast->Load_Tile(instanceTile);
 	}
 	ifs.close();
 	return S_OK;

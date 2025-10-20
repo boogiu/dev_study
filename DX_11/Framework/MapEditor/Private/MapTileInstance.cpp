@@ -11,6 +11,8 @@
 #include "ITileService.h"
 #include "IResourceService.h"
 #include "Texture.h"
+#include	"GameInstance.h"
+#include "ITileService.h"
 
 CMapTileInstance::CMapTileInstance()
 {
@@ -46,8 +48,11 @@ HRESULT CMapTileInstance::Initialize(INIT_DESC* pArg)
 	vector<CInstanceModel::INSTANCE_INIT_DESC> pVector;
 	pVector.push_back(instanceDesc);
 
+
+	ReadyTexture2DArray();
+
 	CMaterial* pMaterial = Get_Component<CMaterial>();
-	pMaterial->Link_Material(G_GlobalLevelKey, "RoadTile1B_0.mat");
+	pMaterial->Link_Material(G_GlobalLevelKey, "Base_0.mat");
 
 	SHADER_PARAM TileAlbedo = {};
 	TileAlbedo.iSize = 0;
@@ -62,15 +67,14 @@ HRESULT CMapTileInstance::Initialize(INIT_DESC* pArg)
 	for (auto& instance : pMaterial->Get_Material_Instance()) {
 		instance->Override_Pass("Instancing");
 		instance->Set_Param("g_TileAlbedo", TileAlbedo);
-		instance->Set_Param("g_TilePalette", TilePalette);
 	}
 
-	//pMaterial->Get_MaterialInstanceByName("mGrassXlu")->Override_Pass("Edge");
+	if (pMaterial->Get_MaterialInstanceByName("mGrassXlu")) {
+		pMaterial->Get_MaterialInstanceByName("mGrassXlu")->Override_Pass("Edge");
+		pMaterial->Get_MaterialInstanceByName("mGrassXlu")->Set_Param("g_TilePalette", TilePalette);
+	}
 
-
-	ReadyTexture2DArray();
-
-	Get_Component<CInstanceModel>()->Link_InstanceData(pDevice, pVector, G_GlobalLevelKey, "RoadTile1B_0.model");
+	Get_Component<CInstanceModel>()->Link_InstanceData(pDevice, pVector, G_GlobalLevelKey, "Base_0.model");
 	Get_Component<CInstanceModel>()->Link_InstanceWithMesh(0, 0);
 	Get_Component<CInstanceModel>()->Link_InstanceWithMesh(1, 0);
 
@@ -85,6 +89,11 @@ void CMapTileInstance::Priority_Update(_float dt)
 void CMapTileInstance::Update(_float dt)
 {
 	ID3D11DeviceContext* pContext = CGameInstance::GetInstance()->Get_Context();
+
+	// SRV 클리어 (OpacityTexture, MaskTexture, 기타 이펙트 잔류 제거)
+	ID3D11ShaderResourceView* nullSRV[128] = { nullptr };
+	pContext->PSSetShaderResources(0, 128, nullSRV);
+
 	Get_Component<CInstanceModel>()->Update_Instance(pContext, m_Tiles.data(), 0, static_cast<_uint>(m_Tiles.size()));
 }
 
@@ -106,6 +115,16 @@ void CMapTileInstance::Add_Tile(_float4x4 matrix, _float4 materialType)
 
 void CMapTileInstance::Add_Tile(_float4 position, _float4 materialType)
 {
+	auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
+	TILE_INDEX index = tileSys->Get_IndexByPosition(position);
+	_uint Flag =tileSys->Get_TileFlagByIndex(index);
+
+	if ((Flag & TileExist) != 0) {
+		return;
+	}
+	else {
+		tileSys->Add_TileFlagByIndex(index, TileExist);
+	}
 	INSTANCE_TILE tile = {};
 	tile.vRight = { 1.f, 0.f, 0.f, 0.f };
 	tile.vUp = { 0.f, 1.f, 0.f, 0.f };
@@ -113,6 +132,11 @@ void CMapTileInstance::Add_Tile(_float4 position, _float4 materialType)
 	tile.vTranslation = position;
 	tile.vMaterialType = materialType;
 
+	m_Tiles.push_back(tile);
+}
+
+void CMapTileInstance::Load_Tile(INSTANCE_TILE tile)
+{
 	m_Tiles.push_back(tile);
 }
 
@@ -180,7 +204,7 @@ HRESULT CMapTileInstance::CreateTexture2DArrayFromFiles(vector<string> TexturePa
 
 	for (size_t i = 0; i < TextureKey.size(); i++)
 	{
-		CTexture* pTexture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture(G_GlobalLevelKey, TextureKey[i]);
+ 		CTexture* pTexture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture(G_GlobalLevelKey, TextureKey[i]);
 		ID3D11Resource* pResource = { nullptr };
 		pTexture->Get_SRV()->GetResource(&pResource);
 
@@ -207,12 +231,11 @@ HRESULT CMapTileInstance::CreateTexture2DArrayFromFiles(vector<string> TexturePa
 
 	for (UINT i = 0; i < Textures2D.size(); ++i)
 	{
-		for (UINT mip = 0; mip < arrayDesc.MipLevels; ++mip)
+		
+		for (UINT mip = 0; mip < baseDesc.MipLevels; ++mip)
 		{
-			UINT destSubresource = D3D11CalcSubresource(mip, i, arrayDesc.MipLevels);
-			pContext->CopySubresourceRegion(texArray, destSubresource,
-				0, 0, 0, Textures2D[i],
-				mip, nullptr);
+			UINT destSubresource = D3D11CalcSubresource(mip, i, baseDesc.MipLevels);
+			pContext->CopySubresourceRegion(texArray, destSubresource, 0, 0, 0, Textures2D[i], mip, nullptr);
 		}
 	}
 
@@ -229,14 +252,46 @@ HRESULT CMapTileInstance::CreateTexture2DArrayFromFiles(vector<string> TexturePa
 
 	hr = pDevice->CreateShaderResourceView(texArray, &srvDesc, pSrv);
 	Safe_Release(texArray);
+
 	if (FAILED(hr)) return hr;
 
 	return S_OK;
 }
 
-
 void CMapTileInstance::Render_GUI()
 {
+	ImGui::Begin("Tile Texture Array Viewer");
+	ImGui::Text(to_string(m_Tiles.size()).c_str());
+
+	if (m_pTextureArrayDiffuse)
+	{
+		ImGui::Text("Diffuse Array (Layer 0):");
+		ImGui::Image(
+			(ImTextureID)m_pTextureArrayDiffuse,      
+			ImVec2(128, 128),												
+			ImVec2(0, 0), ImVec2(1, 1));								
+	}
+
+	if (m_pTextureArrayPalette)
+	{
+		ImGui::Text("Palette Array (Layer 0):");
+		ImGui::Image(
+			(ImTextureID)m_pTextureArrayPalette,
+			ImVec2(128, 128),
+			ImVec2(0, 0), ImVec2(1, 1));
+	}
+
+	ImGui::End();
+}
+
+HRESULT CMapTileInstance::Save_Tiles(ofstream& ofs)
+{
+	/*현재 인덱스*/
+	for (auto& tile : m_Tiles) {
+		ofs.write(reinterpret_cast<const char*>(&tile), sizeof(INSTANCE_TILE));
+	}
+
+	return S_OK;
 }
 
 CMapTileInstance* CMapTileInstance::Create()

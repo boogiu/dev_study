@@ -132,17 +132,15 @@ void InstancePass::Execute(ID3D11DeviceContext* pContext)
 	{
 		if (packet.pMaterial->Get_Shader(packet.MaterialIndex) != pCurShader) {
 			pCurShader = packet.pMaterial->Get_Shader(packet.MaterialIndex);
-
-			ID3D11InputLayout* pLayout;
-			m_pRenderSystem->Get_InputLayout(packet.pModel, pCurShader, packet.DrawIndex,
-				packet.pMaterial->GetPassConstant(packet.MaterialIndex), &pLayout);
-			pContext->IASetInputLayout(pLayout);
-
-			packet.pMaterial->Apply_Material(pContext, packet.MaterialIndex);
 			pCurShader->SetConstantBuffer("FrameBuffer", pPipeLine->Get_FrameBuffer());
 			pCurShader->SetConstantBuffer("LightBuffer", pPipeLine->Get_LightBuffer());
-			pPipeLine->Bind_PaletteTexture(pCurShader);
 		}
+		ID3D11InputLayout* pLayout;
+		m_pRenderSystem->Get_InputLayout(packet.pModel, pCurShader, packet.DrawIndex,
+			packet.pMaterial->GetPassConstant(packet.MaterialIndex), &pLayout);
+		pContext->IASetInputLayout(pLayout);
+		packet.pMaterial->Apply_Material(pContext, packet.MaterialIndex);
+		pPipeLine->Bind_PaletteTexture(pCurShader);
 		packet.pModel->Bind_Buffer(pContext, packet.DrawIndex);
 		packet.pModel->Draw(pContext, packet.DrawIndex);
 	}

@@ -100,15 +100,6 @@ void CEditorSystem::Execute_TileSystem()
 	Safe_AddRef(m_pGrid);
 
 
-	CGameObject* pTile = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_TileInstance" })
-		.Position(m_EditorContext.ContextTileInfo.HalfPoint())
-		.Scale(m_EditorContext.ContextTileInfo.WorldSize())
-		.Build("MapTile");
-
-	m_pObjMgr->Add_Object(pTile, { "Editor_Level","Base_Plane" });
-
-	m_pTile = dynamic_cast<CMapTileInstance*>(pTile);
-	Safe_AddRef(m_pTile);
 
 }
 
@@ -321,12 +312,6 @@ HRESULT CEditorSystem::Load_MapData()
 	CGameInstance::GetInstance()->Excute_TileSystem(m_EditorContext.ContextTileInfo);
 	m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 
-	{
-		auto BasePlane = m_pObjMgr->Get_Layer({ "Editor_Level","Base_Plane" });
-		MAP_BASE_HEADER BaseHeader = {};
-		ifs.read(reinterpret_cast<char*>(&BaseHeader), sizeof(MAP_BASE_HEADER));
-	}
-
 	for (size_t i = 0; i < MapFile.iFieldOutCount; i++)
 	{
 		MAP_OBJECT_HEADER ObjHeader = {};
@@ -365,26 +350,23 @@ HRESULT CEditorSystem::Load_MapData()
 			Safe_Release(pObject);
 	}
 
+
+	CGameObject* pTile = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_TileInstance" })
+		.Position(m_EditorContext.ContextTileInfo.HalfPoint())
+		.Scale(m_EditorContext.ContextTileInfo.WorldSize())
+		.Build("MapTile");
+
+	m_pObjMgr->Add_Object(pTile, { "Editor_Level","Base_Plane" });
+
+	m_pTile = dynamic_cast<CMapTileInstance*>(pTile);
+	Safe_AddRef(m_pTile);
+
 	for (size_t i = 0; i < MapFile.iTileCount; i++)
 	{
-		MAP_TILE_HEADER Tile_Header = {};
-		ifs.read(reinterpret_cast<char*>(&Tile_Header), sizeof(MAP_TILE_HEADER));
+		INSTANCE_TILE tile = {};
+		ifs.read(reinterpret_cast<char*>(&tile), sizeof(INSTANCE_TILE));
 
-		//CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
-		//objDesc->TypeName = string(Tile_Header.BaseTypeName);
-		//objDesc->index = Tile_Header.Index;
-
-		//CGameObject* pObject =
-		//	Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
-		//	.Position({ 0,0,0 })
-		//	.Scale({ 1,1,1 })
-		//	.Add_ObjDesc(objDesc)
-		//	.Build(objDesc->TypeName);
-
-		//if (pObject)
-		//	m_pObjMgr->Add_Object(pObject, { "Editor_Level","Tile_Layer" });
-		//else
-		//	Safe_Release(pObject);
+		m_pTile->Load_Tile(tile);
 	}
 
 	ifs.close();
@@ -421,31 +403,9 @@ HRESULT CEditorSystem::Save_MapData()
 		MapFile.iStructureCount = StructureLayer->Get_ObjectCount();
 
 	/*3. Tile Tile*/
-	auto TileLayer = m_pObjMgr->Get_Layer({ "Editor_Level","Tile_Layer" });
-
-	if (TileLayer)
-		MapFile.iTileCount = TileLayer->Get_ObjectCount();
+		MapFile.iTileCount = m_pTile->Get_TileCount();
 
 	ofs.write(reinterpret_cast<char*>(&MapFile), sizeof(MAP_FILE_HEADER));
-	
-	{
-		auto BasePlane = m_pObjMgr->Get_Layer({ "Editor_Level","Base_Plane" });
-		MAP_BASE_HEADER BaseHeader = {};
-		if (BasePlane) {
-			CGameObject* pObject = BasePlane->Find_ObjectByID(m_BaseTileID);
-
-			BaseHeader.vWorldPos = pObject->Get_Position();
-			BaseHeader.vWorldScale = { 16 * 8 + 3 + 3 , 0 , 16 * 6 + 3 + 3 };
-
-			strcpy_s(BaseHeader.ModelName, sizeof(BaseHeader.ModelName), "Base_0.model");
-			strcpy_s(BaseHeader.ModelPath, sizeof(BaseHeader.ModelPath), "../../Resources/Models/FieldRoad/Base/Base_0/Base_0.model");
-			strcpy_s(BaseHeader.MaterialName, sizeof(BaseHeader.MaterialName), "Base_0.mat");
-			strcpy_s(BaseHeader.MaterialPath, sizeof(BaseHeader.MaterialPath), "../../Resources/Models/FieldRoad/Base/Base_0/Base_0.mat");
-
-		}
-		ofs.write(reinterpret_cast<const char*>(&BaseHeader), sizeof(BaseHeader));
-
-	}
 
 	{
 		auto& ObjectVector = FieldOutLayer->Get_AllObject();
@@ -466,12 +426,7 @@ HRESULT CEditorSystem::Save_MapData()
 	}
 
 	{
-		auto& ObjectVector = TileLayer->Get_AllObject();
-		for (auto& Tile : ObjectVector) {
-			CTileObject* TileObj = dynamic_cast<CTileObject*>(Tile);
-			if (TileObj)
-				TileObj->Save_MapData(ofs);
-		}
+		m_pTile->Save_Tiles(ofs);
 	}
 
 	ofs.close();

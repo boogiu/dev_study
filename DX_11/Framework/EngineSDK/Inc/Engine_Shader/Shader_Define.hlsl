@@ -99,4 +99,8 @@ Texture2D g_MaskTexture : register(t19);
 StructuredBuffer<BoneMatrix> g_BoneMatrices : register(t0);
 StructuredBuffer<TileIndex> g_TileIndecies : register(t20);
 
+// 式式式式式式式式式式式式式  Instancing 式式式式式式式式式式式式式
+
+Texture2DArray g_TileAlbedo : register(t21);
+Texture2DArray g_TilePalette : register(t22);
 #endif // __SHADER_DEFINE_HLSL__

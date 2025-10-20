@@ -33,7 +33,6 @@ HRESULT CEditorLevel::Initialize()
 	pObjMgr->Add_Object(Camera, { m_LevelKey,"Cameral_Layer" });
 	m_pGameInstance->Get_CameraMgr()->Set_MainCam(Camera->Get_Component<CCamera>());
 
-	pObjMgr->Get_Layer({ m_LevelKey,"FieldOut_Layer" })->Set_RenderState(false);
     return S_OK;
 }
 

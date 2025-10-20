@@ -8,7 +8,7 @@ class ENGINE_DLL CLevel abstract:
 protected:
     CLevel(const string& LevelKey);
     virtual ~CLevel() DEFAULT;
-
+     
 public:
     virtual HRESULT Initialize() PURE;
     virtual void Update() PURE;

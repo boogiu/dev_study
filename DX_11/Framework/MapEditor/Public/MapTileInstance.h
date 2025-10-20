@@ -1,22 +1,9 @@
 #pragma once
 #include "GameObject.h"
 NS_BEGIN(MapEditor)
-typedef struct tagInstanceTile
-{
-	_float4			vRight, vUp, vLook, vTranslation;
-    _float4              vMaterialType;     //Diffuse/Normal//gradationx,gradationy
-}INSTANCE_TILE;
 
-typedef struct  tagVertexTileInstancing {
-	static constexpr D3D11_INPUT_ELEMENT_DESC		Elements[5] = {
-		{ "INSTANCE", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1,		0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "INSTANCE", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1,	 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "INSTANCE", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1,		32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "INSTANCE", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1,		48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "INSTANCE", 4, DXGI_FORMAT_R32_FLOAT, 1,		                            64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-	};
-}VTX_TILEINSTANCE;
 
+constexpr _uint TileExist = 1 << 0  ;
 class CMapTileInstance :
     public CGameObject
 {
@@ -35,6 +22,8 @@ public:
 public:
     void Add_Tile(_float4x4 matrix, _float4 materialType);
     void Add_Tile(_float4 position, _float4 materialType);
+public:
+    void Load_Tile(INSTANCE_TILE tile);
 
 private:
     HRESULT ReadyTexture2DArray( );
@@ -42,6 +31,9 @@ private:
 
 public:
     void Render_GUI() override;
+public:
+    HRESULT Save_Tiles(ofstream& ofs);
+    _uint Get_TileCount() { return m_Tiles.size(); }
 
 private:
     vector<INSTANCE_TILE> m_Tiles;

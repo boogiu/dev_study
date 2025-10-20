@@ -22,6 +22,7 @@ CMaterialInstance::CMaterialInstance(const CMaterialInstance& rhs)
 void CMaterialInstance::ApplyData(ID3D11DeviceContext* pContext)
 {
 	/*상수 버퍼*/
+
 	if (nullptr != m_pCBuffer) {
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		pContext->Map(m_pCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
