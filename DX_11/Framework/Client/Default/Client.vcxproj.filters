@@ -49,9 +49,6 @@
     <Filter Include="02. GameObjects\02. Field">
       <UniqueIdentifier>{3a1d49ec-2a06-407b-87cc-e5ca75b16581}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\02. Field\TileObject">
-      <UniqueIdentifier>{b1f5be07-91ce-44a1-898c-94875805ff31}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\02. Field\FieldOut">
       <UniqueIdentifier>{0ff94ed8-9fdd-42c3-ad79-d8fe32b8f8e9}</UniqueIdentifier>
     </Filter>
@@ -123,6 +120,9 @@
     </Filter>
     <Filter Include="02. GameObjects\00. Player\PlayerParts\Hand">
       <UniqueIdentifier>{7213264b-a234-49ac-bb4e-209ed58830b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\FieldObject">
+      <UniqueIdentifier>{b1f5be07-91ce-44a1-898c-94875805ff31}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -273,6 +273,12 @@
     <ClInclude Include="..\Public\PlayerPart_Hand.h">
       <Filter>02. GameObjects\00. Player\PlayerParts\Hand</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\FieldStructure.h">
+      <Filter>02. GameObjects\02. Field\FieldStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FieldObject.h">
+      <Filter>02. GameObjects\02. Field\FieldObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -405,6 +411,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\PlayerPart_Hand.cpp">
       <Filter>02. GameObjects\00. Player\PlayerParts\Hand</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FieldStructure.cpp">
+      <Filter>02. GameObjects\02. Field\FieldStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FieldObject.cpp">
+      <Filter>02. GameObjects\02. Field\FieldObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

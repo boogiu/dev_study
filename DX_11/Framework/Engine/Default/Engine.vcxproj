@@ -124,6 +124,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>fmodL_vc.lib;d3d11.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <HeapReserveSize>67108864</HeapReserveSize>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(TargetDir)Engine_Shaders\"

@@ -4,7 +4,6 @@ NS_BEGIN(Client)
 class CAutoTile :
     public CGameObject
 {
-
 public:
 	typedef struct TILE_TYPE_DESC : public GAMEOBJECT_DESC {
 		string TypeName = {};
@@ -36,8 +35,6 @@ private:
 	string m_BaseTypeName = {};
 	_float m_fRotation = {};
 	_uint m_CurState = {};
-
-public:
 
 public:
 	static CAutoTile* Create();

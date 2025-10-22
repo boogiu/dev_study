@@ -53,7 +53,7 @@ void CMapObject::Late_Update(_float dt)
 void CMapObject::Object_OnGrid(TILE_INDEX index)
 {
 	//Get_Component<CDebugRender>()->Add_DebugBounding(Get_Component<CModel>()->Get_LocalBoundingBox());
-	_float4 Anchor = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(index, ANCHOR::Right | ANCHOR::Bottom);
+	_float4 Anchor = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(index, ANCHOR::Left|ANCHOR::Bottom);
 	m_pTransform->Set_Pos({ Anchor.x,Anchor.y,Anchor.z });
 	m_SyncedIndex = index;
 }

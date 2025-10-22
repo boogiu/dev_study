@@ -7,8 +7,6 @@ _uint CBase::AddRef()
 
 _uint CBase::Release()
 {
-	if (m_iRefCnt > 0)
-		--m_iRefCnt;
 
 	if (m_iRefCnt == 0)
 	{

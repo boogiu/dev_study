@@ -98,7 +98,7 @@ HRESULT CLoadSkeletalModel::Save_Model(const string& SavePath)
 		return E_FAIL;
 
 	MODEL_FILE_HEADER fileHeader = {};
-	fileHeader.isAnimate = false;
+	fileHeader.isAnimate = true;
 	fileHeader.MeshCount = m_pData->Get_MeshCount();
 	strcpy_s(fileHeader.ModelKey, sizeof(fileHeader.ModelKey), m_fileName.data());
 	ofs.write(reinterpret_cast<char*>(&fileHeader), sizeof(MODEL_FILE_HEADER));

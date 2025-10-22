@@ -174,7 +174,9 @@
     <ClInclude Include="..\Public\Client_Enum.h" />
     <ClInclude Include="..\Public\Client_Structs.h" />
     <ClInclude Include="..\Public\ClothParts.h" />
+    <ClInclude Include="..\Public\FieldObject.h" />
     <ClInclude Include="..\Public\FieldOut.h" />
+    <ClInclude Include="..\Public\FieldStructure.h" />
     <ClInclude Include="..\Public\Free_Camera.h" />
     <ClInclude Include="..\Public\GamePlayLevel.h" />
     <ClInclude Include="..\Public\HairCapParts.h" />
@@ -220,7 +222,9 @@
     <ClCompile Include="..\Private\BaseField.cpp" />
     <ClCompile Include="..\Private\ClientHelper.cpp" />
     <ClCompile Include="..\Private\ClothParts.cpp" />
+    <ClCompile Include="..\Private\FieldObject.cpp" />
     <ClCompile Include="..\Private\FieldOut.cpp" />
+    <ClCompile Include="..\Private\FieldStructure.cpp" />
     <ClCompile Include="..\Private\Free_Camera.cpp" />
     <ClCompile Include="..\Private\GamePlayLevel.cpp" />
     <ClCompile Include="..\Private\HairCapParts.cpp" />

@@ -120,6 +120,7 @@ CGameObjectBuilder& CGameObjectBuilder::Scale(const _float3 scale)
 
 CGameObjectBuilder& CGameObjectBuilder::Add_ObjDesc(GAMEOBJECT_DESC* pArg)
 {
+	if (pArg == nullptr) return *this;
 	m_pObjDesc = pArg;
 	return *this;
 }

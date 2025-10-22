@@ -238,17 +238,8 @@ namespace Engine
 		_uint iBaseFieldCount = {};
 		_uint iTileCount = {};
 		_uint iStructureCount = {};
+		_uint iMapObjectCount = {};
 	}MAP_FILE_HEADER;
-
-	typedef struct tagMapBaseHeader {
-		TILESYSTEM_INFO tileInfo = {};
-		_float4 vWorldPos = {};
-		_float3 vWorldScale = {};
-		char ModelName[MAX_PATH];
-		char MaterialName[MAX_PATH];
-		char ModelPath[MAX_PATH];
-		char MaterialPath[MAX_PATH];
-	}MAP_BASE_HEADER;
 
 	typedef struct tagMapObjectHeader {
 		TILE_INDEX Index = {};

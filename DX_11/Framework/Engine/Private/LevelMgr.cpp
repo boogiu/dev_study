@@ -9,6 +9,8 @@ CLevelMgr::CLevelMgr()
 
 CLevelMgr::~CLevelMgr()
 {
+    int i = 0;
+    OutputDebugString(L"Destroyed\n");
 }
 
 

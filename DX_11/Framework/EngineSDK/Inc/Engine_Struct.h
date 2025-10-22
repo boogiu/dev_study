@@ -238,6 +238,7 @@ namespace Engine
 		_uint iBaseFieldCount = {};
 		_uint iTileCount = {};
 		_uint iStructureCount = {};
+		_uint iMapObjectCount = {};
 	}MAP_FILE_HEADER;
 
 	typedef struct tagMapBaseHeader {

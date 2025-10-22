@@ -70,18 +70,21 @@ using namespace Engine;
 
 #define _USING_GUI
 
-//#ifdef _DEBUG
-//
-//#define _CRTDBG_MAP_ALLOC
-//#include <stdlib.h>
-//#include <crtdbg.h>
-//
-//#ifndef DBG_NEW 
-//
-//#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
-//#define new DBG_NEW 
-//
-//#endif
-//#endif
+#define UNICODE
+#define _UNICODE
+
+#ifdef _DEBUG
+
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+#ifndef DBG_NEW 
+
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
+#define new DBG_NEW 
+
+#endif
+#endif
 
 #endif // Engine_Define_h__
