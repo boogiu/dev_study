@@ -55,22 +55,22 @@
     <Filter Include="02. ModelObject\OptionUI">
       <UniqueIdentifier>{7455d6d4-bcb4-4f2a-8e22-7fc18b6186a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="00. MainApp\03. LoaderComponent">
+    <Filter Include="03. LoaderComponent">
       <UniqueIdentifier>{168c879f-28b7-4113-bbbc-250dea311749}</UniqueIdentifier>
     </Filter>
-    <Filter Include="00. MainApp\03. LoaderComponent\Model">
+    <Filter Include="03. LoaderComponent\Model">
       <UniqueIdentifier>{5005a669-dde6-4bc1-86c1-5c67029aa1bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="00. MainApp\03. LoaderComponent\Model\Static">
+    <Filter Include="03. LoaderComponent\Model\Static">
       <UniqueIdentifier>{a8170fdc-2a36-421b-b21b-72f01699582f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="00. MainApp\03. LoaderComponent\Model\Skeletal">
+    <Filter Include="03. LoaderComponent\Model\Skeletal">
       <UniqueIdentifier>{1fa6e934-d275-42d0-8571-6c3959c18459}</UniqueIdentifier>
     </Filter>
-    <Filter Include="00. MainApp\03. LoaderComponent\Material">
+    <Filter Include="03. LoaderComponent\Material">
       <UniqueIdentifier>{464a4645-ab79-42d3-abc5-8b1ca3f84517}</UniqueIdentifier>
     </Filter>
-    <Filter Include="00. MainApp\03. LoaderComponent\Animator">
+    <Filter Include="03. LoaderComponent\Animator">
       <UniqueIdentifier>{12515238-28c5-4cc5-98de-021711326841}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -139,7 +139,7 @@
       <Filter>02. ModelObject\CamObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\LoadMaterial.h">
-      <Filter>00. MainApp\03. LoaderComponent\Material</Filter>
+      <Filter>03. LoaderComponent\Material</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AIMaterial.h">
       <Filter>04. LoadResource\MaterialData</Filter>
@@ -148,16 +148,16 @@
       <Filter>04. LoadResource\Skeleton\Bone</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\LoadStaticModel.h">
-      <Filter>00. MainApp\03. LoaderComponent\Model\Static</Filter>
+      <Filter>03. LoaderComponent\Model\Static</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AISkeleton.h">
       <Filter>04. LoadResource\Skeleton</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\LoadSkeletalModel.h">
-      <Filter>00. MainApp\03. LoaderComponent\Model\Skeletal</Filter>
+      <Filter>03. LoaderComponent\Model\Skeletal</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\LoadAnimator3D.h">
-      <Filter>00. MainApp\03. LoaderComponent\Animator</Filter>
+      <Filter>03. LoaderComponent\Animator</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AIAnimationClip.h">
       <Filter>04. LoadResource\AnimationClip</Filter>
@@ -233,7 +233,7 @@
       <Filter>02. ModelObject\CamObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LoadMaterial.cpp">
-      <Filter>00. MainApp\03. LoaderComponent\Material</Filter>
+      <Filter>03. LoaderComponent\Material</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AIMaterial.cpp">
       <Filter>04. LoadResource\MaterialData</Filter>
@@ -242,16 +242,16 @@
       <Filter>04. LoadResource\Skeleton\Bone</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LoadStaticModel.cpp">
-      <Filter>00. MainApp\03. LoaderComponent\Model\Static</Filter>
+      <Filter>03. LoaderComponent\Model\Static</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AISkeleton.cpp">
       <Filter>04. LoadResource\Skeleton</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LoadSkeletalModel.cpp">
-      <Filter>00. MainApp\03. LoaderComponent\Model\Skeletal</Filter>
+      <Filter>03. LoaderComponent\Model\Skeletal</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LoadAnimator3D.cpp">
-      <Filter>00. MainApp\03. LoaderComponent\Animator</Filter>
+      <Filter>03. LoaderComponent\Animator</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AIAnimationClip.cpp">
       <Filter>04. LoadResource\AnimationClip</Filter>

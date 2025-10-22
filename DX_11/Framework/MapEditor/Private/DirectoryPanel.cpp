@@ -47,6 +47,10 @@ void CDirectoryPanel::Render_GUI()
 	if (ImGui::RadioButton("Structure", m_eMode == STRUCTURE)) {
 		m_eMode = STRUCTURE;
 	}
+	ImGui::SameLine();
+	if (ImGui::RadioButton("MapObject", m_eMode == MAPOBJECT)) {
+		m_eMode = MAPOBJECT;
+	}
 	ImGui::Separator();
 	Render_Folders();
 	ImGui::End();
@@ -122,6 +126,8 @@ void CDirectoryPanel::Create_MapObject(const string& name)
 		hr = CEditorSystem::GetInstance()->Create_MapObject(name, CEditorSystem::FIELDOUT); break;
 	case MapEditor::CDirectoryPanel::STRUCTURE:
 		hr = CEditorSystem::GetInstance()->Create_MapObject(name, CEditorSystem::STRUCTURE); break;
+	case MapEditor::CDirectoryPanel::MAPOBJECT:
+		hr = CEditorSystem::GetInstance()->Create_MapObject(name, CEditorSystem::MAPOBJECT); break;
 	default:
 		break;
 	}

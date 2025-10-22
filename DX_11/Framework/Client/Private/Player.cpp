@@ -21,6 +21,8 @@
 #include "ToolItem.h"
 #include "HairParts.h"
 #include "ClothParts.h"
+#include "PlayerPart_Hand.h"
+
 CPlayer::CPlayer()
 {
 }
@@ -80,20 +82,17 @@ void CPlayer::Priority_Update(_float dt)
 {
 
 	auto pInput = CGameInstance::GetInstance()->Get_InputDev();
-
+	
 	_float2 moveAxis = { 0.f, 0.f };
-	if (pInput->Key_Down(VK_SPACE)) {
-		Get_Component<CAnimator3D>()->Chane_Animation("ToolAxe_Air.anim");
-	}
-	if (pInput->Key_Down(VK_UP))				moveAxis.y -= 1.f;
-	if (pInput->Key_Down(VK_DOWN))		moveAxis.y += 1.f;
-	if (pInput->Key_Down(VK_LEFT))			moveAxis.x += 1.f;
-	if (pInput->Key_Down(VK_RIGHT))		moveAxis.x -= 1.f;
 
-	m_pStateMachine->SetInput(moveAxis);
+	if (pInput->Key_Down(VK_UP))				moveAxis.y = -1.f;
+	if (pInput->Key_Down(VK_DOWN))		moveAxis.y = +1.f;
+	if (pInput->Key_Down(VK_LEFT))			moveAxis.x = +1.f;
+	if (pInput->Key_Down(VK_RIGHT))		moveAxis.x = -1.f;
+	
+	m_vInputAxis = moveAxis;
 
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
-
 }
 
 void CPlayer::Update(_float dt)
@@ -110,18 +109,40 @@ void CPlayer::Late_Update(_float dt)
 void CPlayer::Render_GUI()
 {
 	__super::Render_GUI();
+	m_pStateMachine->Render_State(this);
+}
 
-	m_pStateMachine->Render_StateGUI(this);
+ITEM_TYPE CPlayer::Get_CurrentItemType()
+{
+	CGameObject* pHand = Get_Component<CObjectContainer>()->Find_ObjectByName("Hand");
+	CPlayerPart_Hand* pHandPart = dynamic_cast<CPlayerPart_Hand*>(pHand);
+
+	if(pHandPart)
+		return pHandPart->Get_CurrentItemType();
+
+	return ITEM_TYPE::NONE;
 }
 
 void CPlayer::Add_AnimationClips()
 {
 	Get_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", "PlayerBody.model");
+
+	/*움직임*/
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_WatchCStd.anim", "Player", true);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Move_Run_F.anim", "Player", true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Move_Dash_F.anim", "Player", true);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "MoveTurn_Run_L.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToStop_RunFirst_L.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "MoveTurn_Dash_L.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToStop_RunLatter_L.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToStop_DashLatter_L.anim", "Player", false);
+	
+	/*툴 = Axe*/
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_Air.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_APose.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_Hit.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_Ready.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_ReadyKeep.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_Repelled.anim", "Player", false);
 }
 
 void CPlayer::Add_PartObjects()
@@ -143,9 +164,9 @@ void CPlayer::Add_PartObjects()
 	pBottomDesc->pPlayer = this;
 	pBottomDesc->ClothType = "PlayerBottomsPantsNormal";
 
-	CGameObject* pTool = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerTool" })
+	CGameObject* pTool = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
 		.Add_ObjDesc(pToolDesc)
-		.Build("Tool");
+		.Build("Hand");
 
 	CGameObject* pHair = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_HairParts" })
 		.Add_ObjDesc(pHairDesc)

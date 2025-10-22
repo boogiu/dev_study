@@ -228,13 +228,14 @@ namespace Engine
 	}TILE_INDEX;
 
 	struct TILE_INFO {
-		_uint TileFlag = {};												//타일 타입 비트 플래그
+		_uint TileFlag = {};													//타일 타입 비트 플래그
 		class CTileBlock* pTileBlock = { nullptr };		//실제 배치된 타일
 	};
 
 	typedef struct tagMapFileHeader {
 		TILESYSTEM_INFO tileInfo = {};
 		_uint iFieldOutCount = {};
+		_uint iBaseFieldCount = {};
 		_uint iTileCount = {};
 		_uint iStructureCount = {};
 	}MAP_FILE_HEADER;
@@ -271,13 +272,15 @@ namespace Engine
 	}AUTO_TILE_HEADER;
 
 	typedef struct tagAutoTileDesc {
-		_float rotation;                     
+		_float rotation;
 		NEIGHBOR_INDEX Connectable;         
 		NEIGHBOR_INDEX NeverConnectable;     
 	}AUTO_TILE_DESC;
 
 	typedef struct tagAutoTile {
-
+		string TypeName = {};
+		AUTO_TILE_DESC rotateType[4];
+		_bool Patial = {};
 	}AUTO_TILE;
 
 #pragma pack(pop)

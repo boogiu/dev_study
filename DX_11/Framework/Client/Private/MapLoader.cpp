@@ -10,6 +10,7 @@
 #include "FieldOut.h"
 #include "BaseField.h"
 #include "Builder.h"
+#include "AutoTile.h"
 
 CMapLoader::CMapLoader()
 {
@@ -24,7 +25,8 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 
 	MAP_FILE_HEADER mapFileHeader = {};
 	ifs.read(reinterpret_cast<char*>(&mapFileHeader), sizeof(MAP_FILE_HEADER));
-
+	//tempFileHeader mapFileHeader = {};
+	//ifs.read(reinterpret_cast<char*>(&mapFileHeader), sizeof(tempFileHeader));
 	CGameInstance::GetInstance()->Excute_TileSystem(mapFileHeader.tileInfo);
 	auto pProto = CGameInstance::GetInstance()->Get_PrototypeMgr();
 	auto pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
@@ -38,22 +40,22 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 		MAP_OBJECT_HEADER objHeader = {};
 		ifs.read(reinterpret_cast<char*>(&objHeader), sizeof(MAP_OBJECT_HEADER));
 
-	//pRcsMgr->Add_ResourcePath(objHeader.ModelName, objHeader.ModelPath);
-	//pRcsMgr->Add_ResourcePath(objHeader.MaterialName, objHeader.MaterialPath);
-	//
-	//CFieldOut::FIELDOUT_DESC* ObjDesc = new CFieldOut::FIELDOUT_DESC;
-	//ObjDesc->ModelName = objHeader.ModelName;
-	//ObjDesc->MaterialName = objHeader.MaterialName;
-	//ObjDesc->Index = objHeader.Index;
-	//ObjDesc->LevelTag = Desc.LevelTag;
-	//
-	//CGameObject* pFieldOut =
-	//	Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldOut" })
-	//	.Position({ objHeader.vWorldPos.x,objHeader.vWorldPos.y,objHeader.vWorldPos.z })
-	//	.Add_ObjDesc(ObjDesc)
-	//	.Build(objHeader.ModelName);
-	//
-	//pObjMgr->Add_Object(pFieldOut, Desc);
+		pRcsMgr->Add_ResourcePath(objHeader.ModelName, objHeader.ModelPath);
+		pRcsMgr->Add_ResourcePath(objHeader.MaterialName, objHeader.MaterialPath);
+
+		CFieldOut::FIELDOUT_DESC* ObjDesc = new CFieldOut::FIELDOUT_DESC;
+		ObjDesc->ModelName = objHeader.ModelName;
+		ObjDesc->MaterialName = objHeader.MaterialName;
+		ObjDesc->Index = objHeader.Index;
+		ObjDesc->LevelTag = Desc.LevelTag;
+
+		CGameObject* pFieldOut =
+			Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldOut" })
+			.Position({ objHeader.vWorldPos.x,objHeader.vWorldPos.y,objHeader.vWorldPos.z })
+			.Add_ObjDesc(ObjDesc)
+			.Build(objHeader.ModelName);
+
+		pObjMgr->Add_Object(pFieldOut, Desc);
 	}
 
 	for (size_t i = 0; i < mapFileHeader.iStructureCount; i++)
@@ -64,19 +66,36 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 
 	CGameObject* pBaseField =
 		Builder::Create_Object({ Desc.LevelTag, "GameObject_BaseField" })
-		.Position({ 0,0,0 })
+		.Position({ 0,-0.05f,0 })
 		.Build("Base_Plane");
 
 	pObjMgr->Add_Object(pBaseField, { Desc.LevelTag,"Base_Field" });
 
 	CBaseField* pBaseFieldCast = dynamic_cast<CBaseField*>(pBaseField);
+	pBaseFieldCast->Load_BaseTile(ifs, mapFileHeader.iBaseFieldCount);
+
 	for (size_t i = 0; i < mapFileHeader.iTileCount; i++)
 	{
-		INSTANCE_TILE instanceTile = {};
-		ifs.read(reinterpret_cast<char*>(&instanceTile), sizeof(INSTANCE_TILE));
+		MAP_TILE_HEADER Tile_Header = {};
+		ifs.read(reinterpret_cast<char*>(&Tile_Header), sizeof(MAP_TILE_HEADER));
 
-		pBaseFieldCast->Load_Tile(instanceTile);
+		CAutoTile::TILE_TYPE_DESC* objDesc = new CAutoTile::TILE_TYPE_DESC;
+		objDesc->TypeName = string(Tile_Header.BaseTypeName);
+		objDesc->index = Tile_Header.Index;
+
+		CGameObject* pObject =
+			Builder::Create_Object({ "GamePlay_Level", "GamePlay_GameObject_AutoTile"})
+			.Position({ 0,0,0 })
+			.Scale({ 1,1,1 })
+			.Add_ObjDesc(objDesc)
+			.Build(objDesc->TypeName);
+
+		if (pObject)
+			pObjMgr->Add_Object(pObject, { Desc.LevelTag,"Tile_Layer" });
+		else
+			Safe_Release(pObject);
 	}
+
 	ifs.close();
 	return S_OK;
 }

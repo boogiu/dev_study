@@ -10,7 +10,7 @@ _bool Helper::ContainsNonAscii(const string& str)
 	}
 	return false;
 }
-
+ 
 _bool Helper::IsPathInProjectFolder(const string& path)
 {
 	//현재 솔루션 Path

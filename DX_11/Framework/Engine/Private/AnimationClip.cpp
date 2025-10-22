@@ -36,7 +36,7 @@ HRESULT CAnimationClip::Initialize(const string& animationPath)
 	return S_OK;
 }
 
-_float CAnimationClip::TranslateAnimateMatrix(vector<_float4x4>& transfomationMatrices, _float CurrentTrackPosition, _float dt, _bool isLoop)
+_float CAnimationClip::TranslateAnimateMatrix(vector<_float4x4>& transfomationMatrices, _float CurrentTrackPosition, _float dt, _bool isLoop, _bool* isAnimEnd)
 {
 
 	_float RealTrackPosition = CurrentTrackPosition + dt * m_fTickPerSecond;
@@ -44,6 +44,12 @@ _float CAnimationClip::TranslateAnimateMatrix(vector<_float4x4>& transfomationMa
 	if (isLoop) {
 		if (RealTrackPosition > m_fDuration)
 			return 0;
+	}
+	else {
+		if (RealTrackPosition > m_fDuration) {
+			RealTrackPosition = m_fDuration; 
+			*isAnimEnd = true;
+		}
 	}
 
 	for (size_t i = 0; i < m_iNumChannels; i++)

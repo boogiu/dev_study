@@ -50,9 +50,7 @@ void CControlPanel::Render_GUI()
 	ImGui::EndChild();
 
 	ImGui::BeginChild("##Save Btn", ImVec2{ 200, textLineHeight * 2 }, true);
-	if (ImGui::Button("Create_Base")) {
-		CEditorSystem::GetInstance()->Create_Base();
-	}
+
 	if (ImGui::Button("SaveMapDatas")) {
 		CEditorSystem::GetInstance()->Save_MapData();
 	}

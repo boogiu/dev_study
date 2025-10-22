@@ -20,6 +20,7 @@
 #include "FieldOutBlocks.h"
 #include "StructureObject.h"
 #include "MapTileInstance.h"
+#include "MapObject.h"
 
 #include "DirectoryPanel.h"
 #include "ControlPanel.h"
@@ -50,6 +51,7 @@ HRESULT CEditorSystem::Initialize()
 	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_FieldOut", CFieldOutBlocks::Create());
 	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_Structure", CStructureObject::Create());
 	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_TileInstance", CMapTileInstance::Create());
+	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_MapObject", CMapObject::Create());
 
 
 	/*팔레트 우선 등록*/
@@ -84,7 +86,7 @@ void CEditorSystem::Update(_float dt)
 void CEditorSystem::Execute_TileSystem()
 {
 	HRESULT hasFile = Load_MapData();
-	
+
 
 	/*그리드 역할의 오브젝트 생성*/
 	IProtoService* pProto = CGameInstance::GetInstance()->Get_PrototypeMgr();
@@ -98,9 +100,6 @@ void CEditorSystem::Execute_TileSystem()
 	m_pObjMgr->Add_Object(pGrid, { G_GlobalLevelKey,"Global_Layer" });
 	m_pGrid = dynamic_cast<CGridObject*>(pGrid);
 	Safe_AddRef(m_pGrid);
-
-
-
 }
 
 void CEditorSystem::Create_GUIPanels()
@@ -165,24 +164,253 @@ void CEditorSystem::Create_Ray()
 	m_tRay.fMaxDistance = 1550.f;
 }
 
-void CEditorSystem::Create_Base()
+void CEditorSystem::Brushing_Tiles()
 {
-	auto pResMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
-	pResMgr->Add_ResourcePath("Base_0.model", "../../Resources/Models/FieldRoad/Base/Base_0/Base_0.model");
-	pResMgr->Add_ResourcePath("Base_0.mat", "../../Resources/Models/FieldRoad/Base/Base_0/Base_0.mat");
-	auto info = m_EditorContext.ContextTileInfo;
+	if (m_pInputService->Mouse_Down(MOUSE_BTN::LB)) {
+		m_GridMinEdge = m_pGrid->Get_MinEdge();
+	}
 
-	/*베이스 타일을 생성*/
-	CGameObject* pObject =
-		Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Structure" })
-		.Position({ info.HalfPoint().x , info.vWorldMin.y - 0.1f ,info.HalfPoint().z })
-		.Scale({ 16 * 8 + 3 + 3 , 0 , 16 * 6 + 3 + 3 })
-		.Build("Base_Plane", &m_BaseTileID);
+	if (CGameInstance::GetInstance()->Get_GUISystem()->UsingUI()) return;
 
-	m_pObjMgr->Add_Object(pObject, { "Editor_Level","Base_Plane" });
-	dynamic_cast<CStructureObject*>(pObject)->Link_Data("Base_0");
+	if (m_pInputService->Mouse_Away(MOUSE_BTN::LB)) {
+		m_GridMaxEdge = m_pGrid->Get_MaxEdge();
 
-	return;
+		auto indexArea = m_pTileSystem->Get_IndeciesByArea(
+			{ m_GridMinEdge.x,m_GridMinEdge.y,m_GridMinEdge.z,1 },
+			{ m_GridMaxEdge.x,m_GridMaxEdge.y,m_GridMaxEdge.z,1 }
+		);
+
+		for (TILE_INDEX index : indexArea) {
+			ConvertMaterial(m_EditorContext.baseType, index);
+		}
+
+	}
+}
+
+void CEditorSystem::ConvertMaterial(string brushType, TILE_INDEX Index)
+{
+	_float4 vPos = m_pTileSystem->Get_PositionByIndex(Index, ANCHOR::Center); {
+		if (brushType == "Base_0") {
+			m_pTile->Add_Tile(vPos, { 0,0,0,0 });
+		}
+		else {
+			CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
+			objDesc->TypeName = brushType;
+			objDesc->index = Index;
+			CGameObject* pObject = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
+				.Position({ 0,0,0 })
+				.Scale({ 1,1,1 })
+				.Add_ObjDesc(objDesc)
+				.Build(brushType);
+			m_pObjMgr->Add_Object(pObject, { "Editor_Level","Tile_Layer" });
+		}
+	}
+}
+/*타일 전체 정보 저장*/
+struct tempFileHeader
+{
+	TILESYSTEM_INFO tileInfo = {};
+	_uint iFieldOutCount = {};
+	_uint iBaseFieldCount = {};
+	_uint iTileCount = {};
+	_uint iStructureCount = {};
+};
+
+HRESULT CEditorSystem::Load_MapData()
+{
+	//string path = "../../Resources/Data/MapData.dat";
+	//filesystem::path directory(path);
+	//
+	//ifstream ifs(path.c_str(), ios::binary);
+	//if (!ifs.is_open())
+	//{
+	//	TILESYSTEM_INFO info = m_EditorContext.ContextTileInfo;
+	//	info.iTileCountX = 16 * 6 * 2;
+	//	info.iTileCountY = 4;/*0~4 -> 5칸*/
+	//	info.iTileCountZ = 16 * 6 * 2;
+	//	info.vWorldMin = { 0,0,0 };
+	//	info.vWorldMax = { info.iTileCountX * 10.f,	info.iTileCountY * 15.f	, info.iTileCountZ * 10.f };
+	//
+	//}
+	//
+	//
+	////MAP_FILE_HEADER MapFile = {};
+	////ifs.read(reinterpret_cast<char*>(&MapFile), sizeof(MAP_FILE_HEADER));
+	//
+	//tempFileHeader MapFile = {};
+	//ifs.read(reinterpret_cast<char*>(&MapFile), sizeof(tempFileHeader));
+	//
+	///*타일 시스템 구동*/
+	//m_EditorContext.ContextTileInfo = MapFile.tileInfo;
+	//CGameInstance::GetInstance()->Excute_TileSystem(m_EditorContext.ContextTileInfo);
+	//m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+	//
+	//for (size_t i = 0; i < MapFile.iFieldOutCount; i++)
+	//{
+	//	MAP_OBJECT_HEADER ObjHeader = {};
+	//	ifs.read(reinterpret_cast<char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
+	//
+	//	CGameObject* pObject =
+	//		Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_FieldOut" })
+	//		.Position({ 0,0,0 })
+	//		.Scale({ 1,1,1 })
+	//		.Build(ObjHeader.ModelName);
+	//
+	//	HRESULT hr = dynamic_cast<CFieldOutBlocks*>(pObject)->Load_Object(ObjHeader);
+	//
+	//	if (SUCCEEDED(hr))
+	//		m_pObjMgr->Add_Object(pObject, { "Editor_Level","FieldOut_Layer" });
+	//	else
+	//		Safe_Release(pObject);
+	//}
+	//
+	//for (size_t i = 0; i < MapFile.iStructureCount; i++)
+	//{
+	//	MAP_OBJECT_HEADER ObjHeader = {};
+	//	ifs.read(reinterpret_cast<char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
+	//
+	//	CGameObject* pObject =
+	//		Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Structure" })
+	//		.Position({ 0,0,0 })
+	//		.Scale({ 1,1,1 })
+	//		.Build(ObjHeader.ModelName);
+	//
+	//	HRESULT hr = dynamic_cast<CStructureObject*>(pObject)->Load_Object(ObjHeader);
+	//
+	//	if (SUCCEEDED(hr))
+	//		m_pObjMgr->Add_Object(pObject, { "Editor_Level","Structure_Layer" });
+	//	else
+	//		Safe_Release(pObject);
+	//}
+	//
+	//CGameObject* pTile = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_TileInstance" })
+	//	.Position({ 0,0,0})
+	//	.Scale({ 1,1,1 })
+	//	.Build("MapTile");
+	//
+	//m_pObjMgr->Add_Object(pTile, { "Editor_Level","Base_Plane" });
+	//
+	//m_pTile = dynamic_cast<CMapTileInstance*>(pTile);
+	//Safe_AddRef(m_pTile);
+	//
+	//for (size_t i = 0; i < MapFile.iBaseFieldCount; i++)
+	//{
+	//	INSTANCE_TILE tile = {};
+	//	ifs.read(reinterpret_cast<char*>(&tile), sizeof(INSTANCE_TILE));
+	//
+	//	m_pTile->Load_Tile(tile);
+	//}
+	//
+	//for (size_t i = 0; i < MapFile.iTileCount; i++)
+	//{
+	//	MAP_TILE_HEADER Tile_Header = {};
+	//	ifs.read(reinterpret_cast<char*>(&Tile_Header), sizeof(MAP_TILE_HEADER));
+	//
+	//	CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
+	//	objDesc->TypeName = string(Tile_Header.BaseTypeName);
+	//	objDesc->index = Tile_Header.Index;
+	//
+	//	CGameObject* pObject =
+	//		Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
+	//		.Add_ObjDesc(objDesc)
+	//		.Position({ 0,0,0 })
+	//		.Scale({ 1,1,1 })
+	//		.Build(objDesc->TypeName);
+	//
+	//	if (pObject)
+	//		m_pObjMgr->Add_Object(pObject, { "Editor_Level","Tile_Layer" });
+	//	else
+	//		Safe_Release(pObject);
+	//}
+	//
+	//ifs.close();
+	return S_OK;
+}
+
+HRESULT CEditorSystem::Save_MapData()
+{
+	string path = "../../Resources/Data/MapData.dat";
+	filesystem::path directory(path);
+
+	ofstream ofs(path.c_str(), ios::binary);
+	if (!ofs.is_open())
+		return E_FAIL;
+
+	/*타일 전체 정보 저장*/
+	MAP_FILE_HEADER MapFile = {};
+	MapFile.tileInfo = m_EditorContext.ContextTileInfo;
+
+	MapFile.iFieldOutCount = 0;
+	MapFile.iStructureCount = 0;
+	MapFile.iBaseFieldCount = 0;
+	MapFile.iTileCount = 0;
+
+
+	/*1. FieldOut Tile*/
+	auto FieldOutLayer = m_pObjMgr->Get_Layer({ "Editor_Level","FieldOut_Layer" });
+
+	if (FieldOutLayer)
+		MapFile.iFieldOutCount = FieldOutLayer->Get_ObjectCount();
+
+	/*2. Structure Tile*/
+	auto StructureLayer = m_pObjMgr->Get_Layer({ "Editor_Level","Structure_Layer" });
+	if (StructureLayer)
+		MapFile.iStructureCount = StructureLayer->Get_ObjectCount();
+
+	/*3. Base Tile*/
+	MapFile.iBaseFieldCount = m_pTile->Get_TileCount();
+
+	/*4. Tile Tile*/
+	auto Tile_Layer = m_pObjMgr->Get_Layer({ "Editor_Level","Tile_Layer" });
+	if (Tile_Layer)
+		MapFile.iTileCount = Tile_Layer->Get_ObjectCount();
+
+	/*5. MapObject Tile*/
+	auto MapObject_Layer = m_pObjMgr->Get_Layer({ "Editor_Level","MapObject_Layer" });
+	if (MapObject_Layer)
+		MapFile.iMapObjectCount = MapObject_Layer->Get_ObjectCount();
+
+	ofs.write(reinterpret_cast<char*>(&MapFile), sizeof(MAP_FILE_HEADER));
+
+	{
+		auto& ObjectVector = FieldOutLayer->Get_AllObject();
+		for (auto& FieldOut : ObjectVector) {
+			CFieldOutBlocks* pFiedlOut = dynamic_cast<CFieldOutBlocks*>(FieldOut);
+			if (pFiedlOut)
+				pFiedlOut->Save_MapData(ofs);
+		}
+	}
+
+	{
+		auto& ObjectVector = StructureLayer->Get_AllObject();
+		for (auto& structure : ObjectVector) {
+			CStructureObject* pStructure = dynamic_cast<CStructureObject*>(structure);
+			if (pStructure)
+				pStructure->Save_MapData(ofs);
+		}
+	}
+
+	{
+		m_pTile->Save_Tiles(ofs);
+	}
+
+	{
+		auto& ObjectVector = Tile_Layer->Get_AllObject();
+		for (auto& tiles : ObjectVector) {
+			dynamic_cast<CTileObject*>(tiles)->Save_MapData(ofs);
+		}
+	}
+
+	{
+		auto& ObjectVector = MapObject_Layer->Get_AllObject();
+		for (auto& tiles : ObjectVector) {
+			dynamic_cast<CMapObject*>(tiles)->Save_MapData(ofs);
+		}
+	}
+
+	ofs.close();
+
+	return S_OK;
 }
 
 void CEditorSystem::DragDrop_Object()
@@ -221,217 +449,18 @@ void CEditorSystem::DragDrop_Object()
 				object->Object_OnGrid(index);
 		}
 					  break;
+		case MAPOBJECT: {
+			CMapObject* object = dynamic_cast<CMapObject*>(obj);
+			if (object)
+				object->Object_OnGrid(index);
+		}
+					  break;
 		default:
 			break;
 		}
 		m_pDirectoryPanel->Notify_CreateComplete();
 		m_EditorContext.pEditingObject = nullptr;
 	}
-}
-
-void CEditorSystem::Brushing_Tiles()
-{
-	if (m_pInputService->Mouse_Down(MOUSE_BTN::LB)) {
-		m_GridMinEdge = m_pGrid->Get_MinEdge();
-	}
-
-	if (CGameInstance::GetInstance()->Get_GUISystem()->UsingUI()) return;
-
-	if (m_pInputService->Mouse_Away(MOUSE_BTN::LB)) {
-		m_GridMaxEdge = m_pGrid->Get_MaxEdge();
-
-		auto indexArea = m_pTileSystem->Get_IndeciesByArea(
-			{ m_GridMinEdge.x,m_GridMinEdge.y,m_GridMinEdge.z,1 },
-			{ m_GridMaxEdge.x,m_GridMaxEdge.y,m_GridMaxEdge.z,1 }
-		);
-
-		for (TILE_INDEX index : indexArea) {
-			_float4 vPos = m_pTileSystem->Get_PositionByIndex(index, ANCHOR::Center);
-			m_pTile->Add_Tile(vPos, ConvertMaterial(m_EditorContext.baseType));
-		}
-
-	}
-}
-
-_float4 CEditorSystem::ConvertMaterial(string Type)
-{
-	if (Type == "Base_0") {
-		return _float4{-1,0,0,0};
-	}
-	if (Type == "RoadDarkSoil") {
-		return _float4{ -1,3,0,0 };
-	}
-	if (Type == "RoadSoil") {
-		return _float4{ -1,6,0,0 };
-	}
-	if (Type == "RoadSand") {
-		return _float4{ -1,5,0,0 };
-	}
-	if (Type == "RoadBrick") {
-		return _float4{ 0,2,0,0 };
-	}
-	if (Type == "RoadFanPattern") {
-		return _float4{ 1,4,0,0 };
-	}
-	if (Type == "RoadStone") {
-		return _float4{ 2,7,0,0 };
-	}
-	if (Type == "RoadTile") {
-		return _float4{ 3,9,0,0 };
-	}
-	if (Type == "RoadWood") {
-		return _float4{ 4,10,0,0 };
-	}
-
-	return { 0,0,0,0 };
-}
-
-HRESULT CEditorSystem::Load_MapData()
-{
-	string path = "../../Resources/Data/MapData.dat";
-	filesystem::path directory(path);
-
-	ifstream ifs(path.c_str(), ios::binary);
-	if (!ifs.is_open())
-	{
-		TILESYSTEM_INFO info = m_EditorContext.ContextTileInfo;
-		info.iTileCountX = 16 * 6 * 2;
-		info.iTileCountY = 4;/*0~4 -> 5칸*/
-		info.iTileCountZ = 16 * 6 * 2;
-		info.vWorldMin = { 0,0,0 };
-		info.vWorldMax = { info.iTileCountX * 10.f,	info.iTileCountY * 15.f	, info.iTileCountZ * 10.f };
-
-	}
-
-	/*타일 전체 정보 저장*/
-	MAP_FILE_HEADER MapFile = {};
-	ifs.read(reinterpret_cast<char*>(&MapFile), sizeof(MAP_FILE_HEADER));
-
-	/*타일 시스템 구동*/
-	m_EditorContext.ContextTileInfo = MapFile.tileInfo;
-	CGameInstance::GetInstance()->Excute_TileSystem(m_EditorContext.ContextTileInfo);
-	m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-
-	for (size_t i = 0; i < MapFile.iFieldOutCount; i++)
-	{
-		MAP_OBJECT_HEADER ObjHeader = {};
-		ifs.read(reinterpret_cast<char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
-
-		CGameObject* pObject =
-			Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_FieldOut" })
-			.Position({ 0,0,0 })
-			.Scale({ 1,1,1 })
-			.Build(ObjHeader.ModelName);
-
-		HRESULT hr = dynamic_cast<CFieldOutBlocks*>(pObject)->Load_Object(ObjHeader);
-
-		if (SUCCEEDED(hr))
-			m_pObjMgr->Add_Object(pObject, { "Editor_Level","FieldOut_Layer" });
-		else
-			Safe_Release(pObject);
-	}
-
-	for (size_t i = 0; i < MapFile.iStructureCount; i++)
-	{
-		MAP_OBJECT_HEADER ObjHeader = {};
-		ifs.read(reinterpret_cast<char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
-
-		CGameObject* pObject =
-			Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Structure" })
-			.Position({ 0,0,0 })
-			.Scale({ 1,1,1 })
-			.Build(ObjHeader.ModelName);
-
-		HRESULT hr = dynamic_cast<CStructureObject*>(pObject)->Load_Object(ObjHeader);
-
-		if (SUCCEEDED(hr))
-			m_pObjMgr->Add_Object(pObject, { "Editor_Level","Structure_Layer" });
-		else
-			Safe_Release(pObject);
-	}
-
-
-	CGameObject* pTile = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_TileInstance" })
-		.Position(m_EditorContext.ContextTileInfo.HalfPoint())
-		.Scale(m_EditorContext.ContextTileInfo.WorldSize())
-		.Build("MapTile");
-
-	m_pObjMgr->Add_Object(pTile, { "Editor_Level","Base_Plane" });
-
-	m_pTile = dynamic_cast<CMapTileInstance*>(pTile);
-	Safe_AddRef(m_pTile);
-
-	for (size_t i = 0; i < MapFile.iTileCount; i++)
-	{
-		INSTANCE_TILE tile = {};
-		ifs.read(reinterpret_cast<char*>(&tile), sizeof(INSTANCE_TILE));
-
-		m_pTile->Load_Tile(tile);
-	}
-
-	ifs.close();
-	return S_OK;
-}
-
-HRESULT CEditorSystem::Save_MapData()
-{
-	string path = "../../Resources/Data/MapData.dat";
-	filesystem::path directory(path);
-
-	ofstream ofs(path.c_str(), ios::binary);
-	if (!ofs.is_open())
-		return E_FAIL;
-
-	/*타일 전체 정보 저장*/
-	MAP_FILE_HEADER MapFile = {};
-	MapFile.tileInfo = m_EditorContext.ContextTileInfo;
-
-	MapFile.iFieldOutCount = 0;
-	MapFile.iStructureCount = 0;
-	MapFile.iTileCount = 0;
-
-
-	/*1. FieldOut Tile*/
-	auto FieldOutLayer = m_pObjMgr->Get_Layer({ "Editor_Level","FieldOut_Layer" });
-
-	if (FieldOutLayer)
-		MapFile.iFieldOutCount = FieldOutLayer->Get_ObjectCount();
-
-	/*2. Structure Tile*/
-	auto StructureLayer = m_pObjMgr->Get_Layer({ "Editor_Level","Structure_Layer" });
-	if (StructureLayer)
-		MapFile.iStructureCount = StructureLayer->Get_ObjectCount();
-
-	/*3. Tile Tile*/
-		MapFile.iTileCount = m_pTile->Get_TileCount();
-
-	ofs.write(reinterpret_cast<char*>(&MapFile), sizeof(MAP_FILE_HEADER));
-
-	{
-		auto& ObjectVector = FieldOutLayer->Get_AllObject();
-		for (auto& FieldOut : ObjectVector) {
-			CFieldOutBlocks* pFiedlOut = dynamic_cast<CFieldOutBlocks*>(FieldOut);
-			if (pFiedlOut)
-				pFiedlOut->Save_MapData(ofs);
-		}
-	}
-
-	{
-		auto& ObjectVector = StructureLayer->Get_AllObject();
-		for (auto& structure : ObjectVector) {
-			CStructureObject* pStructure = dynamic_cast<CStructureObject*>(structure);
-			if (pStructure)
-				pStructure->Save_MapData(ofs);
-		}
-	}
-
-	{
-		m_pTile->Save_Tiles(ofs);
-	}
-
-	ofs.close();
-
-	return S_OK;
 }
 
 HRESULT CEditorSystem::Create_MapObject(const string& folderName, ObjType eType)
@@ -459,6 +488,15 @@ HRESULT CEditorSystem::Create_MapObject(const string& folderName, ObjType eType)
 			.Build(folderName);
 		m_pObjMgr->Add_Object(pObject, { "Editor_Level","Structure_Layer" });
 		dynamic_cast<CStructureObject*>(pObject)->Link_Data(folderName);
+	}
+											break;
+	case MapEditor::CEditorSystem::MAPOBJECT: {
+		pObject = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_MapObject" })
+			.Position({ 0,0,0 })
+			.Scale({ 1,1,1 })
+			.Build(folderName);
+		m_pObjMgr->Add_Object(pObject, { "Editor_Level","MapObject_Layer" });
+		dynamic_cast<CMapObject*>(pObject)->Link_Data(folderName);
 	}
 											break;
 	default:

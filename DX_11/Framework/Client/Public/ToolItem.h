@@ -23,6 +23,8 @@ public:
     virtual void Render_GUI();
 
 public:
+    void Set_Item(ITEM_DATA_DESC data);
+public:
     static CToolItem* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;
     void Free() override;

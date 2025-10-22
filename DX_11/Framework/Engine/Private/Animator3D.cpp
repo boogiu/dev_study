@@ -116,7 +116,15 @@ HRESULT CAnimator3D::Chane_Animation(string animName, _float convertDuration)
 	if (iter==m_pAnimNames.end()) return E_FAIL;
 
 	if(iter->second == m_iCurrentClipIndex)return E_FAIL;
-	if(m_eState == ANIMATOR_STATE::CONVERTING)return E_FAIL;
+
+	if (m_eState == ANIMATOR_STATE::CONVERTING)
+	{
+		m_QueuedAnim.ConvertTime = convertDuration;
+		m_QueuedAnim.IsQueued = true;
+		m_QueuedAnim.Name = animName;
+		m_QueuedAnim.animIndex = iter->second;
+		return S_OK; 
+	}
 
 	m_eState = ANIMATOR_STATE::CONVERTING;
 	m_fPrevTrackPosition = m_fCurrentTrackPosition;
@@ -129,18 +137,23 @@ HRESULT CAnimator3D::Chane_Animation(string animName, _float convertDuration)
 
 _bool CAnimator3D::isCurrentAnimEnd()
 {
-	if(m_eState == ANIMATOR_STATE::CONVERTING)
-		return false; //전환 중이면 끝나지 않은 것
-
+	if (m_eState == ANIMATOR_STATE::CONVERTING)
+		return false;
+	else if (m_pAnimLoops[m_iCurrentClipIndex]) {
+		return false;
+	}
 	else
 	{
-		return m_fCurrentTrackPosition > m_pAnimClips[m_iCurrentClipIndex]->Get_Duration();
+		return isAnimEnd;
 	}
 }
 
 string CAnimator3D::Get_CurrentAnimName()
 {
-	return m_pAnimClips[m_iCurrentClipIndex]->Get_Name();
+	if (m_eState == ANIMATOR_STATE::CONVERTING)
+		return m_pAnimClips[m_iNextClipIndex]->Get_Name();
+	else
+		return m_pAnimClips[m_iCurrentClipIndex]->Get_Name();
 }
 
 void CAnimator3D::Control_Bone(const string& boneName, _fmatrix BoneMatrix)
@@ -181,7 +194,9 @@ _float4x4 CAnimator3D::Get_BoneMatrix(_uint Index)
 void CAnimator3D::Animation_Run(_float dt)
 {
 	auto& nowClip = m_pAnimClips[m_iCurrentClipIndex];
-	m_fCurrentTrackPosition = nowClip->TranslateAnimateMatrix(m_TransfromationMatrices, m_fCurrentTrackPosition, dt, m_pAnimLoops[m_iCurrentClipIndex]);
+	m_fCurrentTrackPosition = nowClip->TranslateAnimateMatrix(
+		m_TransfromationMatrices, m_fCurrentTrackPosition, 
+		dt, m_pAnimLoops[m_iCurrentClipIndex], &isAnimEnd);
 }
 
 void CAnimator3D::Animation_Convert(_float dt)
@@ -201,7 +216,13 @@ void CAnimator3D::Animation_Convert(_float dt)
 		m_fCurrentTrackPosition = 0;
 		m_eState = ANIMATOR_STATE::RUNNING;
 		m_iCurrentClipIndex = m_iNextClipIndex;
-		m_iNextClipIndex = 0;
+		m_iNextClipIndex = UINT_MAX;
+		isAnimEnd = false;
+		if (m_QueuedAnim.IsQueued)
+		{
+			Chane_Animation(m_QueuedAnim.Name, m_QueuedAnim.ConvertTime);
+			m_QueuedAnim.IsQueued = false;
+		}
 	}
 
 }

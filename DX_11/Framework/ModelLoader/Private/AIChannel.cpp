@@ -84,12 +84,12 @@ void CAIChannel::Save_Channel(ofstream& ofs)
 	if (m_isRoot) {
 		for (auto& keyFrame : m_KeyFrames) {
 
-			XMMATRIX keyFramMatrix =
+			_matrix keyFramMatrix =
 				XMMatrixScalingFromVector(XMLoadFloat3(&keyFrame.vScale)) *
 				XMMatrixRotationQuaternion(XMLoadFloat4(&keyFrame.vRotation)) *
 				XMMatrixTranslationFromVector(XMLoadFloat3(&keyFrame.vTranslation));
 
-			XMMATRIX saveMatrix = XMMatrixMultiply(keyFramMatrix, XMMatrixRotationY(XMConvertToRadians(g_iExportPreRotate)));
+			_matrix saveMatrix = XMMatrixMultiply(keyFramMatrix, XMMatrixRotationY(XMConvertToRadians(g_iExportPreRotate)));
 
 			_vector outScale, outRot, outTrans;
 			XMMatrixDecompose(&outScale, &outRot, &outTrans, saveMatrix);
@@ -102,6 +102,7 @@ void CAIChannel::Save_Channel(ofstream& ofs)
 
 			if (m_isModelRoot && m_RemoveMdlTrans) {
 				keyFrame.vTranslation = { 0,0,0 };
+				keyFrame.vRotation = { 0,0,0,0 };
 			}
 			ofs.write(reinterpret_cast<const char*>(&SaveKeyFrame), sizeof(KEYFRAME));
 		}
@@ -111,6 +112,7 @@ void CAIChannel::Save_Channel(ofstream& ofs)
 
 			if (m_isModelRoot && m_RemoveMdlTrans) {
 				keyFrame.vTranslation = { 0,0,0 };
+				keyFrame.vRotation = { 0,0,0,0 };
 			}
 			ofs.write(reinterpret_cast<const char*>(&keyFrame), sizeof(KEYFRAME));
 		}
@@ -180,6 +182,7 @@ HRESULT CAIChannel::TranslateAnimateMatrix(vector<_float4x4>& transfomationMatri
 
 	if (m_isModelRoot && m_RemoveMdlTrans) {
 		keyFrame.vTranslation = {0,0,0,0};
+		keyFrame.vRotation = {0,0,0,0};
 	}
 
 	XMStoreFloat3(&nowFrame.vTranslation, keyFrame.vTranslation);

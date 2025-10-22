@@ -46,8 +46,8 @@ namespace Engine {
 	/*인스턴싱 패킷*/
 	typedef struct DrawInstancePacket : BASE_PACKET {
 		_uint DrawIndex = {};			/*몇번째 메시 그리는데?*/
-		_uint MaterialIndex = {};		/*그 메시는 뭐쓰는데*/
-
+		_uint MaterialIndex = {};		/*그 메시는 뭐쓰는데*/		
+		_float4x4* pWorldMatrix;
 		class CInstanceModel* pModel = { nullptr };
 		class CMaterial* pMaterial = { nullptr };
 	}INSTANCE_PACKET;

@@ -18,7 +18,8 @@ class CDirectoryPanel :
 	enum  Mode
 	{
 		FIELDOUT,
-		STRUCTURE
+		STRUCTURE,
+		MAPOBJECT
 	};
 
 private:

@@ -261,6 +261,7 @@ HRESULT CGameObject::Make_InstancePacket()
 		if (!packet.pModel->isDrawable(i)) continue;
 		packet.DrawIndex = i;
 		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
+		packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
 		CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Instance(packet);
 	}
 

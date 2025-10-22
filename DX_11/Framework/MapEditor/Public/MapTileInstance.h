@@ -26,8 +26,7 @@ public:
     void Load_Tile(INSTANCE_TILE tile);
 
 private:
-    HRESULT ReadyTexture2DArray( );
-    HRESULT CreateTexture2DArrayFromFiles(vector<string> TexturePath, vector<string> TextureKey, ID3D11ShaderResourceView** pSrv);
+    HRESULT Clear_Tile( );
 
 public:
     void Render_GUI() override;
@@ -37,9 +36,6 @@ public:
 
 private:
     vector<INSTANCE_TILE> m_Tiles;
-    ID3D11ShaderResourceView* m_pTextureArrayDiffuse = { nullptr };
-    ID3D11ShaderResourceView* m_pTextureArrayPalette = { nullptr };
-
 public:
     static CMapTileInstance* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

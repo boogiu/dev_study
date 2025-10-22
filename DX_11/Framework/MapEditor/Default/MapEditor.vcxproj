@@ -45,6 +45,7 @@
     <ClInclude Include="..\Public\FieldOutBlocks.h" />
     <ClInclude Include="..\Public\Free_Camera.h" />
     <ClInclude Include="..\Public\GridObject.h" />
+    <ClInclude Include="..\Public\MapObject.h" />
     <ClInclude Include="..\Public\MapTileInstance.h" />
     <ClInclude Include="..\Public\StructureObject.h" />
     <ClInclude Include="..\Public\TileObject.h" />
@@ -78,6 +79,7 @@
     <ClCompile Include="..\Private\EditorSystem.cpp" />
     <ClCompile Include="..\Private\Free_Camera.cpp" />
     <ClCompile Include="..\Private\GridObject.cpp" />
+    <ClCompile Include="..\Private\MapObject.cpp" />
     <ClCompile Include="..\Private\MapTileInstance.cpp" />
     <ClCompile Include="..\Private\StructureObject.cpp" />
     <ClCompile Include="..\Private\TileObject.cpp" />
@@ -180,7 +182,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);SOLUTION_DIR=R"($(SolutionDir))";_USING_GUI</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USING_GUI</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -193,6 +195,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../EngineSDK/Lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackCommitSize>104857600</StackCommitSize>
     </Link>
     <FxCompile>
       <ShaderType>Effect</ShaderType>

@@ -13,6 +13,14 @@ protected:
         _float ConversionDuration = {};
     };
 
+    struct QueuedAnim
+    {
+        string Name;
+        _float ConvertTime;
+        _bool IsQueued = false;
+        _uint animIndex = {};
+    };
+
 protected:
     CAnimator3D();
     CAnimator3D(const CAnimator3D& rhs);
@@ -73,8 +81,9 @@ protected:
     vector<class CAnimationClip*> m_pAnimClips;
     vector<_bool> m_pAnimLoops;
     unordered_map<string, _uint> m_pAnimNames;
+    QueuedAnim m_QueuedAnim; /*다음 애니메이션 대기열*/
 
-
+    _bool isAnimEnd = { false };
 public:
     static CAnimator3D* Create();
     virtual CComponent* Clone();

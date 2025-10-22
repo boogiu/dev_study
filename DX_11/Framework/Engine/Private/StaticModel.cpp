@@ -29,8 +29,14 @@ HRESULT CStaticModel::Initialize(COMPONENT_DESC* pArg)
 
 HRESULT CStaticModel::Link_Model(const string& levelKey, const string& modelDataKey)
 {
-    Safe_Release(m_pData);
+    if(m_pData)
+        Safe_Release(m_pData);
+
     m_pData = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_ModelData(levelKey, modelDataKey);
+
+    if (!m_pData)
+        return E_FAIL;
+
     Safe_AddRef(m_pData);
     m_DrawableMeshes.resize(m_pData->Get_MeshCount(), true);
     return S_OK;

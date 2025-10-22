@@ -52,6 +52,9 @@
     <Filter Include="02. MapObject\MapTileInstance">
       <UniqueIdentifier>{3489f5a4-4ac0-4387-8220-656f5578e4a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. MapObject\MapObjects">
+      <UniqueIdentifier>{ab1ca873-0e12-420f-b31d-7540af0b23dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc">
@@ -149,6 +152,9 @@
     <ClInclude Include="..\Public\MapTileInstance.h">
       <Filter>02. MapObject\MapTileInstance</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MapObject.h">
+      <Filter>02. MapObject\MapObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">
@@ -230,6 +236,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\MapTileInstance.cpp">
       <Filter>02. MapObject\MapTileInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject.cpp">
+      <Filter>02. MapObject\MapObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

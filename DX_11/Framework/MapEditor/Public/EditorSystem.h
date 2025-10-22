@@ -17,7 +17,7 @@ class CEditorSystem :
 	DECLARE_SINGLETON(CEditorSystem);
 public:
 	enum Mode { EditObj, BrushTile };
-	enum ObjType {FIELDOUT,STRUCTURE};
+	enum ObjType {FIELDOUT,STRUCTURE, MAPOBJECT};
 
 public:
 	struct Editor_Context {
@@ -41,7 +41,6 @@ public:
 	Editor_Context* Get_Context() { return &m_EditorContext; }
 	HRESULT Delete_Object(class CGameObject* pObject);
 	HRESULT Create_MapObject(const string& folderName, ObjType eType);
-	void Create_Base();
 
 public:
 	HRESULT Load_MapData();
@@ -53,7 +52,7 @@ private:
 	void Create_Ray();
 	void DragDrop_Object();
 	void Brushing_Tiles();
-	_float4 ConvertMaterial(string Type);
+	void ConvertMaterial(string brushType, TILE_INDEX Index);
 private:
 	POINT m_MousePt = {};
 

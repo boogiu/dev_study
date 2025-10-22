@@ -19,7 +19,8 @@ public:
 	_float TranslateAnimateMatrix( vector<_float4x4>& transfomationMatrices,
 		_float CurrentTrackPosition,
 		_float dt,
-		_bool isLoop);
+		_bool isLoop,
+		_bool* isAnimEnd);
 
 	_bool ConvertTo(vector<_float4x4>& transfomationMatrices,
 		 CAnimationClip& DestAnimation, 

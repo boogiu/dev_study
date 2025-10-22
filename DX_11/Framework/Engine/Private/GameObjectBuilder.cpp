@@ -19,7 +19,7 @@ CGameObjectBuilder::CGameObjectBuilder(const CLONE_DESC& _cloneDesc)
 		MSG_BOX("Origin Level Tag is Invalidate : Builder");
 	}
 	else {
-		m_CloneDesc = new CLONE_DESC(_cloneDesc);
+		m_CloneDesc = _cloneDesc;
 	}
 	Safe_AddRef(m_pGameInstance);
 }
@@ -30,7 +30,8 @@ CGameObjectBuilder::~CGameObjectBuilder()
 		delete(pair.second);
 
 	m_CompDesc.clear();
-	Safe_Delete(m_CloneDesc);
+
+	//Safe_Delete(m_CloneDesc);
 	Safe_Delete(m_layerDesc);
 	Safe_Delete(m_pObjDesc);
 
@@ -39,7 +40,7 @@ CGameObjectBuilder::~CGameObjectBuilder()
 
 CGameObject* CGameObjectBuilder::Build(const string& instanceKey, _uint* id)
 {
-	if (!m_CloneDesc)
+	if (m_CloneDesc.OriginLevel.empty())
 	{
 		MSG_BOX("CLONE_DESC is missing : CGameObjectBuilder ");
 		return nullptr;
@@ -56,7 +57,7 @@ CGameObject* CGameObjectBuilder::Build(const string& instanceKey, _uint* id)
 
 	//프로토 매니저에서 가져오기
 	CGameObject* instance = m_pGameInstance->Get_PrototypeMgr()->Clone_Prototype(
-		m_CloneDesc->OriginLevel, m_CloneDesc->protoTag, 
+		m_CloneDesc.OriginLevel, m_CloneDesc.protoTag, 
 		m_pObjDesc);
 
 	if (!instance) {

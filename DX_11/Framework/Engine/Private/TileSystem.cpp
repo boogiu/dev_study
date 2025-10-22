@@ -238,7 +238,6 @@ _bool CTileSystem::Check_TileFlagByPosition(_float4 WorldPos, _uint flag)
 }
 
 
-
 CTileBlock* CTileSystem::Get_TileBlockByIndex(TILE_INDEX index)
 {
 	if (!Check_ValidIndex(index))

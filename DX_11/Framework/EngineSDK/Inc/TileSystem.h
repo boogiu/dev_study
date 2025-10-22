@@ -41,9 +41,16 @@ private:
     TILESYSTEM_INFO m_tTileInfo = {};
     vector<BlockLayer> m_TileContainer;
 
+    unordered_map<class CGameObject*, vector<INSTANCE_TILE>> m_AutoTileSystem;
+    vector<TILE_INDEX> m_DirtyTile;
 public:
     static CTileSystem* Create(const TILESYSTEM_INFO& tileInfo);
     virtual void Free() override;
 };
 
+
+/*
+타일 인포에서 자신에게 해당되는 인스턴스 담당 오브젝트를 들고 있음.
+해당 인덱스의 타입이 바뀌면 시스템이 담당 인스턴스로 바뀌어주는 것임.
+*/
 NS_END

@@ -18,7 +18,7 @@ HRESULT CMesh::Initialize_From_File(ID3D11Device* pDevice, ifstream& ifs, MESH_T
 {
 	MESH_INFO_HEADER infoHeader = {};
 
-	ifs.read(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
+ 	ifs.read(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
 	m_VIKey = string(infoHeader.MeshName);
 	m_MaterialIndex = infoHeader.MaterialIndex;
 	m_iVertexBufferCount = 1;

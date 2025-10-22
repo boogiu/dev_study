@@ -49,7 +49,10 @@ HRESULT CGridObject::Initialize(INIT_DESC* pArg)
 
 	_uint Index = {};
 	pMaterial->Insert_MaterialInstance(customInstance, &Index);
-	customInstance->Get_MaterialData()->Link_Shader(G_GlobalLevelKey, "VTX_PlaneGrid.hlsl");
+	
+	auto MaterialDat =customInstance->Get_MaterialData();
+	if(MaterialDat)
+	MaterialDat->Link_Shader(G_GlobalLevelKey, "VTX_PlaneGrid.hlsl");
 	customInstance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "TileCell.png", TEXTURE_TYPE::ALBEDO);
 	SHADER_PARAM ScaleXParam = {};
 	ScaleXParam.iSize = sizeof(_uint);

@@ -7,7 +7,11 @@ _uint CMaterialData::s_NextID = 1;
 
 
 CMaterialData::CMaterialData()
+	:m_MaterialDataID(s_NextID++)
 {
+	if (s_NextID > 4000) {
+		int i = 0;
+	}
 	m_DefaultMaterialConstant.vMtrlAmbient = { 0.5f,0.5f,0.5f,1.f };
 }
 

@@ -21,7 +21,8 @@ public:
 private:
     class CGameInstance* m_pGameInstance = { nullptr };
     LAYER_DESC* m_layerDesc = { nullptr };
-    CLONE_DESC* m_CloneDesc = {nullptr};
+    //CLONE_DESC* m_CloneDesc = {nullptr};
+    CLONE_DESC m_CloneDesc = {};
     GAMEOBJECT_DESC* m_pObjDesc = { nullptr };
 
     unordered_map<type_index, COMPONENT_DESC*> m_CompDesc;

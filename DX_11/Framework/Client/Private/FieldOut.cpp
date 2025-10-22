@@ -58,18 +58,18 @@ void CFieldOut::Override_Pass()
 {
 	CMaterial* pMaterial = Get_Component<CMaterial>();
 
-	//if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassXlu")) {
-	//	instance->Override_Pass("Edge");
-	//}
-	//if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassRiverXlu")) {
-	//	instance->Override_Pass("Edge");
-	//}
-	//if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaterfall")) {
-	//	instance->Override_Pass("Water");
-	//}
-	//if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
-	//	instance->Override_Pass("Base");
-	//}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassXlu")) {
+		instance->Override_Pass("Edge");
+	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassRiverXlu")) {
+		instance->Override_Pass("Edge");
+	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaterfall")) {
+		instance->Override_Pass("Water");
+	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
+		instance->Override_Pass("Base");
+	}
 }
 
 CFieldOut* CFieldOut::Create()

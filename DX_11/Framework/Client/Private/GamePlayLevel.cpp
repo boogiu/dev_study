@@ -19,11 +19,14 @@
 #include "HairParts.h"
 #include "HairCapParts.h"
 #include "ClothParts.h"
+#include "PlayerPart_Hand.h"
 #include "MapLoader.h"
-#include "ClientHelper.h"
+#include "AutoTile.h"
 
+#include "ClientHelper.h"
 #include "ITileService.h"
 #include "Layer.h"
+
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
     :CLevel{ LevelKey },
@@ -39,6 +42,7 @@ CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 HRESULT CGamePlayLevel::Initialize()
 {
     //m_pGameInstance->Get_TileSystem()->
+    CMapLoader::Load_MapData("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });
 
     CGameObject* pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 550,0,550 }).Build("Player");
 
@@ -60,7 +64,8 @@ HRESULT CGamePlayLevel::Initialize()
     m_pObjectManager->Add_Object(pCamera, { "GamePlay_Level", "Camera_Layer" });
     m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 
-    CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
+    CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pCamera->Get_Component<CCamera>());
+
     return S_OK;
 }
 
@@ -101,18 +106,7 @@ void CGamePlayLevel::PreLoad_Level()
     ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Player");
     ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Tool");
     ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Tool");
-    //pRcsMgr->Add_ResourcePath("PlayerBody.model", "../../Resources/Models/Player/PlayerBody.model");
-    //pRcsMgr->Add_ResourcePath("PlayerBody.mat", "../../Resources/Models/Player/PlayerBody.mat");
-    //
-    //pRcsMgr->Add_ResourcePath("ToolAxeFirst.model", "../../Resources/Models/Tool/Axe/ToolAxeFirst.model");
-    //pRcsMgr->Add_ResourcePath("ToolAxeFirst.mat", "../../Resources/Models/Tool/Axe/ToolAxeFirst.mat");
-    //
-    //pRcsMgr->Add_ResourcePath("PlayerHair13.model", "../../Resources/Models/Player/Hair/Hair13/PlayerHair13.model");
-    //pRcsMgr->Add_ResourcePath("PlayerHair13.mat", "../../Resources/Models/Player/Hair/Hair13/PlayerHair13.mat");
-    //
-    //pRcsMgr->Add_ResourcePath("PlayerHairCap03.model", "../../Resources/Models/Player/HairCap/HairCap03/PlayerHairCap03.model");
-    //pRcsMgr->Add_ResourcePath("PlayerHairCap03.mat", "../../Resources/Models/Player/HairCap/HairCap03/PlayerHairCap03.mat");
-
+    
     /*Tiles  Path*/
     ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldRoad");
     ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/FieldRoad");
@@ -132,16 +126,16 @@ void CGamePlayLevel::PreLoad_Level()
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_Player",CPlayer::Create());
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_TargetCamera",CTarget_Camera::Create());
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_FreeCamera",CFree_Camera::Create());
+
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_PlayerTool",CToolItem::Create());
+    pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand",CPlayerPart_Hand::Create());
+
+
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_HairParts",CHairParts::Create());
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_HairCapParts",CHairCapParts::Create());
+
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_ClothParts",CClothParts::Create());
-
-
-    CMapLoader::Load_MapData("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });
-   
-   //auto pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
-   //pObjMgr->Get_Layer({ "GamePlay_Level", "Field_Layer" })->Set_RenderState(false);
+    pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_AutoTile",CAutoTile::Create());
 
  }
 

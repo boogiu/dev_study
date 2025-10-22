@@ -67,9 +67,6 @@
     <Filter Include="02. GameObjects\01. Camera\TargetCam">
       <UniqueIdentifier>{80e56668-eae3-4b45-9da5-296339788533}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\00. Player\State">
-      <UniqueIdentifier>{1072aac8-4888-43ef-80bb-4f6ecdf690f4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96. GUI_Inc">
       <UniqueIdentifier>{121d598e-996e-4cdd-9692-1c32ada1ac6c}</UniqueIdentifier>
     </Filter>
@@ -87,6 +84,45 @@
     </Filter>
     <Filter Include="02. GameObjects\04. Parts\Cloth">
       <UniqueIdentifier>{c56aa9cf-03dc-48e1-9389-acac36329029}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\AutoTile">
+      <UniqueIdentifier>{b9fa2fd9-5a92-4d73-9aa5-3af6f150d725}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. State">
+      <UniqueIdentifier>{e897b336-7122-491b-8964-6aec3bf74b0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine">
+      <UniqueIdentifier>{29fe4cce-fc67-4e76-aa74-a60f5bb83d4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\HFSM">
+      <UniqueIdentifier>{7ddd621f-87f9-4b93-94cb-b4377d2db5d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\MovementState">
+      <UniqueIdentifier>{790f451f-e361-4fb6-b1c7-504192a46d6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\MovementState\Idle">
+      <UniqueIdentifier>{819bcb92-ca72-4168-8b4b-e2f9c4d54dc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\MovementState\Walk">
+      <UniqueIdentifier>{6d57cc37-5ae2-4573-a711-82d84f9721f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\PlayerState">
+      <UniqueIdentifier>{f7034ee4-f119-4c5e-9b0c-f69ce1818384}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\MovementState\Run">
+      <UniqueIdentifier>{ea599003-fbe9-44d5-b832-0c4c9abbb9d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\ToolState">
+      <UniqueIdentifier>{3093c514-6323-4442-acb6-80c50e19658e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\ToolState\Axe">
+      <UniqueIdentifier>{f21a70c0-caab-46b8-8f19-2bee2335bb4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\PlayerParts">
+      <UniqueIdentifier>{edb53e19-b896-459d-b450-2c907577da5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\PlayerParts\Hand">
+      <UniqueIdentifier>{7213264b-a234-49ac-bb4e-209ed58830b4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -140,9 +176,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Target_Camera.h">
       <Filter>02. GameObjects\01. Camera\TargetCam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\PlayerStateMachine.h">
-      <Filter>02. GameObjects\00. Player\State</Filter>
     </ClInclude>
     <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imgui.h">
       <Filter>96. GUI_Inc</Filter>
@@ -198,6 +231,48 @@
     <ClInclude Include="..\Public\ClothParts.h">
       <Filter>02. GameObjects\04. Parts\Cloth</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AutoTile.h">
+      <Filter>02. GameObjects\02. Field\AutoTile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerHFSM.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\HFSM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\State.h">
+      <Filter>02. GameObjects\05. State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Idle.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\MovementState\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Movement.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\MovementState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Walk.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\MovementState\Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerStateMachine.h">
+      <Filter>02. GameObjects\00. Player\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Run.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\MovementState\Run</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Tool.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\ToolState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Axe.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\ToolState\Axe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Client_Structs.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Client_Enum.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerPart_Hand.h">
+      <Filter>02. GameObjects\00. Player\PlayerParts\Hand</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -247,9 +322,6 @@
     <ClCompile Include="..\Private\Target_Camera.cpp">
       <Filter>02. GameObjects\01. Camera\TargetCam</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PlayerStateMachine.cpp">
-      <Filter>02. GameObjects\00. Player\State</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui.cpp">
       <Filter>96. GUI_Inc</Filter>
     </ClCompile>
@@ -297,6 +369,42 @@
     </ClCompile>
     <ClCompile Include="..\Private\ClothParts.cpp">
       <Filter>02. GameObjects\04. Parts\Cloth</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AutoTile.cpp">
+      <Filter>02. GameObjects\02. Field\AutoTile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerHFSM.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\HFSM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\State.cpp">
+      <Filter>02. GameObjects\05. State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Idle.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\MovementState\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Movement.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\MovementState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Walk.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\MovementState\Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerStateMachine.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Run.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\MovementState\Run</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Tool.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\ToolState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Axe.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\ToolState\Axe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerPart_Hand.cpp">
+      <Filter>02. GameObjects\00. Player\PlayerParts\Hand</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

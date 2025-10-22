@@ -145,9 +145,6 @@ HRESULT CTileObject::Link_Data(const string& folderName, _bool Base)
 		}
 	}
 
-	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
-		instance->Override_Pass("Base");
-	}
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassXlu")) {
 		instance->Override_Pass("Edge");
 	}
@@ -282,14 +279,14 @@ HRESULT CTileObject::Save_RuleFile()
 		First_Rotate.rotation = 90;
 
 		AUTO_TILE_DESC Second_Rotate = {};
-		First_Rotate.Connectable = AutoTileEditor::Rotate90(g_TileDB[i].Connectable, 1);
-		First_Rotate.NeverConnectable = AutoTileEditor::Rotate90(g_TileDB[i].NeverConnectable, 2);
-		First_Rotate.rotation = 180;
+		Second_Rotate.Connectable = AutoTileEditor::Rotate90(g_TileDB[i].Connectable, 2);
+		Second_Rotate.NeverConnectable = AutoTileEditor::Rotate90(g_TileDB[i].NeverConnectable, 2);
+		Second_Rotate.rotation = 180;
 
 		AUTO_TILE_DESC Third_Rotate = {};
-		First_Rotate.Connectable = AutoTileEditor::Rotate90(g_TileDB[i].Connectable, 1);
-		First_Rotate.NeverConnectable = AutoTileEditor::Rotate90(g_TileDB[i].NeverConnectable, 3);
-		First_Rotate.rotation = 270;
+		Third_Rotate.Connectable = AutoTileEditor::Rotate90(g_TileDB[i].Connectable, 3);
+		Third_Rotate.NeverConnectable = AutoTileEditor::Rotate90(g_TileDB[i].NeverConnectable, 3);
+		Third_Rotate.rotation = 270;
 
 
 		ofs.write(reinterpret_cast<const char*>(&Name),sizeof(Name));

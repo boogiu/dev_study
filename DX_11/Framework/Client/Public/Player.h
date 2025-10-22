@@ -9,10 +9,6 @@ public:
         CGameObject* pPlayer = { nullptr };
     }PLAYER_PARTS_DESC;
 
-public:
-    enum class Player_State {
-        IDLE, MOVE
-    };
 private:
     CPlayer();
     CPlayer(const CPlayer& rhs);
@@ -26,12 +22,18 @@ public:
     void Late_Update(_float dt) override;
     virtual void Render_GUI();
 
+public:
+    _float2 Get_InputAxis() { return m_vInputAxis; };
+    _float Get_MoveSpeed() { return m_fMoveSpeed; };
+    ITEM_TYPE Get_CurrentItemType();
 private:
     void Add_AnimationClips();
     void Add_PartObjects();
 
 private:
     class CPlayerStateMachine* m_pStateMachine= { nullptr };
+    _float2 m_vInputAxis = {};
+    _float  m_fMoveSpeed = {15.f};
 public:
     static CPlayer* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;
