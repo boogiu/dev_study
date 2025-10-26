@@ -4,11 +4,6 @@ NS_BEGIN(Engine)
 
 using BlockLayer = vector<TILE_INFO>;
 
-struct DEBUG_TILE {
-    TILE_INDEX index;
-    _float4 Color = {1.f,1.f,1.f,1.f};
-};
-
 class  CTileSystem :
     public ITileService
 {
@@ -18,6 +13,15 @@ private:
 
 public:
     HRESULT Initialize(const TILESYSTEM_INFO& tileInfo);
+    virtual void Update(_float dt) override;
+
+public:
+    virtual HRESULT Execute_InstanceModel(const string& levelKey, const string& modelKey, const string& materialKey) override;
+    virtual HRESULT Set_Material_ID(TILE_INDEX tileIndex, _float4 materialID) override;
+
+public:
+    virtual TILESYSTEM_INFO Get_TileSystemInfo() override { return m_tTileInfo; };
+    virtual _float Get_TileHeightByPosition(_float4 WorldPos)override;
     virtual TILE_INDEX Get_IndexByPosition(_float4 WorldPos) override;
     virtual _float4 Get_PositionByIndex(TILE_INDEX tileIndex, ANCHOR anchor ) override;
     virtual TILE_INDEX Register_Tile(class CTileBlock* block, TILE_INDEX index, _bool CanFail)override;
@@ -31,6 +35,13 @@ public:
     virtual HRESULT Remove_TileFlagByIndex(TILE_INDEX index, _uint flag) override;
     virtual _uint Get_TileFlagByIndex(TILE_INDEX index) override;
     virtual _bool Check_TileFlagByPosition(_float4 WorldPos, _uint flag) override;
+    virtual TILE_INFO Get_InfoByIndex(TILE_INDEX index) override;
+    virtual INSTANCE_TILE Get_InstanceInfoByIndex(TILE_INDEX index) override;
+    virtual void Change_CornerHeight(TILE_INDEX index,_float leftTop, _float rightTop, _float rightBottom, _float leftBottom) override;
+
+public:
+    virtual HRESULT Save_TileSystemData(const string& SavePath) override;
+    virtual HRESULT Executer_SystemByData(const string& LoadPath) override;
 
 private:
     class CTileBlock* Get_TileBlockByIndex(TILE_INDEX index);
@@ -39,12 +50,21 @@ private:
 
 private:
     TILESYSTEM_INFO m_tTileInfo = {};
-    vector<BlockLayer> m_TileContainer;
-
-    unordered_map<class CGameObject*, vector<INSTANCE_TILE>> m_AutoTileSystem;
+ 
+    /*For Instance*/
     vector<TILE_INDEX> m_DirtyTile;
+
+    vector<INSTANCE_TILE> m_InstanceTiles;
+    vector<TILE_INFO> m_TileInfos;
+    vector<INSTANCE_INIT_DESC> m_instanceDesc;
+    class CInstanceModel* m_pInstanceModel = { nullptr };
+    class CMaterial* m_pTileMaterial = { nullptr };
+    _float4x4 m_pTileWorldMatrix = {  };
+    ID3D11DeviceContext* m_pContext = { nullptr };
+
 public:
     static CTileSystem* Create(const TILESYSTEM_INFO& tileInfo);
+    static CTileSystem* CreateByData(const string& LoadPath);
     virtual void Free() override;
 };
 

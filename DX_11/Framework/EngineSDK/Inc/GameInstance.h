@@ -1,4 +1,4 @@
-#pragma once
+  #pragma once
 #include "Base.h"
 
 NS_BEGIN(Engine)
@@ -16,6 +16,7 @@ public:
 	void Update_Engine(_float dt);
 	void Release_Engine();
 	HRESULT Excute_TileSystem(const TILESYSTEM_INFO& tileInfo);
+	HRESULT Excute_TileSystemByData(const string& LoadPath);
 public:
 	void Notify_LevelSet();
 	void Clear_LevelResource(const string& levelKey);
@@ -46,6 +47,7 @@ public:
 	class ILightService* Get_LightMgr() { return m_pLightService; }
 	class IRayService* Get_RayMgr() { return m_pRaySystem; }
 	class ITileService* Get_TileSystem() { return m_pTileSystem; }
+	class ICollisionService* Get_CollisionSystem () { return m_pCollisionSystem; }
 
 private:
 	class IGraphicService* m_pGraphicDevice = { nullptr };
@@ -63,6 +65,7 @@ private:
 	class ILightService* m_pLightService = { nullptr };
 	class IRayService* m_pRaySystem = { nullptr };
 	class ITileService* m_pTileSystem = { nullptr };
+	class ICollisionService* m_pCollisionSystem = { nullptr };
 #pragma endregion
 
 private:

@@ -1,32 +1,27 @@
 #include "Client_Defines.h"
 #include "FieldObject.h"
 
-#include "SkeletalModel.h"
+#include "Model.h"
 #include "Material.h"
-#include "MaterialInstance.h"
+
 CFieldObject::CFieldObject()
 {
 }
 
 CFieldObject::CFieldObject(const CFieldObject& rhs)
+	:CGameObject(rhs)
 {
 }
 
 HRESULT CFieldObject::Initialize_Prototype()
 {
 	__super::Initialize();
-	Add_Component<CSkeletalModel>();
-	Add_Component<CMaterial>();
 	return S_OK;
 }
 
 HRESULT CFieldObject::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
-
-	//HRESULT hr = Get_Component<CStaticModel>()->Link_Model(pDesc->LevelTag, pDesc->ModelName);
-	//hr = Get_Component<CMaterial>()->Link_Material(pDesc->LevelTag, pDesc->MaterialName);
-
 	return S_OK;
 }
 
@@ -44,31 +39,17 @@ void CFieldObject::Late_Update(_float dt)
 
 void CFieldObject::Render_GUI()
 {
+	__super::Render_GUI();
 }
 
-CFieldObject* CFieldObject::Create()
+HRESULT CFieldObject::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
-	CFieldObject* instance = new CFieldObject();
-	if (FAILED(instance->Initialize_Prototype()))
-	{
-		MSG_BOX("Object Create Failed : CFieldObject");
-		Safe_Release(instance);
-	}
-
-	return instance;
-}
-
-CGameObject* CFieldObject::Clone(INIT_DESC* pArg)
-{
-	CFieldObject* instance = new CFieldObject(*this);
-
-	if (FAILED(instance->Initialize(pArg)))
-	{
-		MSG_BOX("Object Clone Failed : CFieldObject");
-		Safe_Release(instance);
-	}
-
-	return instance;
+	HRESULT hr = Get_Component<CModel>()->Link_Model("GamePlay_Level", modelMapTable[1]);
+	hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);
+	Obj_Type = objHeader.Object_type;
+	m_pTransform->TranslateMatrix(XMLoadFloat4x4(&objHeader.vWorldMatrix));
+	
+	return S_OK;
 }
 
 void CFieldObject::Free()

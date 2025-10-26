@@ -14,7 +14,7 @@ public:
 
 public:
     HRESULT Render_DebugBox(ID3D11DeviceContext* pContext, _uint DrawIndex );
-    void Add_DebugBounding(const BOUNDING_BOX& box);
+    void Add_DebugBounding(const MINMAX_BOX& box);
     _uint Get_DebugBoxCount() {
         if (m_Vertices.empty())return 0;
         return m_Vertices.size(); 

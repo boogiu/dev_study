@@ -319,6 +319,24 @@
     <Filter Include="01. Utility\04. Components\StaticComponent\03. Model\InstanceModel">
       <UniqueIdentifier>{281a2512-160c-49d9-9730-044c89c82ff4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Components\StaticComponent\09. Collider\AABB">
+      <UniqueIdentifier>{394159c0-45e2-434b-a373-9f2749f0acbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\StaticComponent\09. Collider\DebugDraw">
+      <UniqueIdentifier>{dc74bcff-896e-4c63-9314-95d0daa3e93c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\StaticComponent\09. Collider\Sphere">
+      <UniqueIdentifier>{599b1600-d6ad-4f0a-9da7-277b12501b80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\StaticComponent\09. Collider\OBB">
+      <UniqueIdentifier>{e88f0f5d-ecda-491a-b8c4-048b522acf1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. Services\16. ICollisionService">
+      <UniqueIdentifier>{174c2b15-0fce-4e70-a666-94c19496e6d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\11. CollisionSystem">
+      <UniqueIdentifier>{d9d35ee7-e451-48f3-be89-fda5eb5fc594}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -557,6 +575,24 @@
     </ClCompile>
     <ClCompile Include="..\Private\RenderSystem.cpp">
       <Filter>01. Utility\06. RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DebugDraw.cpp">
+      <Filter>01. Utility\04. Components\StaticComponent\09. Collider\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AABB_Collider.cpp">
+      <Filter>01. Utility\04. Components\StaticComponent\09. Collider\AABB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Collider.cpp">
+      <Filter>01. Utility\04. Components\StaticComponent\09. Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CollisionSystem.cpp">
+      <Filter>01. Utility\11. CollisionSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\OBB_Collider.cpp">
+      <Filter>01. Utility\04. Components\StaticComponent\09. Collider\OBB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sphere_Collider.cpp">
+      <Filter>01. Utility\04. Components\StaticComponent\09. Collider\Sphere</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -871,6 +907,27 @@
     </ClInclude>
     <ClInclude Include="..\Public\Engine_Layouts.h">
       <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DebugDraw.h">
+      <Filter>01. Utility\04. Components\StaticComponent\09. Collider\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AABB_Collider.h">
+      <Filter>01. Utility\04. Components\StaticComponent\09. Collider\AABB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Collider.h">
+      <Filter>01. Utility\04. Components\StaticComponent\09. Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CollisionSystem.h">
+      <Filter>01. Utility\11. CollisionSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\OBB_Collider.h">
+      <Filter>01. Utility\04. Components\StaticComponent\09. Collider\OBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sphere_Collider.h">
+      <Filter>01. Utility\04. Components\StaticComponent\09. Collider\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ICollisionService.h">
+      <Filter>01. Utility\98. Services\16. ICollisionService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

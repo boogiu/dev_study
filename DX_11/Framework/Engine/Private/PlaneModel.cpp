@@ -98,24 +98,24 @@ void CPlaneModel::SetDrawable(_uint Index, _bool isDraw)
 	isDrawing = isDraw;
 }
 
-BOUNDING_BOX CPlaneModel::Get_LocalBoundingBox()
+MINMAX_BOX CPlaneModel::Get_LocalBoundingBox()
 {
-	return BOUNDING_BOX{ { -0.5f, 0.f, -0.5f, }, {0.5f,0.f ,0.5f} };
+	return MINMAX_BOX{ { -0.5f, 0.f, -0.5f, }, {0.5f,0.f ,0.5f} };
 }
 
-BOUNDING_BOX CPlaneModel::Get_WorldBoundingBox()
+MINMAX_BOX CPlaneModel::Get_WorldBoundingBox()
 {
-	BOUNDING_BOX wordlBox = {};
-	_float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix();
+	MINMAX_BOX wordlBox = {};
+	_float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix_Ptr();
 	XMStoreFloat3(&wordlBox.vMin, XMVector3TransformCoord({ -0.5f, 0.f, -0.5f }, XMLoadFloat4x4(pWorldMat)));
 	XMStoreFloat3(&wordlBox.vMax, XMVector3TransformCoord({ 0.5f,0.f ,0.5f }, XMLoadFloat4x4(pWorldMat)));
 	return wordlBox;
 }
 
-vector<BOUNDING_BOX> CPlaneModel::Get_MeshBoundingBox()
+vector<MINMAX_BOX> CPlaneModel::Get_MeshBoundingBox()
 {
-	vector<BOUNDING_BOX> boxes;
-	boxes.push_back(BOUNDING_BOX{ { -0.5f, 0.f, -0.5f, }, {0.5f,0.f ,0.5f} });
+	vector<MINMAX_BOX> boxes;
+	boxes.push_back(MINMAX_BOX{ { -0.5f, 0.f, -0.5f, }, {0.5f,0.f ,0.5f} });
 	return boxes;
 }
 

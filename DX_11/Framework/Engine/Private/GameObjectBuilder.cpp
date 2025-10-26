@@ -10,7 +10,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Light.h"
-
+#include "AABB_Collider.h"
 CGameObjectBuilder::CGameObjectBuilder(const CLONE_DESC& _cloneDesc)
 	:m_pGameInstance(CGameInstance::GetInstance())
 {
@@ -115,6 +115,13 @@ CGameObjectBuilder& CGameObjectBuilder::Scale(const _float3 scale)
 
 	TRANSFORM_DESC* pDesc = static_cast<TRANSFORM_DESC*>(iter->second);
 	pDesc->vInitialScale = scale;
+	return *this;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::AABB_Collider(const AABB_COLLIDER_DESC& desc)
+{
+	AABB_COLLIDER_DESC* AABB_Desc = new AABB_COLLIDER_DESC(desc);
+	m_CompDesc.emplace(type_index(typeid(CAABB_Collider)), AABB_Desc);
 	return *this;
 }
 

@@ -17,8 +17,11 @@ public:
 
 public:
     void Update(_float dt);
+    void Request_ChangeState(const string& NextState);
+
 public:
     void Render_State(class CPlayer* pPlayer);
+    
 private:
     CPlayer* m_pOwner = { nullptr };
     class CPlayerHFSM* m_pHFSM = { nullptr };

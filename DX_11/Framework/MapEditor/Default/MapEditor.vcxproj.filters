@@ -40,17 +40,8 @@
     <Filter Include="02. MapObject\GridObject">
       <UniqueIdentifier>{b1b3eaf0-90f3-4a57-91c5-a85579151221}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. MapObject\StructureObject">
-      <UniqueIdentifier>{2deaefc3-11f1-4115-9124-6c8d28dcbb4d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. MapObject\FieldOutObject">
-      <UniqueIdentifier>{6134bc13-30aa-44d1-b877-628b30596361}</UniqueIdentifier>
-    </Filter>
     <Filter Include="05. GUI_Panel\DirectoryPanel">
       <UniqueIdentifier>{dbe55b4a-e544-42af-a9af-b322285073b6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. MapObject\MapTileInstance">
-      <UniqueIdentifier>{3489f5a4-4ac0-4387-8220-656f5578e4a7}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. MapObject\MapObjects">
       <UniqueIdentifier>{ab1ca873-0e12-420f-b31d-7540af0b23dd}</UniqueIdentifier>
@@ -143,15 +134,6 @@
     <ClInclude Include="..\Public\GridObject.h">
       <Filter>02. MapObject\GridObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\FieldOutBlocks.h">
-      <Filter>02. MapObject\FieldOutObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\StructureObject.h">
-      <Filter>02. MapObject\StructureObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\MapTileInstance.h">
-      <Filter>02. MapObject\MapTileInstance</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\MapObject.h">
       <Filter>02. MapObject\MapObjects</Filter>
     </ClInclude>
@@ -219,9 +201,6 @@
     <ClCompile Include="..\Private\TileObject.cpp">
       <Filter>02. MapObject\TileObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\FieldOutBlocks.cpp">
-      <Filter>02. MapObject\FieldOutObject</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\DirectoryPanel.cpp">
       <Filter>05. GUI_Panel\DirectoryPanel</Filter>
     </ClCompile>
@@ -230,12 +209,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\GridObject.cpp">
       <Filter>02. MapObject\GridObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\StructureObject.cpp">
-      <Filter>02. MapObject\StructureObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\MapTileInstance.cpp">
-      <Filter>02. MapObject\MapTileInstance</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MapObject.cpp">
       <Filter>02. MapObject\MapObjects</Filter>

@@ -106,7 +106,7 @@ HRESULT CAIMesh::Create_AnimVertex(ID3D11Device* pDevice)
 	{
 		aiBone* pAIBone = m_pAIMesh->mBones[i];
 		string BoneName = pAIBone->mName.C_Str();
-		_int BoneIndex = m_pSkeleton->Find_BoneIndexByName(BoneName);
+		BoneIndex = m_pSkeleton->Find_BoneIndexByName(BoneName);
 		m_BoneIndices.push_back(BoneIndex);
 
 		_float4x4 m_OffsetMatrix = {};
@@ -220,6 +220,15 @@ void CAIMesh::Save_File(ofstream& ofs)
 
 }
 
+void CAIMesh::Render_GUI()
+{
+		ImGui::Text(to_string(Get_VertexCount()).c_str());
+		ImGui::Text(m_VIKey.c_str());
+		if (ImGui::IsItemHovered())
+		{
+				ImGui::SetTooltip("Parent: %s", m_pSkeleton->Find_BoneNameByIndex(BoneIndex).c_str());
+		}
+}
 CAIMesh* CAIMesh::Create(ID3D11Device* pDevice, const aiMesh* pAIMesh, CSkeleton* pSkeleton, MESH_TYPE eType)
 {
 	CAIMesh* instance = new CAIMesh(pAIMesh->mName.C_Str());

@@ -20,7 +20,7 @@ public:
 public:
     void Object_OnGrid(TILE_INDEX index);
     HRESULT Link_Data(const string& folderName);
-    HRESULT Load_Object(MAP_OBJECT_HEADER ObjHeader);
+    HRESULT Load_Object(OLD_MAP_OBJECT_HEADER ObjHeader);
 
 public:
     HRESULT Save_MapData(ofstream& ofs);

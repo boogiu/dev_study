@@ -81,8 +81,6 @@ HRESULT CGridObject::Initialize(INIT_DESC* pArg)
 	customInstance->Set_Param("vEdgeMin", vMinParam);
 	customInstance->Set_Param("vEdgeMax", vMaxParam);
 
-	m_NowIndex.IndexY = 0;
-
 	return S_OK;
 }
 
@@ -90,25 +88,8 @@ void CGridObject::Priority_Update(_float dt)
 {
 	/*자신의 크기 ()*/
 	TILESYSTEM_INFO contextInfo = CEditorSystem::GetInstance()->Get_Context()->ContextTileInfo;
-
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_DOWN)) {
-		if (m_NowIndex.IndexY == 0)
-			m_NowIndex.IndexY = 0;
-		else
-			m_NowIndex.IndexY -= 1;
-	}
-
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_UP)) {
-		if (m_NowIndex.IndexY == contextInfo.iTileCountY-1)
-			m_NowIndex.IndexY = contextInfo.iTileCountY - 1;
-		else
-			m_NowIndex.IndexY += 1;
-	}
-
-	Get_Component<CTransform>()->Set_Pos({ Get_Position().x, 
-		static_cast<_float>(contextInfo.SizePerTile().y) * m_NowIndex.IndexY
-		,Get_Position().z });
-
+	_float3 pos = contextInfo.HalfPoint();
+	Get_Component<CTransform>()->Set_Pos({ pos .x,contextInfo.vWorldMin.y,pos .z});
 }
 
 void CGridObject::Update(_float dt)
@@ -157,11 +138,6 @@ void CGridObject::Render_GUI()
 	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Hitted_Index : ");
 	ImGui::SameLine();
 	ImGui::InputInt2("##Index", Idx, ImGuiInputTextFlags_ReadOnly);
-
-	_int yLayer = static_cast<_int>(m_HittedIndex.IndexY);
-	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Now Y Layer : ");
-	ImGui::SameLine();
-	ImGui::InputInt("##Index", &yLayer);
 
 	ImGui::End();
 }

@@ -20,7 +20,7 @@ HRESULT CObjectMgr::Initialize()
 
 void CObjectMgr::Pre_EngineUpdate(_float dt)
 {
-	for (auto pObject : DeleteObjs)
+ 	for (auto pObject : DeleteObjs)
 	{
 		_uint ObjectID = pObject->Get_ObjectID();
 		pObject->Get_Layer()->Remove_GameObject(ObjectID);

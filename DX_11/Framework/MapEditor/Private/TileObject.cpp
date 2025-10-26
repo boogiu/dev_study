@@ -54,14 +54,14 @@ HRESULT CTileObject::Initialize(INIT_DESC* pArg)
 	else {
 		Link_Data(m_BaseTypeName + "0A_0");
 		index = Get_Component<CTileBlock>()->On_Grid(tileDesc->index, m_BaseTypeName, true);
-		if (index.IndexX < 0 || index.IndexY < 0 || index.IndexZ < 0) {
+		if (index.IndexX < 0  || index.IndexZ < 0) {
 			return E_FAIL;
 		}
 		_uint N_State = Get_Component<CTileBlock>()->Get_NeigborState();
 		Update_State(N_State);
 	}
 
-	if (index.IndexX < 0 || index.IndexY < 0 || index.IndexZ < 0) {
+	if (index.IndexX < 0 || index.IndexZ < 0) {
 		return E_FAIL;
 	}
 
@@ -221,7 +221,7 @@ void CTileObject::Update_State(_uint N_State)
 {
 	string selectedName;
 	_float rotation = 0.f;
-	string yIndex = "_" + to_string(Get_Component<CTileBlock>()->Get_Index().IndexY);
+	string yIndex = "_" + to_string(0);
 
 	for (auto& tile : g_TileDB)
 	{

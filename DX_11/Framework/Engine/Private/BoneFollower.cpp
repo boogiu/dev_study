@@ -45,7 +45,7 @@ void CBoneFollower::Sync_Transform(_float dt, CTransform* pTransform)
 	_float4x4 boneMatrix = m_pMasterAnimator->Get_BoneMatrix(FollowingBone);
     _matrix matBone = XMLoadFloat4x4(&boneMatrix);
 
-	_float4x4* masterMatrix = m_pMasterTransform->Get_WorldMatrix();
+	_float4x4* masterMatrix = m_pMasterTransform->Get_WorldMatrix_Ptr();
     _matrix matMasterWorld = XMLoadFloat4x4(masterMatrix);
 
     _matrix matOffset = XMLoadFloat4x4(&m_Offset);

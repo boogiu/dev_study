@@ -25,9 +25,9 @@ public:
 	virtual _bool isReadyToDraw()	PURE;
 
 public:
-	virtual BOUNDING_BOX Get_LocalBoundingBox()	PURE;
-	virtual vector<BOUNDING_BOX> Get_MeshBoundingBox()	PURE;
-	virtual BOUNDING_BOX Get_WorldBoundingBox()	PURE;
+	virtual MINMAX_BOX Get_LocalBoundingBox()	PURE;
+	virtual vector<MINMAX_BOX> Get_MeshBoundingBox()	PURE;
+	virtual MINMAX_BOX Get_WorldBoundingBox()	PURE;
 public:
 	virtual void Free() override;
 };

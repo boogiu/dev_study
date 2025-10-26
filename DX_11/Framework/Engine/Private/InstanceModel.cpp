@@ -96,6 +96,14 @@ void CInstanceModel::Link_InstanceWithMesh(_uint MeshIndex, _uint InstanceIndex)
 	m_MapMeshWithInstance.emplace(MeshIndex, InstanceIndex);
 }
 
+void CInstanceModel::Link_InstanceMeshAll(_uint InstanceIndex)
+{
+	for (size_t i = 0; i < m_pModelData->Get_MeshCount(); i++)
+	{
+		m_MapMeshWithInstance.emplace(i, InstanceIndex);
+	}
+}
+
 HRESULT CInstanceModel::Update_Instance(ID3D11DeviceContext* pContext, const void* pData, _uint Index, _uint count)
 {
 	if (!Check_Valid(Index)) {
@@ -221,15 +229,15 @@ _bool CInstanceModel::isReadyToDraw()
 	return true;
 }
 
-BOUNDING_BOX CInstanceModel::Get_LocalBoundingBox()
+MINMAX_BOX CInstanceModel::Get_LocalBoundingBox()
 {
 	return m_pModelData->Get_LocalBoundingBox();
 }
 
-BOUNDING_BOX CInstanceModel::Get_WorldBoundingBox()
+MINMAX_BOX CInstanceModel::Get_WorldBoundingBox()
 {
-	BOUNDING_BOX wordlBox = m_pModelData->Get_LocalBoundingBox();
-	_float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix();
+	MINMAX_BOX wordlBox = m_pModelData->Get_LocalBoundingBox();
+	_float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix_Ptr();
 	XMStoreFloat3(&wordlBox.vMin, XMVector3TransformCoord(XMLoadFloat3(&wordlBox.vMin), XMLoadFloat4x4(pWorldMat)));
 	XMStoreFloat3(&wordlBox.vMax, XMVector3TransformCoord(XMLoadFloat3(&wordlBox.vMax), XMLoadFloat4x4(pWorldMat)));
 	return wordlBox;
@@ -243,9 +251,9 @@ _bool CInstanceModel::Check_Valid(_uint MeshIndex)
 	return true;
 }
 
-vector<BOUNDING_BOX> CInstanceModel::Get_MeshBoundingBox()
+vector<MINMAX_BOX> CInstanceModel::Get_MeshBoundingBox()
 {
-	vector<BOUNDING_BOX> boxes;
+	vector<MINMAX_BOX> boxes;
 
 	for (size_t i = 0; i < m_pModelData->Get_MeshCount(); i++)
 	{

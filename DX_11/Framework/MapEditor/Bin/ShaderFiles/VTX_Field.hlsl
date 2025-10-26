@@ -8,7 +8,6 @@ struct VS_IN
     float2 vTexcoord : TEXCOORD0;
     float3 vTangent : TANGENT;
 };
-
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
@@ -42,6 +41,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), fSpecularPow * 100);
     return Out;
 }
+
 
 struct PS_IN
 {
@@ -138,7 +138,6 @@ PS_OUT PS_WATER(PS_IN In)
     return Out;
 }
 
-
 technique11 DefaultTechnique
 {
     pass Opaque
@@ -175,4 +174,5 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_WATER();
     }
+
 }

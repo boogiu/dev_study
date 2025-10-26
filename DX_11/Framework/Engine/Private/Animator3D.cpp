@@ -148,6 +148,13 @@ _bool CAnimator3D::isCurrentAnimEnd()
 	}
 }
 
+_bool CAnimator3D::isOverAnimTiming(_float percent)
+{
+	auto& nowClip = m_pAnimClips[m_iCurrentClipIndex];
+
+	return nowClip->Get_Duration()*percent < m_fCurrentTrackPosition;
+}
+
 string CAnimator3D::Get_CurrentAnimName()
 {
 	if (m_eState == ANIMATOR_STATE::CONVERTING)
@@ -172,6 +179,11 @@ void CAnimator3D::Control_BoneByIndex(_uint Index, _fmatrix BoneMatrix)
 	else {
 		XMStoreFloat4x4(&m_ManipulateMatrices[Index], BoneMatrix);
 	}
+}
+
+void CAnimator3D::Dettach_BoneRelation(_uint Index)
+{
+	m_DettachedBone.insert(Index);
 }
 
 _float4x4 CAnimator3D::Get_BoneMatrix(const string& boneName)
@@ -234,7 +246,18 @@ void CAnimator3D::BuildBone()
 		int parent = m_pData->Get_BoneParentIndex(i);
 
 		if (parent == -1) {
-			m_CombinedMatrices[i] = m_TransfromationMatrices[i];
+			_matrix MyTransformation =
+				XMLoadFloat4x4(&m_ManipulateMatrices[i]) *
+				XMLoadFloat4x4(&m_TransfromationMatrices[i]);
+
+			XMStoreFloat4x4(&m_CombinedMatrices[i], MyTransformation);
+		}
+		else if (m_DettachedBone.count(i)) {
+			_matrix MyTransformation =
+				XMLoadFloat4x4(&m_ManipulateMatrices[i])*
+				XMLoadFloat4x4(&m_TransfromationMatrices[i]);
+
+			XMStoreFloat4x4(&m_CombinedMatrices[i], MyTransformation);
 		}
 		else {
 			_matrix ParentCombine = XMLoadFloat4x4(&m_CombinedMatrices[parent]);
@@ -278,7 +301,6 @@ void CAnimator3D::Render_GUI()
 			(m_pAnimLoops[i])=!(m_pAnimLoops[i]);
 		ImGui::PopStyleVar();
 		ImGui::PopID();
-
 
 		if (isSelected) {
 			ImGui::SetItemDefaultFocus(); // 선택된 항목에 포커스

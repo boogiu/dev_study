@@ -35,7 +35,7 @@ HRESULT CDebugRender::Render_DebugBox(ID3D11DeviceContext* pContext, _uint DrawI
 	return S_OK;
 }
 
-void CDebugRender::Add_DebugBounding(const BOUNDING_BOX& box)
+void CDebugRender::Add_DebugBounding(const MINMAX_BOX& box)
 {
 	_float3 vMin = box.vMin;
 	_float3 vMax = box.vMax;

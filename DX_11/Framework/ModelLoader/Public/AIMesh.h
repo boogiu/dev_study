@@ -28,12 +28,14 @@ public:
 private:
     const aiMesh* m_pAIMesh = { nullptr };
      CSkeleton* m_pSkeleton = { nullptr };
+     _int BoneIndex = {};
     vector<VTXSKINMESH> m_VBSkinContainer ;
     vector<VTXMESH> m_VBMeshContainer;
     vector<_uint> m_IBContainer ;
     vector<_uint>	m_BoneIndices;		//어떤 본을 사용하는가??
 
 public:
+    void Render_GUI() override;
     static CAIMesh* Create(ID3D11Device* pDevice, const aiMesh* pAIMesh, CSkeleton* pSkeleton, MESH_TYPE eType);
     virtual void Free() override;
 };

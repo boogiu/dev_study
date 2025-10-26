@@ -15,13 +15,6 @@ class CDirectoryPanel :
 		FolderType eType;
 		string strName;
 	};
-	enum  Mode
-	{
-		FIELDOUT,
-		STRUCTURE,
-		MAPOBJECT
-	};
-
 private:
 	CDirectoryPanel(GUI_CONTEXT* context);
 	virtual ~CDirectoryPanel();
@@ -54,7 +47,6 @@ private:
 	vector<FolderInfo> m_ContentInfos;
 	 _bool m_bLeafFolder = { false };
 	 
-	 Mode m_eMode = FIELDOUT;
 public:
 	static CDirectoryPanel* Create(GUI_CONTEXT* context);
 	virtual void Free();

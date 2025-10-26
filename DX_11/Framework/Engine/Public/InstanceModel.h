@@ -7,13 +7,6 @@ class ENGINE_DLL CInstanceModel
 	: public CModel
 {
 public:
-	typedef struct tagInstanceInitDESC{
-		_uint instanceStride = {};		// 인스턴스 구조체 크기 
-		_uint instanceCount = {};     // 최대 인스턴스 개수
-		_uint ElementCount = {};
-		const D3D11_INPUT_ELEMENT_DESC* pElementDesc = { nullptr };
-		string ElementKey = {  };
-	}INSTANCE_INIT_DESC;
 
 protected:
 	CInstanceModel();
@@ -26,6 +19,7 @@ public:
 	virtual HRESULT Link_Model(const string& levelKey, const string& modelDataKey) override;
 	virtual HRESULT Link_InstanceData(ID3D11Device* pDevice , vector<INSTANCE_INIT_DESC> initArray, const string& LevelKey, const string& ModelKey);
 	void	Link_InstanceWithMesh(_uint MeshIndex, _uint InstanceIndex);
+	void	Link_InstanceMeshAll( _uint InstanceIndex);
 
 public:
 	HRESULT Update_Instance(ID3D11DeviceContext* pContext, const void* pData, _uint Index, _uint count);
@@ -45,9 +39,9 @@ public:
 	_bool isReadyToDraw()	override;
 
 public:
-	virtual BOUNDING_BOX Get_LocalBoundingBox()	override;
-	virtual vector<BOUNDING_BOX> Get_MeshBoundingBox()	override;
-	virtual BOUNDING_BOX Get_WorldBoundingBox()	override;
+	virtual MINMAX_BOX Get_LocalBoundingBox()	override;
+	virtual vector<MINMAX_BOX> Get_MeshBoundingBox()	override;
+	virtual MINMAX_BOX Get_WorldBoundingBox()	override;
 
 private:
 	_bool Check_Valid(_uint MeshIndex);

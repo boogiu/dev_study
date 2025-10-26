@@ -146,7 +146,7 @@ HRESULT CMesh::Create_Index(ID3D11Device* pDevice)
 
 void CMesh::Render_GUI()
 {
-
+	ImGui::Text(m_VIKey.c_str());
 }
 
 

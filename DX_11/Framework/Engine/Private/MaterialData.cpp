@@ -132,6 +132,7 @@ void CMaterialData::Render_GUI( vector<_uint>& TextureIndexs)
 		}
 	}
 
+
 }
 HRESULT CMaterialData::Link_Texture(const string& levelKey, const string& textureKey, TEXTURE_TYPE eType)
 {

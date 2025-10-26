@@ -2,9 +2,16 @@
 
 enum class TILE_FLAG : unsigned int {
     NONE = 0,
-    ONPLAYER = 1 << 0,
-    WALKABLE = 1 << 1,
-    DIGGABLE = 1 << 2,
+    FLAG_WALKABLE = 1 << 0,
+    FLAG_BLOCKED = 1 << 1,
+    FLAG_SWIMMABLE = 1 << 2,
+    FLAG_DIGGABLE = 1 << 3,
+    FLAG_TOOLINTERACT = 1 << 4,
+    FLAG_TREE = 1 << 5,
+    FLAG_STONE = 1 << 6,
+
+
+    ONPLAYER = 1 << 31,
 };
 
 inline TILE_FLAG operator | (TILE_FLAG a, TILE_FLAG b) {

@@ -15,3 +15,4 @@
 #include "ILightService.h"
 #include "IRayService.h"
 #include "ITileService.h"
+#include "ICollisionService.h"

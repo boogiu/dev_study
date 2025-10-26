@@ -54,7 +54,7 @@ void CClothParts::Update(_float dt)
 	if (Follower)
 		Follower->Sync_Bones(dt);
 
-	m_pTransform->Get_WorldMatrix();
+	m_pTransform->Get_WorldMatrix_Ptr();
 }
 
 void CClothParts::Late_Update(_float dt)

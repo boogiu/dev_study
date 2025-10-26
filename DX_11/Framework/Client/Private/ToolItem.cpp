@@ -7,6 +7,8 @@
 #include "Animator3D.h"
 
 #include "Player.h"
+#include "OBB_Collider.h"
+
 CToolItem::CToolItem()
 {
 }
@@ -22,8 +24,10 @@ CToolItem::~CToolItem()
 
 HRESULT CToolItem::Initialize_Prototype()
 {
+	__super::Initialize_Prototype();
 	Add_Component<CSkeletalModel>();
 	Add_Component<CMaterial>();
+	Add_Component<COBB_Collider>();
 	return S_OK;
 }
 
@@ -69,9 +73,11 @@ void CToolItem::Set_Item(ITEM_DATA_DESC data)
 	else {
 		Get_Component<CModel>()->Set_Active(true);
 	}
-
+	m_InstanceTag = data.TypeTag;
 	Get_Component<CModel>()->Link_Model("GamePlay_Level", data.modelName);
 	Get_Component<CMaterial>()->Link_Material("GamePlay_Level", data.materialName);
+	Get_Component<COBB_Collider>()->Make_MinMaxCollider({ {-3,-6,-2},{7,1,4} });
+	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
 }
 
 CToolItem* CToolItem::Create()

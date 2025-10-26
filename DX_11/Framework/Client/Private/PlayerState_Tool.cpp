@@ -30,7 +30,7 @@ CState* CPlayerState_Tool::HandleTransition()
 	ITEM_TYPE eType = m_pPlayer->Get_CurrentItemType();
 
 	if (eType == ITEM_TYPE::NONE) {
-		return m_pHFSM->Get_State("Movement_Idle_State");
+		return m_pHFSM->Get_State("Idle_Base_State");
 	}
 
 	else {

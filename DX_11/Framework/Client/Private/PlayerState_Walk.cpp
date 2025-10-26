@@ -23,19 +23,17 @@ void CPlayerState_Walk::OnEnter()
 void CPlayerState_Walk::OnUpdate(_float dt)
 {
     CPlayerState_Movement* Parent =  static_cast<CPlayerState_Movement*>(m_pParent);
-  
-    if (!Parent->isFliping()) {
-        _float2 InputAxis = m_pPlayer->Get_InputAxis();
-        _float MoveSpeed = m_pPlayer->Get_MoveSpeed();
-        InputAxis.y *= MoveSpeed * dt;
-        InputAxis.x *= MoveSpeed * dt;
+    _float2 Player_InputAxis = m_pPlayer->Get_InputAxis();
 
-        _float4 pos = m_pPlayer->Get_Position();
-        pos.x += InputAxis.x;
-        pos.z += InputAxis.y;
-        if (Parent->CheckMovable({ pos.x, pos.y, pos.z,0.f })) {
+    if (!Parent->isFliping()) {
+        _float MoveSpeed = m_pPlayer->Get_MoveSpeed();
+        _float2 myAxis = {};
+        myAxis.x =Player_InputAxis.x *MoveSpeed *dt;
+        myAxis.y =Player_InputAxis.y * MoveSpeed *dt;
+
+        if (Parent->CheckMovable(myAxis)) {
             CTransform* pTransform = m_pPlayer->Get_Component<CTransform>();
-            pTransform->Set_Pos({ pos.x, pos.y, pos.z });
+            pTransform->Translate({ myAxis.x ,0,myAxis.y });
         }
     }
 
@@ -57,7 +55,7 @@ CState* CPlayerState_Walk::HandleTransition()
         Animator->Chane_Animation("ToStop_RunLatter_L.anim",0.2f);
 
         if(Animator->isCurrentAnimEnd())
-            return m_pHFSM->Get_State("Movement_Idle_State");
+            return m_pHFSM->Get_State("Idle_Base_State");
     }
     else if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_SHIFT)) {
         return m_pHFSM->Get_State("Movement_Run_State");

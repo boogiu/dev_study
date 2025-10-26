@@ -2,6 +2,8 @@
 #include "Base.h"
 #include "Transform.h"
 #include "Builder.h"
+#include "Collider.h"
+#include "Model.h"
 
 NS_BEGIN(Engine)
 
@@ -31,6 +33,15 @@ public:
 	virtual void Late_Update(_float dt) PURE;
 
 public:
+	virtual void OnCollisionEnter(CGameObject* pObject);
+	virtual void OnCollisionStay(CGameObject* pObject);
+	virtual void OnCollisionExit(CGameObject* pObject);
+
+public:
+	_bool Has_Tag(const string& tag) { return m_InstanceTag == tag; };
+	void Set_Tag(const string& tag) { m_InstanceTag = tag; };
+
+public:
 	virtual void Render_GUI();
 	void RenderHierarchy(CGameObject*& outSelected, bool isSelected);
 
@@ -57,6 +68,8 @@ protected:
 	CTransform* m_pTransform = { nullptr };
 	class CLayer* m_pLayer = { nullptr };
 	string m_InstanceName = {};
+	string m_InstanceTag = {};
+
 	map<type_index,class CComponent*> m_Components;
 
 public:
@@ -87,6 +100,11 @@ inline T* CGameObject::Add_Component(Args && ...args)
 		m_Components.insert({ type_index(typeid(CModel)), comp });
 		Safe_AddRef(comp);
 	}
+	if constexpr (is_base_of_v<CCollider, T>) //충돌체 특수 처리
+	{
+		m_Components.insert({ type_index(typeid(CCollider)), comp });
+		Safe_AddRef(comp);
+	}
 	return comp;
 }
 
@@ -110,6 +128,11 @@ inline HRESULT CGameObject::Remove_Component()
 		if constexpr (is_base_of_v<CModel, T>) {
 			Safe_Release(iter->second);
 			m_Components.erase(type_index(typeid(CModel)));
+		}
+		if constexpr (is_base_of_v<CCollider, T>) //충돌체 특수 처리
+		{
+			Safe_Release(iter->second);
+			m_Components.erase(type_index(typeid(CCollider)));
 		}
 		Safe_Release(iter->second);
 		m_Components.erase(iter);

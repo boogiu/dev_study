@@ -40,13 +40,13 @@ HRESULT CAutoTile::Initialize(INIT_DESC* pArg)
 
 	Link_Data(m_BaseTypeName + "0A_0");
 	index = Get_Component<CTileBlock>()->On_Grid(tileDesc->index, m_BaseTypeName, true);
-	if (index.IndexX < 0 || index.IndexY < 0 || index.IndexZ < 0) {
+	if (index.IndexX < 0 || index.IndexZ < 0) {
 		return E_FAIL;
 	}
 
 	_uint N_State = Get_Component<CTileBlock>()->Get_NeigborState();
 	Update_State(N_State);
-	if (index.IndexX < 0 || index.IndexY < 0 || index.IndexZ < 0) {
+	if (index.IndexX < 0 || index.IndexZ < 0) {
 		return E_FAIL;
 	}
 
@@ -179,12 +179,12 @@ void CAutoTile::Update_State(_uint N_State)
 	if (!selectedName.empty())
 	{
 		m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(rotation));
-		string yIndex = "_" + to_string(Get_Component<CTileBlock>()->Get_Index().IndexY);
+		string yIndex = "_0";
 		Link_Data(m_BaseTypeName + selectedName + yIndex);
 	}
 	else
 	{
-		string yIndex = "_" + to_string(Get_Component<CTileBlock>()->Get_Index().IndexY);
+		string yIndex = "_0";
 		Link_Data(m_BaseTypeName + "0A" + yIndex);
 	}
 

@@ -80,23 +80,23 @@ void CStaticModel::SetDrawable(_uint Index, _bool isDraw)
     m_DrawableMeshes[Index] = isDraw;
 }
 
-BOUNDING_BOX CStaticModel::Get_LocalBoundingBox()
+MINMAX_BOX CStaticModel::Get_LocalBoundingBox()
 {
     return m_pData->Get_LocalBoundingBox();
 }
 
-BOUNDING_BOX CStaticModel::Get_WorldBoundingBox()
+MINMAX_BOX CStaticModel::Get_WorldBoundingBox()
 {
-    BOUNDING_BOX wordlBox = m_pData->Get_LocalBoundingBox();
-    _float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix();
+    MINMAX_BOX wordlBox = m_pData->Get_LocalBoundingBox();
+    _float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix_Ptr();
     XMStoreFloat3(&wordlBox.vMin, XMVector3TransformCoord(XMLoadFloat3(&wordlBox.vMin), XMLoadFloat4x4(pWorldMat)));
     XMStoreFloat3(&wordlBox.vMax, XMVector3TransformCoord(XMLoadFloat3(&wordlBox.vMax), XMLoadFloat4x4(pWorldMat)));
     return wordlBox;
 }
 
-vector<BOUNDING_BOX> CStaticModel::Get_MeshBoundingBox()
+vector<MINMAX_BOX> CStaticModel::Get_MeshBoundingBox()
 {
-    vector<BOUNDING_BOX> boxes;
+    vector<MINMAX_BOX> boxes;
 
     for (size_t i = 0; i < m_pData->Get_MeshCount(); i++)
     {

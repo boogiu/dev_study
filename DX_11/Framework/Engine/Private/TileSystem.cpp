@@ -1,14 +1,11 @@
 #include "TileSystem.h"
 #include "TileBlock.h"
 #include "GameInstance.h"
-#include "Shader.h"
+#include "IRenderService.h"
 
-#ifdef _DEBUG
-#include "IResourceService.h"
-#include "ICameraService.h"
-#include "PipeLine.h"
-#endif // _DEBUG
-
+#include "InstanceModel.h"
+#include "Material.h"
+#include "MaterialInstance.h"
 
 CTileSystem::CTileSystem()
 {
@@ -18,15 +15,157 @@ CTileSystem::CTileSystem()
 HRESULT CTileSystem::Initialize(const TILESYSTEM_INFO& tileInfo)
 {
 	m_tTileInfo = tileInfo;
-
-	m_TileContainer.resize(m_tTileInfo.iTileCountY);
-
-	for (BlockLayer& layer : m_TileContainer) {
-		layer.resize(m_tTileInfo.iTileCountX * m_tTileInfo.iTileCountZ, {});
-	}
-
+	m_TileInfos.resize(m_tTileInfo.iTileCountX * m_tTileInfo.iTileCountZ, { 0,{
+		m_tTileInfo.vWorldMin.y,m_tTileInfo.vWorldMin.y,m_tTileInfo.vWorldMin.y,m_tTileInfo.vWorldMin.y
+		},nullptr });
+	
 	return S_OK;
 }
+
+void CTileSystem::Update(_float dt)
+{
+	if (m_pInstanceModel) {
+
+		for (auto Index : m_DirtyTile) {
+			auto info = m_TileInfos[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX];
+			m_InstanceTiles[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX].fCornerHeight = { 
+				info.fCornerHeight[0],
+				info.fCornerHeight[1],
+				info.fCornerHeight[2],
+				info.fCornerHeight[3]
+			};
+		}
+		m_DirtyTile.clear();
+
+		m_pInstanceModel->Update_Instance(m_pContext, m_InstanceTiles.data(), 0, static_cast<_uint>(m_InstanceTiles.size()));
+		INSTANCE_PACKET packet;
+		packet.pModel = m_pInstanceModel;
+		packet.pMaterial = m_pTileMaterial;
+
+		for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
+		{
+			if (!packet.pModel->isDrawable(i)) continue;
+			packet.DrawIndex = i;
+			packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
+			packet.pWorldMatrix = &m_pTileWorldMatrix;
+			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Instance(packet);
+		}
+
+	}
+}
+
+HRESULT CTileSystem::Execute_InstanceModel(const string& levelKey, const string& modelKey, const string& materialKey)
+{
+	ID3D11Device* pDevice = CGameInstance::GetInstance()->Get_Device();
+	m_pContext = CGameInstance::GetInstance()->Get_Context();
+	Safe_AddRef(m_pContext);
+
+	m_pInstanceModel = CInstanceModel::Create();
+	m_pTileMaterial = CMaterial::Create();
+
+	INSTANCE_INIT_DESC instanceDesc = {};
+	instanceDesc.ElementKey = "TileSystem";
+	instanceDesc.ElementCount = VTX_TILEINSTANCE::iElementCount;
+	instanceDesc.instanceStride = sizeof(INSTANCE_TILE);
+	instanceDesc.pElementDesc = VTX_TILEINSTANCE::Elements;
+	instanceDesc.instanceCount = m_TileInfos.size();
+
+	vector<INSTANCE_INIT_DESC> pInstanceVector;
+	m_instanceDesc.push_back(instanceDesc);
+	XMStoreFloat4x4(&m_pTileWorldMatrix, XMMatrixIdentity());
+
+	m_InstanceTiles.resize(m_TileInfos.size());
+	m_pTileMaterial->Link_Material(levelKey, materialKey);
+	for (auto& instance : m_pTileMaterial->Get_Material_Instance()) {
+		instance->Override_Pass("Instancing");
+	}
+
+	m_pInstanceModel->Link_InstanceData(pDevice, m_instanceDesc, levelKey, modelKey);
+	m_pInstanceModel->Link_InstanceMeshAll(0);
+	_float sizex = m_tTileInfo.SizePerTile().x;
+	_float sizez = m_tTileInfo.SizePerTile().z;
+	for (size_t i = 0; i < m_tTileInfo.iTileCountZ; i++)
+	{
+		for (size_t j = 0; j < m_tTileInfo.iTileCountX; j++)
+		{
+			const _uint Index = i * m_tTileInfo.iTileCountX + j;  
+
+			m_InstanceTiles[Index].vLook = { 0,0,1,0 };
+			m_InstanceTiles[Index].vUp = { 0,1,0,0 };
+			m_InstanceTiles[Index].vRight = { 1,0,0,0 };
+			m_InstanceTiles[Index].vTranslation = {
+				m_tTileInfo.vWorldMin.x + j* sizex + sizex*0.5f,
+				m_tTileInfo.vWorldMin.y,
+				m_tTileInfo.vWorldMin.z+ i* sizez + sizez * 0.5f,
+				1.f
+			};
+			m_InstanceTiles[Index].fCornerHeight = {
+			m_TileInfos[Index].fCornerHeight[0],
+			m_TileInfos[Index].fCornerHeight[1],
+			m_TileInfos[Index].fCornerHeight[2],
+			m_TileInfos[Index].fCornerHeight[3]
+			};
+		}
+	}
+	return S_OK;
+}
+
+HRESULT CTileSystem::Set_Material_ID(TILE_INDEX tileIndex, _float4 materialID)
+{
+	if (!Check_ValidIndex(tileIndex))
+		return E_FAIL;
+
+	m_InstanceTiles[tileIndex.IndexX + tileIndex.IndexZ * m_tTileInfo.iTileCountX].vMaterialType = materialID;
+	return S_OK;
+}
+_float CTileSystem::Get_TileHeightByPosition(_float4 WorldPos)
+{
+	TILE_INDEX dstIndex = Get_IndexByPosition(WorldPos);
+	if (!Check_ValidIndex(dstIndex))
+		return 0.f;
+
+	_float4 dstPos = Get_PositionByIndex(dstIndex, ANCHOR::Center);
+	TILE_INFO info = m_TileInfos[dstIndex.IndexX + dstIndex.IndexZ * m_tTileInfo.iTileCountX];
+	_float hSizeX = m_tTileInfo.SizePerTile().x * 0.5f;
+	_float hSizeZ = m_tTileInfo.SizePerTile().z * 0.5f;
+
+	_float3 CornerA = { dstPos.x - hSizeX, info.fCornerHeight[0], dstPos.z + hSizeZ }; // LT
+	_float3 CornerB = { dstPos.x + hSizeX, info.fCornerHeight[1], dstPos.z + hSizeZ }; // RT
+	_float3 CornerC = { dstPos.x + hSizeX, info.fCornerHeight[2], dstPos.z - hSizeZ }; // RB
+	_float3 CornerD = { dstPos.x - hSizeX, info.fCornerHeight[3], dstPos.z - hSizeZ }; // LB
+
+	// Å¸ÀÏ ³»ºÎ¿¡¼­ÀÇ Á¤±ÔÈ­ ÁÂÇ¥ (0~1)
+	_float localX = WorldPos.x - (dstPos.x - hSizeX);
+	_float localZ = WorldPos.z - (dstPos.z - hSizeZ);
+	_float normX = localX / (hSizeX * 2.f);
+	_float normZ = localZ / (hSizeZ * 2.f);
+
+	_float4 vPlane = {};
+
+	// LT ¡ê RB ±âÁØ: Á÷¼± ¹æÁ¤½ÄÀº v = u
+	if (normZ > normX) {
+		// À­»ï°¢Çü (LT, RT, RB)
+		XMStoreFloat4(&vPlane, XMPlaneFromPoints(
+			XMLoadFloat3(&CornerA), // LT
+			XMLoadFloat3(&CornerB), // RT
+			XMLoadFloat3(&CornerC)  // RB
+		));
+	}
+	else {
+		// ¾Æ·§»ï°¢Çü (LT, RB, LB)
+		XMStoreFloat4(&vPlane, XMPlaneFromPoints(
+			XMLoadFloat3(&CornerA), // LT
+			XMLoadFloat3(&CornerC), // RB
+			XMLoadFloat3(&CornerD)  // LB
+		));
+	}
+
+	// Æò¸é½Ä ax + by + cz + d = 0  ¡æ y = (-a*x - c*z - d)/b
+	_float fy = (-vPlane.x * WorldPos.x - vPlane.z * WorldPos.z - vPlane.w) / vPlane.y;
+
+	return fy;
+}
+
 
 TILE_INDEX CTileSystem::Get_IndexByPosition(_float4 WorldPos)
 {
@@ -35,7 +174,6 @@ TILE_INDEX CTileSystem::Get_IndexByPosition(_float4 WorldPos)
 	_float DistanceZ = WorldPos.z - m_tTileInfo.vWorldMin.z;
 
 	_int    TileIndexX = static_cast<_int>(floorf(DistanceX / m_tTileInfo.SizePerTile().x));
-	_int    TileIndexY = static_cast<_int>(floorf(DistanceY / m_tTileInfo.SizePerTile().y));
 	_int    TileIndexZ = static_cast<_int>(floorf(DistanceZ / m_tTileInfo.SizePerTile().z));
 
 	TILE_INDEX index = {};
@@ -44,11 +182,6 @@ TILE_INDEX CTileSystem::Get_IndexByPosition(_float4 WorldPos)
 		index.IndexX = -1;
 	else
 		index.IndexX = TileIndexX;
-
-	if (TileIndexY < 0 || TileIndexY >= static_cast<_int>(m_tTileInfo.iTileCountY))
-		index.IndexY = -1;
-	else
-		index.IndexY = TileIndexY;
 
 	if (TileIndexZ < 0 || TileIndexZ >= static_cast<_int>(m_tTileInfo.iTileCountZ))
 		index.IndexZ = -1;
@@ -80,7 +213,7 @@ _float4 CTileSystem::Get_PositionByIndex(TILE_INDEX tileIndex, ANCHOR anchor)
 		result.z = (tileIndex.IndexZ * m_tTileInfo.SizePerTile().z) + (m_tTileInfo.SizePerTile().z * 0.5f);
 
 
-	result.y = (tileIndex.IndexY * m_tTileInfo.SizePerTile().y);
+	result.y = m_tTileInfo.vWorldMin.y;
 
 	return _float4{ result.x, result.y, result.z, 1.f };
 }
@@ -90,13 +223,12 @@ TILE_INDEX CTileSystem::Register_Tile(CTileBlock* block, TILE_INDEX index,_bool 
 	if (!Check_ValidIndex(index))
 		return TILE_INDEX();
 
-	BlockLayer& TileLayer = m_TileContainer[index.IndexY];
 	TILE_INDEX desireIndex = index;
 	while (true) {
 		_int XZIndex = desireIndex.IndexX + desireIndex.IndexZ * m_tTileInfo.iTileCountX;
 
-		if (nullptr == TileLayer[XZIndex].pTileBlock) {
-			TileLayer[XZIndex].pTileBlock = block;
+		if (nullptr == m_TileInfos[XZIndex].pTileBlock) {
+			m_TileInfos[XZIndex].pTileBlock = block;
 
 			block->Set_Index(desireIndex);
 			block->Update_Position(m_tTileInfo);
@@ -127,19 +259,17 @@ vector<class CTileBlock*> CTileSystem::Get_NeighborByIndex(TILE_INDEX index)
 
 	if (!Check_ValidIndex(index))
 		return neighBorTile;
-
-	BlockLayer& Layer = m_TileContainer[index.IndexY]; //°°Àº Ãþ ·¹ÀÌ¾î Å½»ö
 	neighBorTile.resize(9, nullptr);
 	//UPLEFT, UP, UPRIGHT, LEFT, CENTER, RIGHT, DOWNLEFT, DOWN, DOWNRIGHT,END    
-	neighBorTile[0] =		Get_TileBlockByIndex({ index.IndexX - 1, index.IndexY,index.IndexZ + 1 });//zÀ§·Î x¿Þ;
-	neighBorTile[1] =		Get_TileBlockByIndex({ index.IndexX       , index.IndexY,index.IndexZ + 1 });
-	neighBorTile[2] =		Get_TileBlockByIndex({ index.IndexX + 1, index.IndexY,index.IndexZ + 1 });
-	neighBorTile[3] =		Get_TileBlockByIndex({ index.IndexX - 1, index.IndexY,index.IndexZ });
-	neighBorTile[4] =		Get_TileBlockByIndex({ index.IndexX, index.IndexY,index.IndexZ });
-	neighBorTile[5] =		Get_TileBlockByIndex({ index.IndexX + 1, index.IndexY,index.IndexZ });
-	neighBorTile[6] =		Get_TileBlockByIndex({ index.IndexX - 1, index.IndexY,index.IndexZ - 1 });
-	neighBorTile[7] =		Get_TileBlockByIndex({ index.IndexX , index.IndexY,index.IndexZ - 1 });
-	neighBorTile[8] =		Get_TileBlockByIndex({ index.IndexX + 1, index.IndexY,index.IndexZ - 1 });
+	neighBorTile[0] =		Get_TileBlockByIndex({ index.IndexX - 1,			index.IndexZ + 1 });//zÀ§·Î x¿Þ;
+	neighBorTile[1] =		Get_TileBlockByIndex({ index.IndexX       ,			index.IndexZ + 1 });
+	neighBorTile[2] =		Get_TileBlockByIndex({ index.IndexX + 1,			index.IndexZ + 1 });
+	neighBorTile[3] =		Get_TileBlockByIndex({ index.IndexX - 1,			index.IndexZ });
+	neighBorTile[4] =		Get_TileBlockByIndex({ index.IndexX,				index.IndexZ });
+	neighBorTile[5] =		Get_TileBlockByIndex({ index.IndexX + 1,			index.IndexZ });
+	neighBorTile[6] =		Get_TileBlockByIndex({ index.IndexX - 1,			index.IndexZ - 1 });
+	neighBorTile[7] =		Get_TileBlockByIndex({ index.IndexX ,				index.IndexZ - 1 });
+	neighBorTile[8] =		Get_TileBlockByIndex({ index.IndexX + 1,			index.IndexZ - 1 });
 
 	return neighBorTile;
 }
@@ -157,22 +287,18 @@ vector<TILE_INDEX> CTileSystem::Get_IndeciesByArea(_float4 vMin, _float4 vMax)
 
 	if (!Check_ValidIndex(MinIndex) || !Check_ValidIndex(MinIndex)) { return indices; }
 
-	for (int y = MinIndex.IndexY; y <= MaxIndex.IndexY; ++y)
-	{
 		for (int z = MinIndex.IndexZ; z <= MaxIndex.IndexZ-1; ++z)
 		{
 			for (int x = MinIndex.IndexX; x <= MaxIndex.IndexX-1; ++x)
 			{
 				TILE_INDEX idx;
 				idx.IndexX = x;
-				idx.IndexY = y;
 				idx.IndexZ = z;
 				if (!Check_ValidIndex(idx)) continue;
 
 				indices.push_back(idx);
 			}
 		}
-	}
 	return indices;
 }
 
@@ -181,8 +307,7 @@ HRESULT CTileSystem::Add_TileFlagByIndex(vector<TILE_INDEX> indices, _uint flag)
 	for (auto Index : indices) {
 		if (!Check_ValidIndex(Index))
 			continue;
-		BlockLayer& Layer = m_TileContainer[Index.IndexY]; //°°Àº Ãþ ·¹ÀÌ¾î Å½»ö
-		Layer[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX].TileFlag |= flag;
+		m_TileInfos[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX].TileFlag |= flag;
 	}
 	return S_OK;
 }
@@ -192,8 +317,7 @@ HRESULT CTileSystem::Add_TileFlagByIndex(TILE_INDEX index, _uint flag)
 	if (!Check_ValidIndex(index))
 		return E_FAIL;
 
-	BlockLayer& Layer = m_TileContainer[index.IndexY]; //°°Àº Ãþ ·¹ÀÌ¾î Å½»ö
-	Layer[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX].TileFlag |= flag;
+	m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX].TileFlag |= flag;
 
 	return S_OK;
 }
@@ -203,8 +327,7 @@ HRESULT CTileSystem::Remove_TileFlagByIndex(vector<TILE_INDEX> indices, _uint fl
 	for (auto Index : indices) {
 		if (!Check_ValidIndex(Index))
 			continue;
-		BlockLayer& Layer = m_TileContainer[Index.IndexY]; //°°Àº Ãþ ·¹ÀÌ¾î Å½»ö	
-		Layer[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX].TileFlag &= ~flag;
+		m_TileInfos[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX].TileFlag &= ~flag;
 
 	}
 	return S_OK;
@@ -215,16 +338,14 @@ HRESULT CTileSystem::Remove_TileFlagByIndex(TILE_INDEX index, _uint flag)
 	if (!Check_ValidIndex(index))
 		return E_FAIL;
 
-	BlockLayer& Layer = m_TileContainer[index.IndexY]; //°°Àº Ãþ ·¹ÀÌ¾î Å½»ö	
-	Layer[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX].TileFlag &= ~flag;
+	m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX].TileFlag &= ~flag;
 
 	return S_OK;
 }
 
 _uint CTileSystem::Get_TileFlagByIndex(TILE_INDEX index)
 {
-	BlockLayer& Layer = m_TileContainer[index.IndexY]; //°°Àº Ãþ ·¹ÀÌ¾î Å½»ö	
-	return Layer[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX].TileFlag;
+	return m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX].TileFlag;
 }
 
 _bool CTileSystem::Check_TileFlagByPosition(_float4 WorldPos, _uint flag)
@@ -232,9 +353,71 @@ _bool CTileSystem::Check_TileFlagByPosition(_float4 WorldPos, _uint flag)
 	TILE_INDEX Index = Get_IndexByPosition(WorldPos);
 	if (!Check_ValidIndex(Index)) return false;
 
-	BlockLayer& Layer = m_TileContainer[Index.IndexY]; //°°Àº Ãþ ·¹ÀÌ¾î Å½»ö	
-	_uint Flag =  Layer[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX].TileFlag;
+	_uint Flag = m_TileInfos[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX].TileFlag;
 	return(Flag & flag) != 0;
+}
+
+TILE_INFO CTileSystem::Get_InfoByIndex(TILE_INDEX index)
+{
+	if (!Check_ValidIndex(index)) return TILE_INFO{};
+
+	return m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
+}
+
+INSTANCE_TILE CTileSystem::Get_InstanceInfoByIndex(TILE_INDEX index)
+{
+	if (!Check_ValidIndex(index)) return INSTANCE_TILE{};
+
+	return m_InstanceTiles[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
+}
+
+void CTileSystem::Change_CornerHeight(TILE_INDEX index, _float leftTop, _float rightTop, _float rightBottom, _float leftBottom)
+{
+	auto& TileInfo =  m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
+	TileInfo.fCornerHeight[0]= leftTop;
+	TileInfo.fCornerHeight[1]	= rightTop;
+	TileInfo.fCornerHeight[2]	= rightBottom;
+	TileInfo.fCornerHeight[3]	= leftBottom;
+
+	m_DirtyTile.push_back(index);
+}
+
+HRESULT CTileSystem::Save_TileSystemData(const string& SavePath)
+{
+	ofstream ofs(SavePath.c_str(), ios::binary);
+	if (!ofs.is_open())
+		return E_FAIL;
+	
+	ofs.write(reinterpret_cast<const char*>(&m_tTileInfo), sizeof(TILESYSTEM_INFO));
+
+	_uint infoCount = m_TileInfos.size();
+	ofs.write(reinterpret_cast<const char*>(&infoCount), sizeof(_uint));
+	for (size_t i = 0; i < infoCount; i++)
+	{
+		ofs.write(reinterpret_cast<const char*>(&m_TileInfos[i]), sizeof(TILE_INFO));
+	}
+
+	ofs.close();
+	return S_OK;
+}
+
+HRESULT CTileSystem::Executer_SystemByData(const string& LoadPath)
+{
+	ifstream ifs(LoadPath.c_str(), ios::binary);
+	if (!ifs.is_open())
+		return E_FAIL;
+
+	ifs.read(reinterpret_cast<char*>(&m_tTileInfo), sizeof(TILESYSTEM_INFO));
+
+	_uint infoCount = {};
+	ifs.read(reinterpret_cast< char*>(&infoCount), sizeof(_uint));
+	m_TileInfos.resize(infoCount);
+	for (size_t i = 0; i < infoCount; i++)
+	{
+		ifs.read(reinterpret_cast< char*>(&m_TileInfos[i]), sizeof(TILE_INFO));
+	}
+	ifs.close();
+	return S_OK;
 }
 
 
@@ -243,15 +426,12 @@ CTileBlock* CTileSystem::Get_TileBlockByIndex(TILE_INDEX index)
 	if (!Check_ValidIndex(index))
 		return nullptr;
 
-	BlockLayer& Layer = m_TileContainer[index.IndexY]; //°°Àº Ãþ ·¹ÀÌ¾î Å½»ö
-	return Layer[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX].pTileBlock;
+	return m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX].pTileBlock;
 }
 
 _bool CTileSystem::Check_ValidIndex(TILE_INDEX index)
 {
 	if (index.IndexX < 0 || index.IndexX >= static_cast<_int>(m_tTileInfo.iTileCountX))
-		return false;
-	if (index.IndexY < 0 || index.IndexY >= static_cast<_int>(m_tTileInfo.iTileCountY))
 		return false;
 	if (index.IndexZ < 0 || index.IndexZ >= static_cast<_int>(m_tTileInfo.iTileCountZ))
 		return false;
@@ -264,8 +444,7 @@ TILE_INFO CTileSystem::Find_Info(TILE_INDEX index)
 	if (!Check_ValidIndex(index))
 		return TILE_INFO();
 
-	BlockLayer& Layer = m_TileContainer[index.IndexY]; //°°Àº Ãþ ·¹ÀÌ¾î Å½»ö
-	return Layer[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
+	return m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
 }
 
 
@@ -279,8 +458,20 @@ CTileSystem* CTileSystem::Create(const TILESYSTEM_INFO& tileInfo)
 	return instance;
 }
 
+CTileSystem* CTileSystem::CreateByData(const string& LoadPath)
+{
+	CTileSystem* instance = new CTileSystem();
+	if (FAILED(instance->Executer_SystemByData(LoadPath))) {
+		Safe_Release(instance);
+	}
+	return instance;
+}
+
 void CTileSystem::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pInstanceModel);
+	Safe_Release(m_pTileMaterial);
+	Safe_Release(m_pContext);
 }

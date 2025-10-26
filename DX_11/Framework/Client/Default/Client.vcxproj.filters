@@ -49,15 +49,6 @@
     <Filter Include="02. GameObjects\02. Field">
       <UniqueIdentifier>{3a1d49ec-2a06-407b-87cc-e5ca75b16581}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\02. Field\FieldOut">
-      <UniqueIdentifier>{0ff94ed8-9fdd-42c3-ad79-d8fe32b8f8e9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\02. Field\FieldStructure">
-      <UniqueIdentifier>{9fd2235a-1307-40d2-93c6-df093d65c6c6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\02. Field\BaseField">
-      <UniqueIdentifier>{92878d91-4998-4cff-8dd3-41e637b760f3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\01. Camera\FreeCam">
       <UniqueIdentifier>{7e62ca0a-c37d-44b1-9a39-9871688c83fc}</UniqueIdentifier>
     </Filter>
@@ -97,9 +88,6 @@
     <Filter Include="02. GameObjects\00. Player\StateMachine\MovementState">
       <UniqueIdentifier>{790f451f-e361-4fb6-b1c7-504192a46d6e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\MovementState\Idle">
-      <UniqueIdentifier>{819bcb92-ca72-4168-8b4b-e2f9c4d54dc1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\MovementState\Walk">
       <UniqueIdentifier>{6d57cc37-5ae2-4573-a711-82d84f9721f2}</UniqueIdentifier>
     </Filter>
@@ -122,7 +110,31 @@
       <UniqueIdentifier>{7213264b-a234-49ac-bb4e-209ed58830b4}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\02. Field\FieldObject">
-      <UniqueIdentifier>{b1f5be07-91ce-44a1-898c-94875805ff31}</UniqueIdentifier>
+      <UniqueIdentifier>{abd88e48-bd3a-46e3-86fc-b8c1c7afbbb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\Field_Tree">
+      <UniqueIdentifier>{1d24c63f-5f89-4987-87c8-8a6d0166f368}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\Field_Out">
+      <UniqueIdentifier>{0ff94ed8-9fdd-42c3-ad79-d8fe32b8f8e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\TransferState">
+      <UniqueIdentifier>{d86f59f6-0bf7-48e1-a8dd-06ae26b942b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\IdleState">
+      <UniqueIdentifier>{bffa34ee-cf1a-4165-afb1-6796d9fc7ad7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\IdleState\Idle">
+      <UniqueIdentifier>{819bcb92-ca72-4168-8b4b-e2f9c4d54dc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\TransferState\TransItem">
+      <UniqueIdentifier>{b062d2a2-0c2b-491c-bec8-bcdc2c6ba9f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\FieldStone">
+      <UniqueIdentifier>{b6b7dbc3-a4ae-4215-ba76-aef13c63c007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\Plant_Tree">
+      <UniqueIdentifier>{37022cc5-4b02-4058-8287-09d623ee402a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -165,11 +177,8 @@
     <ClInclude Include="..\Public\ClientHelper.h">
       <Filter>03. Utility\ClientHelper</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\FieldOut.h">
-      <Filter>02. GameObjects\02. Field\FieldOut</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\BaseField.h">
-      <Filter>02. GameObjects\02. Field\BaseField</Filter>
+    <ClInclude Include="..\Public\Field_Out.h">
+      <Filter>02. GameObjects\02. Field\Field_Out</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Free_Camera.h">
       <Filter>02. GameObjects\01. Camera\FreeCam</Filter>
@@ -241,7 +250,7 @@
       <Filter>02. GameObjects\05. State</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Idle.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\MovementState\Idle</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\IdleState\Idle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Movement.h">
       <Filter>02. GameObjects\00. Player\StateMachine\MovementState</Filter>
@@ -273,11 +282,23 @@
     <ClInclude Include="..\Public\PlayerPart_Hand.h">
       <Filter>02. GameObjects\00. Player\PlayerParts\Hand</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\FieldStructure.h">
-      <Filter>02. GameObjects\02. Field\FieldStructure</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\FieldObject.h">
       <Filter>02. GameObjects\02. Field\FieldObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Field_Tree.h">
+      <Filter>02. GameObjects\02. Field\Field_Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Transfer.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\TransferState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_TransItem.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\TransferState\TransItem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Field_Stone.h">
+      <Filter>02. GameObjects\02. Field\FieldStone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Plant_Tree.h">
+      <Filter>02. GameObjects\02. Field\Plant_Tree</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -316,11 +337,8 @@
     <ClCompile Include="..\Private\ClientHelper.cpp">
       <Filter>03. Utility\ClientHelper</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\FieldOut.cpp">
-      <Filter>02. GameObjects\02. Field\FieldOut</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\BaseField.cpp">
-      <Filter>02. GameObjects\02. Field\BaseField</Filter>
+    <ClCompile Include="..\Private\Field_Out.cpp">
+      <Filter>02. GameObjects\02. Field\Field_Out</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Free_Camera.cpp">
       <Filter>02. GameObjects\01. Camera\FreeCam</Filter>
@@ -386,7 +404,7 @@
       <Filter>02. GameObjects\05. State</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Idle.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\MovementState\Idle</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\IdleState\Idle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Movement.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\MovementState</Filter>
@@ -412,11 +430,23 @@
     <ClCompile Include="..\Private\PlayerPart_Hand.cpp">
       <Filter>02. GameObjects\00. Player\PlayerParts\Hand</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\FieldStructure.cpp">
-      <Filter>02. GameObjects\02. Field\FieldStructure</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\FieldObject.cpp">
       <Filter>02. GameObjects\02. Field\FieldObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Field_Tree.cpp">
+      <Filter>02. GameObjects\02. Field\Field_Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Transfer.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\TransferState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_TransItem.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\TransferState\TransItem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Field_Stone.cpp">
+      <Filter>02. GameObjects\02. Field\FieldStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Plant_Tree.cpp">
+      <Filter>02. GameObjects\02. Field\Plant_Tree</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

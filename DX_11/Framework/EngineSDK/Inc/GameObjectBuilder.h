@@ -16,6 +16,12 @@ public:
     CGameObjectBuilder& Position(const _float3 position);
     CGameObjectBuilder& Rotate(const _float3 rotate);
     CGameObjectBuilder& Scale(const _float3 scale);
+    
+    CGameObjectBuilder& AABB_Collider(const AABB_COLLIDER_DESC& desc);
+   // CGameObjectBuilder& OBB_Collider(const OBB_COLLIDER_DESC& scale);
+   // CGameObjectBuilder& Spher_Collider(const SPHERE_COLLIDER_DESC& scale);
+
+
     CGameObjectBuilder& Add_ObjDesc(GAMEOBJECT_DESC* pArg);
 
 private:

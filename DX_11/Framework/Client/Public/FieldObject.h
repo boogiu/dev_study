@@ -5,16 +5,7 @@ NS_BEGIN(Client)
 class CFieldObject :
     public CGameObject
 {
-public:
-    typedef struct tagFieldObjectDesc : public GAMEOBJECT_DESC
-    {
-        TILE_INDEX Index = {};
-        string LevelTag;
-        string ModelName;
-        string MaterialName;
-    }FIELDOBJ_DESC;
-
-private:
+protected:
     CFieldObject();
     CFieldObject(const CFieldObject& rhs);
     virtual ~CFieldObject() DEFAULT;
@@ -26,10 +17,12 @@ public:
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
     virtual void Render_GUI()override;
-
 public:
-    static CFieldObject* Create();
-    CGameObject* Clone(INIT_DESC* pArg) override;
+    virtual HRESULT Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable);
+
+protected:
+    _uint Obj_Type = {};
+public:
     void Free() override;
 };
 

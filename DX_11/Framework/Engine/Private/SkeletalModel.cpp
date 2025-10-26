@@ -41,6 +41,7 @@ HRESULT CSkeletalModel::Link_Model(const string& levelKey, const string& modelDa
 	XMStoreFloat4x4(&IdentityMatrix, XMMatrixIdentity());
 	m_TransfromationMatrices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
 	m_CombinedMatrices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
+	m_ManipulateMatrices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
 	m_FinalMatices.resize(m_pData->Get_BoneCount(), IdentityMatrix);
 
 	for (size_t i = 0; i < m_pData->Get_BoneCount(); i++)
@@ -113,23 +114,59 @@ void CSkeletalModel::SetDrawable(_uint Index, _bool isDraw)
 	m_DrawableMeshes[Index] = isDraw;
 }
 
-BOUNDING_BOX CSkeletalModel::Get_LocalBoundingBox()
+MINMAX_BOX CSkeletalModel::Get_LocalBoundingBox()
 {
 	return m_pData->Get_LocalBoundingBox();
 }
-
-BOUNDING_BOX CSkeletalModel::Get_WorldBoundingBox()
+ const vector<_float4x4>& CSkeletalModel::Get_BoneMatrices()
 {
-	BOUNDING_BOX wordlBox = m_pData->Get_LocalBoundingBox();
-	_float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix();
+	 if (!m_bDirty) {
+		 return m_FinalMatices;
+	 }
+	 else{
+		 for (size_t i = 0; i < m_pData->Get_BoneCount(); i++)
+		 {
+			 int parent = m_pData->Get_BoneParentIndex(i);
+
+			 if (parent == -1) {
+				 _matrix MyTransformation =
+					 XMLoadFloat4x4(&m_ManipulateMatrices[i]) *
+					 XMLoadFloat4x4(&m_TransfromationMatrices[i]);
+
+				 XMStoreFloat4x4(&m_CombinedMatrices[i], MyTransformation);
+			 }
+			 else {
+				 _matrix ParentCombine = XMLoadFloat4x4(&m_CombinedMatrices[parent]);
+				 _matrix MyTransformation =
+					 XMLoadFloat4x4(&m_ManipulateMatrices[i])
+					 * XMLoadFloat4x4(&m_TransfromationMatrices[i]);
+
+				 XMStoreFloat4x4(&m_CombinedMatrices[i], MyTransformation * ParentCombine);
+			 }
+		 }
+
+		 for (size_t i = 0; i < m_pData->Get_BoneCount(); i++)
+		 {
+			 XMStoreFloat4x4(&m_FinalMatices[i], m_pData->Get_OffsetMatrix(i) * XMLoadFloat4x4(&m_CombinedMatrices[i]));
+		 }
+
+		 m_bDirty = false;
+		 return m_FinalMatices;
+	 }
+}
+
+MINMAX_BOX CSkeletalModel::Get_WorldBoundingBox()
+{
+	MINMAX_BOX wordlBox = m_pData->Get_LocalBoundingBox();
+	_float4x4* pWorldMat = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix_Ptr();
 	XMStoreFloat3(&wordlBox.vMin, XMVector3TransformCoord(XMLoadFloat3(&wordlBox.vMin), XMLoadFloat4x4(pWorldMat)));
 	XMStoreFloat3(&wordlBox.vMax, XMVector3TransformCoord(XMLoadFloat3(&wordlBox.vMax), XMLoadFloat4x4(pWorldMat)));
 	return wordlBox;
 }
 
-vector<BOUNDING_BOX> CSkeletalModel::Get_MeshBoundingBox()
+vector<MINMAX_BOX> CSkeletalModel::Get_MeshBoundingBox()
 {
-	vector<BOUNDING_BOX> boxes;
+	vector<MINMAX_BOX> boxes;
 
 	for (size_t i = 0; i < m_pData->Get_MeshCount(); i++)
 	{
@@ -143,6 +180,27 @@ _bool CSkeletalModel::isReadyToDraw()
 	return m_pData != nullptr; 
 }
 
+void CSkeletalModel::Control_Bone(const string& boneName, _fmatrix BoneMatrix)
+{
+	_int Index = m_pData->Find_BoneIndexByName(boneName);
+	if (Index == -1) return;
+
+	else {
+		XMStoreFloat4x4(&m_ManipulateMatrices[Index], BoneMatrix);
+	}
+	m_bDirty = true;
+}
+
+void CSkeletalModel::Control_BoneByIndex(_uint Index, _fmatrix BoneMatrix)
+ {
+
+	if (Index >= m_ManipulateMatrices.size()) return;
+	else {
+		XMStoreFloat4x4(&m_ManipulateMatrices[Index], BoneMatrix);
+	}
+	m_bDirty = true;
+}
+
 void CSkeletalModel::Render_GUI()
 {
 	ImGui::SeparatorText("Animate Model");
@@ -152,6 +210,17 @@ void CSkeletalModel::Render_GUI()
 
 	ImGui::BeginChild("##Animate ModelChild", ImVec2{ 0, childHeight }, true);
 		m_pData->Render_GUI();
+		string ID = "HideMesh : ";
+		for (size_t i = 0; i < m_pData->Get_MeshCount(); i++)
+		{
+
+			if (ImGui::Button((ID + to_string(i)).c_str()))
+			{
+				if (m_DrawableMeshes.size() >= 1) {
+					m_DrawableMeshes[i] = !m_DrawableMeshes[i];
+				}
+			}
+		}
 	ImGui::EndChild();
 }
 

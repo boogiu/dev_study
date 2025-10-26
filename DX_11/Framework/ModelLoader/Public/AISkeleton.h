@@ -18,6 +18,8 @@ public:
     void Save_File(ofstream& ofs);
 
 public:
+    _int Find_SimilarByName(const string& meshName);
+public:
     static CAISkeleton* Create(const aiNode* pAINode);
     virtual void Free() override;
 };

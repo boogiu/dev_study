@@ -20,6 +20,7 @@ public:
 	void AddScale(_fvector scale);
 
 	void Set_Pos(const _float3& position);
+	void Set_Y(const _float& position);
 	void Rotate(const _float3& eular);
 	void Scale(const _float3& scale);
 
@@ -33,7 +34,8 @@ public:
 	_vector Get_Scale() { return XMLoadFloat4(&m_vScale); };
 	 _vector Dir(STATE eState);
 
-	 _float4x4* Get_WorldMatrix();
+	 _float4x4* Get_WorldMatrix_Ptr();
+	 _float4x4 Get_WorldMatrix();
 	 _float4x4* Get_LocalMatrix();
 	 _float4x4 Get_InverseWorldMatrix();
 	 _float4x4* Get_InverseWorldMatrix_Ptr();
@@ -41,6 +43,7 @@ public:
 public:
 	void Set_ParentTransform(CTransform* pParentTransform);
 	void TranslateMatrix(_fmatrix matrix);
+
 public:
 	virtual void Render_GUI() override;
 

@@ -42,12 +42,9 @@
     <ClInclude Include="..\Public\EditorSystem.h" />
     <ClInclude Include="..\Public\Editor_Defines.h" />
     <ClInclude Include="..\Public\EditorMain.h" />
-    <ClInclude Include="..\Public\FieldOutBlocks.h" />
     <ClInclude Include="..\Public\Free_Camera.h" />
     <ClInclude Include="..\Public\GridObject.h" />
     <ClInclude Include="..\Public\MapObject.h" />
-    <ClInclude Include="..\Public\MapTileInstance.h" />
-    <ClInclude Include="..\Public\StructureObject.h" />
     <ClInclude Include="..\Public\TileObject.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MapEditor.h" />
@@ -71,7 +68,6 @@
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_tables.cpp" />
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_widgets.cpp" />
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\ImSequencer.cpp" />
-    <ClCompile Include="..\Private\FieldOutBlocks.cpp" />
     <ClCompile Include="..\Private\ControlPanel.cpp" />
     <ClCompile Include="..\Private\EditorLevel.cpp" />
     <ClCompile Include="..\Private\EditorMain.cpp" />
@@ -80,8 +76,6 @@
     <ClCompile Include="..\Private\Free_Camera.cpp" />
     <ClCompile Include="..\Private\GridObject.cpp" />
     <ClCompile Include="..\Private\MapObject.cpp" />
-    <ClCompile Include="..\Private\MapTileInstance.cpp" />
-    <ClCompile Include="..\Private\StructureObject.cpp" />
     <ClCompile Include="..\Private\TileObject.cpp" />
     <ClCompile Include="MapEditor.cpp" />
   </ItemGroup>

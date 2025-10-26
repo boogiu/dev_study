@@ -63,7 +63,7 @@ _bool CRayReceiver::OnRayHit(RAY* ray, RAY_HIT* HittedInfo)
 		)
 	);
 
-	BOUNDING_BOX bounding = m_pModel->Get_LocalBoundingBox();
+	MINMAX_BOX bounding = m_pModel->Get_LocalBoundingBox();
 
 	_float tmin = -FLT_MAX;
 	_float tmax = FLT_MAX;
@@ -100,7 +100,7 @@ _bool CRayReceiver::OnRayHit(RAY* ray, RAY_HIT* HittedInfo)
 	if (tmin > tmax) return false; // 교차 구간 없음
 
 	_vector hitLocal = XMLoadFloat3(&RayLocalOrigin) + tmin * XMLoadFloat3(&RayLocalDir);
-	_vector hitWorld = XMVector3TransformCoord(hitLocal, XMLoadFloat4x4(m_pTransform->Get_WorldMatrix()));
+	_vector hitWorld = XMVector3TransformCoord(hitLocal, XMLoadFloat4x4(m_pTransform->Get_WorldMatrix_Ptr()));
 	XMStoreFloat3(&m_tHitInfo.vHittedPosition, hitWorld);
 
 	_vector vDiff = hitWorld - XMLoadFloat3(&ray->vRayOrigin);

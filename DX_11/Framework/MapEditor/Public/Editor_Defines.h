@@ -17,3 +17,12 @@ extern HWND g_hWnd;
 extern HINSTANCE g_hInstance;
 
 using namespace MapEditor;
+
+enum Mode {NONE, EditObj, BrushTile, TileSystem };
+enum ModelMap {ID, Name, ModleFileName, ModelFileName, ModelFilePath, MaterialFilePath,END};
+enum class TILE_FLAG : unsigned int {
+    NONE = 0,
+    FLAG_WALKABLE = 1 << 0,
+    FLAG_BLOCKED = 1 << 1,
+    FLAG_SWIMMABLE = 1 << 2,
+};

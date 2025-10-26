@@ -16,6 +16,7 @@
 #include "LightMgr.h"
 #include "RaySystem.h"
 #include "TileSystem.h"
+#include "CollisionSystem.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -45,6 +46,7 @@ _bool CGameInstance::Init_Engine(const ENGINE_DESC& engine)
 	m_pUIManager = CUI_Manager::Create();
 	m_pLightService = CLightMgr::Create();
 	m_pRaySystem = CRaySystem::Create();
+	m_pCollisionSystem = CCollisionSystem::Create(m_pDevice, m_pDeviceContext);
 
 #if defined _USING_GUI
 	m_pGuiSystem = CGUISystem::Create(engine, m_pDevice, m_pDeviceContext);
@@ -93,10 +95,11 @@ void CGameInstance::Update_Engine(_float dt)
 #if defined _USING_GUI
 	m_pGuiSystem->Update(dt);
 #endif
-
+	m_pCollisionSystem->Update(dt);
+	if (m_pTileSystem)
+		m_pTileSystem->Update(dt);
 	m_pObjectManager->Late_Update(dt);
 	m_pUIManager->Late_Update(dt);
-
 	/*엔진 제어 업데이트 -> 렌더 패킷 제출용*/
 	m_pObjectManager->Post_EngineUpdate(dt);
 	m_pUIManager->Post_EngineUpdate(dt);
@@ -121,13 +124,31 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pSoundDevice);
 	Safe_Release(m_pRaySystem);
 	Safe_Release(m_pTileSystem);
+	Safe_Release(m_pCollisionSystem);
 
 	DestroyInstance();
 }
 
 HRESULT CGameInstance::Excute_TileSystem(const TILESYSTEM_INFO& tileInfo)
 {
+	if (m_pTileSystem)
+		return E_FAIL;
+	
 	m_pTileSystem = CTileSystem::Create(tileInfo);
+
+	if (m_pTileSystem)
+		return S_OK;
+
+	else
+		return E_FAIL;
+}
+
+HRESULT CGameInstance::Excute_TileSystemByData(const string& LoadPath)
+{
+	if (m_pTileSystem)
+		return E_FAIL;
+
+	m_pTileSystem = CTileSystem::CreateByData(LoadPath);
 
 	if (m_pTileSystem)
 		return S_OK;
@@ -189,6 +210,9 @@ HRESULT CGameInstance::Draw()
 {
 	m_pRenderSystem->Render();
 	m_pLevelManager->Render(m_pDeviceContext);
+#if defined _DEBUG
+	m_pCollisionSystem->Render_Debug();
+#endif
 
 #if defined _USING_GUI
 	m_pGuiSystem->Render_GUI();
@@ -204,7 +228,7 @@ HRESULT CGameInstance::Draw_End()
 
 void CGameInstance::Free()
 {
-	__super::Free();
 	Safe_Release(m_pDeviceContext);
 	Safe_Release(m_pDevice);
+	__super::Free();
 }

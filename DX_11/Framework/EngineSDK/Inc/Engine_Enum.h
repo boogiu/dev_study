@@ -17,11 +17,9 @@ namespace Engine
     enum class BUFFER_TYPE {
         BASIC_RECT, BASIC_CUBE, BASIC_SPHERE, BASIC_PLANE, TERRAIN, MESH
     };
-    enum class MESH_TYPE
-    {
-        ANIM,
-        NONANIM
-    };
+    enum class MESH_TYPE  {ANIM,  NONANIM   };
+    enum class COLLIDER_TYPE  {AABB, OBB, SPHERE};
+
     enum class SOUND_GROUP { BGM, SFX, UI, TALK, END };
 
     enum class RENDER_PASS { RENDER_PRIORITY, RENDER_OPAQUE, RENDER_TRANSPARENT, RENDER_UI, RG_END };

@@ -23,6 +23,7 @@ public:
 	const D3D11_INPUT_ELEMENT_DESC* Get_ElementDesc(_uint DrawIndex);
 	const _uint Get_ElementCount(_uint DrawIndex);
 	const string_view Get_ElementKey(_uint DrawIndex);
+	_bool isSkinned() { return (m_pSkeleton != nullptr); }
 #pragma endregion 
 
 #pragma region Skeleton
@@ -36,8 +37,8 @@ public:
 
 	const vector<string> Get_BoneNames();
 	const vector<_int> GenerateFollowingIndices(class CModelData* pMasterData);
-	BOUNDING_BOX Get_LocalBoundingBox();
-	BOUNDING_BOX Get_MeshBoundingBox(_uint index);
+	MINMAX_BOX Get_LocalBoundingBox();
+	MINMAX_BOX Get_MeshBoundingBox(_uint index);
 
 #pragma endregion 
 	virtual void Render_GUI();
@@ -46,7 +47,7 @@ public:
 protected:
 	class CSkeleton* m_pSkeleton = { nullptr };
 	vector<class CMesh*> m_Meshes;
-
+	
 	_float3 m_vMinLocal = { FLT_MAX ,FLT_MAX ,FLT_MAX };
 	_float3 m_vMaxLocal = { -FLT_MAX ,-FLT_MAX ,-FLT_MAX };
 

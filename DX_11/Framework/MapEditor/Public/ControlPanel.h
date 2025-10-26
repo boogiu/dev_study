@@ -19,10 +19,14 @@ public:
 	virtual void Render_GUI() override;
 private:
 	void Render_BrushTab();
+	void Render_EditTab();
+	void Render_TileEdit();
+	void Render_SaveTab();
 private:
 	class CGridObject* m_pGrid = { nullptr };
-	_bool m_BrushTabOpen = { false };
-
+	Mode m_eMode = {};
+	_bool SaveTab = {};
+	_uint nowFlag = {};
 public:
 	static CControlPanel* Create(GUI_CONTEXT* context);
 	virtual void Free();

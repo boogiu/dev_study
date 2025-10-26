@@ -53,7 +53,7 @@ void CGuizmoPanel::ShowObject_Guizmo()
 	);
 
 	CTransform* objTransform = m_pContext->pSelectedObject->Get_Component<CTransform>();
-	_float4x4 temp = *objTransform->Get_WorldMatrix();
+	_float4x4 temp = *objTransform->Get_WorldMatrix_Ptr();
 
 	ImGuizmo::Manipulate(
 		(float*)m_pContext->pCameraManager->Get_ViewMatrix(),

@@ -42,6 +42,26 @@ void CPlayerHFSM::Update(_float dt)
 	m_pCurrent->OnUpdate(dt);
 }
 
+void CPlayerHFSM::Request_ChangeState(const string& NextState)
+{
+	auto iter = m_States.find(NextState);
+	if (iter == m_States.end())
+		return;
+
+	if (CanTransition(m_pCurrent, m_States[NextState])) {
+		m_pCurrent->OnExit();
+		m_pCurrent = m_States[NextState];
+		m_pCurrent->OnEnter();
+	}
+
+	return;
+}
+
+_bool CPlayerHFSM::CanTransition(CState* from, CState* To)
+{
+	return true;
+}
+
 CState* CPlayerHFSM::Get_State(const string& name)
 {
 	auto iter = m_States.find(name);

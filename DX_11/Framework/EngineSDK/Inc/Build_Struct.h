@@ -62,10 +62,37 @@ namespace Engine {
 	}LIGHT_INIT_DESC;
 
 	typedef struct ColliderInitDesc :public COMPONENT_DESC {
-
+		_float3 vCenter = {};
 		ColliderInitDesc() DEFAULT;
+		ColliderInitDesc(_float3 vCenter) :vCenter{ vCenter } {};
+		ColliderInitDesc(const ColliderInitDesc& rhs) :vCenter{ rhs.vCenter } {};
 		virtual ~ColliderInitDesc() DEFAULT;
 	}COLLIDER_DESC;
+
+	typedef struct ColliderAABBInitDesc :public COLLIDER_DESC {
+		_float3 vSize = {};
+		ColliderAABBInitDesc() DEFAULT;
+		ColliderAABBInitDesc(_float3 vCenter, _float3 vSize) :COLLIDER_DESC{ vCenter }, vSize{vSize} {};
+		ColliderAABBInitDesc(const ColliderAABBInitDesc& rhs) :COLLIDER_DESC{ rhs }, vSize{ rhs.vSize} {};
+		virtual ~ColliderAABBInitDesc() DEFAULT;
+	}AABB_COLLIDER_DESC;
+
+	typedef struct ColliderInitOBBDesc :public COLLIDER_DESC {
+		_float3 vSize = {};
+		_float3 vEularRadians = {};
+		ColliderInitOBBDesc() DEFAULT;
+		virtual ~ColliderInitOBBDesc() DEFAULT;
+		ColliderInitOBBDesc(_float3 vCenter, _float3 vSize, _float3 vEularRadians) :COLLIDER_DESC{ vCenter }, vSize{ vSize }, vEularRadians{ vEularRadians } {};
+		ColliderInitOBBDesc(const ColliderInitOBBDesc& rhs) :COLLIDER_DESC{ rhs }, vSize{ rhs.vSize } , vEularRadians{rhs.vEularRadians } {};
+	}OBB_COLLIDER_DESC;
+
+	typedef struct ColliderInitSphereDesc :public COLLIDER_DESC {
+		_float fRadius = {};
+		ColliderInitSphereDesc() DEFAULT;
+		virtual ~ColliderInitSphereDesc() DEFAULT;
+		ColliderInitSphereDesc(_float3 vCenter, _float vRadius) :COLLIDER_DESC{ vCenter }, fRadius{ vRadius }{};
+		ColliderInitSphereDesc(const ColliderInitSphereDesc& rhs) :COLLIDER_DESC{ rhs }, fRadius{ rhs.fRadius }{};
+	}SPHERE_COLLIDER_DESC;
 
 	/*Object Clone Desc*/
 	typedef struct tagGameObjectDesc : public INIT_DESC {

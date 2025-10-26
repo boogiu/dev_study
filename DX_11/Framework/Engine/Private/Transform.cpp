@@ -92,8 +92,13 @@ void CTransform::Set_Pos(const _float3& position)
 		_fvector newPosition = XMVectorSetW(XMLoadFloat3(&position), 1.f);
 		XMStoreFloat4(&m_vPosition, newPosition);
 		MarkDirty();
-
 	}
+}
+
+void CTransform::Set_Y(const _float& position)
+{
+	m_vPosition.y = position;
+	MarkDirty();
 }
 
 void CTransform::Rotate(const _float3& _eular)
@@ -113,12 +118,20 @@ void CTransform::Scale(const _float3& scale)
 
 }
 
-_float4x4* CTransform::Get_WorldMatrix()
+_float4x4* CTransform::Get_WorldMatrix_Ptr()
 {
 	if (Check_Dirty())
 		Update_Transform();
 
 	return &m_WorldMatrix;
+}
+
+_float4x4 CTransform::Get_WorldMatrix()
+{
+	if (Check_Dirty())
+		Update_Transform();
+
+	return m_WorldMatrix;
 }
 
 _float4x4* CTransform::Get_LocalMatrix()
@@ -260,7 +273,7 @@ void CTransform::Update_Transform()
 	_matrix combined;
 
 	if (m_pParentTransform) {
-		combined = XMLoadFloat4x4(&m_LocalMatrix) * XMLoadFloat4x4(m_pParentTransform->Get_WorldMatrix());
+		combined = XMLoadFloat4x4(&m_LocalMatrix) * XMLoadFloat4x4(m_pParentTransform->Get_WorldMatrix_Ptr());
 		XMStoreFloat4x4(&m_WorldMatrix, combined);
 	}
 	else {

@@ -54,8 +54,8 @@ void CStructureObject::Late_Update(_float dt)
 
 void CStructureObject::Object_OnGrid(TILE_INDEX index)
 {
-	Get_Component<CDebugRender>()->Add_DebugBounding(Get_Component<CModel>()->Get_LocalBoundingBox());
-	_float4 Anchor = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(index, ANCHOR::Right | ANCHOR::Bottom);
+	CEditorSystem::Editor_Context* pContext = CEditorSystem::GetInstance()->Get_Context();
+	_float4 Anchor = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(index, static_cast<ANCHOR>(pContext->eAnchor));
 	m_pTransform->Set_Pos({ Anchor.x,Anchor.y,Anchor.z });
 	m_SyncedIndex = index;
 }
@@ -68,6 +68,21 @@ HRESULT CStructureObject::Link_Data(const string& folderName)
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
 		instance->Override_Pass("Base");
 	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassXlu")) {
+		instance->Override_Pass("Edge");
+	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassRiverXlu")) {
+		instance->Override_Pass("Edge");
+	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassCliffXlu")) {
+		instance->Override_Pass("Edge");
+	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
+		instance->Override_Pass("Base");
+	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaterfall")) {
+		instance->Override_Pass("Water");
+	}
 	if (SUCCEEDED(hr)) {
 		ModelName = folderName + ".model";
 		MaterialName = folderName + ".mat";
@@ -76,7 +91,7 @@ HRESULT CStructureObject::Link_Data(const string& folderName)
 	return hr;
 }
 
-HRESULT CStructureObject::Load_Object(MAP_OBJECT_HEADER ObjHeader)
+HRESULT CStructureObject::Load_Object(OLD_MAP_OBJECT_HEADER ObjHeader)
 {
 	m_SyncedIndex = ObjHeader.Index;
 	MaterialName = ObjHeader.MaterialName;
@@ -101,13 +116,15 @@ HRESULT CStructureObject::Save_MapData(ofstream& ofs)
 	/*ÇöÀç ÀÎµ¦½º*/
 	MAP_OBJECT_HEADER ObjHeader = {};
 	ObjHeader.Index = m_SyncedIndex;
-	XMStoreFloat4(&ObjHeader.vWorldPos, m_pTransform->Get_Pos());
+	ObjHeader.Object_type = static_cast<_uint>(m_eType);
+
+	//XMStoreFloat4(&ObjHeader.vWorldPos, m_pTransform->Get_Pos());
 	strcpy_s(ObjHeader.ModelName, sizeof(ObjHeader.ModelName), ModelName.c_str());
 	strcpy_s(ObjHeader.ModelPath, sizeof(ObjHeader.ModelPath), CGameInstance::GetInstance()->Get_ResourceMgr()->Get_ResourcePath(ModelName).c_str());
 	strcpy_s(ObjHeader.MaterialName, sizeof(ObjHeader.MaterialName), MaterialName.c_str());
 	strcpy_s(ObjHeader.MaterialPath, sizeof(ObjHeader.MaterialPath), CGameInstance::GetInstance()->Get_ResourceMgr()->Get_ResourcePath(MaterialName).c_str());
 
-	ofs.write(reinterpret_cast<const char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
+	ofs.write(reinterpret_cast<const char*>(&ObjHeader), sizeof(OLD_MAP_OBJECT_HEADER));
 	return S_OK;
 }
 

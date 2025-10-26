@@ -21,6 +21,7 @@ public:
     class CGameObject* Get_Owner() { return m_pOwner; }
 public:
     void Set_Active(_bool bActive) { m_bActive = bActive; }
+    _bool Get_Active() { return m_bActive; }
 protected:
     class CGameObject* m_pOwner = {nullptr};
     _bool m_bActive = { true };

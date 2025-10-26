@@ -176,12 +176,18 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\AABB_Collider.h" />
     <ClInclude Include="..\Public\BoneFollower.h" />
+    <ClInclude Include="..\Public\Collider.h" />
+    <ClInclude Include="..\Public\CollisionSystem.h" />
+    <ClInclude Include="..\Public\DebugDraw.h" />
     <ClInclude Include="..\Public\DebugRender.h" />
     <ClInclude Include="..\Public\Engine_Layouts.h" />
+    <ClInclude Include="..\Public\ICollisionService.h" />
     <ClInclude Include="..\Public\InstanceModel.h" />
     <ClInclude Include="..\Public\IRayService.h" />
     <ClInclude Include="..\Public\ITileService.h" />
+    <ClInclude Include="..\Public\OBB_Collider.h" />
     <ClInclude Include="..\Public\RayReceiver.h" />
     <ClInclude Include="..\Public\RaySystem.h" />
     <ClInclude Include="..\Public\SkeletalModel.h" />
@@ -258,6 +264,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\SkeletonFollower.h" />
     <ClInclude Include="..\Public\SoundData.h" />
     <ClInclude Include="..\Public\AudioDevice.h" />
+    <ClInclude Include="..\Public\Sphere_Collider.h" />
     <ClInclude Include="..\Public\Sprite2D.h" />
     <ClInclude Include="..\Public\StaticModel.h" />
     <ClInclude Include="..\Public\Texture.h" />
@@ -282,9 +289,14 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\VI_Terrain.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\AABB_Collider.cpp" />
     <ClCompile Include="..\Private\BoneFollower.cpp" />
+    <ClCompile Include="..\Private\Collider.cpp" />
+    <ClCompile Include="..\Private\CollisionSystem.cpp" />
+    <ClCompile Include="..\Private\DebugDraw.cpp" />
     <ClCompile Include="..\Private\DebugRender.cpp" />
     <ClCompile Include="..\Private\InstanceModel.cpp" />
+    <ClCompile Include="..\Private\OBB_Collider.cpp" />
     <ClCompile Include="..\Private\RayReceiver.cpp" />
     <ClCompile Include="..\Private\RaySystem.cpp" />
     <ClCompile Include="..\Private\SkeletalModel.cpp" />
@@ -336,6 +348,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\AudioDevice.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\InputMgr.cpp" />
+    <ClCompile Include="..\Private\Sphere_Collider.cpp" />
     <ClCompile Include="..\Private\Sprite2D.cpp" />
     <ClCompile Include="..\Private\StaticModel.cpp" />
     <ClCompile Include="..\Private\Texture.cpp" />

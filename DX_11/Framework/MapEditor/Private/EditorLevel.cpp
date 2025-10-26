@@ -5,7 +5,6 @@
 #include "IProtoService.h"
 #include "ICameraService.h"
 #include "IObjectService.h"
-#include "ICameraService.h"
 #include "IResourceService.h"
 
 #include "GridObject.h"

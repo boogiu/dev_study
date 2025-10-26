@@ -58,7 +58,7 @@ PS_OUT PS_MAIN(PS_IN In)
     
     float inside = insideX * insideZ;
     Out.vColor = lerp(GridCol, float4(0.2f, 0.2f, 0.2f, 1), inside);
-    Out.vColor.a = 0.4f;
+    Out.vColor.a = 0.1f;
     
     return Out;
 }
@@ -68,7 +68,7 @@ technique11 DefaultTechnique
 {
     pass Opaque
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_NoCull);
         SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();

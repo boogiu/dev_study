@@ -28,8 +28,6 @@ CMapTileInstance::CMapTileInstance(const CMapTileInstance& rhs)
 HRESULT CMapTileInstance::Initialize_Prototype()
 {
 	__super::Initialize();
-	Add_Component<CInstanceModel>();
-	Add_Component<CMaterial>();
 	return S_OK;
 }
 
@@ -38,24 +36,24 @@ HRESULT CMapTileInstance::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 	ID3D11Device* pDevice = CGameInstance::GetInstance()->Get_Device();
 
-	CInstanceModel::INSTANCE_INIT_DESC instanceDesc = {};
-	instanceDesc.ElementCount = 5;
-	instanceDesc.ElementKey = "Tile_Instancing";
-	instanceDesc.instanceCount = 16000;
-	instanceDesc.instanceStride = sizeof(INSTANCE_TILE);
-	instanceDesc.pElementDesc = VTX_TILEINSTANCE::Elements;
-
-	vector<CInstanceModel::INSTANCE_INIT_DESC> pVector;
-	pVector.push_back(instanceDesc);
-
-	CMaterial* pMaterial = Get_Component<CMaterial>();
-	pMaterial->Link_Material(G_GlobalLevelKey, "Base_0.mat");
-	for (auto& instance : pMaterial->Get_Material_Instance()) {
-		instance->Override_Pass("Instancing");
-	}
-	Get_Component<CInstanceModel>()->Link_InstanceData(pDevice, pVector, G_GlobalLevelKey, "Base_0.model");
-	Get_Component<CInstanceModel>()->Link_InstanceWithMesh(0, 0);
-	Get_Component<CInstanceModel>()->Link_InstanceWithMesh(1, 0);
+	//	CInstanceModel::INSTANCE_INIT_DESC instanceDesc = {};
+	//	instanceDesc.ElementCount = 5;
+	//	instanceDesc.ElementKey = "Tile_Instancing";
+	//	instanceDesc.instanceCount = 16000;
+	//	instanceDesc.instanceStride = sizeof(INSTANCE_TILE);
+	//	instanceDesc.pElementDesc = VTX_TILEINSTANCE::Elements;
+	//	
+	//	vector<CInstanceModel::INSTANCE_INIT_DESC> pVector;
+	//	pVector.push_back(instanceDesc);
+	//	
+	//	CMaterial* pMaterial = Get_Component<CMaterial>();
+	//	pMaterial->Link_Material(G_GlobalLevelKey, "Base_0.mat");
+	//	for (auto& instance : pMaterial->Get_Material_Instance()) {
+	//		instance->Override_Pass("Instancing");
+	//	}
+	//	Get_Component<CInstanceModel>()->Link_InstanceData(pDevice, pVector, G_GlobalLevelKey, "Base_0.model");
+	//	Get_Component<CInstanceModel>()->Link_InstanceWithMesh(0, 0);
+	//	Get_Component<CInstanceModel>()->Link_InstanceWithMesh(1, 0);
 
 	m_Tiles.reserve(16000);
 
@@ -68,9 +66,7 @@ void CMapTileInstance::Priority_Update(_float dt)
 
 void CMapTileInstance::Update(_float dt)
 {
-	ID3D11DeviceContext* pContext = CGameInstance::GetInstance()->Get_Context();
-
- 	Get_Component<CInstanceModel>()->Update_Instance(pContext, m_Tiles.data(), 0, static_cast<_uint>(m_Tiles.size()));
+	
 }
 
 void CMapTileInstance::Late_Update(_float dt)
@@ -134,7 +130,6 @@ HRESULT CMapTileInstance::Clear_Tile()
 	return S_OK;
 
 }
-
 
 void CMapTileInstance::Render_GUI()
 {

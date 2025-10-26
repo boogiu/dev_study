@@ -9,7 +9,8 @@
 
 #include "Player.h"
 #include "ToolItem.h"
-
+#include "Child.h"
+#include "Collider.h"
 CPlayerPart_Hand::CPlayerPart_Hand()
 {
 }
@@ -36,11 +37,11 @@ HRESULT CPlayerPart_Hand::Initialize(INIT_DESC* pArg)
 	CPlayer::PLAYER_PARTS_DESC* pDesc = static_cast<CPlayer::PLAYER_PARTS_DESC*>(pArg);
 	Get_Component<CBoneFollower>()->Link_Bone(
 		pDesc->pPlayer->Get_Component<CAnimator3D>(),
-		"Armature_Hand_L"
+		"Armature_Hand_R"
 	);
 
 	CGameObject* pTool = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerTool" })
-		.Rotate({ XMConvertToRadians(180) ,0,0})
+		.Rotate({ 0 ,XMConvertToRadians(180),0})
 		.Build("Tool");
 
 	m_pToolItem = dynamic_cast<CToolItem*>(pTool);
@@ -67,29 +68,18 @@ void CPlayerPart_Hand::Late_Update(_float dt)
 
 void CPlayerPart_Hand::Render_GUI()
 {
-	ImGui::SeparatorText("Item Control");
-
-	if (ImGui::Button("None")) {
-		ITEM_DATA_DESC Data = {};
-		Data.eType = ITEM_TYPE::NONE;
-		Data.materialName = "ToolAxeFirst.mat";
-		Data.modelName = "ToolAxeFirst.model";
-		Change_Item(Data);
-	}
-
-	if (ImGui::Button("Axe")) {
-		ITEM_DATA_DESC Data = {};
-		Data.eType = ITEM_TYPE::AXE;
-		Data.materialName = "ToolAxeFirst.mat";
-		Data.modelName = "ToolAxeFirst.model";
-		Change_Item(Data);
-	}
+	
 }
 
 void CPlayerPart_Hand::Change_Item(ITEM_DATA_DESC data)
 {
 	m_pToolItem->Set_Item(data);
 	m_eItemType = data.eType;
+}
+
+void CPlayerPart_Hand::Active_ColliderTool(_bool Active)
+{
+	m_pToolItem->Get_Component<CCollider>()->Set_ColliderActive(Active);
 }
 
 

@@ -164,10 +164,10 @@ namespace Engine
 
 	/*BoundingBox*/
 
-	typedef struct tagBoundingBoxInfo {
+	typedef struct tagMinMaxBoxInfo {
 		_float3 vMin = {};
 		_float3 vMax = {};
-	}BOUNDING_BOX;
+	}MINMAX_BOX;
 
 	/*RayInfo*/
 	typedef struct tagRayInfo {
@@ -187,18 +187,16 @@ namespace Engine
 	typedef struct tagTileSystemInfo {
 		/*몇개씩?*/
 		_uint iTileCountX = {};
-		_uint iTileCountY = {};
 		_uint iTileCountZ = {};
 
 		/*전체 크기*/
 		_float3 vWorldMin = {};
 		_float3 vWorldMax = {};
-
 	public:
 		_float3 SizePerTile() {
 			return _float3{
 				(vWorldMax.x - vWorldMin.x)/ iTileCountX,
-				(vWorldMax.y - vWorldMin.y)/ iTileCountY,
+				vWorldMax.y-vWorldMin.y,
 				(vWorldMax.z - vWorldMin.z)/ iTileCountZ
 			};
 		};
@@ -223,31 +221,25 @@ namespace Engine
 
 	typedef struct tagTileIndex {
 		_int IndexX = {-1};
-		_int IndexY = {-1};
 		_int IndexZ = {-1};
 	}TILE_INDEX;
 
 	struct TILE_INFO {
 		_uint TileFlag = {};													//타일 타입 비트 플래그
+		_float fCornerHeight[4] = {};
 		class CTileBlock* pTileBlock = { nullptr };		//실제 배치된 타일
 	};
 
 	typedef struct tagMapFileHeader {
-		TILESYSTEM_INFO tileInfo = {};
-		_uint iFieldOutCount = {};
-		_uint iBaseFieldCount = {};
+		_uint iObjectCount = {};
 		_uint iTileCount = {};
-		_uint iStructureCount = {};
-		_uint iMapObjectCount = {};
 	}MAP_FILE_HEADER;
 
 	typedef struct tagMapObjectHeader {
 		TILE_INDEX Index = {};
-		_float4 vWorldPos = {};
-		char ModelName[MAX_PATH];
-		char MaterialName[MAX_PATH];
-		char ModelPath[MAX_PATH];
-		char MaterialPath[MAX_PATH];
+		_uint Object_type = {};
+		_float4x4 vWorldMatrix = {};
+		char ObjectName[MAX_PATH];
 	}MAP_OBJECT_HEADER;
 
 	typedef struct  tagMapTileHeader {
@@ -273,6 +265,14 @@ namespace Engine
 		AUTO_TILE_DESC rotateType[4];
 		_bool Patial = {};
 	}AUTO_TILE;
+
+	typedef struct tagInstanceInitDESC {
+		_uint instanceStride = {};		// 인스턴스 구조체 크기 
+		_uint instanceCount = {};     // 최대 인스턴스 개수
+		_uint ElementCount = {};
+		const D3D11_INPUT_ELEMENT_DESC* pElementDesc = { nullptr };
+		string ElementKey = {  };
+	}INSTANCE_INIT_DESC;
 
 #pragma pack(pop)
 

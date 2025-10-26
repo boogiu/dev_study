@@ -16,6 +16,9 @@ public:
 public:
 	void Excute(class CState* rootState);
 	void Update(_float dt);
+	void Request_ChangeState(const string& NextState);
+private:
+	_bool CanTransition(class CState* from, class CState* To);
 
 public:
 	template<typename T>

@@ -3,14 +3,20 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
 
 #include <Effect_Inc/d3dx11effect.h>
 #include <d3dcompiler.h>
-#include <DirectXCollision.h>
 #include <dxgidebug.h>
+
 #include "DirectXTK_Inc/WICTextureLoader.h"
 #include "DirectXTK_Inc/DDSTextureLoader.h"
 #include "DirectXTK_Inc/ScreenGrab.h"
+#include "DirectXTK_Inc/SpriteFont.h"
+#include "DirectXTK_Inc/SpriteBatch.h"
+#include "DirectXTK_Inc/VertexTypes.h"
+#include "DirectXTK_Inc/PrimitiveBatch.h"
+#include "DirectXTK_Inc/Effects.h"
 
 #include <vector>
 #include <list>
@@ -19,6 +25,7 @@
 #include <functional>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <queue>
 #include <ctime>
 #include <memory>

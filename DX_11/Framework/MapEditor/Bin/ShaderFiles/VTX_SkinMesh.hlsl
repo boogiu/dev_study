@@ -111,6 +111,20 @@ PS_OUT PS_BLEND(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_TREE(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vMixture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vAlbGry = AlbedoGrayTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = g_PaletteTexture.Sample(DefaultSampler, float2((1 - vAlbGry.r), 0.6));
+    
+   //ºûÀÇ »ö»ó * ºûÀÇ °­µµ * ÅØ½ºÃ³ »ö±ò
+    Out.vColor = vMtrlDiffuse;
+    
+    
+    return Out;
+}
 technique11 DefaultTechnique
 {
     pass Opaque
@@ -138,6 +152,15 @@ technique11 DefaultTechnique
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_BLEND();
+    }
+
+    pass Tree
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        PixelShader = compile ps_5_0 PS_TREE();
     }
 }
 

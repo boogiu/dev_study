@@ -1,3 +1,4 @@
+
 #include "GameObject.h"
 #include "GameInstance.h"
 #include "Builder.h"
@@ -12,7 +13,6 @@
 #include "IMeshProvider.h"
 #include "DebugRender.h"
 #include "InstanceModel.h"
-
 _uint CGameObject::s_NextID = 1;
 
 CGameObject::CGameObject()
@@ -21,7 +21,7 @@ CGameObject::CGameObject()
 }
 
 CGameObject::CGameObject(const CGameObject& rhs)
-	:m_ObjectID(s_NextID++)
+	:m_ObjectID(s_NextID++),m_InstanceTag(rhs.m_InstanceTag)
 {
 	/*트랜스폼은 가장 먼저.*/
 	type_index transform = type_index(typeid(CTransform));
@@ -42,6 +42,8 @@ CGameObject::CGameObject(const CGameObject& rhs)
 
 		if (pair.first == type_index(typeid(CModel)))
 			continue;
+		if (pair.first == type_index(typeid(CCollider)))
+			continue;
 
 		else {
 			CComponent* comp = pair.second->Clone();
@@ -50,6 +52,11 @@ CGameObject::CGameObject(const CGameObject& rhs)
 
 			if (dynamic_cast<CModel*>(comp)) {
 				m_Components.emplace(type_index(typeid(CModel)), comp);
+				Safe_AddRef(comp);
+			}
+
+			if (dynamic_cast<CCollider*>(comp)) {
+				m_Components.emplace(type_index(typeid(CCollider)), comp);
 				Safe_AddRef(comp);
 			}
 		}
@@ -111,7 +118,9 @@ void CGameObject::Pre_EngineUpdate(_float dt)
 void CGameObject::Post_EngineUpdate(_float dt)
 {
 	/*패킷은 용도별로 따로 만든다.*/
-
+	if (m_InstanceTag == "Tree") {
+		int i = 0;
+	}
 	if (Get_Component<CInstanceModel>()) {
 		Make_InstancePacket();
 	}
@@ -124,7 +133,7 @@ void CGameObject::Post_EngineUpdate(_float dt)
 	DEBUG_PACKET debugPacket = {};
 	debugPacket.pModel = Get_Component<CModel>();
 	debugPacket.pDebug = Get_Component<CDebugRender>();
-	debugPacket.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+	debugPacket.pWorldMatrix = m_pTransform->Get_WorldMatrix_Ptr();
 	if (debugPacket.pDebug) {
 		for (size_t i = 0; i < debugPacket.pDebug->Get_DebugBoxCount(); i++)
 		{
@@ -139,6 +148,18 @@ void CGameObject::Post_EngineUpdate(_float dt)
 	for (auto& child : Get_Children()) {
 		child->Post_EngineUpdate(dt);
 	}
+}
+
+void CGameObject::OnCollisionEnter(CGameObject* pObject)
+{
+}
+
+void CGameObject::OnCollisionStay(CGameObject* pObject)
+{
+}
+
+void CGameObject::OnCollisionExit(CGameObject* pObject)
+{
 }
 
 void CGameObject::Render_GUI()
@@ -203,7 +224,7 @@ const vector<CGameObject*> CGameObject::Get_Children()
 
 _float4x4* CGameObject::Get_WorldMatrix()
 {
-	return m_pTransform->Get_WorldMatrix();
+	return m_pTransform->Get_WorldMatrix_Ptr();
 }
 
 _float4 CGameObject::Get_Position()
@@ -219,10 +240,11 @@ HRESULT CGameObject::Make_OpaquePacket()
 	packet.pModel = { nullptr };
 	packet.bSkinning = false;
 	packet.pMaterial = Get_Component<CMaterial>();
-	packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+	packet.pWorldMatrix = m_pTransform->Get_WorldMatrix_Ptr();
 
 	packet.pModel = Get_Component<CModel>();
-	if (packet.pModel&&!packet.pModel->isReadyToDraw()) return E_FAIL;
+	if (!packet.pModel || !packet.pModel->isReadyToDraw()) return E_FAIL;
+	if (!packet.pModel->Get_Active()) return E_FAIL;
 	packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel) ? true : false;
 
 	if (auto Animator = Get_Component<CAnimator3D>()) {
@@ -236,7 +258,7 @@ HRESULT CGameObject::Make_OpaquePacket()
 	}
 
 	if (packet.pModel == nullptr) {
-		return E_FAIL;
+		return E_FAIL ;
 	}
 
 	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
@@ -256,12 +278,13 @@ HRESULT CGameObject::Make_InstancePacket()
 	packet.pModel = Get_Component<CInstanceModel>();
 	packet.pMaterial = Get_Component<CMaterial>();
 
+	if (!packet.pModel ||!packet.pModel->Get_Active()) return E_FAIL;
 	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
 	{
 		if (!packet.pModel->isDrawable(i)) continue;
 		packet.DrawIndex = i;
 		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
-		packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+		packet.pWorldMatrix = m_pTransform->Get_WorldMatrix_Ptr();
 		CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Instance(packet);
 	}
 

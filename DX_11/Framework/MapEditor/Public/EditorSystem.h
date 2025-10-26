@@ -16,17 +16,19 @@ class CEditorSystem :
 {
 	DECLARE_SINGLETON(CEditorSystem);
 public:
-	enum Mode { EditObj, BrushTile };
-	enum ObjType {FIELDOUT,STRUCTURE, MAPOBJECT};
-
+	struct DebugIndex {
+		TILE_INDEX index;
+		_float4 saveMtl = {};
+	};
 public:
 	struct Editor_Context {
-		ObjType eType = { FIELDOUT };
 		Mode eMode = { EditObj };
-
+		_uint eAnchor = {static_cast<_uint>(ANCHOR::Center) };
+		_uint tileFlag =	{static_cast<_uint>(ANCHOR::Center) };
 		CGameObject* pEditingObject = {nullptr};
 		string baseType = {};
 		TILESYSTEM_INFO ContextTileInfo = {};
+		_float4 m_fConerHeight = {};
 	};
 
 private:
@@ -40,8 +42,11 @@ public:
 public:
 	Editor_Context* Get_Context() { return &m_EditorContext; }
 	HRESULT Delete_Object(class CGameObject* pObject);
-	HRESULT Create_MapObject(const string& folderName, ObjType eType);
-
+	HRESULT Create_MapObject(const string& folderName);
+public:
+	void Clear_Index();
+	void Adjust_Height();
+	void Adjust_Flag();
 public:
 	HRESULT Load_MapData();
 	HRESULT Save_MapData();
@@ -50,9 +55,13 @@ private:
 	void Execute_TileSystem();
 	void Create_GUIPanels();
 	void Create_Ray();
+
+private:
 	void DragDrop_Object();
 	void Brushing_Tiles();
 	void ConvertMaterial(string brushType, TILE_INDEX Index);
+	void Editing_TileInfo();
+
 private:
 	POINT m_MousePt = {};
 
@@ -77,12 +86,12 @@ private:
 	_float3 m_GridMinEdge = {};
 	_float3 m_GridMaxEdge = {};
 
-	class CMapTileInstance* m_pTile = { nullptr };
+	vector<DebugIndex> m_selectedIndex;
+
 	/*GUI Panel*/
 	class CDirectoryPanel* m_pDirectoryPanel = { nullptr };
 	class CControlPanel* m_pControlPanel = { nullptr };
-
-	_uint m_BaseTileID = {};
+	
 public:
 	virtual void Free() override;
 };

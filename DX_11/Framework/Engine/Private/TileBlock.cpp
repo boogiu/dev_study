@@ -58,19 +58,17 @@ void CTileBlock::Update_Position(TILESYSTEM_INFO& systemInfo)
 	_float tileSizeY = systemInfo.SizePerTile().y;
 	_float tileSizeZ = systemInfo.SizePerTile().z;
 
-	/*오리진에서 오른쪽 앞으로 나아가는 방식임, 그러니까 업데이트 포지션의 기준은 왼쪽아래 모서리에 맞출 것임*/
-	/*Y는 그냥 바닥에 맞추자*/
-
+	
 	_float3 anchor = {
 		systemInfo.vWorldMin.x + (tileSizeX * m_tIndex.IndexX),
-		systemInfo.vWorldMin.y + (tileSizeY * m_tIndex.IndexY),
+		systemInfo.vWorldMin.y ,
 		systemInfo.vWorldMin.z + (tileSizeZ * m_tIndex.IndexZ)
 	};
 
 	_float3 worldPos = {};
 	/*그 기준은 모델의 바운딩 박스로*/
 	if (CModel* pModel = m_pOwner->Get_Component<CModel>()) {
-		BOUNDING_BOX box = pModel->Get_WorldBoundingBox();
+		MINMAX_BOX box = pModel->Get_WorldBoundingBox();
 		_float halfSizeX = (box.vMax.x - box.vMin.x) * 0.5f;
 		_float halfSizeZ = (box.vMax.z - box.vMin.z) * 0.5f;
 		_float halfSizeY = (box.vMax.y - box.vMin.y) * 0.5f;

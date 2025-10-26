@@ -94,7 +94,7 @@ HRESULT CFieldOutBlocks::Link_Data(const string& folderName)
 	return hr;
 }
 
-HRESULT CFieldOutBlocks::Load_Object(MAP_OBJECT_HEADER ObjHeader)
+HRESULT CFieldOutBlocks::Load_Object(OLD_MAP_OBJECT_HEADER ObjHeader)
 {
 	m_SyncedIndex=ObjHeader.Index;
 	MaterialName = ObjHeader.MaterialName;
@@ -131,13 +131,14 @@ HRESULT CFieldOutBlocks::Save_MapData(ofstream& ofs)
 	/*ÇöÀç ÀÎµ¦½º*/
 	MAP_OBJECT_HEADER ObjHeader = {};
 	ObjHeader.Index = m_SyncedIndex;
-	XMStoreFloat4(&ObjHeader.vWorldPos, m_pTransform->Get_Pos());
+	ObjHeader.Object_type = static_cast<_uint>(MapObjectType::FIELDOUT);
+	//XMStoreFloat4(&ObjHeader.vWorldPos, m_pTransform->Get_Pos());
 	strcpy_s(ObjHeader.ModelName, sizeof(ObjHeader.ModelName), ModelName.c_str());
 	strcpy_s(ObjHeader.ModelPath, sizeof(ObjHeader.ModelPath), CGameInstance::GetInstance()->Get_ResourceMgr()->Get_ResourcePath(ModelName).c_str());
 	strcpy_s(ObjHeader.MaterialName, sizeof(ObjHeader.MaterialName), MaterialName.c_str());
 	strcpy_s(ObjHeader.MaterialPath, sizeof(ObjHeader.MaterialPath), CGameInstance::GetInstance()->Get_ResourceMgr()->Get_ResourcePath(MaterialName).c_str());
 
-	ofs.write(reinterpret_cast<const char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
+	ofs.write(reinterpret_cast<const char*>(&ObjHeader), sizeof(OLD_MAP_OBJECT_HEADER));
 	return S_OK;
 }
 

@@ -2,13 +2,17 @@
 #include "PlayerStateMachine.h"
 #include "PlayerHFSM.h"
 
-#include "PlayerState_Movement.h"
 #include "PlayerState_Idle.h"
+
+#include "PlayerState_Movement.h"
 #include "PlayerState_Walk.h"
 #include "PlayerState_Run.h"
 
 #include "PlayerState_Tool.h"
 #include "PlayerState_Axe.h"
+
+#include "PlayerState_Transfer.h"
+#include "PlayerState_TransItem.h"
 
 #include "GameInstance.h"
 #include "ITileService.h"
@@ -26,12 +30,11 @@ HRESULT CPlayerStateMachine::Initialize()
 {
 	m_pHFSM = CPlayerHFSM::Create(m_pOwner);
 
+	auto Idle = m_pHFSM->Add_State<CPlayerState_Idle>("Idle_Base_State");
 	auto Movemet = m_pHFSM->Add_State<CPlayerState_Movement>("Movement_Base_State");
-	auto Idle = m_pHFSM->Add_State<CPlayerState_Idle>("Movement_Idle_State");
 	auto Walk = m_pHFSM->Add_State<CPlayerState_Walk>("Movement_Walk_State");
 	auto Run = m_pHFSM->Add_State<CPlayerState_Run>("Movement_Run_State");
 
-	Idle->SetParent(Movemet);
 	Walk->SetParent(Movemet);
 	Run->SetParent(Movemet);
 
@@ -40,6 +43,11 @@ HRESULT CPlayerStateMachine::Initialize()
 
 	Axe->SetParent(Tool);
 
+	auto Transfer = m_pHFSM->Add_State<CPlayerState_Transfer>("Transfer_Base_State");
+	auto TransItem = m_pHFSM->Add_State<CPlayerState_TransItem>("Transfer_Item_State");
+
+	TransItem->SetParent(Transfer);
+
 	m_pHFSM->Excute(Idle);
 	return S_OK;
 }
@@ -47,6 +55,11 @@ HRESULT CPlayerStateMachine::Initialize()
 void CPlayerStateMachine::Update(_float dt)
 {
 	m_pHFSM->Update(dt);
+}
+
+void CPlayerStateMachine::Request_ChangeState(const string& NextState)
+{
+	m_pHFSM->Request_ChangeState(NextState);
 }
 
 void CPlayerStateMachine::Render_State(CPlayer* pPlayer)

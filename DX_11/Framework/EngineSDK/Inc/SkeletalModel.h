@@ -30,18 +30,24 @@ public:
 	virtual void SetDrawable(_uint Index, _bool isDraw) override;
 
 	class CModelData* Get_ModelData() { return m_pData; };
-	virtual BOUNDING_BOX Get_LocalBoundingBox()	override;
-	virtual BOUNDING_BOX Get_WorldBoundingBox()	override;
-	virtual vector<BOUNDING_BOX> Get_MeshBoundingBox()	override;
-	const vector<_float4x4>& Get_BoneMatrices() { return m_FinalMatices; };
+	virtual MINMAX_BOX Get_LocalBoundingBox()	override;
+	virtual MINMAX_BOX Get_WorldBoundingBox()	override;
+	virtual vector<MINMAX_BOX> Get_MeshBoundingBox()	override;
+	const vector<_float4x4>& Get_BoneMatrices();
 	_bool isReadyToDraw()	override;
+
+public:
+	void Control_Bone(const string& boneName, _fmatrix BoneMatrix);
+	void Control_BoneByIndex(_uint Index, _fmatrix BoneMatrix);
 
 public:
 	virtual void Render_GUI();
 
 protected:
+	_bool m_bDirty = { false };
 	vector<_bool> m_DrawableMeshes;
 	vector<_float4x4> m_TransfromationMatrices = {};
+	vector<_float4x4> m_ManipulateMatrices = {};
 	vector<_float4x4> m_CombinedMatrices = {};
 	vector<_float4x4> m_FinalMatices = {};
 	class CModelData* m_pData = { nullptr };

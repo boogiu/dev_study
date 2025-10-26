@@ -25,5 +25,3 @@ using namespace Loader;
 
 #pragma pop_macro("new")
 using namespace Assimp;
-
-//#include "byml/byml.h"

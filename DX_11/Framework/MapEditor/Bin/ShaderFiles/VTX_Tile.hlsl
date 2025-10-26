@@ -14,6 +14,7 @@ struct VS_INSTANCE_IN
     float4 iLook : INSTANCE2;
     float4 iTrans : INSTANCE3;
     float4 iMtlType : INSTANCE4;
+    float4 fCornerHeight : INSTANCE5;
 };
 
 
@@ -28,19 +29,40 @@ struct VS_INSTANCE_OUT
 VS_INSTANCE_OUT VS_INSTANCE(VS_INSTANCE_IN In)
 {
     VS_INSTANCE_OUT Out = (VS_INSTANCE_OUT) 0;
-    row_major float4x4 instWorld = float4x4(In.iRight, In.iUp, In.iLook, In.iTrans); // 4개가 '행'이라고 명시
-    float4 localPos = mul(float4(In.vPosition, 1.0f), instWorld);
-    float4 WorldPos = mul(localPos, g_WorldMatrix);
-    float4 viewPos = mul(WorldPos, matView);
+    float2 pos = In.vPosition.xz; // 로컬 좌표 (0~1 기준)
+
+    float height = 0.0f;
+
+// 왼쪽 위
+    if (pos.x < 0.5 && pos.y > 0.5)
+        height = In.fCornerHeight.x;
+// 오른쪽 위
+    else if (pos.x >= 0.5 && pos.y > 0.5)
+        height = In.fCornerHeight.y;
+// 오른쪽 아래
+    else if (pos.x >= 0.5 && pos.y <= 0.5)
+        height = In.fCornerHeight.z;
+// 왼쪽 아래
+    else
+        height = In.fCornerHeight.w;
+
+    float3 localPos = In.vPosition;
+    localPos.y += height;
+
+    row_major float4x4 instWorld = float4x4(In.iRight, In.iUp, In.iLook, In.iTrans);
+    float4 worldPos = mul(float4(localPos, 1.0f), instWorld);
+    float4 viewPos = mul(worldPos, matView);
     float4 projPos = mul(viewPos, matProjection);
 
+
     Out.vPosition = projPos;
-    Out.vWorldPos = WorldPos;
+    Out.vWorldPos = worldPos;
     Out.vTexcoord = In.vTexcoord;
     Out.iMtlType = In.iMtlType;
-    
+
     return Out;
 }
+
 
 struct VS_IN
 {
@@ -169,7 +191,18 @@ PS_OUT PS_EDGE(PS_IN In)
 PS_OUT PS_TILE_INSTANCE(PS_INSTATNCE_IN In)
 {
     PS_OUT Out;
+    if (In.iMtlType.y == 0.f)
+    {
+        Out.vColor = float4(0.5f, 0.f, 0.f, 0.2f);
+        return Out;
+    }
 
+    if (In.iMtlType.y <0.f)
+    {
+        Out.vColor = float4(0.f, 0.5f, 0.f, 0.2f);
+        return Out;
+    }
+    
     vector Diffuse;
     float2 worldSize = vMax - vMin;
     float2 WorldUV = (In.vWorldPos.xz - vMin) / worldSize;
@@ -181,8 +214,9 @@ PS_OUT PS_TILE_INSTANCE(PS_INSTATNCE_IN In)
     vector Palette2 = g_PaletteTexture.Sample(LinearSampler, float2(PalettePixel.x + (1 - Mask2.r) * Mask2.b, PalettePixel.y));
     vector Grd = (Palette * (1 - Mask.a) + (Palette2) * (Mask.a));
     Diffuse = Grd;
-    
+  
     Out.vColor = Diffuse;
+    
     return Out;
 }
 
@@ -197,11 +231,11 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_BASE();
     }
-  pass Edge
-  {
-      SetRasterizerState(RS_Default);
-      SetDepthStencilState(DSS_Default, 0);
-      SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+    pass Edge
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_EDGE();
     }
@@ -209,7 +243,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_INSTANCE();
         PixelShader = compile ps_5_0 PS_TILE_INSTANCE();
     }

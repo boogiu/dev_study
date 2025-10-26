@@ -38,20 +38,6 @@ void CDirectoryPanel::Render_GUI()
 	ImGui::SetNextWindowPos(windowPos, ImGuiCond_Once);
 	ImGui::SetNextWindowSize(windowSize, ImGuiCond_Once);
 	ImGui::Begin("Model Files", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
-
-	ImGui::Separator();
-	if (ImGui::RadioButton("FieldOut", m_eMode == FIELDOUT)) {
-		m_eMode = FIELDOUT;
-	}	
-	ImGui::SameLine();
-	if (ImGui::RadioButton("Structure", m_eMode == STRUCTURE)) {
-		m_eMode = STRUCTURE;
-	}
-	ImGui::SameLine();
-	if (ImGui::RadioButton("MapObject", m_eMode == MAPOBJECT)) {
-		m_eMode = MAPOBJECT;
-	}
-	ImGui::Separator();
 	Render_Folders();
 	ImGui::End();
 }
@@ -118,20 +104,8 @@ void CDirectoryPanel::Create_MapObject(const string& name)
 	string folderPath = m_strDirectory + ("/" + name);
 	m_pResource->Add_ResourcePath((name+".model"),(folderPath + "/" + name + ".model"));
 	m_pResource->Add_ResourcePath((name + ".mat"), (folderPath +"/"+ name + ".mat"));
-	HRESULT hr;
-
-	switch (m_eMode)
-	{
-	case MapEditor::CDirectoryPanel::FIELDOUT:
-		hr = CEditorSystem::GetInstance()->Create_MapObject(name, CEditorSystem::FIELDOUT); break;
-	case MapEditor::CDirectoryPanel::STRUCTURE:
-		hr = CEditorSystem::GetInstance()->Create_MapObject(name, CEditorSystem::STRUCTURE); break;
-	case MapEditor::CDirectoryPanel::MAPOBJECT:
-		hr = CEditorSystem::GetInstance()->Create_MapObject(name, CEditorSystem::MAPOBJECT); break;
-	default:
-		break;
-	}
-
+	HRESULT hr= CEditorSystem::GetInstance()->Create_MapObject(name);
+	
 	if (SUCCEEDED(hr)) {
 		m_bItemCreated = true;
 	}

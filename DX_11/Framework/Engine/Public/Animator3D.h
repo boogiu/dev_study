@@ -43,11 +43,13 @@ public:
     virtual HRESULT Chane_Animation(string animName, _float convertDuration = 0.2f);
 
     _bool isCurrentAnimEnd();
+    _bool isOverAnimTiming(_float percent);
     string Get_CurrentAnimName();
 
 public:
     void Control_Bone(const string& boneName, _fmatrix BoneMatrix);
     void Control_BoneByIndex(_uint Index, _fmatrix BoneMatrix);
+    void Dettach_BoneRelation(_uint Index);
 
 public:
     _float4x4 Get_BoneMatrix(const string& boneName);
@@ -77,6 +79,7 @@ protected:
     vector<_float4x4> m_ManipulateMatrices = {};
     vector<_float4x4> m_CombinedMatrices = {};
     vector<_float4x4> m_FinalMatices = {};
+    unordered_set<_uint> m_DettachedBone = {};
 
     vector<class CAnimationClip*> m_pAnimClips;
     vector<_bool> m_pAnimLoops;

@@ -6,10 +6,14 @@
 #include "IObjectService.h"
 #include "ITileService.h"
 #include "IResourceService.h"
-#include "FieldStructure.h"
-#include "FieldOut.h"
-#include "BaseField.h"
 #include "Builder.h"
+
+#include "FieldObject.h"
+#include "Field_Out.h"
+#include "Field_Tree.h"
+#include "Field_Stone.h"
+
+#include "Plant_Tree.h"
 #include "AutoTile.h"
 
 CMapLoader::CMapLoader()
@@ -25,71 +29,56 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 
 	MAP_FILE_HEADER mapFileHeader = {};
 	ifs.read(reinterpret_cast<char*>(&mapFileHeader), sizeof(MAP_FILE_HEADER));
-	
-	CGameInstance::GetInstance()->Excute_TileSystem(mapFileHeader.tileInfo);
+	string Systempath = "../../Resources/Data/TileSystemData.dat";
+	CGameInstance::GetInstance()->Excute_TileSystemByData(Systempath);
+	CGameInstance::GetInstance()->Get_TileSystem()->Execute_InstanceModel(G_GlobalLevelKey, "Base_0.model", "Base_0.mat");
+
 	auto pProto = CGameInstance::GetInstance()->Get_PrototypeMgr();
 	auto pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
 	auto pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
 
-	pProto->Add_ProtoType(Desc.LevelTag, "GameObject_BaseField", CBaseField::Create());
-	pProto->Add_ProtoType(Desc.LevelTag, "GameObject_FieldOut", CFieldOut::Create());
-	pProto->Add_ProtoType(Desc.LevelTag, "GameObject_FieldStructure", CFieldStructure::Create());
+	pProto->Add_ProtoType(Desc.LevelTag, "GameObject_FieldOut", CField_Out::Create());
+	pProto->Add_ProtoType(Desc.LevelTag, "GameObject_FieldTree", CField_Tree::Create());
+	pProto->Add_ProtoType(Desc.LevelTag, "GameObject_FieldStone", CField_Stone::Create());
+	pProto->Add_ProtoType(Desc.LevelTag, "GameObject_PlantTree", CPlant_Tree::Create());
 
-	for (size_t i = 0; i < mapFileHeader.iFieldOutCount; i++)
+	for (size_t i = 0; i < mapFileHeader.iObjectCount; i++)
 	{
 		MAP_OBJECT_HEADER objHeader = {};
 		ifs.read(reinterpret_cast<char*>(&objHeader), sizeof(MAP_OBJECT_HEADER));
+		auto iter = g_ModelMapTable.find(objHeader.Object_type);
+		if (iter == g_ModelMapTable.end())
+			continue;
+		CGameObject* pObject = { nullptr };
+		if (objHeader.Object_type < 55) {
+			pObject =
+				Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldOut" })
+				.Build(iter->second[0]);
+		}
+		else  if (objHeader.Object_type > 55 && objHeader.Object_type< 66) {
+			pObject =
+				Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldTree" })
+				.Build(iter->second[0]);
+		}
+		else  if (objHeader.Object_type > 66 && objHeader.Object_type < 72) {
+			pObject =
+				Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldStone" })
+				.Build(iter->second[0]);
+		}
+		else  if (objHeader.Object_type > 72 && objHeader.Object_type < 85) {
+			pObject =
+				Builder::Create_Object({ Desc.LevelTag , "GameObject_PlantTree" })
+				.Build(iter->second[0]);
+		}
+		else {
+			continue;
+		}
 
-		pRcsMgr->Add_ResourcePath(objHeader.ModelName, objHeader.ModelPath);
-		pRcsMgr->Add_ResourcePath(objHeader.MaterialName, objHeader.MaterialPath);
-
-		CFieldOut::FIELDOUT_DESC* ObjDesc = new CFieldOut::FIELDOUT_DESC;
-		ObjDesc->ModelName = objHeader.ModelName;
-		ObjDesc->MaterialName = objHeader.MaterialName;
-		ObjDesc->Index = objHeader.Index;
-		ObjDesc->LevelTag = Desc.LevelTag;
-
-		CGameObject* pFieldOut =
-			Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldOut" })
-			.Position({ objHeader.vWorldPos.x,objHeader.vWorldPos.y,objHeader.vWorldPos.z })
-			.Add_ObjDesc(ObjDesc)
-			.Build(objHeader.ModelName);
-
-		pObjMgr->Add_Object(pFieldOut, Desc);
+		if (pObject) {
+			dynamic_cast<CFieldObject*>(pObject)->Sync_MapData(objHeader, iter->second);
+			pObjMgr->Add_Object(pObject, Desc);
+		}
 	}
-
-	for (size_t i = 0; i < mapFileHeader.iStructureCount; i++)
-	{
-		MAP_OBJECT_HEADER objHeader = {};
-		ifs.read(reinterpret_cast<char*>(&objHeader), sizeof(MAP_OBJECT_HEADER));
-
-		pRcsMgr->Add_ResourcePath(objHeader.ModelName, objHeader.ModelPath);
-		pRcsMgr->Add_ResourcePath(objHeader.MaterialName, objHeader.MaterialPath);
-
-		CFieldStructure::FIELDSTR_DESC* ObjDesc = new CFieldStructure::FIELDSTR_DESC;
-		ObjDesc->ModelName = objHeader.ModelName;
-		ObjDesc->MaterialName = objHeader.MaterialName;
-		ObjDesc->Index = objHeader.Index;
-		ObjDesc->LevelTag = Desc.LevelTag;
-
-		CGameObject* pFieldOut =
-			Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldStructure" })
-			.Position({ objHeader.vWorldPos.x,objHeader.vWorldPos.y,objHeader.vWorldPos.z })
-			.Add_ObjDesc(ObjDesc)
-			.Build(objHeader.ModelName);
-
-		pObjMgr->Add_Object(pFieldOut, Desc);
-	}
-
-	CGameObject* pBaseField =
-		Builder::Create_Object({ Desc.LevelTag, "GameObject_BaseField" })
-		.Position({ 0,-0.05f,0 })
-		.Build("Base_Plane");
-
-	pObjMgr->Add_Object(pBaseField, { Desc.LevelTag,"Base_Field" });
-
-	CBaseField* pBaseFieldCast = dynamic_cast<CBaseField*>(pBaseField);
-	pBaseFieldCast->Load_BaseTile(ifs, mapFileHeader.iBaseFieldCount);
 
 	for (size_t i = 0; i < mapFileHeader.iTileCount; i++)
 	{
@@ -113,28 +102,72 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 			Safe_Release(pObject);
 	}
 
-	for (size_t i = 0; i < mapFileHeader.iMapObjectCount; i++)
-	{
-		MAP_OBJECT_HEADER objHeader = {};
-		ifs.read(reinterpret_cast<char*>(&objHeader), sizeof(MAP_OBJECT_HEADER));
+	ifs.close();
+	return S_OK;
+}
 
-		pRcsMgr->Add_ResourcePath(objHeader.ModelName, objHeader.ModelPath);
-		pRcsMgr->Add_ResourcePath(objHeader.MaterialName, objHeader.MaterialPath);
+HRESULT CMapLoader::Load_ModelData()
+{
+	wstring path = L"../../Resources/Data/ModelMap.json";
+	ifstream ifs(path);
+	if (!ifs.is_open()) {
+		MessageBoxW(nullptr, L"ModelMap.json 파일을 찾을 수 없습니다.", L"Error", MB_OK);
+		return E_FAIL;
+	}
 
-		CFieldStructure::FIELDSTR_DESC* ObjDesc = new CFieldStructure::FIELDSTR_DESC;
-		ObjDesc->ModelName = objHeader.ModelName;
-		ObjDesc->MaterialName = objHeader.MaterialName;
-		ObjDesc->Index = objHeader.Index;
-		ObjDesc->LevelTag = Desc.LevelTag;
-
-		CGameObject* pFieldOut =
-			Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldStructure" })
-			.Position({ objHeader.vWorldPos.x,objHeader.vWorldPos.y,objHeader.vWorldPos.z })
-			.Add_ObjDesc(ObjDesc)
-			.Build(objHeader.ModelName);
-
-		pObjMgr->Add_Object(pFieldOut, Desc);
+	json jScene;
+	try {
+		ifs >> jScene;
+	}
+	catch (const json::parse_error& e) {
+		MessageBoxA(nullptr, e.what(), "JSON Parse Error", MB_OK);
+		return E_FAIL;
 	}
 	ifs.close();
+
+	g_ModelMapTable.clear();
+
+	// JSON 배열 순회
+	for (auto& item : jScene)
+	{
+		try
+		{
+			string key = item.value("Key", "");
+			_uint id = 0;
+			if (item.contains("ID"))
+			{
+				if (item["ID"].is_number_integer())
+					id = item["ID"].get<_uint>();
+				else if (item["ID"].is_string())
+					id = std::stoul(item["ID"].get<string>());
+			}
+			string model = item.value("Model", "");
+			string mat = item.value("Mat", "");
+			string modelPath = item.value("ModelPath", "");
+			string matPath = item.value("MatPath", "");
+
+			if (key.empty())
+				continue;
+
+			g_ModelMapTable[id] = { key, model, mat, modelPath, matPath };
+		}
+		catch (...)
+		{
+			continue;
+		}
+	}
+
+	// 리소스 매니저에 등록
+	auto pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
+	for (auto& pair : g_ModelMapTable)
+	{
+		const vector<string>& values = pair.second;
+		if (values.size() < 5)
+			continue;
+
+		pRcsMgr->Add_ResourcePath(values[1], values[3]); // model
+		pRcsMgr->Add_ResourcePath(values[2], values[4]); // mat
+	}
+
 	return S_OK;
 }

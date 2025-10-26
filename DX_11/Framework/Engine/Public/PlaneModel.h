@@ -23,9 +23,9 @@ public:
 	_uint Get_MaterialIndex(_uint Index) override;
 	_bool isDrawable(_uint Index) override;
 	virtual void SetDrawable(_uint Index, _bool isDraw) override;
-	virtual BOUNDING_BOX Get_LocalBoundingBox()	override;
-	virtual BOUNDING_BOX Get_WorldBoundingBox()	override;
-	virtual vector<BOUNDING_BOX> Get_MeshBoundingBox()	override;
+	virtual MINMAX_BOX Get_LocalBoundingBox()	override;
+	virtual MINMAX_BOX Get_WorldBoundingBox()	override;
+	virtual vector<MINMAX_BOX> Get_MeshBoundingBox()	override;
 	_bool isReadyToDraw()	override { return true; };
 
 public:

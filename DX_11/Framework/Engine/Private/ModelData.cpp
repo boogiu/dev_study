@@ -106,7 +106,7 @@ void CModelData::Render_GUI()
 
 	ImGui::Text(meshCount.c_str());
 	for (auto& mesh : m_Meshes) {
-		ImGui::Text(mesh->Get_Key().c_str());
+		mesh->Render_GUI();
 	}
 	ImGui::Separator();
 
@@ -161,14 +161,14 @@ const vector<_int> CModelData::GenerateFollowingIndices(CModelData* pMasterData)
 	return FollowingIndices;
 }
 
-BOUNDING_BOX CModelData::Get_LocalBoundingBox()
+MINMAX_BOX CModelData::Get_LocalBoundingBox()
 {
-	return BOUNDING_BOX{m_vMinLocal,m_vMaxLocal};
+	return MINMAX_BOX{m_vMinLocal,m_vMaxLocal};
 }
 
-BOUNDING_BOX CModelData::Get_MeshBoundingBox(_uint index)
+MINMAX_BOX CModelData::Get_MeshBoundingBox(_uint index)
 {
-	BOUNDING_BOX box = {};
+	MINMAX_BOX box = {};
 	if (index >= m_Meshes.size()) {
 		return box;
 	}

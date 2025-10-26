@@ -16,7 +16,6 @@ struct VS_OUT
     float fSpecular : TEXCOORD2;
 };
 
-
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out;

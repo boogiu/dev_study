@@ -73,6 +73,17 @@ void CAISkeleton::Save_File(ofstream& ofs)
 }
 
 
+_int CAISkeleton::Find_SimilarByName(const string& meshName)
+{
+	for (size_t i = 0; i < m_Bones.size(); i++)
+	{
+		if(meshName.find(m_Bones[i]->Get_Name()) != string::npos){
+			return i;
+		}
+	}
+	return -1;
+}
+
 CAISkeleton* CAISkeleton::Create(const aiNode* pAINode)
 {
 	CAISkeleton* instance = new CAISkeleton;

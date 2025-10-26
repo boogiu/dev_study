@@ -54,7 +54,7 @@ void CUI_Object::Post_EngineUpdate(_float dt)
     UI_PACKET packet;
    // packet.pModel = Add_Component<CModel>();
    // packet.pMaterial = Add_Component<CMaterial>();
-    packet.pWorldMatrix = m_pTransform->Get_WorldMatrix();
+    packet.pWorldMatrix = m_pTransform->Get_WorldMatrix_Ptr();
     packet.pViewMatrix = &m_ViewMat;
 
     CGameInstance::GetInstance()->Get_RenderSystem()->Submit_UI(packet);
