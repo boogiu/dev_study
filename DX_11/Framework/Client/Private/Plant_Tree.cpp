@@ -116,12 +116,15 @@ HRESULT CPlant_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mo
 
 	if(leafMat)
 		leafMat->Set_Param("g_PaletteTexture", leafParam);
-	if (trunkMat)
-		trunkMat->Set_Param("g_PaletteTexture", trunkParam);
+	
 
 	for (auto instance : pMaterial->Get_Material_Instance())
 	{
 		instance->Override_Pass("Tree");
+	}
+	if (trunkMat) {
+		//trunkMat->Override_Pass("TreeCut");
+		trunkMat->Set_Param("g_PaletteTexture", trunkParam);
 	}
 	return S_OK;
 }

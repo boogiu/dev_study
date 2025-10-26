@@ -16,6 +16,7 @@ struct VS_OUT
     float2 vTexcoord : TEXCOORD0;
     float4 vShade : TEXCOORD1;
     float fSpecular : TEXCOORD2;
+    float4 vWorldPos : TEXCOORD3;
 };
 
 
@@ -49,7 +50,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vShade = saturate(max(dot(normalize(vLightDir) * -1.f, normalize(vWorldNormal)), 0.f) + (vLightAmbient * vMtrlAmbient));
     float4 vReflect = reflect(normalize(vLightDir), normalize(vWorldNormal));
     float4 vLook = vWorldPos - vCamPosition;
-    
+    Out.vWorldPos = mul(vPosition, matWorld[TransformIndex]);
     Out.fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), fSpecularPow * 100);
     return Out;
 }
@@ -125,6 +126,7 @@ PS_OUT PS_TREE(PS_IN In)
     
     return Out;
 }
+
 technique11 DefaultTechnique
 {
     pass Opaque
@@ -151,7 +153,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
-        PixelShader = compile ps_5_0 PS_BLEND();
+    PixelShader = compile ps_5_0 PS_BLEND();
     }
 
     pass Tree
