@@ -1,6 +1,9 @@
 #include "Client_Defines.h"
 #include "PlayerHFSM.h"
 #include "State.h"
+#include "Player.h"
+#include "Animator3D.h"
+
 CPlayerHFSM::CPlayerHFSM(class CPlayer* pPlayer)
 	:m_pPlayer{pPlayer}
 {
@@ -31,9 +34,12 @@ void CPlayerHFSM::Update(_float dt)
 
 	if (next && next != m_pCurrent)
 	{
+		
 		m_pCurrent->OnExit();
 		m_pCurrent = next;
+	
 		m_pCurrent->OnEnter();
+
 	}
 
 	if (m_pCurrent->GetParent())
@@ -75,6 +81,7 @@ CState* CPlayerHFSM::Get_State(const string& name)
 void CPlayerHFSM::Render_State(CPlayer* pPlayer)
 {
 	ImGui::SeparatorText(m_pCurrent->GetName().c_str());
+	ImGui::SeparatorText(m_pPlayer->Get_Component<CAnimator3D>()->Get_CurrentAnimName().c_str());
 	if (m_pCurrent->GetParent())
 		m_pCurrent->GetParent()->Render_State();
 

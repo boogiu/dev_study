@@ -1,12 +1,12 @@
 #pragma once
 #include "PlayerState.h"
 NS_BEGIN(Client)
-class CPlayerState_Axe :
+class CPlayerState_Interaction :
     public CPlayerState
 {
 private:
-    CPlayerState_Axe();
-    virtual ~CPlayerState_Axe() DEFAULT;
+    CPlayerState_Interaction();
+    virtual ~CPlayerState_Interaction() DEFAULT;
 
 public:
     virtual void OnEnter();
@@ -17,10 +17,9 @@ public:
 public:
     virtual void Render_State();
 
-private:
-    _bool isForwardTree = {};
 public:
-    static CPlayerState_Axe* Create();
+    static CPlayerState_Interaction* Create();
     virtual void Free();
 };
+
 NS_END

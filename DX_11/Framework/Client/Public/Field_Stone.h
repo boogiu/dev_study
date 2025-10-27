@@ -17,8 +17,7 @@ public:
     void Late_Update(_float dt) override;
     virtual void Render_GUI();
     virtual HRESULT Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable) override;
-public:
-    void OnCollisionEnter(CGameObject* pObj);
+
 private:
     void Override_Pass();
 

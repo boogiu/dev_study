@@ -11,6 +11,9 @@
 #include "ToolItem.h"
 #include "Child.h"
 #include "Collider.h"
+
+#include "Sphere_Collider.h"
+
 CPlayerPart_Hand::CPlayerPart_Hand()
 {
 }
@@ -28,6 +31,8 @@ HRESULT CPlayerPart_Hand::Initialize_Prototype()
 {
 	Add_Component<CBoneFollower>();
 	Add_Component<CObjectContainer>();
+
+	m_InstanceTag = "Player_Hand";
 	return S_OK;
 }
 
@@ -77,9 +82,10 @@ void CPlayerPart_Hand::Change_Item(ITEM_DATA_DESC data)
 	m_eItemType = data.eType;
 }
 
-void CPlayerPart_Hand::Active_ColliderTool(_bool Active)
+void CPlayerPart_Hand::Active_ColliderTool(_bool Active, string Event)
 {
 	m_pToolItem->Get_Component<CCollider>()->Set_ColliderActive(Active);
+	m_pToolItem->Get_Component<CCollider>()->Set_ContextEvent(Event);
 }
 
 

@@ -58,26 +58,8 @@
     <Filter Include="96. GUI_Inc">
       <UniqueIdentifier>{121d598e-996e-4cdd-9692-1c32ada1ac6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\03. Tools">
-      <UniqueIdentifier>{5166a32c-bb2a-43be-a27f-dc8bc2cd477d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\04. Parts">
-      <UniqueIdentifier>{684906bc-a83b-4986-9a82-cdbd862a3573}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\04. Parts\Hair">
-      <UniqueIdentifier>{a703bacc-438f-4fc1-bdd2-f7c106f7e08a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\04. Parts\HairCap">
-      <UniqueIdentifier>{848c2087-8aed-4f28-864a-93462acd390e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\04. Parts\Cloth">
-      <UniqueIdentifier>{c56aa9cf-03dc-48e1-9389-acac36329029}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\02. Field\AutoTile">
       <UniqueIdentifier>{b9fa2fd9-5a92-4d73-9aa5-3af6f150d725}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\05. State">
-      <UniqueIdentifier>{e897b336-7122-491b-8964-6aec3bf74b0a}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine">
       <UniqueIdentifier>{29fe4cce-fc67-4e76-aa74-a60f5bb83d4f}</UniqueIdentifier>
@@ -90,9 +72,6 @@
     </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\MovementState\Walk">
       <UniqueIdentifier>{6d57cc37-5ae2-4573-a711-82d84f9721f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\PlayerState">
-      <UniqueIdentifier>{f7034ee4-f119-4c5e-9b0c-f69ce1818384}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\MovementState\Run">
       <UniqueIdentifier>{ea599003-fbe9-44d5-b832-0c4c9abbb9d4}</UniqueIdentifier>
@@ -133,8 +112,38 @@
     <Filter Include="02. GameObjects\02. Field\FieldStone">
       <UniqueIdentifier>{b6b7dbc3-a4ae-4215-ba76-aef13c63c007}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\02. Field\Plant_Tree">
+    <Filter Include="02. GameObjects\03. Plant">
+      <UniqueIdentifier>{ec53743e-ff98-42c5-b9e3-bce29f2710a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Utility\CharacterState">
+      <UniqueIdentifier>{e897b336-7122-491b-8964-6aec3bf74b0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\03. Plant\Plant_Tree">
       <UniqueIdentifier>{37022cc5-4b02-4058-8287-09d623ee402a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\04. Tools">
+      <UniqueIdentifier>{5166a32c-bb2a-43be-a27f-dc8bc2cd477d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Parts">
+      <UniqueIdentifier>{684906bc-a83b-4986-9a82-cdbd862a3573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Parts\Hair">
+      <UniqueIdentifier>{a703bacc-438f-4fc1-bdd2-f7c106f7e08a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Parts\HairCap">
+      <UniqueIdentifier>{848c2087-8aed-4f28-864a-93462acd390e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Parts\Cloth">
+      <UniqueIdentifier>{c56aa9cf-03dc-48e1-9389-acac36329029}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\InteractionState">
+      <UniqueIdentifier>{0b601fe0-84c9-4ac4-9361-a420500b7911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\InteractionState\TreeShake">
+      <UniqueIdentifier>{412fcc26-6ff6-46dd-8610-a741187adac2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\PlayerState_Super">
+      <UniqueIdentifier>{f7034ee4-f119-4c5e-9b0c-f69ce1818384}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -167,9 +176,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\GamePlayLevel.h">
       <Filter>01. Levels\02. GamePlay</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Player.h">
-      <Filter>02. GameObjects\00. Player</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MapLoader.h">
       <Filter>03. Utility\MapLoader</Filter>
@@ -229,16 +235,16 @@
       <Filter>96. GUI_Inc</Filter>
     </ClInclude>
     <ClInclude Include="..\PUblic\ToolItem.h">
-      <Filter>02. GameObjects\03. Tools</Filter>
+      <Filter>02. GameObjects\04. Tools</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\HairParts.h">
-      <Filter>02. GameObjects\04. Parts\Hair</Filter>
+      <Filter>02. GameObjects\05. Parts\Hair</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\HairCapParts.h">
-      <Filter>02. GameObjects\04. Parts\HairCap</Filter>
+      <Filter>02. GameObjects\05. Parts\HairCap</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ClothParts.h">
-      <Filter>02. GameObjects\04. Parts\Cloth</Filter>
+      <Filter>02. GameObjects\05. Parts\Cloth</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AutoTile.h">
       <Filter>02. GameObjects\02. Field\AutoTile</Filter>
@@ -247,7 +253,7 @@
       <Filter>02. GameObjects\00. Player\StateMachine\HFSM</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\State.h">
-      <Filter>02. GameObjects\05. State</Filter>
+      <Filter>03. Utility\CharacterState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Idle.h">
       <Filter>02. GameObjects\00. Player\StateMachine\IdleState\Idle</Filter>
@@ -256,7 +262,7 @@
       <Filter>02. GameObjects\00. Player\StateMachine\MovementState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\PlayerState</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\PlayerState_Super</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Walk.h">
       <Filter>02. GameObjects\00. Player\StateMachine\MovementState\Walk</Filter>
@@ -298,7 +304,16 @@
       <Filter>02. GameObjects\02. Field\FieldStone</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Plant_Tree.h">
-      <Filter>02. GameObjects\02. Field\Plant_Tree</Filter>
+      <Filter>02. GameObjects\03. Plant\Plant_Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player.h">
+      <Filter>02. GameObjects\00. Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Interaction.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\InteractionState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_TreeShake.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\InteractionState\TreeShake</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -383,16 +398,16 @@
       <Filter>96. GUI_Inc</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ToolItem.cpp">
-      <Filter>02. GameObjects\03. Tools</Filter>
+      <Filter>02. GameObjects\04. Tools</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\HairParts.cpp">
-      <Filter>02. GameObjects\04. Parts\Hair</Filter>
+      <Filter>02. GameObjects\05. Parts\Hair</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\HairCapParts.cpp">
-      <Filter>02. GameObjects\04. Parts\HairCap</Filter>
+      <Filter>02. GameObjects\05. Parts\HairCap</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ClothParts.cpp">
-      <Filter>02. GameObjects\04. Parts\Cloth</Filter>
+      <Filter>02. GameObjects\05. Parts\Cloth</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AutoTile.cpp">
       <Filter>02. GameObjects\02. Field\AutoTile</Filter>
@@ -401,7 +416,7 @@
       <Filter>02. GameObjects\00. Player\StateMachine\HFSM</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\State.cpp">
-      <Filter>02. GameObjects\05. State</Filter>
+      <Filter>03. Utility\CharacterState</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Idle.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\IdleState\Idle</Filter>
@@ -410,7 +425,7 @@
       <Filter>02. GameObjects\00. Player\StateMachine\MovementState</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\PlayerState</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\PlayerState_Super</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Walk.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\MovementState\Walk</Filter>
@@ -446,7 +461,13 @@
       <Filter>02. GameObjects\02. Field\FieldStone</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Plant_Tree.cpp">
-      <Filter>02. GameObjects\02. Field\Plant_Tree</Filter>
+      <Filter>02. GameObjects\03. Plant\Plant_Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Interaction.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\InteractionState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_TreeShake.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\InteractionState\TreeShake</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

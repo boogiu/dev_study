@@ -13,14 +13,15 @@ CPlayerState_Axe::CPlayerState_Axe()
 
 void CPlayerState_Axe::OnEnter()
 {
-	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+              	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	_uint Flag = TileSystem->Get_TileFlagByIndex(m_pPlayer->Get_FowardIndex());
+	isForwardTree = false;
 
 	if ((Flag & static_cast<_uint>(TILE_FLAG::FLAG_TOOLINTERACT)) != 0) {
-		m_pPlayer->ActiveCollider_Tool(true);
 		if ((Flag & static_cast<_uint>(TILE_FLAG::FLAG_TREE)) != 0) {
 			Animator->Chane_Animation("ToolAxe_Hit.anim");
+			isForwardTree = true;
 		}
 		else {
 			Animator->Chane_Animation("ToolAxe_Repelled.anim");
@@ -36,6 +37,10 @@ void CPlayerState_Axe::OnUpdate(_float dt)
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 
 	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
+
+	if (isForwardTree&&Animator->isOverAnimTiming(0.2f)) {
+		m_pPlayer->ActiveCollider_Tool(true);
+	}
 }
 
 void CPlayerState_Axe::OnExit()
@@ -51,7 +56,6 @@ CState* CPlayerState_Axe::HandleTransition()
 		m_pPlayer->ActiveCollider_Tool(false);
 		return m_pHFSM->Get_State("Idle_Base_State");
 	}
-
 	return nullptr;
 }
 

@@ -194,11 +194,13 @@
     <ClInclude Include="..\Public\PlayerStateMachine.h" />
     <ClInclude Include="..\Public\PlayerState_Axe.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
+    <ClInclude Include="..\Public\PlayerState_Interaction.h" />
     <ClInclude Include="..\Public\PlayerState_Movement.h" />
     <ClInclude Include="..\Public\PlayerState_Run.h" />
     <ClInclude Include="..\Public\PlayerState_Tool.h" />
     <ClInclude Include="..\Public\PlayerState_Transfer.h" />
     <ClInclude Include="..\Public\PlayerState_TransItem.h" />
+    <ClInclude Include="..\Public\PlayerState_TreeShake.h" />
     <ClInclude Include="..\Public\PlayerState_Walk.h" />
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\Target_Camera.h" />
@@ -245,11 +247,13 @@
     <ClCompile Include="..\Private\PlayerStateMachine.cpp" />
     <ClCompile Include="..\Private\PlayerState_Axe.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Interaction.cpp" />
     <ClCompile Include="..\Private\PlayerState_Movement.cpp" />
     <ClCompile Include="..\Private\PlayerState_Run.cpp" />
     <ClCompile Include="..\Private\PlayerState_Tool.cpp" />
     <ClCompile Include="..\Private\PlayerState_Transfer.cpp" />
     <ClCompile Include="..\Private\PlayerState_TransItem.cpp" />
+    <ClCompile Include="..\Private\PlayerState_TreeShake.cpp" />
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\Target_Camera.cpp" />

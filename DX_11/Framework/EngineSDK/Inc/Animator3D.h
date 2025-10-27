@@ -5,7 +5,9 @@ class ENGINE_DLL CAnimator3D :
     public CComponent
 {
 protected:
-    enum class ANIMATOR_STATE{RUNNING, CONVERTING};
+    enum class ANIMATOR_STATE{IDLE, RUNNING, CONVERTING};
+
+    enum class BLENDER_STATE{NONE, BLEND_IN, RUNNING, BLEND_OUT};
     struct AnimConvert {
         _uint SrcClip;
         _uint DstClip;
@@ -40,7 +42,12 @@ public:
     const vector<_float4x4>& Get_BoneMatrices() { return m_FinalMatices; };
     const vector<_float4x4>& Get_CombinedBoneMatrices() { return m_CombinedMatrices; };
     virtual void Chane_Animation(_uint index, _float convertDuration = 0.2f);
-    virtual HRESULT Chane_Animation(string animName, _float convertDuration = 0.2f);
+    virtual HRESULT Chane_Animation(string animName, _bool overrideSame = false,_float convertDuration = 0.2f);
+    virtual HRESULT ForceChane_Animation(string animName, _bool overrideSame = false,_float convertDuration = 0.2f);
+    virtual HRESULT Stop_Animation();
+
+    virtual HRESULT Set_AnimationBlend(string animName, vector<_uint> blendIndex);
+    virtual HRESULT Reset_AnimationBlend();
 
     _bool isCurrentAnimEnd();
     _bool isOverAnimTiming(_float percent);
@@ -67,13 +74,13 @@ protected:
     class CModelData* m_pData = {};
     ANIMATOR_STATE m_eState = {};
 
-    _uint m_iCurrentClipIndex = {};
-
-    _uint m_iNextClipIndex = {}; //다음 애니메이션 전환 용
-    _float m_fConvertDuration = {}; //다음 애니메이션 전환 용
+    _int m_iNextClipIndex = { -1 }; //다음 애니메이션 전환 용
+    _float m_fConvertDuration = {}; 
     _float m_fPrevTrackPosition = {}; //다음 애니메이션 전환 용
 
+    _int m_iCurrentClipIndex = { -1 };
     _float m_fCurrentTrackPosition = {};
+    _bool isAnimEnd = { false };
 
     vector<_float4x4> m_TransfromationMatrices = {};
     vector<_float4x4> m_ManipulateMatrices = {};
@@ -82,11 +89,21 @@ protected:
     unordered_set<_uint> m_DettachedBone = {};
 
     vector<class CAnimationClip*> m_pAnimClips;
+    
+    /*Blend*/
+    _int m_iBlendAnimation = {-1};
+    _float m_fBlendTrackPosition = {};
+    _float m_fBlendDuration = {};
+    _float m_fBlendWeight = {};
+    vector<_uint> m_BlendIndex = {};
+    vector<_float4x4> m_BlendTransfomationMatices = {};
+    _bool isBlendAnimEnd = { false };
+    BLENDER_STATE m_eBlendState;
+    /*Managing*/
     vector<_bool> m_pAnimLoops;
     unordered_map<string, _uint> m_pAnimNames;
     QueuedAnim m_QueuedAnim; /*다음 애니메이션 대기열*/
 
-    _bool isAnimEnd = { false };
 public:
     static CAnimator3D* Create();
     virtual CComponent* Clone();

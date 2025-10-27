@@ -19,7 +19,7 @@ public:
 
 public:
     void Change_Item(ITEM_DATA_DESC data);
-    void Active_ColliderTool(_bool Active);
+    void Active_ColliderTool(_bool Active, string Event);
 public:
     ITEM_TYPE Get_CurrentItemType() { return m_eItemType; };
 

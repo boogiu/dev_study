@@ -33,13 +33,14 @@ public:
 	virtual void Late_Update(_float dt) PURE;
 
 public:
-	virtual void OnCollisionEnter(CGameObject* pObject);
-	virtual void OnCollisionStay(CGameObject* pObject);
-	virtual void OnCollisionExit(CGameObject* pObject);
+	virtual void OnCollisionEnter(COLLISION_CONTEXT context);
+	virtual void OnCollisionStay(COLLISION_CONTEXT context);
+	virtual void OnCollisionExit(COLLISION_CONTEXT context);
 
 public:
 	_bool Has_Tag(const string& tag) { return m_InstanceTag == tag; };
 	void Set_Tag(const string& tag) { m_InstanceTag = tag; };
+	string Get_Tag() { return m_InstanceTag ; };
 
 public:
 	virtual void Render_GUI();

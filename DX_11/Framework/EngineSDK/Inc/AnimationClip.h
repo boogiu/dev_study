@@ -33,6 +33,7 @@ public:
 
 	const string& Get_Name() { return m_ClipName; }
 	const string& Get_Subject() { return m_Subject; }
+	_float Get_TickPerSecond() { return m_fTickPerSecond; }
 
 public:
 	virtual void Render_GUI();

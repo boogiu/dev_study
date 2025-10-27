@@ -158,6 +158,16 @@ _float4x4* CTransform::Get_InverseWorldMatrix_Ptr()
 	return &m_WorldInversMatrix;
 }
 
+_vector CTransform::Get_WorldPos()
+{
+	if (m_pParentTransform) {
+		_vector worldpos = XMVector3Transform(XMLoadFloat4(&m_vPosition), XMLoadFloat4x4(m_pParentTransform->Get_WorldMatrix_Ptr()));
+		return worldpos;
+	}
+	else
+		return Get_Pos();
+}
+
 _vector CTransform::Dir(STATE eState)
 {
 	if (Check_Dirty())

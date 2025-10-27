@@ -30,6 +30,7 @@ public:
 
 public:
 	_vector Get_Pos() { return XMLoadFloat4(&m_vPosition); };
+	_vector Get_WorldPos();
 	_vector Get_QuaternionRotate() { return XMLoadFloat4(&m_qRotation); };
 	_vector Get_Scale() { return XMLoadFloat4(&m_vScale); };
 	 _vector Dir(STATE eState);

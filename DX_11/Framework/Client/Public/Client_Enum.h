@@ -7,8 +7,9 @@ enum class TILE_FLAG : unsigned int {
     FLAG_SWIMMABLE = 1 << 2,
     FLAG_DIGGABLE = 1 << 3,
     FLAG_TOOLINTERACT = 1 << 4,
-    FLAG_TREE = 1 << 5,
-    FLAG_STONE = 1 << 6,
+    FLAG_HANDINTERACT = 1 << 5,
+    FLAG_TREE = 1 << 6,
+    FLAG_STONE = 1 << 7,
 
 
     ONPLAYER = 1 << 31,
@@ -23,6 +24,16 @@ inline TILE_FLAG operator & (TILE_FLAG a, TILE_FLAG b) {
 inline TILE_FLAG operator & (TILE_FLAG a, unsigned int b) {
     return static_cast<TILE_FLAG>(static_cast<unsigned int>(a) & (b));
 }
+inline TILE_FLAG operator | (TILE_FLAG a, unsigned int b) {
+    return static_cast<TILE_FLAG>(static_cast<unsigned int>(a) |(b));
+}
+inline _bool operator == (TILE_FLAG a, unsigned int b) {
+    return static_cast<unsigned int>(a)== (b);
+}
+inline _bool operator != (TILE_FLAG a, unsigned int b) {
+    return !(a == b);
+}
+
 enum class ITEM_TYPE {
     NONE, AXE,
 };

@@ -8,6 +8,9 @@
 #include "PlayerState_Walk.h"
 #include "PlayerState_Run.h"
 
+#include "PlayerState_Interaction.h"
+#include "PlayerState_TreeShake.h"
+
 #include "PlayerState_Tool.h"
 #include "PlayerState_Axe.h"
 
@@ -47,6 +50,11 @@ HRESULT CPlayerStateMachine::Initialize()
 	auto TransItem = m_pHFSM->Add_State<CPlayerState_TransItem>("Transfer_Item_State");
 
 	TransItem->SetParent(Transfer);
+
+	auto Interaction = m_pHFSM->Add_State<CPlayerState_Interaction>("Interaction_Base_State");
+	auto ShakeTree = m_pHFSM->Add_State<CPlayerState_TreeShake>("Interaction_TreeShake_State");
+
+	ShakeTree->SetParent(Interaction);
 
 	m_pHFSM->Excute(Idle);
 	return S_OK;

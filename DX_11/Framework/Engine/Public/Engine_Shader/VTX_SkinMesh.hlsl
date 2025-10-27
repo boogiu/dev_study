@@ -119,10 +119,9 @@ PS_OUT PS_TREE(PS_IN In)
     vector vMixture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vAlbGry = AlbedoGrayTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vMtrlDiffuse = g_PaletteTexture.Sample(DefaultSampler, float2((1 - vAlbGry.r), 0.6));
+    vector vOpacity = OpacityTexture.Sample(DefaultSampler, In.vTexcoord);
     
-   //ºûÀÇ »ö»ó * ºûÀÇ °­µµ * ÅØ½ºÃ³ »ö±ò
-    Out.vColor = vMtrlDiffuse;
-    
+     Out.vColor = (vOpacity.a) * vMtrlDiffuse;
     
     return Out;
 }

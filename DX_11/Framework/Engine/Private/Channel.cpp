@@ -105,7 +105,7 @@ HRESULT CChannel::ConvertAnimateMatrix(vector<_float4x4>& transfomationMatrices,
 
 void CChannel::Render_GUI()
 {
-	string key = "Channel : " + m_ChannelName;
+	string key = "Channel : " + m_ChannelName + "(" + to_string(m_iBoneIndex) + ")";
 	ImGui::Text(key.c_str());
 
 	if (ImGui::IsItemHovered()) {

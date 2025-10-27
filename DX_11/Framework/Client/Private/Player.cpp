@@ -22,7 +22,7 @@
 #include "HairParts.h"
 #include "ClothParts.h"
 #include "PlayerPart_Hand.h"
-#include "OBB_Collider.h"
+#include "AABB_Collider.h"
 
 CPlayer::CPlayer()
 {
@@ -43,7 +43,9 @@ HRESULT CPlayer::Initialize_Prototype()
 	hr = Add_Component<CMaterial>()->Link_Material("GamePlay_Level", "PlayerBody.mat");
 	Add_Component<CAnimator3D>();
 	Add_Component<CObjectContainer>();
-	Add_Component<COBB_Collider>();
+	Add_Component<CAABB_Collider>();
+
+	m_InstanceTag = "Player";
 	return hr;
 }
 
@@ -52,10 +54,10 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 
 
-	m_pStateMachine = CPlayerStateMachine::Create(this);
 	Add_AnimationClips();
 	Add_PartObjects();
 
+	m_pStateMachine = CPlayerStateMachine::Create(this);
 	Get_Component<CSkeletalModel>()->SetDrawable(5, false);
 	Get_Component<CSkeletalModel>()->SetDrawable(8, false);
 	Get_Component<CSkeletalModel>()->SetDrawable(10, false);
@@ -77,8 +79,8 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 		instance->Get_MaterialData()->Link_Shader("GamePlay_Level", "PlayerShader.hlsl");
 	}
 
-	Get_Component<COBB_Collider>()->Make_MinMaxCollider(
-		{ { -5,0,0 }, {5,5,6} }
+	Get_Component<CAABB_Collider>()->Make_MinMaxCollider(
+		{ { -2,0,-2 }, {2,5,2} }
 	);
 	return S_OK;
 }
@@ -122,7 +124,7 @@ void CPlayer::Render_GUI()
 		Data.eType = ITEM_TYPE::NONE;
 		Data.materialName = "";
 		Data.modelName = "";
-		Data.TypeTag = "";
+		Data.TypeTag = "None";
 		Change_Item(Data);
 	}
 
@@ -190,32 +192,11 @@ TILE_INDEX CPlayer::Get_FowardIndex()
 	return index;
 }
 
-void CPlayer::ActiveCollider_Tool(_bool active)
+void CPlayer::ActiveCollider_Tool(_bool active, string Event)
 {
 	CGameObject* pHand = Get_Component<CObjectContainer>()->Find_ObjectByName("Right_Hand");
 	CPlayerPart_Hand* pHandPart = dynamic_cast<CPlayerPart_Hand*>(pHand);
-	pHandPart->Active_ColliderTool(active);
-}
-
-void CPlayer::OnCollisionEnter(CGameObject* pObject)
-{
-	if (pObject->Has_Tag("Tree")) {
-		int i = 0;
-	}
-}
-
-void CPlayer::OnCollisionStay(CGameObject* pObject)
-{
-	if (pObject->Has_Tag("Tree")) {
-		int i = 0;
-	}
-}
-
-void CPlayer::OnCollisionExit(CGameObject* pObject)
-{
-	if (pObject->Has_Tag("Tree")) {
-		int i = 0;
-	}
+	pHandPart->Active_ColliderTool(active,Event);
 }
 
 void CPlayer::Add_AnimationClips()
@@ -242,6 +223,9 @@ void CPlayer::Add_AnimationClips()
 
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_EquipOn.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_EquipOff.anim", "Player", false);
+
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Tree_Shake.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Tree_ShakeReadyKeep.anim", "Player", true);
 }
 
 void CPlayer::Add_PartObjects()

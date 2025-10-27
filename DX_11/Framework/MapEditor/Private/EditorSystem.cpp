@@ -305,10 +305,25 @@ HRESULT CEditorSystem::Load_MapData()
 {
 	string Systempath = "../../Resources/Data/TileSystemData.dat";
 
-	CGameInstance::GetInstance()->Excute_TileSystemByData(Systempath);
+	HRESULT TileInfo = CGameInstance::GetInstance()->Excute_TileSystemByData(Systempath);
+	if (FAILED(TileInfo))
+	{
+		TILESYSTEM_INFO info = {};
+		info.iTileCountX = 16 * 6 * 2;
+		info.iTileCountZ = 16 * 6 * 2;
+		info.vWorldMin = { 0,0,0 };
+		info.vWorldMax = { info.iTileCountX * 10.f,	15.f	, info.iTileCountZ * 10.f };
+
+		CGameInstance::GetInstance()->Excute_TileSystem(info);
+	}
+
 	m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	m_pTileSystem->Execute_InstanceModel(G_GlobalLevelKey, "Base_0.model", "Base_0.mat");
 	m_EditorContext.ContextTileInfo = m_pTileSystem->Get_TileSystemInfo();
+	if (FAILED(TileInfo))
+	{
+		return S_OK;
+	}
 	string path = "../../Resources/Data/MapData.dat";
 	ifstream ifs(path.c_str(), ios::binary);
 

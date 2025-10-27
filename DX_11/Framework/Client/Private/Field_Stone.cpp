@@ -74,19 +74,13 @@ HRESULT CField_Stone::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> m
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	TILE_INDEX index = tileSystem->Get_IndexByPosition(Get_Position());
 	
-	tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED| TILE_FLAG::FLAG_TOOLINTERACT| TILE_FLAG::FLAG_STONE));
+	tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED| 
+		TILE_FLAG::FLAG_TOOLINTERACT| TILE_FLAG::FLAG_STONE));
+
 	tileSystem->Set_Material_ID(objHeader.Index, {1,1,0,0});
 
 	return S_OK; 
 }
-
-void CField_Stone::OnCollisionEnter(CGameObject* pObj)
-{
-	if (pObj->Has_Tag("Axe")) {
- 		int i = 0;
-	}
-}
-
 
 void CField_Stone::Override_Pass()
 {

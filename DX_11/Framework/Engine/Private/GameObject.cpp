@@ -150,15 +150,15 @@ void CGameObject::Post_EngineUpdate(_float dt)
 	}
 }
 
-void CGameObject::OnCollisionEnter(CGameObject* pObject)
+void CGameObject::OnCollisionEnter(COLLISION_CONTEXT context)
 {
 }
 
-void CGameObject::OnCollisionStay(CGameObject* pObject)
+void CGameObject::OnCollisionStay(COLLISION_CONTEXT context)
 {
 }
 
-void CGameObject::OnCollisionExit(CGameObject* pObject)
+void CGameObject::OnCollisionExit(COLLISION_CONTEXT context)
 {
 }
 
@@ -230,7 +230,7 @@ _float4x4* CGameObject::Get_WorldMatrix()
 _float4 CGameObject::Get_Position()
 {
 	_float4 pos;
-	XMStoreFloat4(&pos, m_pTransform->Get_Pos());
+	XMStoreFloat4(&pos, m_pTransform->Get_WorldPos());
 	return pos;
 }
 

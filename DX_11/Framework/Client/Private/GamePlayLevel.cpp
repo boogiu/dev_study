@@ -65,7 +65,7 @@ HRESULT CGamePlayLevel::Initialize()
     m_pObjectManager->Add_Object(pCamera, { "GamePlay_Level", "Camera_Layer" });
     m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 
-    CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
+    CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pCamera->Get_Component<CCamera>());
 
     return S_OK;
 }
@@ -112,7 +112,6 @@ void CGamePlayLevel::PreLoad_Level()
     ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Movement");
     ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Interaction");
     ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Base");
-    ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/PltTreeOakAnim");
 
     /*Tiles  Path*/
     ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldRoad");
@@ -125,6 +124,10 @@ void CGamePlayLevel::PreLoad_Level()
     /*Structure  Path*/
     ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Structure");
     ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Structure");
+
+    ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/PltTree");
+    ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/PltTree");
+    ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/PltTreeOakAnim");
 
     /*Object_Prototype*/
     auto pProtoMgr = CGameInstance::GetInstance()->Get_PrototypeMgr();

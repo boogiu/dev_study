@@ -274,6 +274,12 @@ namespace Engine
 		string ElementKey = {  };
 	}INSTANCE_INIT_DESC;
 
+
+	typedef struct tagCollisionInfoContext {
+		string EventTag = {};
+		class CGameObject* Owner = {nullptr};
+	}COLLISION_CONTEXT;
+
 #pragma pack(pop)
 
 }

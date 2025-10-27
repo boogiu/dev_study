@@ -1,12 +1,12 @@
 #pragma once
 #include "PlayerState.h"
 NS_BEGIN(Client)
-class CPlayerState_Axe :
+class CPlayerState_TreeShake :
     public CPlayerState
 {
 private:
-    CPlayerState_Axe();
-    virtual ~CPlayerState_Axe() DEFAULT;
+    CPlayerState_TreeShake();
+    virtual ~CPlayerState_TreeShake() DEFAULT;
 
 public:
     virtual void OnEnter();
@@ -18,9 +18,10 @@ public:
     virtual void Render_State();
 
 private:
-    _bool isForwardTree = {};
+    _float KeepTime = { 0.f };
+    _bool isLooped = { false };
 public:
-    static CPlayerState_Axe* Create();
+    static CPlayerState_TreeShake* Create();
     virtual void Free();
 };
 NS_END

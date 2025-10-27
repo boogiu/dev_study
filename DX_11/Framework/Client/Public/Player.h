@@ -33,15 +33,12 @@ public:
     ITEM_DATA_DESC Get_DstItemData() { return m_DstItem; };
     void Set_CurItemData(ITEM_DATA_DESC desc);
     TILE_INDEX Get_FowardIndex();
-    void ActiveCollider_Tool(_bool active);
-public:
-    void OnCollisionEnter(CGameObject* pObject);
-    void OnCollisionStay(CGameObject* pObject);
-    void OnCollisionExit(CGameObject* pObject);
+    void ActiveCollider_Tool(_bool active, string Event = {});
 
 private:
     void Add_AnimationClips();
     void Add_PartObjects();
+
 private:
     class CPlayerStateMachine* m_pStateMachine= { nullptr };
     _float2 m_vInputAxis = {};

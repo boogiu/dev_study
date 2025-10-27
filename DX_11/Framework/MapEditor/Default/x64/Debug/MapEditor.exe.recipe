@@ -2,12 +2,12 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\dev_study\DX_11\Framework\MapEditor\Bin\MapEditor.exe</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\MapEditor\Bin\MapEditor.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\MapEditor\Bin\VTX_PlaneGrid.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\MapEditor\Bin\VTX_PlaneGrid.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />

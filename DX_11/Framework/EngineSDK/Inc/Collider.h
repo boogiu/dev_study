@@ -26,11 +26,19 @@ public:
 #endif
 public:
     virtual COLLIDER_TYPE Get_ColliderType() PURE;
+    COLLISION_CONTEXT Get_Context() { return m_CollisionContext; };
+    void Set_Context(class CGameObject* pObject,const string& eventTag) { m_CollisionContext.Owner = pObject; m_CollisionContext.EventTag = eventTag;};
+    void Set_ContextOwner(class CGameObject* pObject) { m_CollisionContext.Owner = pObject; };
+    void Set_ContextEvent(const string& eventTag) { m_CollisionContext.EventTag = eventTag; };
+    void Reset_Context() { m_CollisionContext.Owner = m_pOwner;  m_CollisionContext.EventTag = {}; };
+    void Reset_ContextEvent() { m_CollisionContext.EventTag = {}; };
+    void Reset_ContextOwner() { m_CollisionContext.Owner = m_pOwner; };
 
 public:
     void Render_GUI();
 protected:
     _int m_SystemIndex = { -1 };
+    COLLISION_CONTEXT m_CollisionContext = {};
     unordered_set<CCollider*> m_prevCollider = {}; //이전 프레임에 부딪힘
     unordered_set<CCollider*> m_CurrentCollider = {}; //현재 프레임에 부딪힘.
 

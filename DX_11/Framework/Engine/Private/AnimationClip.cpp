@@ -62,9 +62,12 @@ _float CAnimationClip::TranslateAnimateMatrix(vector<_float4x4>& transfomationMa
 
 _bool CAnimationClip::ConvertTo(vector<_float4x4>& transfomationMatrices, CAnimationClip& DestAnimation, _float fConvertDuration, _float PrevTrackPosition, _float ConversionTrackPosition)
 {
+
 	for (auto& SrcChannel : m_Channels) {
 		CChannel* nextChannel = DestAnimation.Find_ChannelByBoneName(SrcChannel->Get_Name());
-		SrcChannel->ConvertAnimateMatrix(transfomationMatrices, 
+		
+		SrcChannel->ConvertAnimateMatrix(
+			transfomationMatrices, 
 			fConvertDuration, 
 			PrevTrackPosition, 
 			ConversionTrackPosition,

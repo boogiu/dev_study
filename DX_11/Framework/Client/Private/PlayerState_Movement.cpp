@@ -13,6 +13,8 @@ CPlayerState_Movement::CPlayerState_Movement()
 void CPlayerState_Movement::OnEnter()
 {
 	m_bEnter = true;
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+
 }
 
 void CPlayerState_Movement::OnUpdate(_float dt)
@@ -31,6 +33,8 @@ void CPlayerState_Movement::OnUpdate(_float dt)
 	_float4 myPos = m_pPlayer->Get_Position();
 	m_fPlayerHeight =  tileSystem->Get_TileHeightByPosition(myPos);
 	m_pPlayer->Get_Component<CTransform>()->Set_Y(m_fPlayerHeight);
+
+	
 }
 
 void CPlayerState_Movement::OnExit()
@@ -39,29 +43,28 @@ void CPlayerState_Movement::OnExit()
 
 CState* CPlayerState_Movement::HandleTransition()
 {
-	if (m_bEnter) 
+	auto inpuDev = CGameInstance::GetInstance()->Get_InputDev();
+	if (m_bEnter)
 		return nullptr;
 
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_SPACE)) {
-		return m_pHFSM->Get_State("Tool_Base_State");
-	};
-	
 	return nullptr;
 }
 
 _bool CPlayerState_Movement::CheckMovable(_float2& InputAxis)
 {
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+	_float2 tmpAxis = InputAxis;
 
 	_float4  NextPos = m_pPlayer->Get_Position();
-	NextPos.x += InputAxis.x;
-	NextPos.z += InputAxis.y;
+	NextPos.x += tmpAxis.x;
+	NextPos.z += tmpAxis.y;
 
 	TILE_INDEX nextIndex = CGameInstance::GetInstance()->Get_TileSystem()->Get_IndexByPosition(NextPos);
 
 	_uint Flag = tileSystem->Get_TileFlagByIndex(nextIndex);
+
 	if ((Flag & static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED)) == 0)
-		return true;
+		return true; /*막혀 있지 않음*/
 
 	/*움직일 수 없음*/
 	_bool blockX = false;
@@ -69,23 +72,34 @@ _bool CPlayerState_Movement::CheckMovable(_float2& InputAxis)
 
 	/*X축 검사*/
 	_float4 testX = m_pPlayer->Get_Position();
-	testX.x += InputAxis.x;
+	testX.x += tmpAxis.x;
+
 	TILE_INDEX testIdxX = tileSystem->Get_IndexByPosition(testX);
+
 	if (tileSystem->Get_TileFlagByIndex(testIdxX) & static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED))
 		blockX = true;
 
 	/*Z축 검사*/
 	_float4 testZ = m_pPlayer->Get_Position();
-	testZ.z += InputAxis.y;
+	testZ.z += tmpAxis.y;
 	TILE_INDEX testIdxZ = tileSystem->Get_IndexByPosition(testZ);
 
 	if (tileSystem->Get_TileFlagByIndex(testIdxZ) & static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED))
 		blockZ = true;
 
-	if (blockX) InputAxis.x = 0.f;
-	if (blockZ) InputAxis.y = 0.f;
+	if (blockX)
+	{ 
+		tmpAxis.x = 0.f;
+		tmpAxis.y = 0.1f *(InputAxis.x <0? -1 : 1);
+	}
+	if (blockZ) { 
+		tmpAxis.x = 0.1f * (InputAxis.y < 0 ? -1 : 1);
+		tmpAxis.y = 0.0f;
+	}
 
-	if (InputAxis.x != 0.f || InputAxis.y != 0.f)
+	InputAxis = tmpAxis;
+
+	if (tmpAxis.x != 0.f || tmpAxis.y != 0.f)
 		return true;
 
 	return false;

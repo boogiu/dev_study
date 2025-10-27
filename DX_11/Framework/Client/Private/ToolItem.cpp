@@ -43,7 +43,9 @@ HRESULT CToolItem::Initialize(INIT_DESC* pArg)
 	Get_Component<CBoneFollower>()->Set_Offset(
 		XMMatrixRotationX(XMConvertToRadians(180))
 	);*/
-
+	m_InstanceTag = "None";
+	Get_Component<COBB_Collider>()->Make_MinMaxCollider({ {-3,-6,-2},{7,1,4} });
+	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
 	return S_OK;
 }
 
@@ -61,11 +63,13 @@ void CToolItem::Late_Update(_float dt)
 
 void CToolItem::Render_GUI()
 {
-	//__super::Render_GUI();
+	Get_Component<COBB_Collider>()->Render_GUI();
 }
 
 void CToolItem::Set_Item(ITEM_DATA_DESC data)
 {
+	m_InstanceTag = data.TypeTag;
+	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
 	if (data.eType == ITEM_TYPE::NONE) {
 		Get_Component<CModel>()->Set_Active(false);
 		return;
@@ -73,11 +77,9 @@ void CToolItem::Set_Item(ITEM_DATA_DESC data)
 	else {
 		Get_Component<CModel>()->Set_Active(true);
 	}
-	m_InstanceTag = data.TypeTag;
 	Get_Component<CModel>()->Link_Model("GamePlay_Level", data.modelName);
 	Get_Component<CMaterial>()->Link_Material("GamePlay_Level", data.materialName);
-	Get_Component<COBB_Collider>()->Make_MinMaxCollider({ {-3,-6,-2},{7,1,4} });
-	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
+	
 }
 
 CToolItem* CToolItem::Create()

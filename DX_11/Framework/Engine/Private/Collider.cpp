@@ -1,6 +1,7 @@
 #include "Collider.h"
 #include "GameInstance.h"
 #include "ICollisionService.h"
+#include "GameObject.h"
 CCollider::CCollider()
 {
 }
@@ -18,6 +19,7 @@ HRESULT CCollider::Initialize_Prototype()
 HRESULT CCollider::Initialize(COMPONENT_DESC* pArg)
 {
 	m_SystemIndex = CGameInstance::GetInstance()->Get_CollisionSystem()->RegisterCollider(this, m_SystemIndex);
+	m_CollisionContext.Owner = m_pOwner;
 	return S_OK;
 }
 
@@ -31,6 +33,9 @@ void CCollider::Render_GUI()
 
 	ImGui::BeginChild("##ColliderChild", ImVec2{ 0, childHeight }, true);
 	ImGui::Text("System Index : %d", m_SystemIndex);
+	string ownerTag = "Owner Tag : " + m_CollisionContext.Owner->Get_Tag();
+	ImGui::Text(ownerTag.c_str());
+	ImGui::Text(m_CollisionContext.EventTag.c_str());
 	ImGui::EndChild();
 
 }

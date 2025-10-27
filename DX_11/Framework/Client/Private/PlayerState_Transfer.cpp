@@ -13,6 +13,7 @@ CPlayerState_Transfer::CPlayerState_Transfer()
 void CPlayerState_Transfer::OnEnter()
 {
 	m_bEnter = true;
+	
 }
 
 void CPlayerState_Transfer::OnUpdate(_float dt)

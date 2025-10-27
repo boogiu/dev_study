@@ -12,7 +12,7 @@ CPlayerState_Idle::CPlayerState_Idle()
 void CPlayerState_Idle::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Chane_Animation("Base_Wait.anim",0.2f);
+	Animator->ForceChane_Animation("Base_Wait.anim");
 }
 
 void CPlayerState_Idle::OnUpdate(_float dt)
@@ -32,17 +32,18 @@ CState* CPlayerState_Idle::HandleTransition()
 
 	_float2 InputAxis = m_pPlayer->Get_InputAxis();
 	auto inpuDev = CGameInstance::GetInstance()->Get_InputDev();
-	if (fabs(InputAxis.x) > 0 || fabs(InputAxis.y) > 0) {
+
+	 if (inpuDev->Key_Tap(VK_SPACE)) {
+		return m_pHFSM->Get_State("Tool_Base_State");
+	}
+
+	 else if (fabs(InputAxis.x) > 0 || fabs(InputAxis.y) > 0) {
 		
 		if (!inpuDev->Key_Down(VK_SHIFT))
 			return m_pHFSM->Get_State("Movement_Walk_State");
 		else
 			return m_pHFSM->Get_State("Movement_Run_State");
 	}
-	else if (inpuDev->Key_Tap(VK_SPACE)) {
-		return m_pHFSM->Get_State("Tool_Base_State");
-	}
-
 	return nullptr;
 }
 

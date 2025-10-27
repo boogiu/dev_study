@@ -14,6 +14,8 @@ public:
     virtual void OnExit();
     virtual CState* HandleTransition();
 
+private:
+    _bool isFlipping = { false };
 public:
     static CPlayerState_Walk* Create();
     virtual void Free();

@@ -2,7 +2,7 @@
 
 typedef struct tagItemDataDesc{
 	ITEM_TYPE eType = { ITEM_TYPE::NONE };
-	string TypeTag = {};
+	string TypeTag = {"None"};
 	string modelName = {};
 	string materialName = {};
 }ITEM_DATA_DESC;

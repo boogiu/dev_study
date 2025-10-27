@@ -89,7 +89,7 @@ void CAIChannel::Save_Channel(ofstream& ofs)
 				XMMatrixRotationQuaternion(XMLoadFloat4(&keyFrame.vRotation)) *
 				XMMatrixTranslationFromVector(XMLoadFloat3(&keyFrame.vTranslation));
 
-			_matrix saveMatrix = XMMatrixMultiply(keyFramMatrix, XMMatrixRotationY(XMConvertToRadians(g_iExportPreRotate)));
+			_matrix saveMatrix = XMMatrixMultiply(keyFramMatrix, XMMatrixRotationY(XMConvertToRadians(0)));
 
 			_vector outScale, outRot, outTrans;
 			XMMatrixDecompose(&outScale, &outRot, &outTrans, saveMatrix);
@@ -121,9 +121,9 @@ void CAIChannel::Save_Channel(ofstream& ofs)
 
 void CAIChannel::Render_GUI()
 {
-	string key ="Channel : "+ m_ChannelName + "/ Bone : " + m_boneName;
+	string key ="Channel : "+ m_ChannelName + "/ Bone : " + m_boneName +"("+ to_string(m_iBoneIndex)+")";
 	ImGui::Text(key.c_str());
-
+	
 	if (ImGui::IsItemHovered()) {
 		ImGui::BeginTooltip();
 

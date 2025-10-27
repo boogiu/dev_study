@@ -54,17 +54,17 @@ void COBB_Collider::Late_Update()
 	for (auto& other : m_CurrentCollider) {
 		if (m_prevCollider.find(other) == m_prevCollider.end()) {
 			//지금 있고 이전에 없음
-			m_pOwner->OnCollisionEnter(other->Get_Owner());
+			m_pOwner->OnCollisionEnter(other->Get_Context());
 		}
 		else {
 			//지금 있고 이전에 있음
-			m_pOwner->OnCollisionStay(other->Get_Owner());
+			m_pOwner->OnCollisionStay(other->Get_Context());
 		}
 	}
 	for (auto& other : m_prevCollider) {
-		if (m_prevCollider.find(other) == m_prevCollider.end()) {
+		if (m_CurrentCollider.find(other) == m_CurrentCollider.end()) {
 			//이전에 있고 지금 없음
-			m_pOwner->OnCollisionExit(other->Get_Owner());
+			m_pOwner->OnCollisionExit(other->Get_Context());
 		}
 	}
 }
