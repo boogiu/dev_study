@@ -139,9 +139,6 @@
     <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\03. PickUp">
       <UniqueIdentifier>{17468ac2-e60a-4991-a5be-087d5768675a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolState\05. TransItem">
-      <UniqueIdentifier>{b062d2a2-0c2b-491c-bec8-bcdc2c6ba9f2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolState\06. Repelled">
       <UniqueIdentifier>{bf35d5f9-5c33-4a47-956e-6866c79eb5ab}</UniqueIdentifier>
     </Filter>
@@ -160,9 +157,6 @@
     <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction">
       <UniqueIdentifier>{25c274d1-e23a-45c0-96f9-efec167d6883}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction\Hand_Shake">
-      <UniqueIdentifier>{55108e52-1e19-4591-ad77-e4937cf853fa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolState\01. AxeAction">
       <UniqueIdentifier>{3a21b6b7-b871-4d4a-b241-a57ab630628c}</UniqueIdentifier>
     </Filter>
@@ -178,8 +172,17 @@
     <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolState\08. ScoopAction\Scoop">
       <UniqueIdentifier>{43a599f6-1ac9-4814-bcb8-7bbb7519da0a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction\NoTool">
+    <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction\TreeShake">
+      <UniqueIdentifier>{55108e52-1e19-4591-ad77-e4937cf853fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\Old">
+      <UniqueIdentifier>{0be089ae-193d-40ed-99d1-3b564fc42957}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolState\00. ToolBase">
       <UniqueIdentifier>{85340240-921d-428b-9774-13b3cff3f1c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\03. TransItem">
+      <UniqueIdentifier>{b062d2a2-0c2b-491c-bec8-bcdc2c6ba9f2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -316,7 +319,7 @@
       <Filter>02. GameObjects\02. Field\Field_Tree</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_TransTool.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\05. TransItem</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\03. TransItem</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Field_Stone.h">
       <Filter>02. GameObjects\02. Field\FieldStone</Filter>
@@ -342,20 +345,17 @@
     <ClInclude Include="..\Public\StateMachine.h">
       <Filter>03. Utility\CharacterState\StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_NoTool.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction\NoTool</Filter>
+    <ClInclude Include="..\Public\PlayerState_ToolBase.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\00. ToolBase</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_AxeAction.h">
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\01. AxeAction</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_ShakeTree.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction\Hand_Shake</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction\TreeShake</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_ChopTree.h">
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\01. AxeAction\Chop_Tree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Axe.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\01. AxeAction\Axe_Idle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Repelled.h">
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\06. Repelled</Filter>
@@ -371,6 +371,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_HandAction.h">
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Axe.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\01. AxeAction\Axe_Idle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -494,7 +497,7 @@
       <Filter>02. GameObjects\02. Field\Field_Tree</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_TransTool.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\05. TransItem</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\03. TransItem</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Field_Stone.cpp">
       <Filter>02. GameObjects\02. Field\FieldStone</Filter>
@@ -517,20 +520,17 @@
     <ClCompile Include="..\Private\StateMachine.cpp">
       <Filter>03. Utility\CharacterState\StateMachine</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_NoTool.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction\NoTool</Filter>
+    <ClCompile Include="..\Private\PlayerState_ToolBase.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\00. ToolBase</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_AxeAction.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\01. AxeAction</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_ShakeTree.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction\Hand_Shake</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction\TreeShake</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_ChopTree.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\01. AxeAction\Chop_Tree</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Axe.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\01. AxeAction\Axe_Idle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Repelled.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\06. Repelled</Filter>
@@ -549,6 +549,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_HandAction.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\00. HandAction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Axe.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolState\01. AxeAction\Axe_Idle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

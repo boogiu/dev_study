@@ -130,7 +130,6 @@ HRESULT CAnimator3D::Change_Animation(string animName, _bool overrideSame, _floa
 		}
 	}
 
-
 	if (m_iCurrentClipIndex == -1) {
 		m_eState = ANIMATOR_STATE::RUNNING;
 		m_iCurrentClipIndex = iter->second;
@@ -172,7 +171,6 @@ HRESULT CAnimator3D::ForceChange_Animation(string animName, _bool overrideSame, 
 		}
 	}
 
-
 	if (m_iCurrentClipIndex == -1) {
 		m_eState = ANIMATOR_STATE::RUNNING;
 		m_iCurrentClipIndex = iter->second;
@@ -210,7 +208,7 @@ HRESULT CAnimator3D::Set_AnimationBlend(string animName, vector<_uint> blendInde
 	}
 
 	if (iter->second == m_iBlendAnimation) {
-		m_fBlendTrackPosition = 0.f;
+		m_fBlendDuration = 0.f;
 		m_eBlendState = BLENDER_STATE::BLEND_IN;
 		m_BlendIndex = blendIndex;
 		return S_OK;
@@ -224,9 +222,22 @@ HRESULT CAnimator3D::Set_AnimationBlend(string animName, vector<_uint> blendInde
 	return S_OK;
 }
 
-HRESULT CAnimator3D::Reset_AnimationBlend()
+HRESULT CAnimator3D::Release_AnimationBlend(vector<_uint> blendIndex)
 {
 	m_eBlendState = BLENDER_STATE::BLEND_OUT;
+	m_BlendIndex = blendIndex;
+	return S_OK;
+}
+
+HRESULT CAnimator3D::Release_AnimationBlend()
+{
+	m_eBlendState = BLENDER_STATE::BLEND_OUT;
+	return S_OK;
+}
+
+HRESULT CAnimator3D::Stop_AnimationBlend()
+{
+	m_eBlendState = BLENDER_STATE::BLEND_PAUSE;
 
 	return S_OK;
 }
@@ -310,6 +321,7 @@ void CAnimator3D::Animation_Run(_float dt)
 	if (m_pAnimLoops[m_iCurrentClipIndex] == false && isAnimEnd) {
 		m_eState = ANIMATOR_STATE::IDLE;
 	}
+
 	Blend_Run(dt);
 }
 
@@ -335,31 +347,7 @@ void CAnimator3D::Animation_Convert(_float dt)
 		m_fPrevTrackPosition,
 		m_fCurrentTrackPosition);
 
-
-	if (m_iBlendAnimation != -1) {
-		if (!m_BlendTransfomationMatices.empty()) {
-			for (size_t i = 0; i < m_BlendIndex.size(); i++)
-			{
-				_uint idx = m_BlendIndex[i];
-				_matrix base = XMLoadFloat4x4(&m_TransfromationMatrices[idx]);
-				_matrix blend = XMLoadFloat4x4(&m_BlendTransfomationMatices[idx]);
-				_vector baseS, baseR, baseT;
-				_vector blendS, blendR, blendT;
-
-				XMMatrixDecompose(&baseS, &baseR, &baseT, base);
-				XMMatrixDecompose(&blendS, &blendR, &blendT, blend);
-
-				_vector blendedS = XMVectorLerp(baseS, blendS, m_fBlendDuration);
-				_vector blendedT = XMVectorLerp(baseT, blendT, m_fBlendDuration);
-				_vector blendedR = XMQuaternionSlerp(baseR, blendR, m_fBlendDuration);
-
-				_matrix BlendedMatrix = XMMatrixAffineTransformation(
-					blendedS, XMVectorSet(0.f, 0.f, 0.f, 1.f), blendedR, blendedT);
-
-				XMStoreFloat4x4(&m_TransfromationMatrices[idx], BlendedMatrix);
-			}
-		}
-	}
+	Blend_Run(dt);
 
 	if (ConvertComplete) {
 		m_fConvertDuration = 0;
@@ -369,6 +357,7 @@ void CAnimator3D::Animation_Convert(_float dt)
 		m_iCurrentClipIndex = m_iNextClipIndex;
 		m_iNextClipIndex = UINT_MAX;
 		isAnimEnd = false;
+
 		if (m_QueuedAnim.IsQueued)
 		{
 			Change_Animation(m_QueuedAnim.Name, m_QueuedAnim.ConvertTime);
@@ -380,65 +369,65 @@ void CAnimator3D::Animation_Convert(_float dt)
 
 void CAnimator3D::Blend_Run(_float dt)
 {
+	if (m_iBlendAnimation == -1)
+		return;
 
-	if (m_iBlendAnimation != -1) {
-		auto& blendClip = m_pAnimClips[m_iBlendAnimation];
-		_float speed = 1 * dt;
+	auto& blendClip = m_pAnimClips[m_iBlendAnimation];
+	_float speed =dt*4;
 
-		if (m_eBlendState == BLENDER_STATE::BLEND_PAUSE)
-			return;
+	if (m_eBlendState == BLENDER_STATE::BLEND_PAUSE)
+		return;
 
-		if (m_eBlendState == BLENDER_STATE::BLEND_IN) {
-			m_fBlendDuration += speed;
-		}
-		if (m_eBlendState == BLENDER_STATE::BLEND_OUT) {
-			m_fBlendDuration -= speed;
-		}
+	if (m_eBlendState == BLENDER_STATE::BLEND_IN) {
+		m_fBlendDuration += speed;
 		if (m_fBlendDuration > 1.f) {
 			m_fBlendDuration = 1.f;
 			m_eBlendState = BLENDER_STATE::RUNNING;
 		}
-
-
-		m_BlendTransfomationMatices = m_TransfromationMatrices;
-
-		m_fBlendTrackPosition = blendClip->TranslateAnimateMatrix(
-			m_BlendTransfomationMatices, m_fBlendTrackPosition,
-			dt, m_pAnimLoops[m_iBlendAnimation], &isBlendAnimEnd);
-
-
-		for (size_t i = 0; i < m_BlendIndex.size(); ++i)
-		{
-			_uint idx = m_BlendIndex[i];
-			_matrix base = XMLoadFloat4x4(&m_TransfromationMatrices[idx]);
-			_matrix blend = XMLoadFloat4x4(&m_BlendTransfomationMatices[idx]);
-			_vector baseS, baseR, baseT;
-			_vector blendS, blendR, blendT;
-
-			XMMatrixDecompose(&baseS, &baseR, &baseT, base);
-			XMMatrixDecompose(&blendS, &blendR, &blendT, blend);
-
-			_vector blendedS = XMVectorLerp(baseS, blendS, m_fBlendDuration);
-			_vector blendedT = XMVectorLerp(baseT, blendT, m_fBlendDuration);
-			_vector blendedR = XMQuaternionSlerp(baseR, blendR, m_fBlendDuration);
-
-			_matrix BlendedMatrix = XMMatrixAffineTransformation(
-				blendedS, XMVectorSet(0.f, 0.f, 0.f, 1.f), blendedR, blendedT);
-
-			XMStoreFloat4x4(&m_TransfromationMatrices[idx], BlendedMatrix);
-		}
-
-
-		if (m_fBlendDuration < 0) {
-			m_fBlendDuration = 0;
+	}
+	else if (m_eBlendState == BLENDER_STATE::BLEND_OUT) {
+		m_fBlendDuration -= speed;
+		if (m_fBlendDuration <= 0.f) {
+			m_fBlendDuration = 0.f;
 			m_BlendIndex.clear();
 			m_BlendTransfomationMatices.clear();
 			m_iBlendAnimation = -1;
 			m_eBlendState = BLENDER_STATE::NONE;
+			return;
 		}
 	}
 
+	// 블렌드 아웃 시에는 업데이트 멈춤
+	if (m_eBlendState != BLENDER_STATE::BLEND_OUT) {
+		m_BlendTransfomationMatices = m_TransfromationMatrices;
+		m_fBlendTrackPosition = blendClip->TranslateAnimateMatrix(
+			m_BlendTransfomationMatices, m_fBlendTrackPosition,
+			dt, m_pAnimLoops[m_iBlendAnimation], &isBlendAnimEnd);
+	}
+
+	// base와 blend 보간
+	for (size_t i = 0; i < m_BlendIndex.size(); ++i)
+	{
+		_uint idx = m_BlendIndex[i];
+		_matrix base = XMLoadFloat4x4(&m_TransfromationMatrices[idx]);
+		_matrix blend = XMLoadFloat4x4(&m_BlendTransfomationMatices[idx]);
+		_vector baseS, baseR, baseT;
+		_vector blendS, blendR, blendT;
+
+		XMMatrixDecompose(&baseS, &baseR, &baseT, base);
+		XMMatrixDecompose(&blendS, &blendR, &blendT, blend);
+
+		_vector blendedS = XMVectorLerp(baseS, blendS, m_fBlendDuration);
+		_vector blendedT = XMVectorLerp(baseT, blendT, m_fBlendDuration);
+		_vector blendedR = XMQuaternionSlerp(baseR, blendR, m_fBlendDuration);
+
+		_matrix blendedM = XMMatrixAffineTransformation(
+			blendedS, XMVectorSet(0.f, 0.f, 0.f, 1.f), blendedR, blendedT);
+
+		XMStoreFloat4x4(&m_TransfromationMatrices[idx], blendedM);
+	}
 }
+
 
 void CAnimator3D::BuildBone()
 {
@@ -507,6 +496,8 @@ void CAnimator3D::Render_GUI()
 			ImGui::SetItemDefaultFocus(); // 선택된 항목에 포커스
 		}
 	}
+
+	ImGui::Text("%.4f", m_fBlendDuration);  
 	ImGui::EndChild();
 
 }

@@ -1,5 +1,5 @@
 #include "Client_Defines.h"
-#include"PlayerState_NoTool.h"
+#include"PlayerState_ToolBase.h"
 #include "Player.h"
 #include "Animator3D.h"
 
@@ -7,25 +7,25 @@
 #include "IInputService.h"
 #include "TileSystem.h"
 
-CPlayerState_NoTool::CPlayerState_NoTool()
+CPlayerState_ToolBase::CPlayerState_ToolBase()
 {
 }
 
-void CPlayerState_NoTool::OnEnter()
+void CPlayerState_ToolBase::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 }
 
-void CPlayerState_NoTool::OnUpdate(_float dt)
+void CPlayerState_ToolBase::OnUpdate(_float dt)
 {
 	
 }
 
-void CPlayerState_NoTool::OnExit()
+void CPlayerState_ToolBase::OnExit()
 {
 }
 
-CState* CPlayerState_NoTool::HandleTransition()
+CState* CPlayerState_ToolBase::HandleTransition()
 {
 	if (m_pPlayer->Get_InteractionPacket().isUsingTool)
 		return nullptr;
@@ -50,16 +50,16 @@ CState* CPlayerState_NoTool::HandleTransition()
 	return nullptr;
 }
 
-void CPlayerState_NoTool::Render_State()
+void CPlayerState_ToolBase::Render_State()
 {
 }
 
-CPlayerState_NoTool* CPlayerState_NoTool::Create()
+CPlayerState_ToolBase* CPlayerState_ToolBase::Create()
 {
-	return new CPlayerState_NoTool;
+	return new CPlayerState_ToolBase;
 }
 
-void CPlayerState_NoTool::Free()
+void CPlayerState_ToolBase::Free()
 {
 	__super::Free();
 }

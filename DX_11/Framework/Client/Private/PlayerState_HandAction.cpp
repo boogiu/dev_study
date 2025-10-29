@@ -36,7 +36,7 @@ CState* CPlayerState_HandAction::HandleTransition()
 		return m_pLayer->Get_State("Action_TreeShake_State");
 	}
 	else {
-		return m_pLayer->Get_State("Movement_Idel_State");
+		return m_pLayer->Get_State("Movement_Idle_State");
 	}
 	
 	return nullptr;

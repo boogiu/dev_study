@@ -21,7 +21,7 @@
 #include	 "PlayerState_Repelled.h"
 #include "PlayerState_Air.h"
 
-#include "PlayerState_NoTool.h"
+#include "PlayerState_ToolBase.h"
 #include "PlayerState_Axe.h"
 #include "PlayerState_Net.h"
 #include "PlayerState_Scoop.h"
@@ -41,6 +41,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	auto Walk = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Walk>("Movement_Walk_State");
 	auto Run = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Run>("Movement_Run_State");
 	auto PickUP = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_PickUp>("Movement_PickUp_State");
+
 	/*여기에 Tool 액션이란 것을 하나 넣어야 하지 않을까. -> */
 	Idle->Set_Owner(m_pOwner);
 	Walk->Set_Owner(m_pOwner);
@@ -48,62 +49,60 @@ HRESULT CPlayerStateMachine::Initialize()
 	PickUP->Set_Owner(m_pOwner);
 
 	/*Tool Action - 툴에 따라 변하는 애들 / 혹은 툴의 블렌딩 여부가 상황에 따라 다른 애들*/
-	auto TRANS_TOOL = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_TransTool>("Action_TransTool_State");
+	auto Trans_Tool = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_TransTool>("Action_TransTool_State");
+	Trans_Tool->Set_Owner(m_pOwner);
 
-	/*Axe_Action*/
-	auto AxeAction = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_AxeAction>("Action_Axe_State");
-	auto TREECHOP = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ChopTree>("Action_TreeChop_State");
-
-	/*Hand_Action*/
-	auto HAND = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_HandAction>("Action_Hand_State");
-	auto TREESHKE = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ShakeTree>("Action_TreeShake_State");
-
-	auto Repell = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Repelled>("Action_Repelled_State");
-	auto Air = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Air>("Action_Air_State");
-
-
-
-	AxeAction->Set_Owner(m_pOwner);
-	TREECHOP->Set_Owner(m_pOwner);
-
-	HAND->Set_Owner(m_pOwner);
-	TREESHKE->Set_Owner(m_pOwner);
-
-	TRANS_TOOL->Set_Owner(m_pOwner);
-
-
-	Repell->Set_Owner(m_pOwner);
-	Air->Set_Owner(m_pOwner);
+	//	/*Axe_Action*/
+	//	auto AxeAction = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_AxeAction>("Action_Axe_State");
+	//	auto TreeChop = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ChopTree>("Action_TreeChop_State");
+	//	
+	//	/*Hand_Action*/
+	//	auto HAND = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_HandAction>("Action_Hand_State");
+	//	auto TreeShake = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ShakeTree>("Action_TreeShake_State");
+	//	
+	//	auto Repell = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Repelled>("Action_Repelled_State");
+	//	auto Air = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Air>("Action_Air_State");
+	//	
+	//	AxeAction->Set_Owner(m_pOwner);
+	//	TreeChop->Set_Owner(m_pOwner);
+	//	
+	//	HAND->Set_Owner(m_pOwner);
+	//	TreeShake->Set_Owner(m_pOwner);
+	//	
+	//	
+	//	
+	//	Repell->Set_Owner(m_pOwner);
+	//	Air->Set_Owner(m_pOwner);
 
 	auto toolLayer = CLayerState::Create();
 	toolLayer->Set_Machine(this);
 	m_LayerStates.emplace(STATE_LAYER::TOOL, toolLayer);
 
-	auto NO_TOOL = m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_NoTool>("Tool_NoTool_State");
+	auto ToolBase = m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_ToolBase>("Tool_Base_State");
 	auto Axe= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Axe>("Tool_Axe_State");
-	auto Net= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Net>("Tool_Net_State");
-	auto Scoop= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Scoop>("Tool_Scoop_State");
+	//auto Net= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Net>("Tool_Net_State");
+	//auto Scoop= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Scoop>("Tool_Scoop_State");
 
-	NO_TOOL->Set_Owner(m_pOwner);
+	ToolBase->Set_Owner(m_pOwner);
 	Axe->Set_Owner(m_pOwner);
-	Net->Set_Owner(m_pOwner);
-	Scoop->Set_Owner(m_pOwner);
+	//Axe->Set_Owner(m_pOwner);
+	//Net->Set_Owner(m_pOwner);
+	//Scoop->Set_Owner(m_pOwner);
 
 
 	m_LayerStates[STATE_LAYER::ACTION]->Excute(Idle);
-	m_LayerStates[STATE_LAYER::TOOL]->Excute(NO_TOOL);
+	m_LayerStates[STATE_LAYER::TOOL]->Excute(ToolBase);
 
 	return S_OK;
 }
 
 void CPlayerStateMachine::Update(_float dt)
 {
-	auto Animator = m_pOwner->Get_Component<CAnimator3D>();
-	Animator->Update_Animation(dt);
-
 	for (auto& LayerState : m_LayerStates) {
 		LayerState.second->Update(dt);
 	}
+	auto Animator = m_pOwner->Get_Component<CAnimator3D>();
+	Animator->Update_Animation(dt);
 }
 
 void CPlayerStateMachine::Request_ChangeState(STATE_LAYER eLayer, const string& NextState)

@@ -1,12 +1,12 @@
 #pragma once
 #include "PlayerState.h"
 NS_BEGIN(Client)
-class CPlayerState_NoTool :
+class CPlayerState_ToolBase :
     public CPlayerState
 {
 private:
-    CPlayerState_NoTool();
-    virtual ~CPlayerState_NoTool() DEFAULT;
+    CPlayerState_ToolBase();
+    virtual ~CPlayerState_ToolBase() DEFAULT;
 
 public:
     virtual void OnEnter();
@@ -22,7 +22,7 @@ private:
     _bool isLooped = { false };
 
 public:
-    static CPlayerState_NoTool* Create();
+    static CPlayerState_ToolBase* Create();
     virtual void Free();
 };
 NS_END

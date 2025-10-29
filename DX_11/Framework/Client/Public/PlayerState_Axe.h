@@ -17,6 +17,8 @@ public:
 public:
     virtual void Render_State();
 
+private:
+    vector<_uint> indexes;
 public:
     static CPlayerState_Axe* Create();
     virtual void Free();

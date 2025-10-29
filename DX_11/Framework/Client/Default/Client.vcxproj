@@ -200,7 +200,7 @@
     <ClInclude Include="..\Public\PlayerState_HandAction.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
     <ClInclude Include="..\Public\PlayerState_Net.h" />
-    <ClInclude Include="..\Public\PlayerState_NoTool.h" />
+    <ClInclude Include="..\Public\PlayerState_ToolBase.h" />
     <ClInclude Include="..\Public\PlayerState_PickUp.h" />
     <ClInclude Include="..\Public\PlayerState_Repelled.h" />
     <ClInclude Include="..\Public\PlayerState_Run.h" />
@@ -260,7 +260,7 @@
     <ClCompile Include="..\Private\PlayerState_HandAction.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
     <ClCompile Include="..\Private\PlayerState_Net.cpp" />
-    <ClCompile Include="..\Private\PlayerState_NoTool.cpp" />
+    <ClCompile Include="..\Private\PlayerState_ToolBase.cpp" />
     <ClCompile Include="..\Private\PlayerState_PickUp.cpp" />
     <ClCompile Include="..\Private\PlayerState_Repelled.cpp" />
     <ClCompile Include="..\Private\PlayerState_Run.cpp" />

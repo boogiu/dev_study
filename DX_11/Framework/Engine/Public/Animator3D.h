@@ -47,7 +47,9 @@ public:
     virtual HRESULT Stop_Animation();
 
     virtual HRESULT Set_AnimationBlend(string animName, vector<_uint> blendIndex);
-    virtual HRESULT Reset_AnimationBlend();
+    virtual HRESULT Release_AnimationBlend(vector<_uint> blendIndex);
+    virtual HRESULT Release_AnimationBlend();
+    virtual HRESULT Stop_AnimationBlend();
 
     _bool isCurrentAnimEnd();
     _bool isOverAnimTiming(_float percent);

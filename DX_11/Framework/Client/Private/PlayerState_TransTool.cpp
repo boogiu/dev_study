@@ -14,7 +14,10 @@ CPlayerState_TransTool::CPlayerState_TransTool()
 
 void CPlayerState_TransTool::OnEnter()
 {
+	//Animator->Release_AnimationBlend();
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	Animator->Release_AnimationBlend();
+
 	auto Pack = m_pPlayer->Get_ItemPacket();
 
 	if (Pack.DstItem.eType == ITEM_TYPE::NONE) {
@@ -32,7 +35,7 @@ void CPlayerState_TransTool::OnUpdate(_float dt)
 	auto& Pack = m_pPlayer->Get_ItemPacket();
 
 	if (!m_bTransed) {
-		if (Animator->isOverAnimTiming(0.5f)) {
+		if (Animator->isOverAnimTiming(0.7f)) {
 			m_pPlayer->Set_CurItemData(Pack.DstItem);
 			m_bTransed = true;
 		}

@@ -24,18 +24,16 @@ void CPlayerState_Axe::OnUpdate(_float dt)
 
 void CPlayerState_Axe::OnExit()
 {
-
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	Animator->Release_AnimationBlend();
 }
 
 CState* CPlayerState_Axe::HandleTransition()
 {
-	if (m_pPlayer->Get_InteractionPacket().isUsingTool)
-		return m_pLayer->Get_State("Tool_NoTool_State");
-
 	ITEM_TYPE nowType = m_pPlayer->Get_ItemPacket().CurItem.eType;
 	if (nowType != ITEM_TYPE::AXE) 
 	{
-		return m_pLayer->Get_State("Tool_NoTool_State");
+		return m_pLayer->Get_State("Tool_Base_State");
 	}
 
 	
