@@ -80,11 +80,12 @@ HRESULT CPlayerStateMachine::Initialize()
 
 	auto ToolBase = m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_ToolBase>("Tool_Base_State");
 	auto Axe= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Axe>("Tool_Axe_State");
-	//auto Net= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Net>("Tool_Net_State");
+	auto Net= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Net>("Tool_Net_State");
 	//auto Scoop= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Scoop>("Tool_Scoop_State");
 
 	ToolBase->Set_Owner(m_pOwner);
 	Axe->Set_Owner(m_pOwner);
+	Net->Set_Owner(m_pOwner);
 	//Axe->Set_Owner(m_pOwner);
 	//Net->Set_Owner(m_pOwner);
 	//Scoop->Set_Owner(m_pOwner);
