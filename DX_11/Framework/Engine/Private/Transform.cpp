@@ -21,6 +21,9 @@ HRESULT CTransform::Initialize_Prototype()
 
 HRESULT CTransform::Initialize(COMPONENT_DESC* pArg)
 {
+	_vector  quaternion = XMQuaternionIdentity();
+	XMStoreFloat4(&m_qRotation, quaternion);
+
 	if (pArg == nullptr)
 		return S_OK;
 
@@ -32,8 +35,13 @@ HRESULT CTransform::Initialize(COMPONENT_DESC* pArg)
 	XMStoreFloat4(&m_vScale, scale);
 
 	/*오일러로 받아서 -> 쿼터니언으로*/
-	_fvector euler = XMVectorSetW(XMLoadFloat3(&desc->vInitialEulerVector), 0.f);
-	_fvector  quaternion = XMQuaternionRotationRollPitchYawFromVector(euler);
+	_vector euler = XMVectorSetW(XMLoadFloat3(&desc->vInitialEulerVector), 0.f);
+	  quaternion = XMQuaternionRotationRollPitchYawFromVector(euler);
+
+	if (XMVector4Equal(quaternion, XMVectorZero()))
+		quaternion = XMQuaternionIdentity();
+
+	quaternion = XMQuaternionNormalize(quaternion); // 항상 정규화
 	XMStoreFloat4(&m_qRotation, quaternion);
 
 	MarkDirty();
@@ -105,7 +113,7 @@ void CTransform::Rotate(const _float3& _eular)
 {
 	_fvector euler = XMVectorSetW(XMLoadFloat3(&_eular), 0.f);
 	_fvector  quaternion = XMQuaternionRotationRollPitchYawFromVector(euler);
-	XMStoreFloat4(&m_qRotation, quaternion);
+	XMStoreFloat4(&m_qRotation, XMQuaternionNormalize(quaternion));
 	MarkDirty();
 
 }

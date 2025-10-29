@@ -35,7 +35,7 @@ private:
 	string m_BaseTypeName = {};
 	_float m_fRotation = {};
 	_uint m_CurState = {};
-
+	TILE_INDEX m_Index = {};
 public:
 	static CAutoTile* Create();
 	CGameObject* Clone(INIT_DESC* pArg) override;

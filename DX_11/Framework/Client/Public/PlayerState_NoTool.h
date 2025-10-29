@@ -1,12 +1,12 @@
 #pragma once
 #include "PlayerState.h"
 NS_BEGIN(Client)
-class CPlayerState_TreeShake :
+class CPlayerState_NoTool :
     public CPlayerState
 {
 private:
-    CPlayerState_TreeShake();
-    virtual ~CPlayerState_TreeShake() DEFAULT;
+    CPlayerState_NoTool();
+    virtual ~CPlayerState_NoTool() DEFAULT;
 
 public:
     virtual void OnEnter();
@@ -20,8 +20,9 @@ public:
 private:
     _float KeepTime = { 0.f };
     _bool isLooped = { false };
+
 public:
-    static CPlayerState_TreeShake* Create();
+    static CPlayerState_NoTool* Create();
     virtual void Free();
 };
 NS_END

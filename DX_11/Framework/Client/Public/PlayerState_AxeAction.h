@@ -1,12 +1,12 @@
 #pragma once
 #include "PlayerState.h"
 NS_BEGIN(Client)
-class CPlayerState_TransItem :
+class CPlayerState_AxeAction :
     public CPlayerState
 {
 private:
-    CPlayerState_TransItem();
-    virtual ~CPlayerState_TransItem() DEFAULT;
+    CPlayerState_AxeAction();
+    virtual ~CPlayerState_AxeAction() DEFAULT;
 
 public:
     virtual void OnEnter();
@@ -18,9 +18,10 @@ public:
     virtual void Render_State();
 
 private:
-    _bool m_bTransed = { false };
+    _float KeepTime = { 0.f };
+    _bool isLooped = { false };
 public:
-    static CPlayerState_TransItem* Create();
+    static CPlayerState_AxeAction* Create();
     virtual void Free();
 };
 NS_END

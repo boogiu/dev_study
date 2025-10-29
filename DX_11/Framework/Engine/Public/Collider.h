@@ -16,7 +16,7 @@ public:
     virtual void Late_Update() PURE;
 
 public:
-   virtual _bool Intersect(CCollider* pOther) PURE;
+   virtual _bool Intersect(COLLIDER_SLOT* pSlot) PURE;
    virtual _bool Has_Desc() PURE;
    virtual void Make_MinMaxCollider(MINMAX_BOX minMax)PURE;
    virtual void Set_ColliderActive(_bool Active);
@@ -24,6 +24,7 @@ public:
 #ifdef _DEBUG
     virtual void Render(PrimitiveBatch<VertexPositionColor>* pBatch, _fvector vColor) PURE;
 #endif
+
 public:
     virtual COLLIDER_TYPE Get_ColliderType() PURE;
     COLLISION_CONTEXT Get_Context() { return m_CollisionContext; };
@@ -36,11 +37,14 @@ public:
 
 public:
     void Render_GUI();
+
+protected:
+    _bool Compare_Same(COLLIDER_SLOT* prev, COLLIDER_SLOT* current);
 protected:
     _int m_SystemIndex = { -1 };
     COLLISION_CONTEXT m_CollisionContext = {};
-    unordered_set<CCollider*> m_prevCollider = {}; //이전 프레임에 부딪힘
-    unordered_set<CCollider*> m_CurrentCollider = {}; //현재 프레임에 부딪힘.
+    unordered_set<COLLIDER_SLOT*> m_prevCollider = {}; //이전 프레임에 부딪힘
+    unordered_set<COLLIDER_SLOT*> m_CurrentCollider = {}; //현재 프레임에 부딪힘.
 
 public:
     virtual void Free() override;

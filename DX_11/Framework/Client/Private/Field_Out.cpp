@@ -60,7 +60,7 @@ HRESULT CField_Out::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mod
 
 	HRESULT hr = Get_Component<CStaticModel>()->Link_Model("GamePlay_Level", modelMapTable[1]);
 	hr= Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);
-	Obj_Type = objHeader.Object_type;
+	m_iObjType = objHeader.Object_type;
 	m_pTransform->TranslateMatrix(XMLoadFloat4x4(&objHeader.vWorldMatrix));
 	if (SUCCEEDED(hr)) {
 		Override_Pass();

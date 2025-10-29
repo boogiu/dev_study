@@ -58,3 +58,23 @@ HRESULT ClientHelper::Add_AnimPathFromDirectory(string directoryPath)
 
 	return S_OK;
 }
+
+HRESULT ClientHelper::Add_TexturePathFromDirectory(string directoryPath)
+{
+	auto pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
+
+	for (const auto& entry : filesystem::directory_iterator(filesystem::path(directoryPath))) {
+		if (!entry.is_regular_file())
+			continue;
+
+		string ext = entry.path().extension().string();
+
+		if (ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".bmp" && ext != ".dds")
+			continue;
+
+		string fileName = entry.path().filename().string();
+		CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(fileName, entry.path().string());
+		}
+	return S_OK;
+}
+

@@ -60,6 +60,14 @@ void CBoneFollower::Set_Offset(_fmatrix Offset)
 	XMStoreFloat4x4(&m_Offset, Offset);
 }
 
+void CBoneFollower::Dettach()
+{
+	 m_pMasterAnimator = { nullptr };
+	 m_pMasterTransform = { nullptr };
+	 FollowingBone = {};
+	 m_Offset = {};
+}
+
 CBoneFollower* CBoneFollower::Create()
 {
 	CBoneFollower* instance = new CBoneFollower();

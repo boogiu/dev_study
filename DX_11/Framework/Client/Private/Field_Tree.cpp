@@ -58,7 +58,7 @@ HRESULT CField_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mo
 
 	HRESULT hr = Get_Component<CModel>()->Link_Model("GamePlay_Level", modelMapTable[1]);
 	hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);
-	Obj_Type = objHeader.Object_type;
+	m_iObjType = objHeader.Object_type;
 	m_pTransform->TranslateMatrix(XMLoadFloat4x4(&objHeader.vWorldMatrix));
 
 	auto vector = Get_Component<CModel>()->Get_MeshBoundingBox();
@@ -72,7 +72,7 @@ HRESULT CField_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mo
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	TILE_INDEX index = tileSystem->Get_IndexByPosition(Get_Position());
 	
-	tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED| TILE_FLAG::FLAG_TOOLINTERACT| TILE_FLAG::FLAG_TREE));
+	tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
 	tileSystem->Set_Material_ID(objHeader.Index, {1,1,0,0});
 
 	return S_OK;

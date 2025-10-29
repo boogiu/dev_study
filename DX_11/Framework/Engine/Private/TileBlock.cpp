@@ -61,7 +61,7 @@ void CTileBlock::Update_Position(TILESYSTEM_INFO& systemInfo)
 	
 	_float3 anchor = {
 		systemInfo.vWorldMin.x + (tileSizeX * m_tIndex.IndexX),
-		systemInfo.vWorldMin.y ,
+		systemInfo.vWorldMin.y+0.05f ,
 		systemInfo.vWorldMin.z + (tileSizeZ * m_tIndex.IndexZ)
 	};
 

@@ -15,7 +15,9 @@ public:
 	virtual TILE_INDEX Register_Tile(class CTileBlock* block, TILE_INDEX index, _bool CanFail)PURE;
 	virtual TILESYSTEM_INFO Get_TileSystemInfo() PURE;
 	virtual _float4 Get_PositionByIndex(TILE_INDEX tileIndex, ANCHOR anchor) PURE;
+	virtual _uint Get_NeighborInfoByIndex(TILE_INDEX index, vector<TILE_INFO>& container) PURE;
 	virtual vector<class CTileBlock*> Get_NeighborByIndex(TILE_INDEX index) PURE;
+
 	virtual vector<TILE_INDEX> Get_IndeciesByArea(_float4 vMin, _float4 vMax) PURE;
 	virtual TILE_INFO Get_InfoByIndex(TILE_INDEX index) PURE;
 	virtual INSTANCE_TILE Get_InstanceInfoByIndex(TILE_INDEX index) PURE;

@@ -253,26 +253,59 @@ TILE_INDEX CTileSystem::Register_Tile(CTileBlock* block, TILE_INDEX index,_bool 
 	}
 }
 
+_uint CTileSystem::Get_NeighborInfoByIndex(TILE_INDEX index, vector<TILE_INFO>& container)
+{
+	if (!Check_ValidIndex(index))
+		return 0;
+
+	container.resize(9, {});
+	_uint NeighborValid = {};
+
+	//UPLEFT, UP, UPRIGHT, LEFT, CENTER, RIGHT, DOWNLEFT, DOWN, DOWNRIGHT,END    
+	if (Get_TileInfoByIndex({ index.IndexX - 1,index.IndexZ + 1 }, container[0]))
+		NeighborValid |= static_cast<_uint>(NEIGHBOR_INDEX::UPLEFT);
+	if (Get_TileInfoByIndex({ index.IndexX,index.IndexZ + 1 }, container[1]))
+		NeighborValid |= static_cast<_uint>(NEIGHBOR_INDEX::UP);
+	if (Get_TileInfoByIndex({ index.IndexX + 1,index.IndexZ + 1 }, container[2]))
+		NeighborValid |= static_cast<_uint>(NEIGHBOR_INDEX::UPRIGHT);
+	if (Get_TileInfoByIndex({ index.IndexX - 1,index.IndexZ }, container[3]))
+		NeighborValid |= static_cast<_uint>(NEIGHBOR_INDEX::LEFT);
+	if (Get_TileInfoByIndex({ index.IndexX,index.IndexZ }, container[4]))
+		NeighborValid |= static_cast<_uint>(NEIGHBOR_INDEX::CENTER);
+	if (Get_TileInfoByIndex({ index.IndexX + 1,index.IndexZ }, container[5]))
+		NeighborValid |= static_cast<_uint>(NEIGHBOR_INDEX::RIGHT);
+	if (Get_TileInfoByIndex({ index.IndexX - 1,index.IndexZ - 1 }, container[6]))
+		NeighborValid |= static_cast<_uint>(NEIGHBOR_INDEX::DOWNLEFT);
+	if (Get_TileInfoByIndex({ index.IndexX ,index.IndexZ - 1 }, container[7]))
+		NeighborValid |= static_cast<_uint>(NEIGHBOR_INDEX::DOWN);
+	if (Get_TileInfoByIndex({ index.IndexX + 1,index.IndexZ - 1 }, container[8]))
+		NeighborValid |= static_cast<_uint>(NEIGHBOR_INDEX::DOWNRIGHT);
+
+	return NeighborValid;
+}
+
 vector<class CTileBlock*> CTileSystem::Get_NeighborByIndex(TILE_INDEX index)
 {
 	vector<class CTileBlock*> neighBorTile;
 
 	if (!Check_ValidIndex(index))
 		return neighBorTile;
+
 	neighBorTile.resize(9, nullptr);
 	//UPLEFT, UP, UPRIGHT, LEFT, CENTER, RIGHT, DOWNLEFT, DOWN, DOWNRIGHT,END    
-	neighBorTile[0] =		Get_TileBlockByIndex({ index.IndexX - 1,			index.IndexZ + 1 });//z¿ß∑Œ xøﬁ;
-	neighBorTile[1] =		Get_TileBlockByIndex({ index.IndexX       ,			index.IndexZ + 1 });
-	neighBorTile[2] =		Get_TileBlockByIndex({ index.IndexX + 1,			index.IndexZ + 1 });
-	neighBorTile[3] =		Get_TileBlockByIndex({ index.IndexX - 1,			index.IndexZ });
-	neighBorTile[4] =		Get_TileBlockByIndex({ index.IndexX,				index.IndexZ });
-	neighBorTile[5] =		Get_TileBlockByIndex({ index.IndexX + 1,			index.IndexZ });
-	neighBorTile[6] =		Get_TileBlockByIndex({ index.IndexX - 1,			index.IndexZ - 1 });
-	neighBorTile[7] =		Get_TileBlockByIndex({ index.IndexX ,				index.IndexZ - 1 });
-	neighBorTile[8] =		Get_TileBlockByIndex({ index.IndexX + 1,			index.IndexZ - 1 });
+	neighBorTile[0] = Get_TileBlockByIndex({ index.IndexX - 1,			index.IndexZ + 1 });//z¿ß∑Œ xøﬁ;
+	neighBorTile[1] = Get_TileBlockByIndex({ index.IndexX       ,			index.IndexZ + 1 });
+	neighBorTile[2] = Get_TileBlockByIndex({ index.IndexX + 1,			index.IndexZ + 1 });
+	neighBorTile[3] = Get_TileBlockByIndex({ index.IndexX - 1,			index.IndexZ });
+	neighBorTile[4] = Get_TileBlockByIndex({ index.IndexX,				index.IndexZ });
+	neighBorTile[5] = Get_TileBlockByIndex({ index.IndexX + 1,			index.IndexZ });
+	neighBorTile[6] = Get_TileBlockByIndex({ index.IndexX - 1,			index.IndexZ - 1 });
+	neighBorTile[7] = Get_TileBlockByIndex({ index.IndexX ,				index.IndexZ - 1 });
+	neighBorTile[8] = Get_TileBlockByIndex({ index.IndexX + 1,			index.IndexZ - 1 });
 
 	return neighBorTile;
 }
+
 
 vector<TILE_INDEX> CTileSystem::Get_IndeciesByArea(_float4 vMin, _float4 vMax)
 {
@@ -328,7 +361,6 @@ HRESULT CTileSystem::Remove_TileFlagByIndex(vector<TILE_INDEX> indices, _uint fl
 		if (!Check_ValidIndex(Index))
 			continue;
 		m_TileInfos[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX].TileFlag &= ~flag;
-
 	}
 	return S_OK;
 }
@@ -360,7 +392,6 @@ _bool CTileSystem::Check_TileFlagByPosition(_float4 WorldPos, _uint flag)
 TILE_INFO CTileSystem::Get_InfoByIndex(TILE_INDEX index)
 {
 	if (!Check_ValidIndex(index)) return TILE_INFO{};
-
 	return m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
 }
 
@@ -395,6 +426,7 @@ HRESULT CTileSystem::Save_TileSystemData(const string& SavePath)
 	for (size_t i = 0; i < infoCount; i++)
 	{
 		ofs.write(reinterpret_cast<const char*>(&m_TileInfos[i]), sizeof(TILE_INFO));
+		ofs.write(reinterpret_cast<const char*>(&m_InstanceTiles[i]), sizeof(INSTANCE_TILE));
 	}
 
 	ofs.close();
@@ -412,9 +444,11 @@ HRESULT CTileSystem::Executer_SystemByData(const string& LoadPath)
 	_uint infoCount = {};
 	ifs.read(reinterpret_cast< char*>(&infoCount), sizeof(_uint));
 	m_TileInfos.resize(infoCount);
+	m_InstanceTiles.resize(infoCount);
 	for (size_t i = 0; i < infoCount; i++)
 	{
 		ifs.read(reinterpret_cast< char*>(&m_TileInfos[i]), sizeof(TILE_INFO));
+		ifs.read(reinterpret_cast<char*>(&m_InstanceTiles[i]), sizeof(INSTANCE_TILE));
 	}
 	ifs.close();
 	return S_OK;
@@ -427,6 +461,16 @@ CTileBlock* CTileSystem::Get_TileBlockByIndex(TILE_INDEX index)
 		return nullptr;
 
 	return m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX].pTileBlock;
+}
+
+_bool CTileSystem::Get_TileInfoByIndex(TILE_INDEX index, TILE_INFO& info)
+{
+	if (!Check_ValidIndex(index))
+		return false;
+
+	info= m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
+
+	return true;
 }
 
 _bool CTileSystem::Check_ValidIndex(TILE_INDEX index)
@@ -446,8 +490,6 @@ TILE_INFO CTileSystem::Find_Info(TILE_INDEX index)
 
 	return m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
 }
-
-
 
 CTileSystem* CTileSystem::Create(const TILESYSTEM_INFO& tileInfo)
 {

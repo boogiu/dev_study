@@ -22,6 +22,8 @@ public:
     void Late_Update(_float dt) override;
     virtual void Render_GUI();
 
+private:
+    void AdjustByItem(ITEM_TYPE type);
 public:
     void Set_Item(ITEM_DATA_DESC data);
 public:

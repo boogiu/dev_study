@@ -34,22 +34,28 @@ HRESULT CCollisionSystem::Initialize()
 
 void CCollisionSystem::Update(_float dt)
 {
+	Clean_Up();
 
-	for (auto& col : m_Colliders)
-		col.pCollider->Update();
+	for (auto& col : m_Colliders) {
+		if(col.pCollider&&col.bActive&&col.pCollider->Get_Active())
+			col.pCollider->Update();
+	}
 
 	MakeCandidate();
+
 	for (size_t i = 0; i < m_CandidateCollision.size(); i++)
 	{
 		_int firstIndex = m_CandidateCollision[i].first;
 		_int SecondIndex = m_CandidateCollision[i].second;
 
-		m_Colliders[firstIndex].pCollider->Intersect(m_Colliders[SecondIndex].pCollider);
-		m_Colliders[SecondIndex].pCollider->Intersect(m_Colliders[firstIndex].pCollider);
+		m_Colliders[firstIndex].pCollider->Intersect(&m_Colliders[SecondIndex]);
+		m_Colliders[SecondIndex].pCollider->Intersect(&m_Colliders[firstIndex]);
 	}
 
-	for (auto& col : m_Colliders)
-		col.pCollider->Late_Update();
+	for (auto& col : m_Colliders) {
+		if (col.pCollider && col.bActive && col.pCollider->Get_Active())
+			col.pCollider->Late_Update();
+	}
 }
 
 _int CCollisionSystem::RegisterCollider(CCollider* pCollider, _int Index)
@@ -65,18 +71,18 @@ _int CCollisionSystem::RegisterCollider(CCollider* pCollider, _int Index)
 		if (m_Colliders[i].pCollider == nullptr)
 		{
 			m_Colliders[i].pCollider = pCollider;
-			
 			m_Colliders[i].bActive = pCollider->Has_Desc();
+			m_Colliders[i].iGeneration ++;
 			return static_cast<_int>(i);
 		}
 	}
 
-	COLLIDER_INFO info{};
+	COLLIDER_SLOT info{};
 	info.pCollider = pCollider;
 	info.bActive = pCollider->Has_Desc();
-
+	info.iGeneration = 1;
 	m_Colliders.push_back(info);
-
+	Safe_AddRef(info.pCollider);
 	return static_cast<_int>(m_Colliders.size()-1);
 }
 
@@ -92,7 +98,7 @@ void CCollisionSystem::UnregisterCollider(CCollider* pCollider, _int Index)
 	}
 
 	else {
-		m_Colliders[Index].pCollider = nullptr;
+		/*여기서 세이프 릴리즈 하면 재귀 호출  되어서 스택 오버플로우 남*/
 		m_Colliders[Index].bActive = false;
 	}
 }
@@ -135,10 +141,27 @@ void CCollisionSystem::MakeCandidate()
 	for (size_t i = 0; i < m_Colliders.size(); i++)
 	{
 		if (m_Colliders[i].bActive == false) continue;
+		if (m_Colliders[i].pCollider->Get_Active() == false) continue;
+
 		for (size_t j = i+1; j < m_Colliders.size(); j++)
 		{
 			if (m_Colliders[j].bActive == false) continue;
+			if (m_Colliders[j].pCollider->Get_Active() == false) continue;
+
 			m_CandidateCollision.emplace_back(i, j);
+		}
+	}
+}
+
+void CCollisionSystem::Clean_Up()
+{
+	for (auto& col : m_Colliders) {
+		if (!col.pCollider) continue;
+
+		if (false == col.pCollider->Get_Active()) {
+			Safe_Release(col.pCollider);
+			col.pCollider = nullptr;
+			col.bActive = false;
 		}
 	}
 }
@@ -185,6 +208,10 @@ void CCollisionSystem::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
+	for (auto& slots : m_Colliders)
+	{
+		Safe_Release(slots.pCollider);
+	}
 	m_Colliders.clear();
 
 #ifdef _DEBUG

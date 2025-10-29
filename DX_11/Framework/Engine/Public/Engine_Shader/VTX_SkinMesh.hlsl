@@ -1,4 +1,5 @@
 #include "Shader_Define.hlsl"
+float2 leafPalette = { 0.25,0.3};
 
 struct VS_IN
 {
@@ -119,10 +120,30 @@ PS_OUT PS_TREE(PS_IN In)
     vector vMixture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vAlbGry = AlbedoGrayTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vMtrlDiffuse = g_PaletteTexture.Sample(DefaultSampler, float2((1 - vAlbGry.r), 0.6));
+    
+     Out.vColor =vMtrlDiffuse;
+    
+    return Out;
+}
+
+PS_OUT PS_LEAF(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vMixture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vAlbGry = AlbedoGrayTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = g_PaletteTexture.Sample(DefaultSampler, leafPalette * (1 - vAlbGry.r));
     vector vOpacity = OpacityTexture.Sample(DefaultSampler, In.vTexcoord);
     
-     Out.vColor = (vOpacity.a) * vMtrlDiffuse;
-    
+    if (vOpacity.r > 0)
+    {
+        Out.vColor = vMtrlDiffuse;
+
+    }
+    else
+        discard;
+
+
     return Out;
 }
 
@@ -162,6 +183,14 @@ technique11 DefaultTechnique
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_TREE();
+    }
+    pass Leaf
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        PixelShader = compile ps_5_0 PS_LEAF();
     }
 }
 

@@ -90,10 +90,10 @@ _bool CPlayerState_Movement::CheckMovable(_float2& InputAxis)
 	if (blockX)
 	{ 
 		tmpAxis.x = 0.f;
-		tmpAxis.y = 0.1f *(InputAxis.x <0? -1 : 1);
+		tmpAxis.y -= 0.2f *(InputAxis.x <0? -1 : 1);
 	}
 	if (blockZ) { 
-		tmpAxis.x = 0.1f * (InputAxis.y < 0 ? -1 : 1);
+		tmpAxis.x -= 0.2f * (InputAxis.y < 0 ? -1 : 1);
 		tmpAxis.y = 0.0f;
 	}
 

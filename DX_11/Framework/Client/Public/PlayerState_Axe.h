@@ -17,8 +17,6 @@ public:
 public:
     virtual void Render_State();
 
-private:
-    _bool isForwardTree = {};
 public:
     static CPlayerState_Axe* Create();
     virtual void Free();

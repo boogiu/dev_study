@@ -6,7 +6,7 @@
 #include "GameInstance.h"
 #include "StaticModel.h"
 #include "TileBlock.h"
-#include "GameInstance.h"
+#include "ITileService.h"
 #include "IResourceService.h"
 #include "Transform.h"
 
@@ -36,17 +36,16 @@ HRESULT CAutoTile::Initialize(INIT_DESC* pArg)
 
 	TILE_TYPE_DESC* tileDesc = static_cast<TILE_TYPE_DESC*>(pArg);
 	m_BaseTypeName = tileDesc->TypeName;
-	TILE_INDEX index;
 
 	Link_Data(m_BaseTypeName + "0A_0");
-	index = Get_Component<CTileBlock>()->On_Grid(tileDesc->index, m_BaseTypeName, true);
-	if (index.IndexX < 0 || index.IndexZ < 0) {
+	m_Index= Get_Component<CTileBlock>()->On_Grid(tileDesc->index, m_BaseTypeName, true);
+	if (m_Index.IndexX < 0 || m_Index.IndexZ < 0) {
 		return E_FAIL;
 	}
 
 	_uint N_State = Get_Component<CTileBlock>()->Get_NeigborState();
 	Update_State(N_State);
-	if (index.IndexX < 0 || index.IndexZ < 0) {
+	if (m_Index.IndexX < 0 || m_Index.IndexZ < 0) {
 		return E_FAIL;
 	}
 
@@ -96,6 +95,11 @@ HRESULT CAutoTile::Link_Data(const string& folderName)
 	if (SUCCEEDED(hr)) {
 		ModelName = folderName + ".model";
 		MaterialName = folderName + ".mat";
+	}
+	if (folderName.find("River") != string::npos) {
+		auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
+		tileSys->Set_Material_ID(m_Index, { 0,0,0,0 });
+		tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
 	}
 
 	return hr;

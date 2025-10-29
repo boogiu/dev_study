@@ -208,6 +208,7 @@ void CObjectContainer::Free()
 	if (m_ChildrenObjects.empty()) return;
 
 	for (auto& child : m_ChildrenObjects) {
+		if(child)
 		child->Get_Component<CChild>()->Dettach_Parent();
 		Safe_Release(child);
 	}

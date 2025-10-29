@@ -65,7 +65,7 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 				Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldStone" })
 				.Build(iter->second[0]);
 		}
-		else  if (objHeader.Object_type > 72 && objHeader.Object_type < 85) {
+		else  if (objHeader.Object_type > 72 && objHeader.Object_type < 86) {
 			pObject =
 				Builder::Create_Object({ Desc.LevelTag , "GameObject_PlantTree" })
 				.Build(iter->second[0]);
@@ -91,7 +91,7 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 
 		CGameObject* pObject =
 			Builder::Create_Object({ "GamePlay_Level", "GamePlay_GameObject_AutoTile"})
-			.Position({ 0,0,0 })
+			.Position({ 0,0.1f,0 })
 			.Scale({ 1,1,1 })
 			.Add_ObjDesc(objDesc)
 			.Build(objDesc->TypeName);

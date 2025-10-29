@@ -25,6 +25,7 @@ public:
     virtual TILE_INDEX Get_IndexByPosition(_float4 WorldPos) override;
     virtual _float4 Get_PositionByIndex(TILE_INDEX tileIndex, ANCHOR anchor ) override;
     virtual TILE_INDEX Register_Tile(class CTileBlock* block, TILE_INDEX index, _bool CanFail)override;
+    virtual _uint Get_NeighborInfoByIndex(TILE_INDEX index, vector<TILE_INFO>& container) override;
     virtual vector<class CTileBlock*> Get_NeighborByIndex(TILE_INDEX index) override;
 
     virtual vector<TILE_INDEX> Get_IndeciesByArea(_float4 vMin, _float4 vMax) override;
@@ -45,6 +46,7 @@ public:
 
 private:
     class CTileBlock* Get_TileBlockByIndex(TILE_INDEX index);
+    _bool Get_TileInfoByIndex(TILE_INDEX index, TILE_INFO& info);
     _bool Check_ValidIndex(TILE_INDEX index);
     TILE_INFO Find_Info(TILE_INDEX index);
 

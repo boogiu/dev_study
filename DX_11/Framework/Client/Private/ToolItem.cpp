@@ -64,6 +64,26 @@ void CToolItem::Late_Update(_float dt)
 void CToolItem::Render_GUI()
 {
 	Get_Component<COBB_Collider>()->Render_GUI();
+	
+	//ImGui::InputFloat3()
+}
+
+void CToolItem::AdjustByItem(ITEM_TYPE type)
+{
+	m_pTransform->Reset_Rotation();
+	m_pTransform->Set_Pos({0,0,0});
+
+	switch (type) {
+		case ITEM_TYPE::AXE:
+			m_pTransform->Override_Rotation({0,1,0,0}, XMConvertToRadians(180));
+			break;
+		case ITEM_TYPE::SCOOP:
+			m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
+			break;
+		case ITEM_TYPE::NET:
+			m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
+			break;
+	}
 }
 
 void CToolItem::Set_Item(ITEM_DATA_DESC data)
@@ -75,6 +95,7 @@ void CToolItem::Set_Item(ITEM_DATA_DESC data)
 		return;
 	}
 	else {
+		AdjustByItem(data.eType);
 		Get_Component<CModel>()->Set_Active(true);
 	}
 	Get_Component<CModel>()->Link_Model("GamePlay_Level", data.modelName);

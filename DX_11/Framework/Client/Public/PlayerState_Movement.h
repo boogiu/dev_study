@@ -17,9 +17,6 @@ public:
 public:
     _bool isFliping() { return m_bFliping; }
     _bool CheckMovable(_float2& InputAxis);
-
-    _float2 ComputeSlide(_float2 input, const _float3& wallNormal);
-
     _float Get_CurrentDegree() { return m_fTurnDegree; };
     _float Get_TargetDegree() { return m_fTargetDegree; };
 
@@ -37,6 +34,7 @@ private:
     _float m_fTargetDegree = {};
     _float m_fPlayerHeight = {};
     _bool m_bFliping = { false };
+   
 public:
     static CPlayerState_Movement* Create();
     virtual void Free();

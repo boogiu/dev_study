@@ -20,6 +20,10 @@ HRESULT CChild::Initialize_Prototype()
 
 HRESULT CChild::Initialize(COMPONENT_DESC* pArg)
 {
+	if (pArg != nullptr)
+	{
+		Set_Parent(static_cast<PARENT_DESC*>(pArg)->pParent);
+	}
 	return S_OK;
 }
 

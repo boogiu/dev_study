@@ -106,7 +106,7 @@ void CAnimator3D::Update_Animation(_float dt)
 	BuildBone();
 }
 
-void CAnimator3D::Chane_Animation(_uint index, _float convertDuration)
+void CAnimator3D::Change_Animation(_uint index, _float convertDuration)
 {
 	if (index >= m_pAnimClips.size()) return;
 
@@ -117,7 +117,7 @@ void CAnimator3D::Chane_Animation(_uint index, _float convertDuration)
 	m_fConvertDuration = convertDuration;
 }
 
-HRESULT CAnimator3D::Chane_Animation(string animName, _bool overrideSame, _float convertDuration)
+HRESULT CAnimator3D::Change_Animation(string animName, _bool overrideSame, _float convertDuration)
 {
 	auto iter = m_pAnimNames.find(animName);
 
@@ -159,7 +159,7 @@ HRESULT CAnimator3D::Chane_Animation(string animName, _bool overrideSame, _float
 	return S_OK;
 }
 
-HRESULT CAnimator3D::ForceChane_Animation(string animName, _bool overrideSame, _float convertDuration)
+HRESULT CAnimator3D::ForceChange_Animation(string animName, _bool overrideSame, _float convertDuration)
 {
 	auto iter = m_pAnimNames.find(animName);
 
@@ -307,63 +307,10 @@ void CAnimator3D::Animation_Run(_float dt)
 		m_TransfromationMatrices, m_fCurrentTrackPosition,
 		dt, m_pAnimLoops[m_iCurrentClipIndex], &isAnimEnd);
 
-	if (m_iBlendAnimation != -1) {
-		auto& blendClip = m_pAnimClips[m_iBlendAnimation];
-
-		_float speed = 3* dt;
-
-		if (m_eBlendState == BLENDER_STATE::BLEND_IN) {
-			m_fBlendDuration += speed;
-		}
-		if (m_eBlendState == BLENDER_STATE::BLEND_OUT) {
-			m_fBlendDuration -= speed ;
-		}
-		if (m_fBlendDuration > 1.f) {
-			m_fBlendDuration = 1.f;
-			m_eBlendState = BLENDER_STATE::RUNNING;
-		}
-
-		m_BlendTransfomationMatices = m_TransfromationMatrices;
-
-		m_fBlendTrackPosition = blendClip->TranslateAnimateMatrix(
-			m_BlendTransfomationMatices, m_fBlendTrackPosition,
-			dt, m_pAnimLoops[m_iBlendAnimation], &isBlendAnimEnd);
-
-
-		for (size_t i = 0; i < m_BlendIndex.size(); ++i)
-		{
-			_uint idx = m_BlendIndex[i];
-			_matrix base = XMLoadFloat4x4(&m_TransfromationMatrices[idx]);
-			_matrix blend = XMLoadFloat4x4(&m_BlendTransfomationMatices[idx]);
-			_vector baseS, baseR, baseT;
-			_vector blendS, blendR, blendT;
-
-			XMMatrixDecompose(&baseS, &baseR, &baseT, base);
-			XMMatrixDecompose(&blendS, &blendR, &blendT, blend);
-
-			_vector blendedS = XMVectorLerp(baseS, blendS, m_fBlendDuration);
-			_vector blendedT = XMVectorLerp(baseT, blendT, m_fBlendDuration);
-			_vector blendedR = XMQuaternionSlerp(baseR, blendR, m_fBlendDuration);
-
-			_matrix BlendedMatrix = XMMatrixAffineTransformation(
-				blendedS, XMVectorSet(0.f, 0.f, 0.f, 1.f), blendedR, blendedT);
-
-			XMStoreFloat4x4(&m_TransfromationMatrices[idx], BlendedMatrix);
-		}
-
-
-		if (m_fBlendDuration < 0) {
-			m_fBlendDuration = 0;
-			m_BlendIndex.clear();
-			m_BlendTransfomationMatices.clear();
-			m_iBlendAnimation = -1;
-			m_eBlendState = BLENDER_STATE::NONE;
-		}
-	}
-
 	if (m_pAnimLoops[m_iCurrentClipIndex] == false && isAnimEnd) {
 		m_eState = ANIMATOR_STATE::IDLE;
 	}
+	Blend_Run(dt);
 }
 
 void CAnimator3D::Animation_Convert(_float dt)
@@ -424,8 +371,70 @@ void CAnimator3D::Animation_Convert(_float dt)
 		isAnimEnd = false;
 		if (m_QueuedAnim.IsQueued)
 		{
-			Chane_Animation(m_QueuedAnim.Name, m_QueuedAnim.ConvertTime);
+			Change_Animation(m_QueuedAnim.Name, m_QueuedAnim.ConvertTime);
 			m_QueuedAnim.IsQueued = false;
+		}
+	}
+
+}
+
+void CAnimator3D::Blend_Run(_float dt)
+{
+
+	if (m_iBlendAnimation != -1) {
+		auto& blendClip = m_pAnimClips[m_iBlendAnimation];
+		_float speed = 1 * dt;
+
+		if (m_eBlendState == BLENDER_STATE::BLEND_PAUSE)
+			return;
+
+		if (m_eBlendState == BLENDER_STATE::BLEND_IN) {
+			m_fBlendDuration += speed;
+		}
+		if (m_eBlendState == BLENDER_STATE::BLEND_OUT) {
+			m_fBlendDuration -= speed;
+		}
+		if (m_fBlendDuration > 1.f) {
+			m_fBlendDuration = 1.f;
+			m_eBlendState = BLENDER_STATE::RUNNING;
+		}
+
+
+		m_BlendTransfomationMatices = m_TransfromationMatrices;
+
+		m_fBlendTrackPosition = blendClip->TranslateAnimateMatrix(
+			m_BlendTransfomationMatices, m_fBlendTrackPosition,
+			dt, m_pAnimLoops[m_iBlendAnimation], &isBlendAnimEnd);
+
+
+		for (size_t i = 0; i < m_BlendIndex.size(); ++i)
+		{
+			_uint idx = m_BlendIndex[i];
+			_matrix base = XMLoadFloat4x4(&m_TransfromationMatrices[idx]);
+			_matrix blend = XMLoadFloat4x4(&m_BlendTransfomationMatices[idx]);
+			_vector baseS, baseR, baseT;
+			_vector blendS, blendR, blendT;
+
+			XMMatrixDecompose(&baseS, &baseR, &baseT, base);
+			XMMatrixDecompose(&blendS, &blendR, &blendT, blend);
+
+			_vector blendedS = XMVectorLerp(baseS, blendS, m_fBlendDuration);
+			_vector blendedT = XMVectorLerp(baseT, blendT, m_fBlendDuration);
+			_vector blendedR = XMQuaternionSlerp(baseR, blendR, m_fBlendDuration);
+
+			_matrix BlendedMatrix = XMMatrixAffineTransformation(
+				blendedS, XMVectorSet(0.f, 0.f, 0.f, 1.f), blendedR, blendedT);
+
+			XMStoreFloat4x4(&m_TransfromationMatrices[idx], BlendedMatrix);
+		}
+
+
+		if (m_fBlendDuration < 0) {
+			m_fBlendDuration = 0;
+			m_BlendIndex.clear();
+			m_BlendTransfomationMatices.clear();
+			m_iBlendAnimation = -1;
+			m_eBlendState = BLENDER_STATE::NONE;
 		}
 	}
 
@@ -482,7 +491,7 @@ void CAnimator3D::Render_GUI()
 
 		if (ImGui::Selectable(m_pAnimClips[i]->Get_Name().c_str(), isSelected, 0, ImVec2{ childWidth * 0.50f, textLineHeight }))
 		{
-			Chane_Animation(i);
+			Change_Animation(i);
 		}
 		ImGui::PopID();
 		ImGui::SameLine();

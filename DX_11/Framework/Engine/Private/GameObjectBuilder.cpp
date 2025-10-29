@@ -11,6 +11,10 @@
 #include "Model.h"
 #include "Light.h"
 #include "AABB_Collider.h"
+#include "OBB_Collider.h"
+#include "Sphere_Collider.h"
+#include "Child.h"
+
 CGameObjectBuilder::CGameObjectBuilder(const CLONE_DESC& _cloneDesc)
 	:m_pGameInstance(CGameInstance::GetInstance())
 {
@@ -122,6 +126,27 @@ CGameObjectBuilder& CGameObjectBuilder::AABB_Collider(const AABB_COLLIDER_DESC& 
 {
 	AABB_COLLIDER_DESC* AABB_Desc = new AABB_COLLIDER_DESC(desc);
 	m_CompDesc.emplace(type_index(typeid(CAABB_Collider)), AABB_Desc);
+	return *this;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::OBB_Collider(const OBB_COLLIDER_DESC& desc)
+{
+	OBB_COLLIDER_DESC* OBB_Desc = new OBB_COLLIDER_DESC(desc);
+	m_CompDesc.emplace(type_index(typeid(COBB_Collider)), OBB_Desc);
+	return *this;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::Sphere_Collider(const SPHERE_COLLIDER_DESC& desc)
+{
+	SPHERE_COLLIDER_DESC* SPHERE_desc = new SPHERE_COLLIDER_DESC(desc);
+	m_CompDesc.emplace(type_index(typeid(CSphere_Collider)), SPHERE_desc);
+	return *this;
+}
+
+CGameObjectBuilder& CGameObjectBuilder::Set_Parent(const PARENT_DESC& parent)
+{
+	PARENT_DESC* parentDesc = new PARENT_DESC(parent);
+	m_CompDesc.emplace(type_index(typeid(CChild)), parentDesc);
 	return *this;
 }
 

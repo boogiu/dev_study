@@ -40,10 +40,34 @@ void CCollider::Render_GUI()
 
 }
 
+_bool CCollider::Compare_Same(COLLIDER_SLOT* prev, COLLIDER_SLOT* current)
+{
+	if (prev->bActive == false) {
+		return false;
+	}
+	if (current->bActive == false) {
+		return false;
+	}
+	if (prev->pCollider->Get_Active() == false) {
+		return false;
+	}
+	if (current->pCollider->Get_Active() == false) {
+		return false;
+	}
+
+	if (prev->iGeneration != current->iGeneration)
+		return false;
+	return true;
+}
+
 void CCollider::Free()
 {
 	__super::Free();
-	 CGameInstance::GetInstance()->Get_CollisionSystem()->UnregisterCollider(this,m_SystemIndex);
+
+	m_CurrentCollider.clear();
+	m_prevCollider.clear();
+
+	CGameInstance::GetInstance()->Get_CollisionSystem()->UnregisterCollider(this,m_SystemIndex);
 }
 
 void CCollider::Set_ColliderActive(_bool Active)

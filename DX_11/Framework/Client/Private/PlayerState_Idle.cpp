@@ -4,6 +4,8 @@
 #include "Animator3D.h"
 #include "GameInstance.h"
 #include "IInputService.h"
+#include "ITileService.h"
+#include "PlayerStateMachine.h"
 
 CPlayerState_Idle::CPlayerState_Idle()
 {
@@ -12,14 +14,11 @@ CPlayerState_Idle::CPlayerState_Idle()
 void CPlayerState_Idle::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->ForceChane_Animation("Base_Wait.anim");
+	Animator->ForceChange_Animation("Base_Wait.anim",false);
 }
 
 void CPlayerState_Idle::OnUpdate(_float dt)
 {
-	/*Run Animation*/
-	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Update_Animation(dt);
   
 }
 
@@ -29,21 +28,35 @@ void CPlayerState_Idle::OnExit()
 
 CState* CPlayerState_Idle::HandleTransition()
 {
-
-	_float2 InputAxis = m_pPlayer->Get_InputAxis();
-	auto inpuDev = CGameInstance::GetInstance()->Get_InputDev();
-
-	 if (inpuDev->Key_Tap(VK_SPACE)) {
-		return m_pHFSM->Get_State("Tool_Base_State");
+	CPlayer::MovementPacket tPacket = m_pPlayer->Get_MovementPacket();
+	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	
+	 if (fabs(tPacket.vInputAxis.x) > 0 || fabs(tPacket.vInputAxis.y) > 0) {
+		 if(tPacket.bRunning)
+			 return m_pLayer->Get_State("Movement_Run_State");
+		 else
+			return m_pLayer->Get_State("Movement_Walk_State");
 	}
 
-	 else if (fabs(InputAxis.x) > 0 || fabs(InputAxis.y) > 0) {
+	 auto TilePack = m_pPlayer->Get_TileInfoPacket();
+	 _uint Flag = TilePack.infos[Get_Index(NEIGHBOR_INDEX::UP)].TileFlag;
+
+	 auto ItemPack = m_pPlayer->Get_ItemPacket();
+
+	 if (InputDev->Key_Down(VK_SPACE)) { 
+		 return m_pLayer->Get_State("Action_Air_State");
+		 //if ((Flag & static_cast<_uint>(TILE_FLAG::FLAG_ONITEM)) != 0) {
+		//	 return m_pLayer->Get_State("Action_PickUp_State");
+		 //}
+		 //else if (ItemPack.CurItem.eType == ITEM_TYPE::NONE) {
+		//	 return m_pLayer->Get_State("Action_Hand_State");
+		 //}
+		 //else if (ItemPack.CurItem.eType == ITEM_TYPE::AXE) {
+		//	 return m_pLayer->Get_State("Action_Axe_State");
+		 //}
 		
-		if (!inpuDev->Key_Down(VK_SHIFT))
-			return m_pHFSM->Get_State("Movement_Walk_State");
-		else
-			return m_pHFSM->Get_State("Movement_Run_State");
-	}
+	 }
 	return nullptr;
 }
 

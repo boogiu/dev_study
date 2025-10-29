@@ -48,7 +48,7 @@ void CLoadAnimator3D::Render_GUI()
 		string key = "Anim_" + to_string(i);
 		if (ImGui::Selectable(key.c_str(), isSelected, 0, ImVec2{ childWidth * 0.50f, textLineHeight }))
 		{
-			Chane_Animation(i);
+			Change_Animation(i);
 		}
 		ImGui::PopID();
 

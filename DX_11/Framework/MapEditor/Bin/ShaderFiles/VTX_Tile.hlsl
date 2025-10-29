@@ -191,18 +191,23 @@ PS_OUT PS_EDGE(PS_IN In)
 PS_OUT PS_TILE_INSTANCE(PS_INSTATNCE_IN In)
 {
     PS_OUT Out;
-    if (In.iMtlType.y == 0.f)
+    //if (In.iMtlType.y == 0.f)
+    //{
+    //    discard;
+    //    Out.vColor = float4(0.5f, 0.f, 0.f, 0.2f);
+    //    return Out;
+    //}
+    //
+    //if (In.iMtlType.y <0.f)
+    //{
+    //    discard;
+    //    Out.vColor = float4(0.f, 0.5f, 0.f, 0.2f);
+    //    return Out;
+    //}
+    if (In.iMtlType.x == 0.f)
     {
-        Out.vColor = float4(0.5f, 0.f, 0.f, 0.2f);
-        return Out;
+        discard;
     }
-
-    if (In.iMtlType.y <0.f)
-    {
-        Out.vColor = float4(0.f, 0.5f, 0.f, 0.2f);
-        return Out;
-    }
-    
     vector Diffuse;
     float2 worldSize = vMax - vMin;
     float2 WorldUV = (In.vWorldPos.xz - vMin) / worldSize;
@@ -241,9 +246,9 @@ technique11 DefaultTechnique
     }
     pass Instancing
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Wireframe);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_INSTANCE();
         PixelShader = compile ps_5_0 PS_TILE_INSTANCE();
     }

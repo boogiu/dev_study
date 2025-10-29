@@ -112,6 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../../EngineSDk/Inc/;../Public/;../../EngineSDk/Inc/GUI_Inc/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -181,28 +182,35 @@
     <ClInclude Include="..\Public\GamePlayLevel.h" />
     <ClInclude Include="..\Public\HairCapParts.h" />
     <ClInclude Include="..\Public\HairParts.h" />
+    <ClInclude Include="..\Public\LayerState.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\LoadingLevel.h" />
     <ClInclude Include="..\Public\LogoLevel.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MapLoader.h" />
+    <ClInclude Include="..\Public\Plant_Fruit.h" />
     <ClInclude Include="..\Public\Plant_Tree.h" />
     <ClInclude Include="..\Public\Player.h" />
-    <ClInclude Include="..\Public\PlayerHFSM.h" />
     <ClInclude Include="..\Public\PlayerPart_Hand.h" />
     <ClInclude Include="..\Public\PlayerState.h" />
     <ClInclude Include="..\Public\PlayerStateMachine.h" />
+    <ClInclude Include="..\Public\PlayerState_Air.h" />
     <ClInclude Include="..\Public\PlayerState_Axe.h" />
+    <ClInclude Include="..\Public\PlayerState_ChopTree.h" />
+    <ClInclude Include="..\Public\PlayerState_HandAction.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
-    <ClInclude Include="..\Public\PlayerState_Interaction.h" />
-    <ClInclude Include="..\Public\PlayerState_Movement.h" />
+    <ClInclude Include="..\Public\PlayerState_Net.h" />
+    <ClInclude Include="..\Public\PlayerState_NoTool.h" />
+    <ClInclude Include="..\Public\PlayerState_PickUp.h" />
+    <ClInclude Include="..\Public\PlayerState_Repelled.h" />
     <ClInclude Include="..\Public\PlayerState_Run.h" />
-    <ClInclude Include="..\Public\PlayerState_Tool.h" />
-    <ClInclude Include="..\Public\PlayerState_Transfer.h" />
-    <ClInclude Include="..\Public\PlayerState_TransItem.h" />
-    <ClInclude Include="..\Public\PlayerState_TreeShake.h" />
+    <ClInclude Include="..\Public\PlayerState_Scoop.h" />
+    <ClInclude Include="..\Public\PlayerState_ShakeTree.h" />
+    <ClInclude Include="..\Public\PlayerState_TransTool.h" />
+    <ClInclude Include="..\Public\PlayerState_AxeAction.h" />
     <ClInclude Include="..\Public\PlayerState_Walk.h" />
     <ClInclude Include="..\Public\State.h" />
+    <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\Public\Target_Camera.h" />
     <ClInclude Include="..\PUblic\ToolItem.h" />
     <ClInclude Include="Client.h" />
@@ -234,28 +242,36 @@
     <ClCompile Include="..\Private\GamePlayLevel.cpp" />
     <ClCompile Include="..\Private\HairCapParts.cpp" />
     <ClCompile Include="..\Private\HairParts.cpp" />
+    <ClCompile Include="..\Private\LayerState.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\LoadingLevel.cpp" />
     <ClCompile Include="..\Private\LogoLevel.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapLoader.cpp" />
+    <ClCompile Include="..\Private\Plant_Fruit.cpp" />
     <ClCompile Include="..\Private\Plant_Tree.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
-    <ClCompile Include="..\Private\PlayerHFSM.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Hand.cpp" />
     <ClCompile Include="..\Private\PlayerState.cpp" />
     <ClCompile Include="..\Private\PlayerStateMachine.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Air.cpp" />
     <ClCompile Include="..\Private\PlayerState_Axe.cpp" />
+    <ClCompile Include="..\Private\PlayerState_ChopTree.cpp" />
+    <ClCompile Include="..\Private\PlayerState_HandAction.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
-    <ClCompile Include="..\Private\PlayerState_Interaction.cpp" />
-    <ClCompile Include="..\Private\PlayerState_Movement.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Net.cpp" />
+    <ClCompile Include="..\Private\PlayerState_NoTool.cpp" />
+    <ClCompile Include="..\Private\PlayerState_PickUp.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Repelled.cpp" />
     <ClCompile Include="..\Private\PlayerState_Run.cpp" />
-    <ClCompile Include="..\Private\PlayerState_Tool.cpp" />
-    <ClCompile Include="..\Private\PlayerState_Transfer.cpp" />
-    <ClCompile Include="..\Private\PlayerState_TransItem.cpp" />
-    <ClCompile Include="..\Private\PlayerState_TreeShake.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Scoop.cpp" />
+    <ClCompile Include="..\Private\PlayerState_ScoopAction.cpp" />
+    <ClCompile Include="..\Private\PlayerState_ShakeTree.cpp" />
+    <ClCompile Include="..\Private\PlayerState_TransTool.cpp" />
+    <ClCompile Include="..\Private\PlayerState_AxeAction.cpp" />
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
+    <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\Private\Target_Camera.cpp" />
     <ClCompile Include="..\Private\ToolItem.cpp" />
     <ClCompile Include="Client.cpp" />

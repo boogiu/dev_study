@@ -40,11 +40,11 @@ CState* CPlayerState_Interaction::HandleTransition()
 
 	if ((TILE_FLAG::FLAG_HANDINTERACT & info.TileFlag) != 0) {
 		if ((TILE_FLAG::FLAG_TREE & info.TileFlag)!=0) {
- 			return m_pHFSM->Get_State("Interaction_TreeShake_State");
+ 			return m_pLayer->Get_State("Interaction_TreeShake_State");
 		}
 	}
 	else {
-		return m_pHFSM->Get_State("Idle_Base_State");
+		return m_pLayer->Get_State("Idle_Base_State");
 	}
 }
 

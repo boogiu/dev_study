@@ -23,7 +23,6 @@ void CPlayerState_Transfer::OnUpdate(_float dt)
 	/*Run Animation*/
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Update_Animation(dt);
-
 }
 
 void CPlayerState_Transfer::OnExit()
@@ -34,6 +33,7 @@ CState* CPlayerState_Transfer::HandleTransition()
 {
 	if (m_bEnter) 
 		return nullptr;
+
 
 	return nullptr;
 }

@@ -31,6 +31,7 @@ HRESULT CPlayerPart_Hand::Initialize_Prototype()
 {
 	Add_Component<CBoneFollower>();
 	Add_Component<CObjectContainer>();
+	Add_Component<CSphere_Collider>();
 
 	m_InstanceTag = "Player_Hand";
 	return S_OK;
@@ -39,19 +40,23 @@ HRESULT CPlayerPart_Hand::Initialize_Prototype()
 HRESULT CPlayerPart_Hand::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
-	CPlayer::PLAYER_PARTS_DESC* pDesc = static_cast<CPlayer::PLAYER_PARTS_DESC*>(pArg);
-	Get_Component<CBoneFollower>()->Link_Bone(
-		pDesc->pPlayer->Get_Component<CAnimator3D>(),
-		"Armature_Hand_R"
-	);
+	CHARACTER_PARTS_DESC* pDesc = static_cast<CHARACTER_PARTS_DESC*>(pArg);
 
+	Get_Component<CBoneFollower>()->Link_Bone(
+		pDesc->pOwner->Get_Component<CAnimator3D>(),
+		pDesc->BoneName
+	);
+	m_OwnerBone = pDesc->BoneName;
+	m_pOwner = pDesc->pOwner;
+
+	/*나중에 툴 용 함수 만들기*/
 	CGameObject* pTool = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerTool" })
-		.Rotate({ 0 ,XMConvertToRadians(180),0})
 		.Build("Tool");
 
 	m_pToolItem = dynamic_cast<CToolItem*>(pTool);
 	Get_Component<CObjectContainer>()->Add_Child(pTool, true);
-
+	Get_Component<CCollider>()->Make_MinMaxCollider({ {-3,-3,-3},{3,3,3} });
+	Get_Component<CCollider>()->Set_ColliderActive(false);
 	return S_OK;
 }
 
@@ -76,6 +81,18 @@ void CPlayerPart_Hand::Render_GUI()
 	
 }
 
+void CPlayerPart_Hand::OnCollisionEnter(COLLISION_CONTEXT context)
+{
+	
+	
+}
+
+
+void CPlayerPart_Hand::OnCollisionStay(COLLISION_CONTEXT context)
+{
+
+}
+
 void CPlayerPart_Hand::Change_Item(ITEM_DATA_DESC data)
 {
 	m_pToolItem->Set_Item(data);
@@ -86,6 +103,12 @@ void CPlayerPart_Hand::Active_ColliderTool(_bool Active, string Event)
 {
 	m_pToolItem->Get_Component<CCollider>()->Set_ColliderActive(Active);
 	m_pToolItem->Get_Component<CCollider>()->Set_ContextEvent(Event);
+}
+
+void CPlayerPart_Hand::Active_ColliderHand(_bool Active, string Event)
+{
+	Get_Component<CCollider>()->Set_ColliderActive(Active);
+	Get_Component<CCollider>()->Set_ContextEvent(Event);
 }
 
 

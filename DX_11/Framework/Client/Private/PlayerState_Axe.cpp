@@ -1,5 +1,5 @@
 #include "Client_Defines.h"
-#include "PlayerState_Axe.h"
+#include"PlayerState_Axe.h"
 #include "Player.h"
 #include "Animator3D.h"
 
@@ -13,49 +13,32 @@ CPlayerState_Axe::CPlayerState_Axe()
 
 void CPlayerState_Axe::OnEnter()
 {
-              	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-	_uint Flag = TileSystem->Get_TileFlagByIndex(m_pPlayer->Get_FowardIndex());
-	isForwardTree = false;
-
-	if ((Flag & static_cast<_uint>(TILE_FLAG::FLAG_TOOLINTERACT)) != 0) {
-		if ((Flag & static_cast<_uint>(TILE_FLAG::FLAG_TREE)) != 0) {
-			Animator->Chane_Animation("ToolAxe_Hit.anim");
-			isForwardTree = true;
-		}
-		else {
-			Animator->Chane_Animation("ToolAxe_Repelled.anim");
-		}
-	}
-	else {
-		Animator->Chane_Animation("ToolAxe_Air.anim");
-	}
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	Animator->Set_AnimationBlend("ToolAxe_APose.anim", { 19,20,21,22,23,24,25,26,27,28,29,30,31 });
 }
 
 void CPlayerState_Axe::OnUpdate(_float dt)
 {
-	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 
-	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
-
-	if (isForwardTree&&Animator->isOverAnimTiming(0.2f)) {
-		m_pPlayer->ActiveCollider_Tool(true);
-	}
 }
 
 void CPlayerState_Axe::OnExit()
 {
+
 }
 
 CState* CPlayerState_Axe::HandleTransition()
 {
-	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
-	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	if (m_pPlayer->Get_InteractionPacket().isUsingTool)
+		return m_pLayer->Get_State("Tool_NoTool_State");
 
-	if (Animator->isCurrentAnimEnd()) {
-		m_pPlayer->ActiveCollider_Tool(false);
-		return m_pHFSM->Get_State("Idle_Base_State");
+	ITEM_TYPE nowType = m_pPlayer->Get_ItemPacket().CurItem.eType;
+	if (nowType != ITEM_TYPE::AXE) 
+	{
+		return m_pLayer->Get_State("Tool_NoTool_State");
 	}
+
+	
 	return nullptr;
 }
 
@@ -70,4 +53,5 @@ CPlayerState_Axe* CPlayerState_Axe::Create()
 
 void CPlayerState_Axe::Free()
 {
+	__super::Free();
 }

@@ -5,14 +5,20 @@
 #include "Material.h"
 #include "MaterialInstance.h"
 #include "AABB_Collider.h"
+#include "ObjectContainer.h"
 
 #include"TileBlock.h"
 #include "GameInstance.h"
 #include "ITileService.h"
 #include "IResourceService.h"
+#include "IObjectService.h"
 
 #include "Texture.h"
 #include "Animator3D.h"
+
+#include "Plant_Fruit.h"
+#include "Builder.h"
+
 
 CPlant_Tree::CPlant_Tree()
 {
@@ -37,6 +43,7 @@ HRESULT CPlant_Tree::Initialize_Prototype()
 	Add_Component<CMaterial>();
 	Add_Component<CAABB_Collider>();
 	Add_Component<CAnimator3D>();
+	Add_Component<CObjectContainer>();
 
 	return S_OK;
 }
@@ -45,162 +52,335 @@ HRESULT CPlant_Tree::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
 	m_pTransform->Rotation({ 0,XMConvertToRadians(180),0,0 });
+
 	return S_OK;
 }
 
 void CPlant_Tree::Priority_Update(_float dt)
 {
-	if (m_eState == CUTTED && Get_Component<CAnimator3D>()->isCurrentAnimEnd()) {
-		Get_Component<CModel>()->Link_Model("GamePlay_Level", m_StumpName);
-		auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+	
+	Check_State(dt);
 
-		tileSystem->Remove_TileFlagByIndex(m_Index, static_cast<_uint>(
-			TILE_FLAG::FLAG_HANDINTERACT
-			| TILE_FLAG::FLAG_TREE));
-		m_eState == IDLE;
-	}
+
+
+	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
 void CPlant_Tree::Update(_float dt)
 {
 	Get_Component<CAnimator3D>()->Update_Animation(dt);
-
+	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
 void CPlant_Tree::Late_Update(_float dt)
 {
+	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
 }
 
 void CPlant_Tree::Render_GUI()
 {
 	__super::Render_GUI();
-	if (ImGui::Button("Change_State")) {
+	if (ImGui::Button("Regenerate_Apple")) {
+		Regenerate_Items();
 	}
+
+	ImGui::InputFloat2("PaletteIndex", reinterpret_cast<float*>(&LeafPalette));
 }
 
 HRESULT CPlant_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
+
 	/*00. Base*/
-	m_ModelName = modelMapTable[0];
-	m_BaseName = modelMapTable[1];
+	Normalize_Name(modelMapTable[0]);
+
+	char GrownLevel = m_ModelName.back();
+	if (isdigit(m_ModelName.back())) {
+		m_iGrownLevel = m_ModelName.back() - '0';
+		m_TypeName = m_ModelName.substr(0, m_ModelName.size() - 1);
+	}
 	
-	/*01. Node*/
-	m_NodeName = m_ModelName + "Node.model";
-
-	/*02. Stump*/
-	m_StumpName = m_ModelName + "Stump.model";
-
-	CMaterial* pMaterial = Get_Component<CMaterial>();
-	if (!pMaterial)
-		return E_FAIL;
-
 	m_pTransform->TranslateMatrix(XMLoadFloat4x4(&objHeader.vWorldMatrix));
-	Obj_Type = objHeader.Object_type;
+	m_iObjType = objHeader.Object_type;
 
 	HRESULT hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);
-	Get_Component<CModel>()->Link_Model("GamePlay_Level", m_NodeName);
 
-	Get_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", m_NodeName);
+	hr = Get_Component<CModel>()->Link_Model("GamePlay_Level", m_ModelName + "Node.model");
+	if (FAILED(hr)) {
+		return E_FAIL;
+	}
 
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName+"CutL0.anim", "OakTree", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName+"CutR0.anim", "OakTree", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName+"ShakeS.anim", "OakTree", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName+"ShakeM.anim", "OakTree", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName+"ShakeL.anim", "OakTree", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName+"ShakeLWait.anim", "OakTree", true);
-	
-	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({{-5,0,-5}, {5,10,5}});
+	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-5,0,-5}, {5,10,5} });
 
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	m_Index = tileSystem->Get_IndexByPosition(Get_Position());
-
 	tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(
-		TILE_FLAG::FLAG_BLOCKED 
-		| TILE_FLAG::FLAG_HANDINTERACT
-		| TILE_FLAG::FLAG_TOOLINTERACT
-		| TILE_FLAG::FLAG_TREE));
+		TILE_FLAG::FLAG_BLOCKED| TILE_FLAG::FLAG_TREE));
+
 	tileSystem->Set_Material_ID(objHeader.Index, { 1,1,0,0 });
 
-	for (auto instance : pMaterial->Get_Material_Instance())
-	{
-		instance->Override_Pass("Tree");
+	Add_Animation();
+	if (m_iGrownLevel >= 4) {
+		Make_Fruits();
 	}
-
-	//auto RcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
-	//
-	//auto trunkMat = pMaterial->Get_MaterialInstanceByName("mPltTreeOakTrunk");
-	//auto leafMat = pMaterial->Get_MaterialInstanceByName("mTreeOakLeaf");
-	//auto backLeafMat = pMaterial->Get_MaterialInstanceByName("mTreeOakLeafBack");
-	//
-	//SHADER_PARAM leafParam = {};
-	//leafParam.iSize = 0;
-	//leafParam.typeName = "Texture2D";
-	//leafParam.pData = RcsMgr->Load_Texture("GamePlay_Level", "mPltTreeOakLeaf_Grd.0.dds")->Get_SRV();
-	//
-	//SHADER_PARAM trunkParam = {};
-	//trunkParam.iSize = 0;
-	//trunkParam.typeName = "Texture2D";
-	//trunkParam.pData = RcsMgr->Load_Texture("GamePlay_Level", "mPltTreeOakTrunkColor_Grd.0.dds")->Get_SRV();
-	//
-	//if(leafMat)
-	//	leafMat->Set_Param("g_PaletteTexture", leafParam);
-	//
-	//
-	//
-	//
-	//
-	//
-	//if (trunkMat) {
-	//	//trunkMat->Override_Pass("TreeCut");
-	//	trunkMat->Set_Param("g_PaletteTexture", trunkParam);
-	//}
-
+	Adjust_Material();
 	return S_OK;
 }
 
 void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 {
 	if (context.Owner->Has_Tag("Axe")) {
-		m_AxeHitCount++;
-		isReadyToAnimate = true;
-		if (m_AxeHitCount >= 3) {
-			_float RLCheck = context.Owner->Get_Position().x;
-			if (Get_Position().x < RLCheck) {
-				Get_Component<CAnimator3D>()->Chane_Animation(m_ModelName + "CutR0.anim", true);
-			}
-			else {
-				Get_Component<CAnimator3D>()->Chane_Animation(m_ModelName + "CutL0.anim", true);
-			}
+		m_eState = HITTED;
+		if (m_AxeHitCount >= m_iGrownLevel)/*성장 단계 1->2->3->4*/
+		{
 			m_eState = CUTTED;
-		}
-		else {
-			HRESULT hr = Get_Component<CAnimator3D>()->Chane_Animation(m_ModelName + "ShakeL.anim", true);
-			if (FAILED(hr)) {
-				Get_Component<CAnimator3D>()->Chane_Animation(m_ModelName + "ShakeM.anim", true);
-			}
+			_float RLCheck = context.Owner->Get_Position().x;
+			m_isTargetRight = Get_Position().x < RLCheck;
 		}
 	}
-	else if (context.Owner->Has_Tag("None"))
-		HRESULT hr = Get_Component<CAnimator3D>()->Chane_Animation(m_ModelName + "ShakeM.anim", true);
 
-	else if (context.Owner->Has_Tag("Player"))
-		HRESULT hr = Get_Component<CAnimator3D>()->Chane_Animation(m_ModelName + "ShakeS.anim", true);
+	else if (context.Owner->Has_Tag("None")) {
+		m_eState = SHAKE;
+	}
+
+	else if (context.Owner->Has_Tag("Player")) {
+		m_eState = ENCOUNTERED;
+	}
 }
 
 void CPlant_Tree::OnCollisionStay(COLLISION_CONTEXT context)
 {
 	if (context.Owner->Has_Tag("None")) {
 		if (context.EventTag == "KeepShake") {
-			HRESULT hr = Get_Component<CAnimator3D>()->Chane_Animation(m_ModelName + "ShakeLWait.anim", false);
+			m_eState = SHAKING;
+			Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeLWait.anim", false);
 		}
 	}
-
 }
 
 void CPlant_Tree::OnCollisionExit(COLLISION_CONTEXT context)
 {
 	if (context.Owner->Has_Tag("None")) {
-		HRESULT hr = Get_Component<CAnimator3D>()->Stop_Animation();
+		Get_Component<CAnimator3D>()->Stop_Animation();
+		m_eState = IDLE;
+	}
+}
+
+void CPlant_Tree::Check_State(_float dt)
+{
+	switch (m_eState) {
+	case IDLE:
+		break;
+	case HITTED:
+		m_AxeHitCount++;
+		PlayAnim_Hit();
+		m_eState = IDLE;
+		break;
+	case CUTTED:
+		PlayAnim_Cut();
+		break;
+	case SHAKE:
+		PlayAnim_Shake();
+		break;
+	case SHAKING:
+		m_fShakeTime += dt;
+		PlayAnim_Shaking();
+		break;
+	case ENCOUNTERED:
+		PlayAnim_Encounter();
+		m_eState = IDLE;
+		break;
+	}
+}
+
+void CPlant_Tree::PlayAnim_Cut()
+{
+
+	if (m_isTargetRight) {
+		Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "CutR0.anim", false);
+	}
+	else {
+		Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "CutL0.anim", false);
+	}
+
+	if (Get_Component<CAnimator3D>()->isCurrentAnimEnd()) {
+
+		Get_Component<CModel>()->Link_Model("GamePlay_Level", m_ModelName + "Stump.model");
+		auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+
+		tileSystem->Remove_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_TREE));
+		tileSystem->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_DIGGABLE| TILE_FLAG::FLAG_SITTABLE));
+		m_eState = IDLE;
+	}
+
+}
+
+void CPlant_Tree::PlayAnim_Hit()
+{
+	HRESULT hr = Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeM.anim", true);
+	if (FAILED(hr)) {
+		hr = Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeS.anim", true);
+	}
+	Drop_Items();
+}
+
+void CPlant_Tree::PlayAnim_Shake()
+{
+	if (m_iGrownLevel >= 2) {
+		Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeM.anim", false);
+	}
+	else {
+		Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeS.anim", false);
+	}
+}
+
+void CPlant_Tree::PlayAnim_Shaking()
+{
+	if (m_fShakeTime > 1.5)
+	{
+		Drop_Items();
+		m_fShakeTime = 0;
+	}
+	if (m_iGrownLevel >= 2) {
+		Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeLWait.anim", false);
+	}
+	else {
+		Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeS.anim", false);
+	}
+}
+
+void CPlant_Tree::PlayAnim_Encounter()
+{
+	HRESULT hr = Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeS.anim", true);
+}
+
+void CPlant_Tree::Make_Fruits()
+{
+	for (size_t i = 0; i < 3; i++)
+	{
+		CGameObject* pObject =
+			Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlantFruit" })
+			.Build("Fruit" + to_string(i));
+
+		m_pFruits[i] = dynamic_cast<CPlant_Fruit*>(pObject);
+		Get_Component<CObjectContainer>()->Add_Child(pObject, false);
+	}
+	m_pFruits[0]->Dangle_Fruit("Armature_PlantTop", { 0,25,-4 });
+	m_pFruits[1]->Dangle_Fruit("Armature_Plant01", { 5,15,-8 });
+	m_pFruits[2]->Dangle_Fruit("Armature_Plant02", { -5,15,-8 });
+}
+
+void CPlant_Tree::Adjust_Material()
+{
+	 Get_Component<CModel>()->SetDrawable(1, false);
+	 Get_Component<CModel>()->SetDrawable(2,false);
+
+	auto pMaterial = Get_Component<CMaterial>();
+	if (!pMaterial) return;
+	auto pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
+
+	auto TruckInstance = pMaterial->Get_MaterialInstanceByName("m"+m_TypeName + "Trunk");
+
+	if (TruckInstance) {
+		SHADER_PARAM palette = {};
+		palette.iSize = 0;
+		palette.typeName = "Texture2D";
+		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "mPltTreeOakTrunkColor_Grd.png")->Get_SRV();
+		TruckInstance->Set_Param("g_PaletteTexture", palette);
+		TruckInstance->Override_Pass("Tree");
+	}
+	
+	SHADER_PARAM Leaf = {};
+	Leaf.iSize = sizeof(_float2);
+	Leaf.typeName = "float2";
+	Leaf.pData = &LeafPalette;
+
+	auto LeafInstance =pMaterial->Get_MaterialInstanceByName("mTreeOakLeaf");
+	if (LeafInstance) {
+		SHADER_PARAM palette = {};
+		palette.iSize = 0;
+		palette.typeName = "Texture2D";
+		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "mPltTreeOakLeafColor_Grd.png")->Get_SRV();
+	
+		LeafInstance->Set_Param("g_PaletteTexture", palette);
+		//LeafInstance->Set_Param("leafPalette", Leaf);
+		LeafInstance->Override_Pass("Leaf");
+	}
+
+	auto BackLeafInstance =pMaterial->Get_MaterialInstanceByName("mTreeOakLeafBack");
+
+	if (BackLeafInstance) {
+		SHADER_PARAM palette = {};
+		palette.iSize = 0;
+		palette.typeName = "Texture2D";
+		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "mPltTreeOakLeafColor_Grd.png")->Get_SRV();
+		//LeafInstance->Set_Param("leafPalette", Leaf);
+		BackLeafInstance->Set_Param("g_PaletteTexture", palette);
+		BackLeafInstance->Override_Pass("Leaf");
+	}
+}
+
+void CPlant_Tree::Drop_Items()
+{
+	if (!m_isAbleToDrop) return;
+	if (m_iGrownLevel <= 3) return;
+	for (size_t i = 0; i < 3; i++)
+	{
+		m_pFruits[i]->Get_Component<CModel>()->Set_Active(false);
+		_float4 pos =m_pFruits[i]->Get_Position();
+
+		CGameObject* pObject =
+			Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlantFruit" })
+			.Position({ pos.x,pos.y,pos.z })
+			.Build("Fruit" + to_string(i));
+
+		CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { "GamePlay_Level","Item_Layer" });
+	}
+	m_isAbleToDrop = false;
+}
+
+void CPlant_Tree::Regenerate_Items()
+{
+	m_isAbleToDrop = true;
+
+	for (size_t i = 0; i < 3; i++)
+	{
+		m_pFruits[i]->Get_Component<CModel>()->Set_Active(true);
+	}
+}
+
+void CPlant_Tree::Normalize_Name(const string& modelName)
+{
+	string BaseModel = modelName;
+	size_t NodeCheck = modelName.find("Node");
+	size_t StumpCheck = modelName.find("Stump");
+
+	if (NodeCheck != string::npos) {
+		BaseModel = modelName.substr(NodeCheck + 4);
+	}
+	if (StumpCheck != string::npos) {
+		BaseModel = modelName.substr(NodeCheck + 5);
+	}
+
+	m_ModelName = BaseModel;
+}
+
+void CPlant_Tree::Add_Animation()
+{
+	Get_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", m_ModelName + "Node.model");
+
+	if (m_iGrownLevel >= 1) {
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName + "CutL0.anim", "OakTree", false);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName + "CutR0.anim", "OakTree", false);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName + "ShakeS.anim", "OakTree", false);
+	}
+	if (m_iGrownLevel >= 2) {
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName + "ShakeM.anim", "OakTree", false);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName + "ShakeL.anim", "OakTree", false);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName + "ShakeLWait.anim", "OakTree", true);
+	}
+	if (m_iGrownLevel >= 3) {
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName + "CutL1.anim", "OakTree", false);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", m_ModelName + "CutR1.anim", "OakTree", false);
 	}
 }
 

@@ -16,18 +16,24 @@ public:
     virtual void OnExit() {}
     virtual CState* HandleTransition() { return nullptr; }
 
-public:
-    void SetParent(CState* parent) { m_pParent = parent; }
-    CState* GetParent() const { return m_pParent; }
+    virtual void Set_Owner(class CGameObject* pOwner) {};
 
+public:
     const string& GetName() const { return m_StateName; }
     void SetName(const string& name) { m_StateName = name; }
+    void SetLayer(class CLayerState* layer) { m_pLayer = layer; }
+    void Set_Machine(class CStateMachine* machine) { m_pStateMachine = machine; }
+
 public:
     virtual void Render_State();
+
 protected:
-    CState* m_pParent = { nullptr };
+    class CStateMachine* m_pStateMachine = { nullptr };
+    class CLayerState* m_pLayer = { nullptr };
+
     string m_StateName = {};
     _bool m_bEnter = false;
+
 public:
     virtual void Free();
 };

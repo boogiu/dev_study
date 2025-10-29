@@ -2,11 +2,7 @@
 #include "ICollisionService.h"
 
 NS_BEGIN(Engine)
-struct COLLIDER_INFO
-{
-    class CCollider* pCollider;
-    _bool bActive = true;
-};
+
 
 class CCollisionSystem 
     : public ICollisionService
@@ -27,10 +23,12 @@ public:
 
 private:
     void MakeCandidate();
+    void Clean_Up();
+
 private:
     ID3D11Device* m_pDevice = {nullptr};
     ID3D11DeviceContext* m_pContext = { nullptr };
-    vector<COLLIDER_INFO> m_Colliders;
+    vector<COLLIDER_SLOT> m_Colliders;
     vector<pair<_int,_int>> m_CandidateCollision;
 
 

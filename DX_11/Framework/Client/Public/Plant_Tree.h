@@ -4,7 +4,14 @@ NS_BEGIN(Client)
 class CPlant_Tree :
     public CFieldObject
 {
-    enum Tree_State {IDLE, SHAKE, CUTTED};
+    enum Tree_State {
+        IDLE,
+        SHAKE, 
+        SHAKING, 
+        HITTED,
+        CUTTED,
+        ENCOUNTERED
+    };
 
 private:
     CPlant_Tree();
@@ -24,20 +31,39 @@ public:
     void OnCollisionEnter(COLLISION_CONTEXT context) override;
     void OnCollisionStay(COLLISION_CONTEXT context)override;
     void OnCollisionExit(COLLISION_CONTEXT context)override;
-private:
-    void ConvertModel();
 
 private:
-    _bool isReadyToAnimate = { false };
+    void Normalize_Name(const string& modelName);
+    void Add_Animation();
+    void Check_State(_float dt);
+    void Make_Fruits();
+    void Adjust_Material();
+private:
+    void PlayAnim_Cut();
+    void PlayAnim_Hit();
+    void PlayAnim_Shake();
+    void PlayAnim_Shaking();
+    void PlayAnim_Encounter();
 
+private:
+    void Drop_Items();
+    void Regenerate_Items();
+
+private:
+    TILE_INDEX m_Index = {};
     string m_ModelName = {};
-    string m_BaseName = {};
-    string m_NodeName = {};
-    string m_StumpName = {};
+    string m_TypeName = {};
+    _uint m_iGrownLevel = {};
+    _float m_fShakeTime = {};
+    _bool m_isTargetRight = {};
 
     _uint m_AxeHitCount = {};
     Tree_State m_eState = { IDLE };
-    TILE_INDEX m_Index = {};
+
+    class CPlant_Fruit* m_pFruits[3];
+
+    _bool m_isAbleToDrop = { true };
+    _float2 LeafPalette = {};
 public:
     static CPlant_Tree* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

@@ -40,6 +40,7 @@ void CAABB_Collider::Update()
 {
 	if ((m_pDesc == nullptr) || (m_pOriginalDesc == nullptr)) return;
 
+	m_prevCollider.clear();
 	m_prevCollider = m_CurrentCollider;
 	m_CurrentCollider.clear();
 
@@ -51,56 +52,97 @@ void CAABB_Collider::Update()
 	TransformMatrix.r[2] = XMVectorSet(0.f, 0.f, 1.f, 0.f) * XMVector3Length(TransformMatrix.r[2]);
 
 	m_pOriginalDesc->Transform(*m_pDesc, TransformMatrix);
-	
 }
 
 void CAABB_Collider::Late_Update()
 {
-	if ((m_pDesc == nullptr) || (m_pOriginalDesc == nullptr)) return;
-	for (auto& other : m_CurrentCollider) {
-		if (m_prevCollider.find(other) == m_prevCollider.end()) {
-			//지금 있고 이전에 없음
-			m_pOwner->OnCollisionEnter(other->Get_Context());
+	if ((m_pDesc == nullptr) || (m_pOriginalDesc == nullptr))
+		return;
+
+	for (auto& currSlot : m_CurrentCollider)
+	{
+		/*유효하지 않은 현재 충돌 대상 필터링*/
+		if (currSlot == nullptr || currSlot->bActive == false)
+			continue;
+
+		CCollider* pCol = currSlot->pCollider;
+		if (pCol == nullptr || pCol->Get_Active() == false)
+			continue;
+
+		// 이전 프레임 동일 슬롯
+		auto itPrev = find_if(m_prevCollider.begin(), m_prevCollider.end(),
+			[&](COLLIDER_SLOT* prevSlot)
+			{
+				return prevSlot != nullptr && Compare_Same(prevSlot, currSlot);
+			});
+
+		if (itPrev == m_prevCollider.end())
+		{//찾아보니 없음
+			m_pOwner->OnCollisionEnter(pCol->Get_Context());
 		}
-		else {
-			//지금 있고 이전에 있음
-			m_pOwner->OnCollisionStay(other->Get_Context());
+		else
+		{//찾아보니 있음
+			m_pOwner->OnCollisionStay(pCol->Get_Context());
 		}
 	}
-	for (auto& other : m_prevCollider) {
-		if (m_CurrentCollider.find(other) == m_CurrentCollider.end()) {
-			//이전에 있고 지금 없음
-			m_pOwner->OnCollisionExit(other->Get_Context());
+
+	for (auto& prevSlot : m_prevCollider)
+	{
+		/*유효하지 않은 이전 충돌 대상 필터링*/
+		if (prevSlot == nullptr)
+			continue;
+
+		CCollider* pCol = prevSlot->pCollider;
+		if (pCol == nullptr)
+			continue;
+		if (pCol->Get_Active() == false || prevSlot->bActive == false) {
+			m_pOwner->OnCollisionExit(pCol->Get_Context());
+			continue;
+		}
+		auto itCurr = find_if(m_CurrentCollider.begin(), m_CurrentCollider.end(),
+			[&](COLLIDER_SLOT* currSlot)
+			{
+				return currSlot != nullptr && Compare_Same(prevSlot, currSlot);
+			});
+
+		if (itCurr == m_CurrentCollider.end())
+		{
+			m_pOwner->OnCollisionExit(pCol->Get_Context());
 		}
 	}
 }
 
-_bool CAABB_Collider::Intersect(CCollider* pOther)
+
+_bool CAABB_Collider::Intersect(COLLIDER_SLOT* pSlot)
 {
 	_bool       onCollision = { false };
+	if (pSlot->bActive == false)
+		return false;
+	if (pSlot->pCollider->Get_Active() == false)
+		return false;
 
-	switch (pOther->Get_ColliderType())
+	switch (pSlot->pCollider->Get_ColliderType())
 	{
 	case Engine::COLLIDER_TYPE::AABB:
-		onCollision = m_pDesc->Intersects(*(static_cast<CAABB_Collider*>(pOther)->Get_Desc()));
+		onCollision = m_pDesc->Intersects(*(static_cast<CAABB_Collider*>(pSlot->pCollider)->Get_Desc()));
 		break;
 	case Engine::COLLIDER_TYPE::OBB:
-		onCollision = m_pDesc->Intersects(*(static_cast<COBB_Collider*>(pOther)->Get_Desc()));
+		onCollision = m_pDesc->Intersects(*(static_cast<COBB_Collider*>(pSlot->pCollider)->Get_Desc()));
 		break;
 	case Engine::COLLIDER_TYPE::SPHERE:
-		onCollision = m_pDesc->Intersects(*(static_cast<CSphere_Collider*>(pOther)->Get_Desc()));
+		onCollision = m_pDesc->Intersects(*(static_cast<CSphere_Collider*>(pSlot->pCollider)->Get_Desc()));
 		break;
 	default:
 		break;
 	}
 
 	if (onCollision) {
-		//pOther->m_CurrentCollider.emplace(this);
-		m_CurrentCollider.emplace(pOther);
+		m_CurrentCollider.emplace(pSlot);
 	}
 
 	return onCollision;
 }
+
 void CAABB_Collider::Make_MinMaxCollider(MINMAX_BOX minMax)
 {
 	if (m_pOriginalDesc) {

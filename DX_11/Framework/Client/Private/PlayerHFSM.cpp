@@ -3,6 +3,7 @@
 #include "State.h"
 #include "Player.h"
 #include "Animator3D.h"
+#include "LayerState.h"
 
 CPlayerHFSM::CPlayerHFSM(class CPlayer* pPlayer)
 	:m_pPlayer{pPlayer}
@@ -12,6 +13,10 @@ CPlayerHFSM::CPlayerHFSM(class CPlayer* pPlayer)
 HRESULT CPlayerHFSM::Initialize()
 {
 	return S_OK;
+}
+
+CLayerState::CLayerState()
+{
 }
 
 void CPlayerHFSM::Excute(CState* rootState)

@@ -22,7 +22,7 @@
 #include "PlayerPart_Hand.h"
 #include "MapLoader.h"
 #include "AutoTile.h"
-
+#include "Plant_Fruit.h"
 #include "ClientHelper.h"
 #include "ITileService.h"
 #include "Layer.h"
@@ -101,10 +101,13 @@ void CGamePlayLevel::PreLoad_Level()
     pRenderSys->Add_Palette("g_PaletteTexture", pRcsMgr->Load_Texture(G_GlobalLevelKey, "mGrass_Grd.dds"));
     pRenderSys->Add_Palette("g_PaletteEdgeTexture", pRcsMgr->Load_Texture(G_GlobalLevelKey, "mGrass_GrdEdge.dds"));
     pRenderSys->Add_Palette("g_MaskTexture", pRcsMgr->Load_Texture(G_GlobalLevelKey, "mGrass_Mix.dds"));
+    ClientHelper::Add_TexturePathFromDirectory("../../Resources/Palette");
 
     /*Player Model Path*/
     ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Player");
     ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Player");
+
+    /*Tool*/
     ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Tool");
     ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Tool");
 
@@ -112,6 +115,12 @@ void CGamePlayLevel::PreLoad_Level()
     ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Movement");
     ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Interaction");
     ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Base");
+    ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Transfer");
+
+    /*Insect  Path*/
+    ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Insect");
+    ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Insect");
+    ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Insect");
 
     /*Tiles  Path*/
     ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldRoad");
@@ -144,6 +153,8 @@ void CGamePlayLevel::PreLoad_Level()
 
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_ClothParts",CClothParts::Create());
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_AutoTile",CAutoTile::Create());
+
+    pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_PlantFruit",CPlant_Fruit::Create());
 
  }
 

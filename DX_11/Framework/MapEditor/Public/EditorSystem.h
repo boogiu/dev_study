@@ -26,7 +26,7 @@ public:
 		_uint eAnchor = {static_cast<_uint>(ANCHOR::Center) };
 		_uint tileFlag =	{static_cast<_uint>(ANCHOR::Center) };
 		CGameObject* pEditingObject = {nullptr};
-		string baseType = {};
+		string baseType = {"Base_0"};
 		TILESYSTEM_INFO ContextTileInfo = {};
 		_float4 m_fConerHeight = {};
 	};

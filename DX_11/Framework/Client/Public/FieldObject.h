@@ -21,7 +21,7 @@ public:
     virtual HRESULT Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable);
 
 protected:
-    _uint Obj_Type = {};
+    _uint m_iObjType = {};
 public:
     void Free() override;
 };

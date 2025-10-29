@@ -111,7 +111,8 @@ void CGameObject::Pre_EngineUpdate(_float dt)
 	}
 
 	for (auto& child : Get_Children()) {
-		child->Pre_EngineUpdate(dt);
+		if (child)
+			child->Pre_EngineUpdate(dt);
 	}
 }
 
@@ -146,6 +147,7 @@ void CGameObject::Post_EngineUpdate(_float dt)
 #endif // _DEBUG
 
 	for (auto& child : Get_Children()) {
+		if(child)
 		child->Post_EngineUpdate(dt);
 	}
 }

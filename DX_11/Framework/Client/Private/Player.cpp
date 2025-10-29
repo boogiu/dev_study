@@ -87,23 +87,13 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 
 void CPlayer::Priority_Update(_float dt)
 {
-
-	auto pInput = CGameInstance::GetInstance()->Get_InputDev();
-
-	_float2 moveAxis = { 0.f, 0.f };
-
-	if (pInput->Key_Down(VK_UP))				moveAxis.y = -1.f;
-	if (pInput->Key_Down(VK_DOWN))		moveAxis.y = +1.f;
-	if (pInput->Key_Down(VK_LEFT))			moveAxis.x = +1.f;
-	if (pInput->Key_Down(VK_RIGHT))		moveAxis.x = -1.f;
-
-	XMStoreFloat2(&m_vInputAxis, XMVector2Normalize(XMLoadFloat2(&moveAxis)));
-
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
 void CPlayer::Update(_float dt)
 {
+	Update_Input(dt);
+	Update_TileInfo(dt); 
 	m_pStateMachine->Update(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
@@ -137,39 +127,142 @@ void CPlayer::Render_GUI()
 		Change_Item(Data);
 	}
 
+	if (ImGui::Button("Net")) {
+		ITEM_DATA_DESC Data = {};
+		Data.eType = ITEM_TYPE::NET;
+		Data.materialName = "ToolNetFirst.mat";
+		Data.modelName = "ToolNetFirst.model";
+		Data.TypeTag = "Net";
+		Change_Item(Data);
+	}
+
+	if (ImGui::Button("Scoop")) {
+		ITEM_DATA_DESC Data = {};
+		Data.eType = ITEM_TYPE::SCOOP;
+		Data.materialName = "ToolScoopFirst.mat";
+		Data.modelName = "ToolScoopFirst.model";
+		Data.TypeTag = "Scoop";
+		Change_Item(Data);
+	}
 	ImGui::End();
 }
 
-ITEM_TYPE CPlayer::Get_CurrentItemType()
+void CPlayer::Update_Input(_float dt)
 {
-	CGameObject* pHand = Get_Component<CObjectContainer>()->Find_ObjectByName("Right_Hand");
-	CPlayerPart_Hand* pHandPart = dynamic_cast<CPlayerPart_Hand*>(pHand);
+	auto pInput = CGameInstance::GetInstance()->Get_InputDev();
 
-	if (pHandPart)
-		return pHandPart->Get_CurrentItemType();
+	_float2 moveAxis = { 0.f, 0.f };
 
-	return ITEM_TYPE::NONE;
+	if (pInput->Key_Down(VK_UP))				moveAxis.y = -1.f;
+	if (pInput->Key_Down(VK_DOWN))		moveAxis.y = +1.f;
+	if (pInput->Key_Down(VK_LEFT))			moveAxis.x = +1.f;
+	if (pInput->Key_Down(VK_RIGHT))		moveAxis.x = -1.f;
+
+	m_MovementPack.bRunning = pInput->Key_Down(VK_SHIFT);
+	
+
+	XMStoreFloat2(&m_MovementPack.vInputAxis, XMVector2Normalize(XMLoadFloat2(&moveAxis)));
+
+	if (fabs(moveAxis.x) > 0.01f || fabs(moveAxis.y) > 0.01f)
+		m_MovementPack.fTargetDegree = XMConvertToDegrees(atan2(moveAxis.x, moveAxis.y));
+
+	_float DeltaDegree = m_MovementPack.fTargetDegree - m_MovementPack.fCurrentDegree;
+
+	// -180~180 범위로 정규화
+	while (DeltaDegree > 180.f) DeltaDegree -= 360.f;
+	while (DeltaDegree < -180.f) DeltaDegree += 360.f;
+
+	_float RotSpeed = dt * 480;
+
+	if (fabs(DeltaDegree) > 150.f)
+		m_MovementPack.bFliping = true;
+
+	if (fabs(DeltaDegree) > 10.f) {
+		if (m_MovementPack.bFliping)
+			m_MovementPack.fCurrentDegree -= RotSpeed;
+		else
+			m_MovementPack.fCurrentDegree += (DeltaDegree > 0 ? RotSpeed : -RotSpeed);
+	}
+
+	else {
+		m_MovementPack.bFliping = false;
+		m_MovementPack.fCurrentDegree = m_MovementPack.fTargetDegree;
+	}
+
 }
+
+void CPlayer::Update_TileInfo(_float dt)
+{
+	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
+	auto Info = TileSys->Get_TileSystemInfo();
+
+	m_TileInfoPack.nowIndex = TileSys->Get_IndexByPosition(Get_Position());
+	m_TileInfoPack.infos.resize(9);
+
+	vector<TILE_INFO> worldInfo = {};
+	_uint ValidIndex = TileSys->Get_NeighborInfoByIndex(m_TileInfoPack.nowIndex, worldInfo);
+	/*현재 y축 회전값을 360으로 나머지 연산*/
+	_float yaw = fmodf(m_MovementPack.fCurrentDegree, 360.f);
+	/*음수면 보정*/
+	if (yaw < 0.f)
+		yaw += 360.f;
+
+	_uint RotCount = static_cast<_uint>(yaw / 45.f) % 8;
+
+	for (size_t i = 0; i < 9; i++)
+	{
+		NEIGHBOR_INDEX neighbor = Get_Negihbor(i);
+		if ((ValidIndex & neighbor) != 0) {
+			m_TileInfoPack.infos[Get_Index(Rotate45_CCW(neighbor, RotCount))] = worldInfo[Get_Index(neighbor)];
+			m_TileInfoPack.neighboValidFlag |= static_cast<_uint>(Rotate45_CCW(neighbor, RotCount));
+		}
+	}
+	Get_Index(NEIGHBOR_INDEX::UP);
+}
+
 
 void CPlayer::Change_Item(ITEM_DATA_DESC desc)
 {
-	if (m_CurItem.modelName == desc.modelName) {
+	if (m_ItemPack.CurItem.modelName == desc.modelName) {
 		return;
 	}
-	m_DstItem = desc;
-	m_pStateMachine->Request_ChangeState("Transfer_Item_State");
+	m_ItemPack.DstItem = desc;
+	m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION,"Action_TransTool_State");
 }
 
 void CPlayer::Set_CurItemData(ITEM_DATA_DESC desc)
 {
-	if (m_CurItem.modelName == desc.modelName) {
+	if (m_ItemPack.CurItem.modelName == desc.modelName) {
 		return;
 	}
 
-	m_CurItem = desc;
-	m_DstItem = {};
+	m_ItemPack.CurItem = desc;
+	m_ItemPack.DstItem = {};
 	CGameObject* pObj = Get_Component<CObjectContainer>()->Find_ObjectByName("Right_Hand");
 	dynamic_cast<CPlayerPart_Hand*>(pObj)->Change_Item(desc);
+}
+
+_bool CPlayer::Can_Walk(_float2 moveAxis)
+{
+	if (m_MovementPack.bMovable == false)
+		return false;
+
+	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+	
+	_float4 nextPos = { 
+		Get_Position().x + moveAxis.x,
+		Get_Position().y,
+		Get_Position().z + moveAxis.y,
+		1};
+	
+	TILE_INDEX index = TileSystem->Get_IndexByPosition(nextPos);
+	TILE_INFO info = TileSystem->Get_InfoByIndex(index);
+
+	if ((CANT_WALK & info.TileFlag) == 0)
+		return true;
+	else
+		return false;
+
 }
 
 TILE_INDEX CPlayer::Get_FowardIndex()
@@ -199,6 +292,13 @@ void CPlayer::ActiveCollider_Tool(_bool active, string Event)
 	pHandPart->Active_ColliderTool(active,Event);
 }
 
+void CPlayer::ActiveCollider_LeftHand(_bool active, string Event)
+{
+	CGameObject* pHand = Get_Component<CObjectContainer>()->Find_ObjectByName("Left_Hand");
+	CPlayerPart_Hand* pHandPart = dynamic_cast<CPlayerPart_Hand*>(pHand);
+	pHandPart->Active_ColliderHand(active, Event);
+}
+
 void CPlayer::Add_AnimationClips()
 {
 	Get_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", "PlayerBody.model");
@@ -221,17 +321,44 @@ void CPlayer::Add_AnimationClips()
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_ReadyKeep.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_Repelled.anim", "Player", false);
 
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_EquipOn.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_EquipOff.anim", "Player", false);
+	/*툴 = NET*/
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_APose.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_APoseDash.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_Get.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_Slip.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_Swing.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Ground.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Upper.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Lower.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Middle.anim", "Player", false);
+
+
+	/*툴 = SCOOP*/
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_APose.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_Air.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_BuryHole.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_Dig.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_DigStump.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_Repelled.anim", "Player", false);
 
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Tree_Shake.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Tree_ShakeReadyKeep.anim", "Player", true);
+
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_EquipOff.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_EquipOn.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Pickup.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Pickup_Get.anim", "Player", false);
 }
 
 void CPlayer::Add_PartObjects()
 {
-	PLAYER_PARTS_DESC* pToolDesc = new PLAYER_PARTS_DESC;
-	pToolDesc->pPlayer = this;
+	CPlayerPart_Hand::CHARACTER_PARTS_DESC* pRHandDesc = new CPlayerPart_Hand::CHARACTER_PARTS_DESC;
+	pRHandDesc->pOwner = this;
+	pRHandDesc->BoneName = "Armature_Hand_R";
+
+	CPlayerPart_Hand::CHARACTER_PARTS_DESC* pLHandDesc = new CPlayerPart_Hand::CHARACTER_PARTS_DESC;
+	pLHandDesc->pOwner = this;
+	pLHandDesc->BoneName = "Armature_Hand_L";
 
 	PLAYER_PARTS_DESC* pHairDesc = new PLAYER_PARTS_DESC;
 	pHairDesc->pPlayer = this;
@@ -247,9 +374,13 @@ void CPlayer::Add_PartObjects()
 	pBottomDesc->pPlayer = this;
 	pBottomDesc->ClothType = "PlayerBottomsPantsNormal";
 
-	CGameObject* pTool = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
-		.Add_ObjDesc(pToolDesc)
+	CGameObject* pRightHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
+		.Add_ObjDesc(pRHandDesc)
 		.Build("Right_Hand");
+
+	CGameObject* pLeftHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
+		.Add_ObjDesc(pLHandDesc)
+		.Build("Left_Hand");
 
 	CGameObject* pHair = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_HairParts" })
 		.Add_ObjDesc(pHairDesc)
@@ -267,7 +398,8 @@ void CPlayer::Add_PartObjects()
 		.Add_ObjDesc(pBottomDesc)
 		.Build("Bottom");
 
-	Get_Component<CObjectContainer>()->Add_Child(pTool, false);
+	Get_Component<CObjectContainer>()->Add_Child(pRightHand, false);
+	Get_Component<CObjectContainer>()->Add_Child(pLeftHand, false);
 	Get_Component<CObjectContainer>()->Add_Child(pHair, false);
 	Get_Component<CObjectContainer>()->Add_Child(pHairCap, false);
 	Get_Component<CObjectContainer>()->Add_Child(pTop, true);

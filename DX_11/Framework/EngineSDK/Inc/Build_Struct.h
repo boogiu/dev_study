@@ -94,6 +94,13 @@ namespace Engine {
 		ColliderInitSphereDesc(const ColliderInitSphereDesc& rhs) :COLLIDER_DESC{ rhs }, fRadius{ rhs.fRadius }{};
 	}SPHERE_COLLIDER_DESC;
 
+	/*Parent Child Desc*/
+	typedef struct tagSetParentDesc :public COMPONENT_DESC {
+		class CGameObject* pParent = { nullptr };
+		tagSetParentDesc(CGameObject* pParent) : pParent{pParent} {};
+		virtual ~tagSetParentDesc() DEFAULT;
+	}PARENT_DESC;
+
 	/*Object Clone Desc*/
 	typedef struct tagGameObjectDesc : public INIT_DESC {
 		string InstanceName = "";

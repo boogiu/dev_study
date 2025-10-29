@@ -184,6 +184,12 @@ namespace Engine
 	}RAY_HIT;
 
 	/*Tile Grid System*/
+
+	typedef struct tagTileIndex {
+		_int IndexX = { -1 };
+		_int IndexZ = { -1 };
+	}TILE_INDEX;
+
 	typedef struct tagTileSystemInfo {
 		/*몇개씩?*/
 		_uint iTileCountX = {};
@@ -216,13 +222,17 @@ namespace Engine
 				(vWorldMax.z - vWorldMin.z) 
 			};
 		};
+		_bool Check_ValidIndex(TILE_INDEX index) {
+			if (index.IndexX < 0 || index.IndexX >= static_cast<_int>(iTileCountX))
+				return false;
+			if (index.IndexZ < 0 || index.IndexZ >= static_cast<_int>(iTileCountZ))
+				return false;
+
+			return true;
+		}
 
 	}TILESYSTEM_INFO;
 
-	typedef struct tagTileIndex {
-		_int IndexX = {-1};
-		_int IndexZ = {-1};
-	}TILE_INDEX;
 
 	struct TILE_INFO {
 		_uint TileFlag = {};													//타일 타입 비트 플래그
@@ -274,6 +284,12 @@ namespace Engine
 		string ElementKey = {  };
 	}INSTANCE_INIT_DESC;
 
+	struct COLLIDER_SLOT
+	{
+		class CCollider* pCollider;
+		_bool bActive = true;
+		_uint iGeneration = {};
+	};
 
 	typedef struct tagCollisionInfoContext {
 		string EventTag = {};

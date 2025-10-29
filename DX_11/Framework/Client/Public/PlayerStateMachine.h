@@ -1,12 +1,11 @@
 #pragma once
-#include "Base.h"
+#include "StateMachine.h"
 #include "Player.h"
 
 NS_BEGIN(Client)
 
-#pragma region STATE_MACHINE
 class CPlayerStateMachine :
-    public CBase
+    public CStateMachine
 {
 private:
     CPlayerStateMachine(CPlayer* pPlayer);
@@ -16,19 +15,18 @@ public:
     HRESULT Initialize();
 
 public:
-    void Update(_float dt);
-    void Request_ChangeState(const string& NextState);
+    void Update(_float dt) override;
+    virtual void Request_ChangeState(STATE_LAYER eLayer, const string& NextState) override;
 
 public:
     void Render_State(class CPlayer* pPlayer);
     
 private:
     CPlayer* m_pOwner = { nullptr };
-    class CPlayerHFSM* m_pHFSM = { nullptr };
+
 public:
     static CPlayerStateMachine* Create(CPlayer* pPlayer); 
     virtual void Free();
 };
-#pragma endregion
 
 NS_END

@@ -15,7 +15,7 @@ public:
 public:
     virtual void Update() override;
     virtual void Late_Update() override;
-    virtual _bool Intersect(CCollider* pOther) override;
+    virtual _bool Intersect(COLLIDER_SLOT* pSlot) override;
     const BoundingSphere* Get_Desc() const {
         return m_pDesc;
     }

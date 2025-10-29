@@ -7,7 +7,7 @@ class ENGINE_DLL CAnimator3D :
 protected:
     enum class ANIMATOR_STATE{IDLE, RUNNING, CONVERTING};
 
-    enum class BLENDER_STATE{NONE, BLEND_IN, RUNNING, BLEND_OUT};
+    enum class BLENDER_STATE{NONE, BLEND_IN, RUNNING, BLEND_OUT, BLEND_PAUSE};
     struct AnimConvert {
         _uint SrcClip;
         _uint DstClip;
@@ -41,9 +41,9 @@ public:
 
     const vector<_float4x4>& Get_BoneMatrices() { return m_FinalMatices; };
     const vector<_float4x4>& Get_CombinedBoneMatrices() { return m_CombinedMatrices; };
-    virtual void Chane_Animation(_uint index, _float convertDuration = 0.2f);
-    virtual HRESULT Chane_Animation(string animName, _bool overrideSame = false,_float convertDuration = 0.2f);
-    virtual HRESULT ForceChane_Animation(string animName, _bool overrideSame = false,_float convertDuration = 0.2f);
+    virtual void Change_Animation(_uint index, _float convertDuration = 0.2f);
+    virtual HRESULT Change_Animation(string animName, _bool overrideSame = false,_float convertDuration = 0.2f);
+    virtual HRESULT ForceChange_Animation(string animName, _bool overrideSame = false,_float convertDuration = 0.2f);
     virtual HRESULT Stop_Animation();
 
     virtual HRESULT Set_AnimationBlend(string animName, vector<_uint> blendIndex);
@@ -65,6 +65,7 @@ public:
 protected:
     void Animation_Run(_float dt);
     void Animation_Convert(_float dt);
+    void Blend_Run(_float dt);
     void BuildBone();
 
 public:
