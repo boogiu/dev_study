@@ -298,7 +298,7 @@ void CGameObject::Free()
 	__super::Free();
 
 	for (auto& pair : m_Components) {
-		pair.second->Set_Active(false);
+		pair.second->Set_Dead(false);
 		pair.second->Set_Owner(nullptr);
 		Safe_Release(pair.second);
 	}

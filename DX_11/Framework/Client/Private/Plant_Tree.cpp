@@ -329,7 +329,7 @@ void CPlant_Tree::Drop_Items()
 	if (m_iGrownLevel <= 3) return;
 	for (size_t i = 0; i < 3; i++)
 	{
-		m_pFruits[i]->Get_Component<CModel>()->Set_Active(false);
+		m_pFruits[i]->Get_Component<CModel>()->Set_Dead(false);
 		_float4 pos =m_pFruits[i]->Get_Position();
 
 		CGameObject* pObject =
@@ -348,7 +348,7 @@ void CPlant_Tree::Regenerate_Items()
 
 	for (size_t i = 0; i < 3; i++)
 	{
-		m_pFruits[i]->Get_Component<CModel>()->Set_Active(true);
+		m_pFruits[i]->Get_Component<CModel>()->Set_Dead(true);
 	}
 }
 

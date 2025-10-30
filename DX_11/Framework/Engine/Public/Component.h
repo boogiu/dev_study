@@ -20,7 +20,7 @@ public:
     void Set_Owner(class CGameObject* owner) { m_pOwner = owner; }
     class CGameObject* Get_Owner() { return m_pOwner; }
 public:
-    virtual void Set_Active(_bool bActive) { m_bActive = bActive; }
+    virtual void Set_Dead(_bool bActive) { m_bActive = bActive; }
     _bool Get_Active() { return m_bActive; }
 
 protected:

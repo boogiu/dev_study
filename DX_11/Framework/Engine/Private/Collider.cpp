@@ -39,10 +39,11 @@ void CCollider::Render_GUI()
 
 }
 
-void CCollider::Set_Active(_bool bActive)
+void CCollider::Set_Dead(_bool bActive)
 {
 	m_bActive = bActive; 
-	m_CollisionContext.Owner = nullptr;
+	if(bActive == false)
+		m_CollisionContext.Owner = nullptr;
 }
 
 _bool CCollider::Compare_Same(COLLIDER_SLOT* prev, COLLIDER_SLOT* current)

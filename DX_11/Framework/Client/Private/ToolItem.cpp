@@ -92,12 +92,12 @@ void CToolItem::Set_Item(ITEM_DATA_DESC data)
 	m_InstanceTag = data.TypeTag;
 	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
 	if (data.eType == ITEM_TYPE::NONE) {
-		Get_Component<CModel>()->Set_Active(false);
+		Get_Component<CModel>()->Set_Dead(false);
 		return;
 	}
 	else {
 		AdjustByItem(data.eType);
-		Get_Component<CModel>()->Set_Active(true);
+		Get_Component<CModel>()->Set_Dead(true);
 	}
 
 	Get_Component<CModel>()->Link_Model("GamePlay_Level", data.modelName);
