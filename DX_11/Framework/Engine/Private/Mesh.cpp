@@ -152,7 +152,7 @@ void CMesh::Render_GUI()
 
 CMesh* CMesh::Create(ID3D11Device* pDevice, ifstream& ifs, MESH_TYPE eType)
 {
-	CMesh* instance = new CMesh();
+  	CMesh* instance = new CMesh();
 	if (FAILED(instance->Initialize_From_File(pDevice, ifs, eType))) {
 		Safe_Release(instance);
 	}

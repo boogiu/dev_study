@@ -14,8 +14,7 @@ CPlayerState_Idle::CPlayerState_Idle()
 void CPlayerState_Idle::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Change_Animation("Base_Wait.anim", false);
-
+	Animator->ForceChange_Animation("Base_Wait.anim", true);
 }
 
 void CPlayerState_Idle::OnUpdate(_float dt)

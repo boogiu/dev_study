@@ -61,11 +61,12 @@ void CAABB_Collider::Late_Update()
 
 	for (auto& currSlot : m_CurrentCollider)
 	{
+		if (currSlot->IsValid() == false)
+			continue;
+
 		/*유효하지 않은 현재 충돌 대상 필터링*/
 		CCollider* pCol = currSlot->pCollider;
-		if (currSlot == nullptr || currSlot->bActive == false)
-			continue;
-		 else if (pCol == nullptr || pCol->Get_Active() == false)
+		if (pCol->Get_CompActive() == false)
 			continue;
 
 		// 이전 프레임 동일 슬롯
@@ -88,17 +89,14 @@ void CAABB_Collider::Late_Update()
 	for (auto& prevSlot : m_prevCollider)
 	{
 		/*유효하지 않은 이전 충돌 대상 필터링*/
-		if (prevSlot == nullptr)
+		if (prevSlot->IsValid() == false)
 			continue;
 
+		/*유효하지 않은 현재 충돌 대상 필터링*/
 		CCollider* pCol = prevSlot->pCollider;
-
-		if (pCol == nullptr)
-			continue;
-
-		if (pCol->Get_Active() == false || prevSlot->bActive == false) {
+		if (pCol->Get_CompActive() == false) {
 			m_pOwner->OnCollisionExit(pCol->Get_Context());
-  			continue;
+			continue;
 		}
 
 		auto itCurr = find_if(m_CurrentCollider.begin(), m_CurrentCollider.end(),
@@ -114,16 +112,17 @@ void CAABB_Collider::Late_Update()
 	}
 }
 
-
 _bool CAABB_Collider::Intersect(COLLIDER_SLOT* pSlot)
 {
 	_bool       onCollision = { false };
-	if (pSlot->bActive == false)
-		return false;
-	if (pSlot->pCollider->Get_Active() == false)
+
+	if (pSlot->IsValid() == false || pSlot->IsActive()==false)
 		return false;
 
-	switch (pSlot->pCollider->Get_ColliderType())
+	if (pSlot->pCollider->Get_CompActive() == false)
+		return false;
+
+	switch (pSlot->pCollider->Get_ColliderType())        
 	{
 	case Engine::COLLIDER_TYPE::AABB:
 		onCollision = m_pDesc->Intersects(*(static_cast<CAABB_Collider*>(pSlot->pCollider)->Get_Desc()));

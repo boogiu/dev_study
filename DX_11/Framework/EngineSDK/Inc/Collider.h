@@ -37,10 +37,12 @@ public:
 
 public:
     void Render_GUI();
-    virtual void Set_Active(_bool bActive) override;
+    virtual void Set_CompActive(_bool bActive) override;
+    virtual void Releas_Component() override;
 
 protected:
     _bool Compare_Same(COLLIDER_SLOT* prev, COLLIDER_SLOT* current);
+
 protected:
     _int m_SystemIndex = { -1 };
     COLLISION_CONTEXT m_CollisionContext = {};

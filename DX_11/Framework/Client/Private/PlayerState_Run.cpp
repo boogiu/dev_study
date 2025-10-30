@@ -71,6 +71,8 @@ void CPlayerState_Run::OnUpdate(_float dt)
 
 void CPlayerState_Run::OnExit()
 {
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	Animator->Stop_Animation();
 }
 
 CState* CPlayerState_Run::HandleTransition()

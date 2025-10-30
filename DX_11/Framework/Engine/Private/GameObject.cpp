@@ -89,6 +89,12 @@ HRESULT CGameObject::Initialize(INIT_DESC* pArg)
 	GAMEOBJECT_DESC* obj = static_cast<GAMEOBJECT_DESC*>(pArg);
 	for (auto& pair : m_Components)
 	{
+
+		if (pair.first == type_index(typeid(CModel)))
+			continue;
+		if (pair.first == type_index(typeid(CCollider)))
+			continue;
+
 		auto iter = obj->CompDesc.find(pair.first);
 		/*각자 컴포넌트에 맞는 설명체 찾아서 넣어줌. 없으면 그냥 이니셜ㄹ라이즈*/
 		if (iter == obj->CompDesc.end())
@@ -246,7 +252,7 @@ HRESULT CGameObject::Make_OpaquePacket()
 
 	packet.pModel = Get_Component<CModel>();
 	if (!packet.pModel || !packet.pModel->isReadyToDraw()) return E_FAIL;
-	if (!packet.pModel->Get_Active()) return E_FAIL;
+	if (!packet.pModel->Get_CompActive()) return E_FAIL;
 	packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel) ? true : false;
 
 	if (auto Animator = Get_Component<CAnimator3D>()) {
@@ -280,7 +286,7 @@ HRESULT CGameObject::Make_InstancePacket()
 	packet.pModel = Get_Component<CInstanceModel>();
 	packet.pMaterial = Get_Component<CMaterial>();
 
-	if (!packet.pModel ||!packet.pModel->Get_Active()) return E_FAIL;
+	if (!packet.pModel ||!packet.pModel->Get_CompActive()) return E_FAIL;
 	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
 	{
 		if (!packet.pModel->isDrawable(i)) continue;
@@ -298,8 +304,14 @@ void CGameObject::Free()
 	__super::Free();
 
 	for (auto& pair : m_Components) {
-		pair.second->Set_Dead(false);
-		pair.second->Set_Owner(nullptr);
+
+		//if (pair.first == type_index(typeid(CModel)))
+		//	continue;
+		//if (pair.first == type_index(typeid(CCollider)))
+		//	continue;
+		pair.second->Set_CompActive(false);
+
+		pair.second->Releas_Component();
 		Safe_Release(pair.second);
 	}
 

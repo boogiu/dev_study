@@ -106,9 +106,6 @@
     <Filter Include="02. GameObjects\05. Parts\Cloth">
       <UniqueIdentifier>{c56aa9cf-03dc-48e1-9389-acac36329029}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\03. Plant\Fruit">
-      <UniqueIdentifier>{9ed31946-94ed-4b07-9bce-21017d469509}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. Utility\CharacterState\LayerState">
       <UniqueIdentifier>{75703e1c-0272-4149-b22d-7e0e3e57c83c}</UniqueIdentifier>
     </Filter>
@@ -186,6 +183,12 @@
     </Filter>
     <Filter Include="02. GameObjects\02. Field\Hole">
       <UniqueIdentifier>{a639926f-a9d5-48a2-af46-c71bb34da43c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Item">
+      <UniqueIdentifier>{709fd50e-737c-43b9-91fa-e10df5f674df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\06. Item\Fruit">
+      <UniqueIdentifier>{9ed31946-94ed-4b07-9bce-21017d469509}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -334,7 +337,7 @@
       <Filter>02. GameObjects\00. Player</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Plant_Fruit.h">
-      <Filter>02. GameObjects\03. Plant\Fruit</Filter>
+      <Filter>02. GameObjects\06. Item\Fruit</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_PickUp.h">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\03. PickUp</Filter>
@@ -515,7 +518,7 @@
       <Filter>02. GameObjects\03. Plant\Plant_Tree</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Plant_Fruit.cpp">
-      <Filter>02. GameObjects\03. Plant\Fruit</Filter>
+      <Filter>02. GameObjects\06. Item\Fruit</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_PickUp.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\03. PickUp</Filter>

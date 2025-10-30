@@ -117,6 +117,7 @@ void CPlant_Fruit::Update_ByState(_float dt)
 		break;
 	case  DESTROY:
 		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
+		m_eState = IDLE;
 		break;
 	}
 }

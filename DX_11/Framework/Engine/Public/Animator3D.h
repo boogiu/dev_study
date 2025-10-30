@@ -67,8 +67,14 @@ public:
 protected:
     void Animation_Run(_float dt);
     void Animation_Convert(_float dt);
+
+
+    void Blend_In(_float dt);
     void Blend_Run(_float dt);
+    void Blend_Out(_float dt);
+    void Blend_Pause(_float dt);
     void Blend_Convert(_float dt);
+    void Override_BlendAnim();
     void BuildBone();
 
 public:
@@ -97,12 +103,14 @@ protected:
     /*Blend*/
     _int m_iBlendAnimation = {-1};
     _float m_fBlendTrackPosition = {};
+    _float m_fBlendConversionTrackPosition = {};
     _float m_fBlendDuration = {};
-    _float m_fBlendWeight = {};
+    _float m_fBlendWeight = {1.5f};
     vector<_uint> m_BlendIndex = {};
     vector<_float4x4> m_BlendTransfomationMatices = {};
     _bool isBlendAnimEnd = { false };
     BLENDER_STATE m_eBlendState;
+
     /*Managing*/
     vector<_bool> m_pAnimLoops;
     unordered_map<string, _uint> m_pAnimNames;

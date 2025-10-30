@@ -4,7 +4,7 @@
 #include "Collider.h"
 
 CCollisionSystem::CCollisionSystem(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:m_pDevice{ pDevice }, m_pContext{pContext}
+	:m_pDevice{ pDevice }, m_pContext{ pContext }
 {
 	Safe_AddRef(pDevice);
 	Safe_AddRef(pContext);
@@ -34,9 +34,16 @@ HRESULT CCollisionSystem::Initialize()
 
 void CCollisionSystem::Update(_float dt)
 {
-	for (auto& col : m_Colliders) {
-		if(col.pCollider&&col.bActive&&col.pCollider->Get_Active())
-			col.pCollider->Update();
+ 	for (auto& slot : m_Colliders)
+	{
+		if (slot.eState == COLLIDER_SLOT::STATE::DEAD ||
+			slot.pCollider == nullptr)
+			continue;
+		
+		if (!slot.pCollider->Get_CompActive())
+			continue;
+
+		slot.pCollider->Update();
 	}
 
 	MakeCandidate();
@@ -55,14 +62,21 @@ void CCollisionSystem::Update(_float dt)
 void CCollisionSystem::Late_Update(_float dt)
 {
 	for (auto& col : m_Colliders) {
-		if (col.pCollider && col.bActive && col.pCollider->Get_Active())
-			col.pCollider->Late_Update();
+
+		if (col.eState == COLLIDER_SLOT::STATE::DEAD ||
+			col.pCollider == nullptr)
+			continue;
+
+		if (!col.pCollider->Get_CompActive())
+			continue;
+
+		col.pCollider->Late_Update();
 	}
 }
 
 _int CCollisionSystem::RegisterCollider(CCollider* pCollider, _int Index)
 {
-	if (Index != -1 && Index<m_Colliders.size()) {
+	if (Index != -1 && Index < m_Colliders.size()) {
 		if (m_Colliders[Index].pCollider == pCollider) {
 			return Index;
 		}
@@ -70,22 +84,21 @@ _int CCollisionSystem::RegisterCollider(CCollider* pCollider, _int Index)
 
 	for (size_t i = 0; i < m_Colliders.size(); ++i)
 	{
-		if (m_Colliders[i].pCollider == nullptr)
+		if (m_Colliders[i].pCollider == nullptr && m_Colliders[i].eState == COLLIDER_SLOT::STATE::DEAD)
 		{
 			m_Colliders[i].pCollider = pCollider;
-			m_Colliders[i].bActive = pCollider->Has_Desc();
-			m_Colliders[i].iGeneration ++;
+			m_Colliders[i].eState = (pCollider->Has_Desc() ? COLLIDER_SLOT::STATE::ACTIVE : COLLIDER_SLOT::STATE::INACTIVE);
+			m_Colliders[i].iGeneration++;
 			return static_cast<_int>(i);
 		}
 	}
 
 	COLLIDER_SLOT info{};
 	info.pCollider = pCollider;
-	info.bActive = pCollider->Has_Desc();
+	info.eState = (pCollider->Has_Desc() ? COLLIDER_SLOT::STATE::ACTIVE : COLLIDER_SLOT::STATE::INACTIVE);
 	info.iGeneration = 1;
 	m_Colliders.push_back(info);
-	Safe_AddRef(info.pCollider);
-	return static_cast<_int>(m_Colliders.size()-1);
+	return static_cast<_int>(m_Colliders.size() - 1);
 }
 
 
@@ -99,16 +112,14 @@ void CCollisionSystem::UnregisterCollider(CCollider* pCollider, _int Index)
 		return;
 	}
 
-	else {
-		/*여기서 세이프 릴리즈 하면 재귀 호출  되어서 스택 오버플로우 남*/
-		Safe_Release(m_Colliders[Index].pCollider);
-		m_Colliders[Index].bActive = false;
+	else {/*Remove At Clean Up*/
+		m_Colliders[Index].eState = COLLIDER_SLOT::STATE::DEAD;
 	}
 }
 
 void CCollisionSystem::DeActiveCollider(CCollider* pCollider, _int Index)
 {
-	if(Index >= m_Colliders.size()) {
+	if (Index >= m_Colliders.size()) {
 		return;
 	}
 
@@ -117,7 +128,7 @@ void CCollisionSystem::DeActiveCollider(CCollider* pCollider, _int Index)
 	}
 
 	else {
-		m_Colliders[Index].bActive = false;
+		m_Colliders[Index].eState = COLLIDER_SLOT::STATE::INACTIVE;
 	}
 }
 
@@ -134,7 +145,7 @@ void CCollisionSystem::ActiveCollider(CCollider* pCollider, _int Index)
 	}
 
 	else {
-		m_Colliders[Index].bActive = true;
+		m_Colliders[Index].eState = COLLIDER_SLOT::STATE::ACTIVE;
 	}
 }
 
@@ -145,13 +156,21 @@ void CCollisionSystem::MakeCandidate()
 
 	for (size_t i = 0; i < m_Colliders.size(); i++)
 	{
-		if (m_Colliders[i].bActive == false) continue;
-		if (m_Colliders[i].pCollider->Get_Active() == false) continue;
+		if (m_Colliders[i].IsValid() == false)
+			continue;
+		if (m_Colliders[i].IsActive() == false)
+			continue;
+		if (m_Colliders[i].pCollider->Get_CompActive() == false)
+			continue;
 
-		for (size_t j = i+1; j < m_Colliders.size(); j++)
+		for (size_t j = i + 1; j < m_Colliders.size(); j++)
 		{
-			if (m_Colliders[j].bActive == false) continue;
-			if (m_Colliders[j].pCollider->Get_Active() == false) continue;
+			if (m_Colliders[j].IsValid() == false)
+				continue;
+			if (m_Colliders[j].IsActive() == false)
+				continue;
+			if (m_Colliders[j].pCollider->Get_CompActive() == false)
+				continue;
 
 			m_CandidateCollision.emplace_back(i, j);
 		}
@@ -163,10 +182,9 @@ void CCollisionSystem::Clean_Up()
 	for (auto& col : m_Colliders) {
 		if (!col.pCollider) continue;
 
-		if (false == col.pCollider->Get_Active()) {
-			Safe_Release(col.pCollider);
+		if (false == col.pCollider->Get_CompActive()) {
 			col.pCollider = nullptr;
-			col.bActive = false;
+			col.eState = COLLIDER_SLOT::STATE::DEAD;
 		}
 	}
 }
@@ -186,10 +204,10 @@ void CCollisionSystem::Render_Debug()
 	m_pContext->IASetInputLayout(m_pInputLayout);
 
 	m_pBatch->Begin();
-	
+
 	for (size_t i = 0; i < m_Colliders.size(); i++)
 	{
-		if (m_Colliders[i].bActive) {
+		if (m_Colliders[i].IsActive()) {
 			m_Colliders[i].pCollider->Render(m_pBatch, XMVectorSet(0.f, 1.f, 0.f, 1.f));
 		}
 	}
@@ -200,7 +218,7 @@ void CCollisionSystem::Render_Debug()
 
 CCollisionSystem* CCollisionSystem::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CCollisionSystem* Instance = new CCollisionSystem(pDevice,pContext);
+	CCollisionSystem* Instance = new CCollisionSystem(pDevice, pContext);
 	if (FAILED(Instance->Initialize())) {
 		Safe_Release(Instance);
 	}
@@ -213,10 +231,6 @@ void CCollisionSystem::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
-	for (auto& slots : m_Colliders)
-	{
-		Safe_Release(slots.pCollider);
-	}
 	m_Colliders.clear();
 
 #ifdef _DEBUG

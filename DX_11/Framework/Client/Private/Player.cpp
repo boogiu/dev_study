@@ -146,6 +146,15 @@ void CPlayer::Render_GUI()
 		Change_Item(Data);
 	}
 	ImGui::End();
+
+	ImGui::Begin("Control_Packet");
+	ImGui::Checkbox("MsgMove", &m_ControlPack.MsgMove);
+	ImGui::Checkbox("MsgDash", &m_ControlPack.MsgDash);
+	ImGui::Checkbox("MsgAction", &m_ControlPack.MsgAction);
+	ImGui::Checkbox("MsgToolUse", &m_ControlPack.MsgToolUse);
+	ImGui::Checkbox("MsgInteraction", &m_ControlPack.MsgInteraction);
+	ImGui::Checkbox("MsgUI", &m_ControlPack.MsgUI);
+	ImGui::End();
 }
 
 void CPlayer::Update_Input(_float dt)

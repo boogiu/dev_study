@@ -307,9 +307,20 @@ namespace Engine
 
 	struct COLLIDER_SLOT
 	{
+		enum class STATE : _uint
+		{
+			NONE = 0,   // 비어 있음 (슬롯 미사용)
+			ACTIVE = 1,   // 충돌 검사 대상
+			INACTIVE = 2,   // 일시 비활성 (충돌 검사 제외)
+			DEAD = 3,   // 소유자가 삭제됨, 완전히 제거 예정
+		};
+
 		class CCollider* pCollider;
-		_bool bActive = true;
+		STATE eState = STATE::NONE;
 		_uint iGeneration = {};
+
+		bool IsValid() const { return eState != STATE::DEAD && pCollider != nullptr; }
+		bool IsActive() const { return eState == STATE::ACTIVE && pCollider != nullptr; }
 	};
 
 	typedef struct tagCollisionInfoContext {

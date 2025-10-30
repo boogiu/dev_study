@@ -38,6 +38,8 @@ void CPlayerState_Walk::OnUpdate(_float dt)
 
 void CPlayerState_Walk::OnExit()
 {
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	Animator->Stop_Animation();
 }
 
 CState* CPlayerState_Walk::HandleTransition()

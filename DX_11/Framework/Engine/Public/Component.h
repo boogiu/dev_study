@@ -19,15 +19,17 @@ public:
 public:
     void Set_Owner(class CGameObject* owner) { m_pOwner = owner; }
     class CGameObject* Get_Owner() { return m_pOwner; }
+
 public:
-    virtual void Set_Dead(_bool bActive) { m_bActive = bActive; }
-    _bool Get_Active() { return m_bActive; }
+    virtual void Set_CompActive(_bool bActive) { m_bActive = bActive; }
+    _bool Get_CompActive() { return m_bActive; }
 
 protected:
     class CGameObject* m_pOwner = {nullptr};
     _bool m_bActive = { true };
 
 public:
+    virtual void Releas_Component() {};
     virtual CComponent* Clone() PURE;
     virtual void Free();
 };

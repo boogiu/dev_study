@@ -55,6 +55,7 @@ void CSphere_Collider::Update()
 
 	m_pOriginalDesc->Transform(*m_pDesc, TransformMatrix);
 }
+
 void CSphere_Collider::Late_Update()
 {
 	if ((m_pDesc == nullptr) || (m_pOriginalDesc == nullptr))
@@ -62,12 +63,12 @@ void CSphere_Collider::Late_Update()
 
 	for (auto& currSlot : m_CurrentCollider)
 	{
-		/*유효하지 않은 현재 충돌 대상 필터링*/
-		if (currSlot == nullptr || currSlot->bActive == false)
+		if (currSlot->IsValid() == false)
 			continue;
 
+		/*유효하지 않은 현재 충돌 대상 필터링*/
 		CCollider* pCol = currSlot->pCollider;
-		if (pCol == nullptr || pCol->Get_Active() == false)
+		if (pCol->Get_CompActive() == false)
 			continue;
 
 		// 이전 프레임 동일 슬롯
@@ -90,17 +91,16 @@ void CSphere_Collider::Late_Update()
 	for (auto& prevSlot : m_prevCollider)
 	{
 		/*유효하지 않은 이전 충돌 대상 필터링*/
-		if (prevSlot == nullptr)
+		if (prevSlot->IsValid() == false)
 			continue;
 
+		/*유효하지 않은 현재 충돌 대상 필터링*/
 		CCollider* pCol = prevSlot->pCollider;
-		if (pCol == nullptr)
-			continue;
-		if (pCol->Get_Active() == false || prevSlot->bActive == false) {
+		if (pCol->Get_CompActive() == false) {
 			m_pOwner->OnCollisionExit(pCol->Get_Context());
 			continue;
 		}
-		// 이번 프레임에도 있는 놈 있는지->있음녀 ㄴ스테이
+
 		auto itCurr = find_if(m_CurrentCollider.begin(), m_CurrentCollider.end(),
 			[&](COLLIDER_SLOT* currSlot)
 			{
@@ -117,9 +117,11 @@ void CSphere_Collider::Late_Update()
 _bool CSphere_Collider::Intersect(COLLIDER_SLOT* pSlot)
 {
 	_bool       onCollision = { false };
-	if (pSlot->bActive == false)
+
+	if (pSlot->IsValid() == false || pSlot->IsActive() == false)
 		return false;
-	if (pSlot->pCollider->Get_Active() == false)
+
+	if (pSlot->pCollider->Get_CompActive() == false)
 		return false;
 
 	switch (pSlot->pCollider->Get_ColliderType())

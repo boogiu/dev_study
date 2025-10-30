@@ -39,41 +39,44 @@ void CCollider::Render_GUI()
 
 }
 
-void CCollider::Set_Dead(_bool bActive)
+void CCollider::Set_CompActive(_bool bActive)
 {
 	m_bActive = bActive; 
 	if(bActive == false)
 		m_CollisionContext.Owner = nullptr;
 }
 
+void CCollider::Releas_Component()
+{
+}
+
 _bool CCollider::Compare_Same(COLLIDER_SLOT* prev, COLLIDER_SLOT* current)
 {
-	if (prev->bActive == false) {
+	if (!prev || !current)
 		return false;
-	}
-	if (current->bActive == false) {
+
+	if (prev->pCollider == nullptr || current->pCollider == nullptr)
 		return false;
-	}
-	if (prev->pCollider->Get_Active() == false) {
+
+	// DEAD Á¦¿Ü
+	if (prev->eState == COLLIDER_SLOT::STATE::DEAD ||
+		current->eState == COLLIDER_SLOT::STATE::DEAD)
 		return false;
-	}
-	if (current->pCollider->Get_Active() == false) {
-		return false;
-	}
 
 	if (prev->iGeneration != current->iGeneration)
 		return false;
-	return true;
+
+	return prev->pCollider == current->pCollider;
 }
+
 
 void CCollider::Free()
 {
 	__super::Free();
-
+	CGameInstance::GetInstance()->Get_CollisionSystem()->UnregisterCollider(this, m_SystemIndex);
 	m_CurrentCollider.clear();
 	m_prevCollider.clear();
 
-	//CGameInstance::GetInstance()->Get_CollisionSystem()->UnregisterCollider(this,m_SystemIndex);
 }
 
 void CCollider::Set_ColliderActive(_bool Active)
