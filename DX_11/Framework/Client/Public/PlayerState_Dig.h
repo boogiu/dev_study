@@ -1,12 +1,12 @@
 #pragma once
 #include "PlayerState.h"
 NS_BEGIN(Client)
-class CPlayerState_Axe :
+class CPlayerState_Dig :
     public CPlayerState
 {
 private:
-    CPlayerState_Axe();
-    virtual ~CPlayerState_Axe() DEFAULT;
+    CPlayerState_Dig();
+    virtual ~CPlayerState_Dig() DEFAULT;
 
 public:
     virtual void OnEnter();
@@ -19,9 +19,15 @@ public:
     virtual _uint Get_InputMask() const override;
 
 private:
-    vector<_uint> indexes;
+    void Make_Hole();
+
+private:
+    _bool m_isTree = { false };
+    _bool m_isDigged = { false };
+    _bool m_isDiggable = { false };
+    _bool m_DigComplete = { false };
 public:
-    static CPlayerState_Axe* Create();
+    static CPlayerState_Dig* Create();
     virtual void Free();
 };
 NS_END

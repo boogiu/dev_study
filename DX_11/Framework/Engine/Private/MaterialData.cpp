@@ -22,7 +22,10 @@ CMaterialData::~CMaterialData()
 HRESULT CMaterialData::Initialize(const string& levelKey, ifstream& ifs, const string& directory)
 {
 	MATERIAL_INFO_HEADER infoHeader = {};
-
+	string parentFolder = filesystem::path(directory).parent_path().string();
+	string ParentName = filesystem::path(parentFolder).filename().string();
+	//string parentFolder = filesystem::path(directory).di.string();
+	
 	ifs.read(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
 
 	m_DefaultMaterialConstant = infoHeader.materialConstant;
@@ -30,6 +33,7 @@ HRESULT CMaterialData::Initialize(const string& levelKey, ifstream& ifs, const s
 	m_MaterialKey = infoHeader.materialDataKey;
 
 	Link_Shader(levelKey, infoHeader.ShaderKey);
+
 	for (size_t i = 0; i < infoHeader.TextureTypeCount; i++)
 	{
 		TEXTURE_FILE_HEADER textureHeader = {};
@@ -38,8 +42,11 @@ HRESULT CMaterialData::Initialize(const string& levelKey, ifstream& ifs, const s
 		{
 			TEXTURE_INFO_HEADER textureInfoHeader = {};
 			ifs.read(reinterpret_cast<char*>(&textureInfoHeader), sizeof(TEXTURE_INFO_HEADER));
-			CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(textureInfoHeader.TextureKey, directory + textureInfoHeader.TextureKey);
-			Link_Texture(levelKey, textureInfoHeader.TextureKey, static_cast<TEXTURE_TYPE>(textureHeader.typeID));
+			CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(
+				ParentName+textureInfoHeader.TextureKey,
+				directory + textureInfoHeader.TextureKey);
+
+			Link_Texture(levelKey, ParentName + textureInfoHeader.TextureKey, static_cast<TEXTURE_TYPE>(textureHeader.typeID));
 		}
 	}
 

@@ -73,7 +73,9 @@ HRESULT ClientHelper::Add_TexturePathFromDirectory(string directoryPath)
 			continue;
 
 		string fileName = entry.path().filename().string();
-		CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(fileName, entry.path().string());
+		string parentFolder = entry.path().parent_path().filename().string();
+		string combinedKey = parentFolder + "_" + fileName;
+		CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(combinedKey, entry.path().string());
 		}
 	return S_OK;
 }

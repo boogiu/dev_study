@@ -1,5 +1,6 @@
   #pragma once
 #include "Base.h"
+#include "Engine_Service.h"
 
 NS_BEGIN(Engine)
 

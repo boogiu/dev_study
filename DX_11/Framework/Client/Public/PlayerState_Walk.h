@@ -13,6 +13,7 @@ public:
     virtual void OnUpdate(_float dt);
     virtual void OnExit();
     virtual CState* HandleTransition();
+    virtual _uint Get_InputMask() const override;
 
 private:
     _bool isFlipping = { false };

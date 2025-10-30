@@ -124,7 +124,7 @@ namespace Engine
 	typedef struct ENGINE_DLL tagKeyFrame
 	{
 		_float3			vScale;
-		_float4			vRotation;
+		_float4			vRotation = {0,0,0,1};
 		_float3			vTranslation;
 		_float				fTrackPosition;
 
@@ -135,16 +135,37 @@ namespace Engine
 		_XMKeyFrame LerpKeyFram(const tagKeyFrame& nextFrame, _float nowTrackPosition) {
 			_XMKeyFrame lerpedFrame = {};
 			_float fRatio = (nowTrackPosition - fTrackPosition) / (nextFrame.fTrackPosition - fTrackPosition);
+			_float4 nextRot = nextFrame.vRotation;
+
+			_vector nextRotation =XMLoadFloat4(&nextRot);
+			_vector nowRotation =XMLoadFloat4(&vRotation);
+
+			if (XMVector4Equal(nextRotation, XMVectorZero()))
+						nextRotation = XMQuaternionIdentity();
+			if (XMVector4Equal(nowRotation, XMVectorZero()))
+				nowRotation = XMQuaternionIdentity();
+
 			lerpedFrame.vScale = XMVectorLerp(XMLoadFloat3(&vScale), XMLoadFloat3(&nextFrame.vScale), fRatio);
-			lerpedFrame.vRotation = XMQuaternionSlerp(XMLoadFloat4(&vRotation), XMLoadFloat4(&nextFrame.vRotation), fRatio);
+			lerpedFrame.vRotation = XMQuaternionSlerp(nowRotation, nextRotation, (float)fRatio);
 			lerpedFrame.vTranslation = XMVectorLerp(XMVectorSetW(XMLoadFloat3(&vTranslation), 1.f), XMVectorSetW(XMLoadFloat3(&nextFrame.vTranslation), 1.f), fRatio);
 			return lerpedFrame;
 		}
+
 		_XMKeyFrame LerpKeyFram(const tagKeyFrame& nextFrame, _float nowTrackPosition, _float Distance) {
 			_XMKeyFrame lerpedFrame = {};
 			_float fRatio = nowTrackPosition / Distance;
+
+			_float4 nextRot = nextFrame.vRotation;
+			_vector nextRotation = XMLoadFloat4(&nextRot);
+			_vector nowRotation = XMLoadFloat4(&vRotation);
+
+			if (XMVector4Equal(nextRotation, XMVectorZero()))
+				nextRotation = XMQuaternionIdentity();
+			if (XMVector4Equal(nowRotation, XMVectorZero()))
+				nowRotation = XMQuaternionIdentity();
+
 			lerpedFrame.vScale = XMVectorLerp(XMLoadFloat3(&vScale), XMLoadFloat3(&nextFrame.vScale), fRatio);
-			lerpedFrame.vRotation = XMQuaternionSlerp(XMLoadFloat4(&vRotation), XMLoadFloat4(&nextFrame.vRotation), fRatio);
+			lerpedFrame.vRotation = XMQuaternionSlerp(nowRotation, nextRotation, (float)fRatio);
 			lerpedFrame.vTranslation = XMVectorLerp(XMVectorSetW(XMLoadFloat3(&vTranslation), 1.f), XMVectorSetW(XMLoadFloat3(&nextFrame.vTranslation), 1.f), fRatio);
 			return lerpedFrame;
 		}

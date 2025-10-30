@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 NS_BEGIN(Engine)
-class ENGINE_DLL CCollider :
+class ENGINE_DLL CCollider abstract:
     public CComponent
 {
 protected:
@@ -37,6 +37,7 @@ public:
 
 public:
     void Render_GUI();
+    virtual void Set_Active(_bool bActive) override;
 
 protected:
     _bool Compare_Same(COLLIDER_SLOT* prev, COLLIDER_SLOT* current);

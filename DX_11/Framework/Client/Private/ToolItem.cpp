@@ -64,6 +64,7 @@ void CToolItem::Late_Update(_float dt)
 void CToolItem::Render_GUI()
 {
 	Get_Component<COBB_Collider>()->Render_GUI();
+	Get_Component<CMaterial>()->Render_GUI();
 	
 	//ImGui::InputFloat3()
 }
@@ -98,9 +99,9 @@ void CToolItem::Set_Item(ITEM_DATA_DESC data)
 		AdjustByItem(data.eType);
 		Get_Component<CModel>()->Set_Active(true);
 	}
+
 	Get_Component<CModel>()->Link_Model("GamePlay_Level", data.modelName);
 	Get_Component<CMaterial>()->Link_Material("GamePlay_Level", data.materialName);
-	
 }
 
 CToolItem* CToolItem::Create()

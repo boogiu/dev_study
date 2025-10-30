@@ -28,11 +28,12 @@ HRESULT CSphere_Collider::Initialize_Prototype()
 HRESULT CSphere_Collider::Initialize(COMPONENT_DESC* pArg)
 {
 	__super::Initialize(pArg);
+
 	if (pArg != nullptr) {
 		SPHERE_COLLIDER_DESC* pDesc = static_cast<SPHERE_COLLIDER_DESC*>(pArg);
 		m_pOriginalDesc = new BoundingSphere(pDesc->vCenter, pDesc->fRadius);
 		m_pDesc = new BoundingSphere(*m_pOriginalDesc);
-		CGameInstance::GetInstance()->Get_CollisionSystem()->ActiveCollider(this, m_SystemIndex);
+		m_SystemIndex = CGameInstance::GetInstance()->Get_CollisionSystem()->RegisterCollider(this, m_SystemIndex);
 	}
 	return S_OK;
 }
@@ -161,7 +162,7 @@ void CSphere_Collider::Make_MinMaxCollider(MINMAX_BOX minMax)
 
 	m_pOriginalDesc = new BoundingSphere(vCenter, maxRadius);
 	m_pDesc = new BoundingSphere(*m_pOriginalDesc);
-	CGameInstance::GetInstance()->Get_CollisionSystem()->ActiveCollider(this, m_SystemIndex);
+	m_SystemIndex = CGameInstance::GetInstance()->Get_CollisionSystem()->RegisterCollider(this, m_SystemIndex);
 }
 
 #ifdef _DEBUG

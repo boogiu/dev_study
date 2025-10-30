@@ -43,25 +43,31 @@ void CPlayerState_Walk::OnExit()
 CState* CPlayerState_Walk::HandleTransition()
 {
 	CPlayer::MovementPacket tPacket = m_pPlayer->Get_MovementPacket();
+	CPlayer::ControlPacket control = m_pPlayer->Get_ControlPack();
 	_float2 InputAxis = tPacket.vInputAxis;
 
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 
 
-	if (!isFlipping && fabs(InputAxis.x) == 0 && fabs(InputAxis.y) == 0) {
+	if (!isFlipping && !control.MsgMove) {
 		Animator->Change_Animation("ToStop_RunLatter_L.anim");
 
 		if (Animator->isCurrentAnimEnd()) {
 			return m_pLayer->Get_State("Movement_Idle_State");
 		}
 	}
-	else if (tPacket.bRunning) {
+	else if (control.MsgDash) {
 		return m_pLayer->Get_State("Movement_Run_State");
 	}
 	else {
 		HRESULT hr = Animator->Change_Animation("Move_Run_F.anim");
 	}
 	return nullptr;
+}
+
+_uint CPlayerState_Walk::Get_InputMask() const
+{
+	return OnlyMove;
 }
 
 CPlayerState_Walk* CPlayerState_Walk::Create()

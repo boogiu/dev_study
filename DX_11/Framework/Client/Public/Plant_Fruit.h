@@ -4,7 +4,7 @@ NS_BEGIN(Client)
 class CPlant_Fruit :
     public CGameObject
 {
-    enum Fruit_State {DANGLE, DROP, BOUND, FINDED, IDLE, PICKED};
+    enum Fruit_State {DANGLE, DROP, BOUND, FINDED, IDLE, PICKED,DESTROY};
 
 private:
     CPlant_Fruit();

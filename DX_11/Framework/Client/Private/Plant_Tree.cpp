@@ -60,9 +60,6 @@ void CPlant_Tree::Priority_Update(_float dt)
 {
 	
 	Check_State(dt);
-
-
-
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
@@ -113,6 +110,7 @@ HRESULT CPlant_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mo
 
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	m_Index = tileSystem->Get_IndexByPosition(Get_Position());
+
 	tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(
 		TILE_FLAG::FLAG_BLOCKED| TILE_FLAG::FLAG_TREE));
 
@@ -136,6 +134,11 @@ void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 			_float RLCheck = context.Owner->Get_Position().x;
 			m_isTargetRight = Get_Position().x < RLCheck;
 		}
+	}
+
+	if (context.Owner->Has_Tag("Scoop")) {
+		if(context.EventTag == "Digged")
+			m_eState = DIGGED;
 	}
 
 	else if (context.Owner->Has_Tag("None")) {
@@ -189,6 +192,9 @@ void CPlant_Tree::Check_State(_float dt)
 		PlayAnim_Encounter();
 		m_eState = IDLE;
 		break;
+	case DIGGED:
+		Digged_Self(dt);
+		break;
 	}
 }
 
@@ -205,11 +211,9 @@ void CPlant_Tree::PlayAnim_Cut()
 	if (Get_Component<CAnimator3D>()->isCurrentAnimEnd()) {
 
 		Get_Component<CModel>()->Link_Model("GamePlay_Level", m_ModelName + "Stump.model");
-		auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-
-		tileSystem->Remove_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_TREE));
-		tileSystem->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_DIGGABLE| TILE_FLAG::FLAG_SITTABLE));
+		
 		m_eState = IDLE;
+		m_InstanceTag = "Stump";
 	}
 
 }
@@ -284,7 +288,7 @@ void CPlant_Tree::Adjust_Material()
 		SHADER_PARAM palette = {};
 		palette.iSize = 0;
 		palette.typeName = "Texture2D";
-		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "mPltTreeOakTrunkColor_Grd.png")->Get_SRV();
+		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "Palette_mPltTreeOakTrunkColor_Grd.png")->Get_SRV();
 		TruckInstance->Set_Param("g_PaletteTexture", palette);
 		TruckInstance->Override_Pass("Tree");
 	}
@@ -299,7 +303,7 @@ void CPlant_Tree::Adjust_Material()
 		SHADER_PARAM palette = {};
 		palette.iSize = 0;
 		palette.typeName = "Texture2D";
-		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "mPltTreeOakLeafColor_Grd.png")->Get_SRV();
+		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "Palette_mPltTreeOakLeafColor_Grd.png")->Get_SRV();
 	
 		LeafInstance->Set_Param("g_PaletteTexture", palette);
 		//LeafInstance->Set_Param("leafPalette", Leaf);
@@ -312,7 +316,7 @@ void CPlant_Tree::Adjust_Material()
 		SHADER_PARAM palette = {};
 		palette.iSize = 0;
 		palette.typeName = "Texture2D";
-		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "mPltTreeOakLeafColor_Grd.png")->Get_SRV();
+		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "Palette_mPltTreeOakLeafColor_Grd.png")->Get_SRV();
 		//LeafInstance->Set_Param("leafPalette", Leaf);
 		BackLeafInstance->Set_Param("g_PaletteTexture", palette);
 		BackLeafInstance->Override_Pass("Leaf");
@@ -345,6 +349,18 @@ void CPlant_Tree::Regenerate_Items()
 	for (size_t i = 0; i < 3; i++)
 	{
 		m_pFruits[i]->Get_Component<CModel>()->Set_Active(true);
+	}
+}
+
+void CPlant_Tree::Digged_Self(_float dt)
+{
+	_float speed = dt * -4;
+	m_pTransform->AddScale({ speed,speed,speed });
+	_float scale = XMVectorGetX(XMVector3Length(m_pTransform->Get_Scale()));
+	if (scale < 0.1f) {
+		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
+		auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+		tileSystem->Remove_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_TREE));
 	}
 }
 

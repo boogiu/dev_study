@@ -10,7 +10,8 @@ class CPlant_Tree :
         SHAKING, 
         HITTED,
         CUTTED,
-        ENCOUNTERED
+        ENCOUNTERED,
+        DIGGED
     };
 
 private:
@@ -38,6 +39,7 @@ private:
     void Check_State(_float dt);
     void Make_Fruits();
     void Adjust_Material();
+
 private:
     void PlayAnim_Cut();
     void PlayAnim_Hit();
@@ -48,6 +50,7 @@ private:
 private:
     void Drop_Items();
     void Regenerate_Items();
+    void Digged_Self(_float dt);
 
 private:
     TILE_INDEX m_Index = {};

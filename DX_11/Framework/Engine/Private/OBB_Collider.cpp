@@ -35,7 +35,7 @@ HRESULT COBB_Collider::Initialize(COMPONENT_DESC* pArg)
 			XMQuaternionRotationRollPitchYaw(pDesc->vEularRadians.x, pDesc->vEularRadians.y, pDesc->vEularRadians.z));
 		m_pOriginalDesc = new BoundingOrientedBox(pDesc->vCenter, pDesc->vSize, vQuaternion);
 		m_pDesc = new BoundingOrientedBox(*m_pOriginalDesc);
-		CGameInstance::GetInstance()->Get_CollisionSystem()->ActiveCollider(this, m_SystemIndex);
+		m_SystemIndex = CGameInstance::GetInstance()->Get_CollisionSystem()->RegisterCollider(this, m_SystemIndex);
 	}
 	return S_OK;
 }
@@ -165,7 +165,7 @@ void COBB_Collider::Make_MinMaxCollider(MINMAX_BOX minMax)
 	m_pOriginalDesc = new BoundingOrientedBox(vCenter, vSize, vQuaternion);
 	m_pDesc = new BoundingOrientedBox(*m_pOriginalDesc);
 
-	CGameInstance::GetInstance()->Get_CollisionSystem()->ActiveCollider(this, m_SystemIndex);
+	m_SystemIndex = CGameInstance::GetInstance()->Get_CollisionSystem()->RegisterCollider(this, m_SystemIndex);
 }
 
 #ifdef _DEBUG

@@ -202,13 +202,13 @@ HRESULT CAnimator3D::Set_AnimationBlend(string animName, vector<_uint> blendInde
 	auto iter = m_pAnimNames.find(animName);
 
 	if (iter == m_pAnimNames.end()) return E_FAIL;
-
+	 
 	if (iter->second == m_iCurrentClipIndex) {
 		return E_FAIL;
 	}
 
 	if (iter->second == m_iBlendAnimation) {
-		m_fBlendDuration = 0.f;
+		//m_fBlendDuration = 0.f;
 		m_eBlendState = BLENDER_STATE::BLEND_IN;
 		m_BlendIndex = blendIndex;
 		return S_OK;
@@ -257,8 +257,10 @@ _bool CAnimator3D::isCurrentAnimEnd()
 _bool CAnimator3D::isOverAnimTiming(_float percent)
 {
 	auto& nowClip = m_pAnimClips[m_iCurrentClipIndex];
+	_float threshold = nowClip->Get_Duration() * percent;
 
-	return nowClip->Get_Duration() * percent < m_fCurrentTrackPosition;
+	// 이전 프레임 트랙 위치 < 기준 <= 현재 트랙 위치일 때 true
+	return  m_fCurrentTrackPosition >= threshold;
 }
 
 string CAnimator3D::Get_CurrentAnimName()
@@ -340,6 +342,7 @@ void CAnimator3D::Animation_Convert(_float dt)
 		return;
 	}
 
+
 	_bool ConvertComplete = m_pAnimClips[m_iCurrentClipIndex]->ConvertTo(
 		m_TransfromationMatrices,
 		*m_pAnimClips[m_iNextClipIndex],
@@ -347,7 +350,7 @@ void CAnimator3D::Animation_Convert(_float dt)
 		m_fPrevTrackPosition,
 		m_fCurrentTrackPosition);
 
-	Blend_Run(dt);
+	Blend_Convert(dt);
 
 	if (ConvertComplete) {
 		m_fConvertDuration = 0;
@@ -373,7 +376,7 @@ void CAnimator3D::Blend_Run(_float dt)
 		return;
 
 	auto& blendClip = m_pAnimClips[m_iBlendAnimation];
-	_float speed =dt*4;
+	_float speed = dt * 2.5;
 
 	if (m_eBlendState == BLENDER_STATE::BLEND_PAUSE)
 		return;
@@ -403,6 +406,7 @@ void CAnimator3D::Blend_Run(_float dt)
 		m_fBlendTrackPosition = blendClip->TranslateAnimateMatrix(
 			m_BlendTransfomationMatices, m_fBlendTrackPosition,
 			dt, m_pAnimLoops[m_iBlendAnimation], &isBlendAnimEnd);
+
 	}
 
 	// base와 blend 보간
@@ -424,6 +428,68 @@ void CAnimator3D::Blend_Run(_float dt)
 		_matrix blendedM = XMMatrixAffineTransformation(
 			blendedS, XMVectorSet(0.f, 0.f, 0.f, 1.f), blendedR, blendedT);
 
+		XMStoreFloat4x4(&m_TransfromationMatrices[idx], blendedM);
+	}
+}
+
+void CAnimator3D::Blend_Convert(_float dt)
+{
+	if (m_iBlendAnimation == -1)
+		return;
+
+	auto& blendClip = m_pAnimClips[m_iBlendAnimation];
+	_float speed = dt * 2.5;
+
+	if (m_eBlendState == BLENDER_STATE::BLEND_IN) {
+		m_fBlendDuration += speed;
+		if (m_fBlendDuration > 1.f) {
+			m_fBlendDuration = 1.f;
+			m_eBlendState = BLENDER_STATE::RUNNING;
+		}
+	}
+	else if (m_eBlendState == BLENDER_STATE::BLEND_OUT) {
+		m_fBlendDuration -= speed;
+		if (m_fBlendDuration <= 0.f) {
+			m_fBlendDuration = 0.f;
+			m_BlendIndex.clear();
+			m_BlendTransfomationMatices.clear();
+			m_iBlendAnimation = -1;
+			m_eBlendState = BLENDER_STATE::NONE;
+			return;
+		}
+	}
+
+	m_BlendTransfomationMatices = m_TransfromationMatrices;
+	m_fBlendTrackPosition = blendClip->TranslateAnimateMatrix(
+		m_BlendTransfomationMatices, m_fBlendTrackPosition,
+		dt, m_pAnimLoops[m_iBlendAnimation], &isBlendAnimEnd);
+
+	m_pAnimClips[m_iBlendAnimation]->ConvertTo(
+		m_BlendTransfomationMatices,
+		*m_pAnimClips[m_iNextClipIndex],
+		m_fBlendDuration,
+		m_fPrevTrackPosition,
+		m_fBlendTrackPosition);
+
+	// base와 blend 보간
+	for (size_t i = 0; i < m_BlendIndex.size(); ++i)
+	{
+		_uint idx = m_BlendIndex[i];
+		_matrix base = XMLoadFloat4x4(&m_TransfromationMatrices[idx]);
+		_matrix blend = XMLoadFloat4x4(&m_BlendTransfomationMatices[idx]);
+		_vector baseS, baseR, baseT;
+		_vector blendS, blendR, blendT;
+		
+		XMMatrixDecompose(&baseS, &baseR, &baseT, base);
+		XMMatrixDecompose(&blendS, &blendR, &blendT, blend);
+		
+		_vector blendedS = XMVectorLerp(baseS, blendS, m_fBlendDuration);
+		_vector blendedT = XMVectorLerp(baseT, blendT, m_fBlendDuration);
+		_vector blendedR = XMQuaternionSlerp(baseR, blendR, m_fBlendDuration);
+		
+		_matrix blendedM = XMMatrixAffineTransformation(
+			blendedS, XMVectorSet(0.f, 0.f, 0.f, 1.f), blendedR, blendedT);
+		
 		XMStoreFloat4x4(&m_TransfromationMatrices[idx], blendedM);
 	}
 }
@@ -496,8 +562,33 @@ void CAnimator3D::Render_GUI()
 			ImGui::SetItemDefaultFocus(); // 선택된 항목에 포커스
 		}
 	}
+	ImGui::Text("%.4f", m_fBlendDuration);
+	auto& nowClip = m_pAnimClips[m_iCurrentClipIndex];
+	_float threshold = nowClip->Get_Duration() * 0.2;
+	_bool Over = m_fCurrentTrackPosition >= threshold;
+	ImGui::Checkbox("0.2%", &Over);
+	ImGui::Text("%.4f", m_fBlendDuration);
+	switch (m_eBlendState)
+	{
+	case Engine::CAnimator3D::BLENDER_STATE::NONE:
+		ImGui::Text("NONE BLEND");
+		break;
+	case Engine::CAnimator3D::BLENDER_STATE::BLEND_IN:
+		ImGui::Text(" BLEND_IN");
+		break;
+	case Engine::CAnimator3D::BLENDER_STATE::RUNNING:
+		ImGui::Text(" BLEND RUNNING");
+		break;
+	case Engine::CAnimator3D::BLENDER_STATE::BLEND_OUT:
+		ImGui::Text(" BLEND_OUT");
+		break;
+	case Engine::CAnimator3D::BLENDER_STATE::BLEND_PAUSE:
+		ImGui::Text(" BLEND_PAUSE");
+		break;
+	default:
+		break;
+	}
 
-	ImGui::Text("%.4f", m_fBlendDuration);  
 	ImGui::EndChild();
 
 }

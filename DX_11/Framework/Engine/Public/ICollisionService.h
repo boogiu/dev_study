@@ -9,6 +9,7 @@ protected:
     virtual  ~ICollisionService() DEFAULT;
 public:
     virtual void Update(_float dt) PURE;
+    virtual void Late_Update(_float dt) PURE;
 
 public:
    virtual _int RegisterCollider(class CCollider* pCollider, _int Index) PURE;

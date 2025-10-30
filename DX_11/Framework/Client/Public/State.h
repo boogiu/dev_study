@@ -26,6 +26,7 @@ public:
 
 public:
     virtual void Render_State();
+    virtual _uint Get_InputMask() const { return 0xFFFFFFFF; }
 
 protected:
     class CStateMachine* m_pStateMachine = { nullptr };

@@ -34,8 +34,6 @@ HRESULT CCollisionSystem::Initialize()
 
 void CCollisionSystem::Update(_float dt)
 {
-	Clean_Up();
-
 	for (auto& col : m_Colliders) {
 		if(col.pCollider&&col.bActive&&col.pCollider->Get_Active())
 			col.pCollider->Update();
@@ -51,7 +49,11 @@ void CCollisionSystem::Update(_float dt)
 		m_Colliders[firstIndex].pCollider->Intersect(&m_Colliders[SecondIndex]);
 		m_Colliders[SecondIndex].pCollider->Intersect(&m_Colliders[firstIndex]);
 	}
+	Clean_Up();
+}
 
+void CCollisionSystem::Late_Update(_float dt)
+{
 	for (auto& col : m_Colliders) {
 		if (col.pCollider && col.bActive && col.pCollider->Get_Active())
 			col.pCollider->Late_Update();
@@ -99,6 +101,7 @@ void CCollisionSystem::UnregisterCollider(CCollider* pCollider, _int Index)
 
 	else {
 		/*여기서 세이프 릴리즈 하면 재귀 호출  되어서 스택 오버플로우 남*/
+		Safe_Release(m_Colliders[Index].pCollider);
 		m_Colliders[Index].bActive = false;
 	}
 }
@@ -123,8 +126,10 @@ void CCollisionSystem::ActiveCollider(CCollider* pCollider, _int Index)
 	if (Index >= m_Colliders.size()) {
 		return;
 	}
-
 	if (m_Colliders[Index].pCollider != pCollider) {
+		return;
+	}
+	if (!pCollider->Has_Desc()) {
 		return;
 	}
 

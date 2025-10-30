@@ -20,7 +20,7 @@ public:
 
 public:
     void Render_State(class CPlayer* pPlayer);
-    
+    _uint Get_CurrentMask(STATE_LAYER eLayer);
 private:
     CPlayer* m_pOwner = { nullptr };
 

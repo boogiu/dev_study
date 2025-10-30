@@ -1,13 +1,8 @@
 #include "Client_Defines.h"
 #include "GamePlayLevel.h"
 #include "GameInstance.h"
-#include "ILevelService.h"
-#include "IProtoService.h"
-#include "IObjectService.h"
-#include "IResourceService.h"
 #include "IRenderService.h"
-#include "IInputService.h"
-#include "ICameraService.h"
+#include "IResourceService.h"
 
 #include "Builder.h"
 #include "Player.h"
@@ -24,8 +19,8 @@
 #include "AutoTile.h"
 #include "Plant_Fruit.h"
 #include "ClientHelper.h"
-#include "ITileService.h"
 #include "Layer.h"
+#include "FieldHole.h"
 
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
@@ -134,9 +129,14 @@ void CGamePlayLevel::PreLoad_Level()
     ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Structure");
     ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Structure");
 
+    /*Plant Path*/
     ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/PltTree");
     ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/PltTree");
     ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/PltTreeOakAnim");
+
+    /*Icon Path*/
+    ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Icon");
+    ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Icon");
 
     /*Object_Prototype*/
     auto pProtoMgr = CGameInstance::GetInstance()->Get_PrototypeMgr();
@@ -155,6 +155,7 @@ void CGamePlayLevel::PreLoad_Level()
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_AutoTile",CAutoTile::Create());
 
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_PlantFruit",CPlant_Fruit::Create());
+    pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_FieldHole",CFieldHole::Create());
 
  }
 

@@ -19,29 +19,40 @@ void CPlayerState_Axe::OnEnter()
 
 void CPlayerState_Axe::OnUpdate(_float dt)
 {
-
 }
 
 void CPlayerState_Axe::OnExit()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Release_AnimationBlend();
 }
 
 CState* CPlayerState_Axe::HandleTransition()
 {
-	ITEM_TYPE nowType = m_pPlayer->Get_ItemPacket().CurItem.eType;
-	if (nowType != ITEM_TYPE::AXE) 
-	{
-		return m_pLayer->Get_State("Tool_Base_State");
-	}
+	auto TilePack = m_pPlayer->Get_TileInfoPacket();
+	_uint Flag = TilePack.infos[Get_Index(NEIGHBOR_INDEX::UP)].TileFlag;
+	_uint ItemFlag = Flag | TilePack.infos[Get_Index(NEIGHBOR_INDEX::CENTER)].TileFlag;
+	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
+	CPlayer::ControlPacket control = m_pPlayer->Get_ControlPack();
 
-	
+	if (control.MsgToolUse) {
+		if ((TILE_FLAG::FLAG_ONITEM & ItemFlag) != 0) {
+			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Movement_PickUp_State");
+		}
+		else {
+			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TreeChop_State");
+			return m_pLayer->Get_State("Tool_Base_State");
+		}
+	}
 	return nullptr;
 }
 
 void CPlayerState_Axe::Render_State()
 {
+}
+
+_uint CPlayerState_Axe::Get_InputMask() const
+{
+	return ToolAndAction;
 }
 
 CPlayerState_Axe* CPlayerState_Axe::Create()

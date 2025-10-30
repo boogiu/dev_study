@@ -31,7 +31,7 @@ HRESULT CAABB_Collider::Initialize(COMPONENT_DESC* pArg)
 		AABB_COLLIDER_DESC* pDesc = static_cast<AABB_COLLIDER_DESC*>(pArg);
 		m_pOriginalDesc = new BoundingBox(pDesc->vCenter, pDesc->vSize);
 		m_pDesc = new BoundingBox(*m_pOriginalDesc);
-		CGameInstance::GetInstance()->Get_CollisionSystem()->ActiveCollider(this, m_SystemIndex);
+		m_SystemIndex = CGameInstance::GetInstance()->Get_CollisionSystem()->RegisterCollider(this, m_SystemIndex);
 	}
 	return S_OK;
 }
@@ -62,11 +62,10 @@ void CAABB_Collider::Late_Update()
 	for (auto& currSlot : m_CurrentCollider)
 	{
 		/*유효하지 않은 현재 충돌 대상 필터링*/
+		CCollider* pCol = currSlot->pCollider;
 		if (currSlot == nullptr || currSlot->bActive == false)
 			continue;
-
-		CCollider* pCol = currSlot->pCollider;
-		if (pCol == nullptr || pCol->Get_Active() == false)
+		 else if (pCol == nullptr || pCol->Get_Active() == false)
 			continue;
 
 		// 이전 프레임 동일 슬롯
@@ -93,12 +92,15 @@ void CAABB_Collider::Late_Update()
 			continue;
 
 		CCollider* pCol = prevSlot->pCollider;
+
 		if (pCol == nullptr)
 			continue;
+
 		if (pCol->Get_Active() == false || prevSlot->bActive == false) {
 			m_pOwner->OnCollisionExit(pCol->Get_Context());
-			continue;
+  			continue;
 		}
+
 		auto itCurr = find_if(m_CurrentCollider.begin(), m_CurrentCollider.end(),
 			[&](COLLIDER_SLOT* currSlot)
 			{
@@ -163,7 +165,7 @@ void CAABB_Collider::Make_MinMaxCollider(MINMAX_BOX minMax)
 
 	m_pOriginalDesc = new BoundingBox(vCenter,vSize);
 	m_pDesc = new BoundingBox(*m_pOriginalDesc);
-	CGameInstance::GetInstance()->Get_CollisionSystem()->ActiveCollider(this, m_SystemIndex);
+	m_SystemIndex = CGameInstance::GetInstance()->Get_CollisionSystem()->RegisterCollider(this, m_SystemIndex);
 }
 
 #ifdef _DEBUG

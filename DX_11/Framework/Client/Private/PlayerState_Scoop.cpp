@@ -26,18 +26,24 @@ void CPlayerState_Scoop::OnExit()
 {
 
 }
-
 CState* CPlayerState_Scoop::HandleTransition()
 {
-	if (m_pPlayer->Get_InteractionPacket().isUsingTool)
-		return m_pLayer->Get_State("Tool_NoTool_State");
-	ITEM_TYPE nowType = m_pPlayer->Get_ItemPacket().CurItem.eType;
-	if (nowType != ITEM_TYPE::SCOOP)
-	{
-		return m_pLayer->Get_State("Tool_NoTool_State");
+	auto TilePack = m_pPlayer->Get_TileInfoPacket();
+	_uint Flag = TilePack.infos[Get_Index(NEIGHBOR_INDEX::UP)].TileFlag;
+	_uint ItemFlag = Flag | TilePack.infos[Get_Index(NEIGHBOR_INDEX::CENTER)].TileFlag;
+	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
+	CPlayer::ControlPacket control = m_pPlayer->Get_ControlPack();
+
+	if (control.MsgToolUse) {
+		if ((TILE_FLAG::FLAG_ONITEM & ItemFlag) != 0) {
+			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Movement_PickUp_State");
+		}
+		//나중에 여기에 뭔가를 심을건지 판별하는 로직 추가 필요함.
+		else {
+			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_Dig_State");
+			return m_pLayer->Get_State("Tool_Base_State");
+		}
 	}
-
-
 	return nullptr;
 }
 

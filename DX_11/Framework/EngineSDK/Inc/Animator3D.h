@@ -68,6 +68,7 @@ protected:
     void Animation_Run(_float dt);
     void Animation_Convert(_float dt);
     void Blend_Run(_float dt);
+    void Blend_Convert(_float dt);
     void BuildBone();
 
 public:

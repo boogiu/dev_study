@@ -14,6 +14,7 @@ private:
 public:
     HRESULT Initialize();
     virtual void Update(_float dt) override;
+    virtual void Late_Update(_float dt) override;
 
 public:
    virtual _int RegisterCollider(class CCollider* pCollider, _int Index)override;

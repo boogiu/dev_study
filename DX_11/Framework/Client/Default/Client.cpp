@@ -72,7 +72,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (Break) {
 			break;
 		}
-
 		timer->Update_Timer("Default_Timer");
 		fTimeAcc += timer->Get_DeltaTime("Default_Timer");
 

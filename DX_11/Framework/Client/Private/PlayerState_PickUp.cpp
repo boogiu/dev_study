@@ -20,6 +20,7 @@ void CPlayerState_PickUp::OnEnter()
 void CPlayerState_PickUp::OnUpdate(_float dt)
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+
 	if (Animator->isOverAnimTiming(0.3)) {
 		m_pPlayer->ActiveCollider_LeftHand(true, "Pick_Up");
 	}
@@ -42,6 +43,11 @@ CState* CPlayerState_PickUp::HandleTransition()
 
 void CPlayerState_PickUp::Render_State()
 {
+}
+
+_uint CPlayerState_PickUp::Get_InputMask() const
+{
+	return OnlyAction;
 }
 
 CPlayerState_PickUp* CPlayerState_PickUp::Create()

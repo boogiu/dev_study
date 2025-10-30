@@ -16,8 +16,11 @@ public:
 
 public:
     virtual void Render_State();
+public:
+    virtual _uint Get_InputMask() const override;
 
 private:
+    _bool m_bOnTree = {};
     _bool m_bInCycle = {};
 public:
     static CPlayerState_ChopTree* Create();

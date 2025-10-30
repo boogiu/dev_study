@@ -18,7 +18,6 @@ HRESULT CCollider::Initialize_Prototype()
 
 HRESULT CCollider::Initialize(COMPONENT_DESC* pArg)
 {
-	m_SystemIndex = CGameInstance::GetInstance()->Get_CollisionSystem()->RegisterCollider(this, m_SystemIndex);
 	m_CollisionContext.Owner = m_pOwner;
 	return S_OK;
 }
@@ -38,6 +37,12 @@ void CCollider::Render_GUI()
 	ImGui::Text(m_CollisionContext.EventTag.c_str());
 	ImGui::EndChild();
 
+}
+
+void CCollider::Set_Active(_bool bActive)
+{
+	m_bActive = bActive; 
+	m_CollisionContext.Owner = nullptr;
 }
 
 _bool CCollider::Compare_Same(COLLIDER_SLOT* prev, COLLIDER_SLOT* current)
@@ -67,17 +72,18 @@ void CCollider::Free()
 	m_CurrentCollider.clear();
 	m_prevCollider.clear();
 
-	CGameInstance::GetInstance()->Get_CollisionSystem()->UnregisterCollider(this,m_SystemIndex);
+	//CGameInstance::GetInstance()->Get_CollisionSystem()->UnregisterCollider(this,m_SystemIndex);
 }
 
 void CCollider::Set_ColliderActive(_bool Active)
 {
 	if (m_SystemIndex < 0)
 		return;
+
 	else if(Active == false){
 		CGameInstance::GetInstance()->Get_CollisionSystem()->DeActiveCollider(this, m_SystemIndex);
 	}
-	else if (Active == true) {
+	else if (Active == true && Has_Desc()) {
 		CGameInstance::GetInstance()->Get_CollisionSystem()->ActiveCollider(this, m_SystemIndex);
 	}
 }

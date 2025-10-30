@@ -15,6 +15,9 @@ public:
     virtual CState* HandleTransition();
 public:
     void Render_State() override;
+public:
+    virtual _uint Get_InputMask() const override;
+
 private:
     _bool m_bFliping = { false };
     _float2 m_vLastAxis = {};

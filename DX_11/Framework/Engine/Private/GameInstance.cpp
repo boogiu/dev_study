@@ -77,14 +77,15 @@ void CGameInstance::Clear_LevelResource(const string& levelKey)
 
 void CGameInstance::Update_Engine(_float dt)
 {
+	m_pInputDevice->Update();
 	/*엔진 제어 업데이트 -> 동기화용*/
 	m_pObjectManager->Pre_EngineUpdate(dt);
+	m_pCollisionSystem->Update(dt);
 
 	/*클라 제어 업데이트 -> 게임 로직*/
 	m_pObjectManager->Priority_Update(dt);
 	m_pUIManager->Priority_Update(dt);
 
-	m_pInputDevice->Update();
 	m_pLevelManager->Update(dt);
 	m_pCameraManager->Update(dt);
 	m_pObjectManager->Update(dt);
@@ -95,12 +96,12 @@ void CGameInstance::Update_Engine(_float dt)
 #if defined _USING_GUI
 	m_pGuiSystem->Update(dt);
 #endif
-	m_pCollisionSystem->Update(dt);
 	if (m_pTileSystem)
 		m_pTileSystem->Update(dt);
 	m_pObjectManager->Late_Update(dt);
 	m_pUIManager->Late_Update(dt);
 	/*엔진 제어 업데이트 -> 렌더 패킷 제출용*/
+	m_pCollisionSystem->Late_Update(dt);
 	m_pObjectManager->Post_EngineUpdate(dt);
 	m_pUIManager->Post_EngineUpdate(dt);
 }

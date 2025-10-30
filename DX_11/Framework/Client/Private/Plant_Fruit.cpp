@@ -65,8 +65,8 @@ void CPlant_Fruit::OnCollisionEnter(COLLISION_CONTEXT context)
 	if (context.Owner->Has_Tag("Player_Hand")) {
 		if (context.EventTag == "Pick_Up") {
 			m_eState = PICKED;
-			m_pOwnerMatrix = context.Owner->Get_WorldMatrix();
-			Get_Component<CCollider>()->Set_ColliderActive(false);
+ 			m_pOwnerMatrix = context.Owner->Get_WorldMatrix();
+			//Get_Component<CCollider>()->Set_ColliderActive(false);
 		}
 	}
 }
@@ -77,9 +77,9 @@ void CPlant_Fruit::OnCollisionStay(COLLISION_CONTEXT context)
 
 void CPlant_Fruit::OnCollisionExit(COLLISION_CONTEXT context)
 {
-	//if (context.Owner->Has_Tag("Player_Hand")) {
-	//		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
-	//} 사과 삭제로직 다시 제대로 필요.
+	if (context.Owner->Has_Tag("Player_Hand")) {
+		m_eState = DESTROY;
+	} 
 }
 
 void CPlant_Fruit::Render_GUI()
@@ -114,6 +114,9 @@ void CPlant_Fruit::Update_ByState(_float dt)
 		break;
 	case  PICKED:
 		FollowHand(dt);
+		break;
+	case  DESTROY:
+		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
 		break;
 	}
 }

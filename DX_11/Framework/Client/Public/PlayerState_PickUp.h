@@ -16,6 +16,8 @@ public:
 
 public:
     virtual void Render_State();
+public:
+    virtual _uint Get_InputMask() const override;
 
 public:
     static CPlayerState_PickUp* Create();

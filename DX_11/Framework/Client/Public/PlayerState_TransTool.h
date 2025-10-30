@@ -16,6 +16,7 @@ public:
 
 public:
     virtual void Render_State();
+    virtual _uint Get_InputMask() const override;
 
 private:
     _bool m_bTransed = { false };

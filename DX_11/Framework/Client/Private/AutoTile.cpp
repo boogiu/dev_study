@@ -38,7 +38,7 @@ HRESULT CAutoTile::Initialize(INIT_DESC* pArg)
 	m_BaseTypeName = tileDesc->TypeName;
 
 	Link_Data(m_BaseTypeName + "0A_0");
-	m_Index= Get_Component<CTileBlock>()->On_Grid(tileDesc->index, m_BaseTypeName, true);
+	m_Index = Get_Component<CTileBlock>()->On_Grid(tileDesc->index, m_BaseTypeName, true);
 	if (m_Index.IndexX < 0 || m_Index.IndexZ < 0) {
 		return E_FAIL;
 	}
@@ -52,6 +52,15 @@ HRESULT CAutoTile::Initialize(INIT_DESC* pArg)
 	if (TileRuleDB.empty()) {
 		Read_TileRule();
 	}
+	auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
+
+	tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_TILE | TILE_FLAG::FLAG_WALKABLE));
+	tileSys->Remove_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
+	if (m_BaseTypeName.find("River") != string::npos) {
+		tileSys->Set_Material_ID(m_Index, { 0,0,0,0 });
+		tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
+	}
+
 	return S_OK;
 }
 
@@ -95,11 +104,6 @@ HRESULT CAutoTile::Link_Data(const string& folderName)
 	if (SUCCEEDED(hr)) {
 		ModelName = folderName + ".model";
 		MaterialName = folderName + ".mat";
-	}
-	if (folderName.find("River") != string::npos) {
-		auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
-		tileSys->Set_Material_ID(m_Index, { 0,0,0,0 });
-		tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
 	}
 
 	return hr;

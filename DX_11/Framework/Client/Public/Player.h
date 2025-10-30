@@ -11,8 +11,6 @@ public:
 
     struct MovementPacket {
         _bool bFliping = { false };
-        _bool bMovable = { true };
-        _bool bRunning = { true };
         _float fCurrentDegree= {};
         _float fTargetDegree = {};
         _float fPlayerHeight = {};
@@ -31,8 +29,18 @@ public:
         ITEM_DATA_DESC  DstItem = {};
     };
 
-    struct InteractionPacket {
-        _bool isUsingTool = { false };
+    struct ControlPacket {
+        _bool MsgMove = false;
+        _bool MsgDash = false;
+        _bool MsgAction = false;
+        _bool MsgToolUse = false;
+        _bool MsgInteraction = false;
+        _bool MsgUI = false;
+        _bool MsgCut = false;
+
+        void Reset() {
+            MsgMove = MsgDash= MsgAction = MsgToolUse = MsgInteraction= MsgUI= MsgCut = false;
+        }
     };
 
 private:
@@ -50,15 +58,17 @@ public:
 
 public:
     void Update_Input(_float dt);
+    void Update_Movement(_float dt);
     void Update_TileInfo(_float dt);
+    void Adjust_To_Foward();
 
 public:
     MovementPacket& Get_MovementPacket() { return m_MovementPack; }
     TileInfoPacket& Get_TileInfoPacket() { return m_TileInfoPack; }
     ItemPacket& Get_ItemPacket() { return m_ItemPack; }
-    InteractionPacket& Get_InteractionPacket() { return m_InteractionPack; }
+    ControlPacket& Get_ControlPack() { return m_ControlPack; }
 
-    _bool Can_Walk(_float2 moveAxis);
+    _bool Can_Walk(_float2& moveAxis);
     TILE_INDEX Get_FowardIndex();
 
 public:
@@ -80,7 +90,7 @@ private:
     MovementPacket m_MovementPack = {};
     TileInfoPacket m_TileInfoPack = {};
     ItemPacket m_ItemPack = {};
-    InteractionPacket m_InteractionPack = {};
+    ControlPacket m_ControlPack = {};
 
 public:
     static CPlayer* Create();

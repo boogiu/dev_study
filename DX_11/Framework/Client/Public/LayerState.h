@@ -22,6 +22,7 @@ public:
 	T* Add_State(const string& name);
 	CState* Get_State(const string& name);
 	void Set_Machine(class CStateMachine* machine) { m_pStateMachine = machine; }
+	_uint Get_CurrentMask();
 
 private:
 	class CStateMachine* m_pStateMachine = { nullptr };

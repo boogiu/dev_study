@@ -39,6 +39,9 @@ void CLayerState::Request_ChangeState(const string& NextState)
 	if (iter == m_States.end())
 		return;
 
+	if (m_pCurrent->GetName() == NextState)
+		return;
+
 	m_pCurrent->OnExit();
 	m_pCurrent = m_States[NextState];
 	m_pCurrent->OnEnter();
@@ -54,6 +57,14 @@ CState* CLayerState::Get_State(const string& name)
 	}
 
 	return iter->second;
+}
+
+_uint CLayerState::Get_CurrentMask()
+{
+	if (m_pCurrent)
+		return m_pCurrent->Get_InputMask();
+	else
+		return 0xfffffff;
 }
 
 void CLayerState::Render_State()

@@ -88,12 +88,13 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 void CPlayer::Priority_Update(_float dt)
 {
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
+	Update_Input(dt);
 }
 
 void CPlayer::Update(_float dt)
 {
-	Update_Input(dt);
 	Update_TileInfo(dt); 
+	Update_Movement(dt);
 	m_pStateMachine->Update(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
@@ -149,20 +150,54 @@ void CPlayer::Render_GUI()
 
 void CPlayer::Update_Input(_float dt)
 {
+	auto pInpuDev = CGameInstance::GetInstance()->Get_InputDev();
+	auto& control = m_ControlPack;
+	control.Reset();
+
+	_uint StateActionMask = m_pStateMachine->Get_CurrentMask(STATE_LAYER::ACTION);
+	_uint StateToolMask = m_pStateMachine->Get_CurrentMask(STATE_LAYER::TOOL);
+
+	auto AllowAction = [&](InputMask type) {return (StateActionMask & (1 << static_cast<_uint>(type))) != 0;};
+	auto AllowTool = [&](InputMask type) {return (StateToolMask & (1 << static_cast<_uint>(type))) != 0;};
+
+	if (AllowAction(InputMask::MOVE))
+	{
+		_float2 moveAxis = { 0.f, 0.f };
+		if (pInpuDev->Key_Down(VK_UP))				
+			moveAxis.y = -1.f;
+		if (pInpuDev->Key_Down(VK_DOWN))		
+			moveAxis.y = +1.f;
+		if (pInpuDev->Key_Down(VK_LEFT))			
+			moveAxis.x = +1.f;
+		if (pInpuDev->Key_Down(VK_RIGHT))		
+			moveAxis.x = -1.f;
+
+		if (moveAxis.x != 0 || moveAxis.y != 0)
+			control.MsgMove = true;
+		else 
+			control.MsgMove = false;
+
+		if (pInpuDev->Key_Down(VK_SHIFT) && control.MsgMove)
+			control.MsgDash = true;
+		XMStoreFloat2(&m_MovementPack.vInputAxis, XMVector2Normalize(XMLoadFloat2(&moveAxis)));
+	}
+
+	if (AllowAction(InputMask::ACTION)) {
+		if (pInpuDev->Key_Down(VK_SPACE))
+			control.MsgAction = true;
+	}
+	if (AllowAction(InputMask::TOOL)) {
+		if (pInpuDev->Key_Down(VK_SPACE))
+				control.MsgToolUse = true;
+	}
+
+}
+
+void CPlayer::Update_Movement(_float dt)
+{
 	auto pInput = CGameInstance::GetInstance()->Get_InputDev();
 
-	_float2 moveAxis = { 0.f, 0.f };
-
-	if (pInput->Key_Down(VK_UP))				moveAxis.y = -1.f;
-	if (pInput->Key_Down(VK_DOWN))		moveAxis.y = +1.f;
-	if (pInput->Key_Down(VK_LEFT))			moveAxis.x = +1.f;
-	if (pInput->Key_Down(VK_RIGHT))		moveAxis.x = -1.f;
-
-	m_MovementPack.bRunning = pInput->Key_Down(VK_SHIFT);
-	
-
-	XMStoreFloat2(&m_MovementPack.vInputAxis, XMVector2Normalize(XMLoadFloat2(&moveAxis)));
-
+	_float2 moveAxis = m_MovementPack.vInputAxis;
 	if (fabs(moveAxis.x) > 0.01f || fabs(moveAxis.y) > 0.01f)
 		m_MovementPack.fTargetDegree = XMConvertToDegrees(atan2(moveAxis.x, moveAxis.y));
 
@@ -188,7 +223,6 @@ void CPlayer::Update_Input(_float dt)
 		m_MovementPack.bFliping = false;
 		m_MovementPack.fCurrentDegree = m_MovementPack.fTargetDegree;
 	}
-
 }
 
 void CPlayer::Update_TileInfo(_float dt)
@@ -220,6 +254,18 @@ void CPlayer::Update_TileInfo(_float dt)
 	Get_Index(NEIGHBOR_INDEX::UP);
 }
 
+void CPlayer::Adjust_To_Foward()
+{
+	//현재 룩벡터
+
+	//바라봐야하는 벡터
+	TILE_INDEX index = Get_FowardIndex();
+
+	//사이각/
+
+	//목표 각으로 전환
+}
+
 
 void CPlayer::Change_Item(ITEM_DATA_DESC desc)
 {
@@ -242,27 +288,58 @@ void CPlayer::Set_CurItemData(ITEM_DATA_DESC desc)
 	dynamic_cast<CPlayerPart_Hand*>(pObj)->Change_Item(desc);
 }
 
-_bool CPlayer::Can_Walk(_float2 moveAxis)
+_bool CPlayer::Can_Walk(_float2& moveAxis)
 {
-	if (m_MovementPack.bMovable == false)
+	//대각선 블럭 대응 못하는 중
+	if (m_ControlPack.MsgMove== false)
 		return false;
 
-	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-	
-	_float4 nextPos = { 
-		Get_Position().x + moveAxis.x,
-		Get_Position().y,
-		Get_Position().z + moveAxis.y,
-		1};
-	
-	TILE_INDEX index = TileSystem->Get_IndexByPosition(nextPos);
-	TILE_INFO info = TileSystem->Get_InfoByIndex(index);
+	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+	_float2 tmpAxis = moveAxis;
+	_float4  NextPos =Get_Position();
+	NextPos.x += tmpAxis.x;
+	NextPos.z += tmpAxis.y;
+	TILE_INDEX nextIndex = CGameInstance::GetInstance()->Get_TileSystem()->Get_IndexByPosition(NextPos);
 
-	if ((CANT_WALK & info.TileFlag) == 0)
+	_uint Flag = tileSystem->Get_TileFlagByIndex(nextIndex);
+	if ((CANT_WALK & Flag) == 0)
 		return true;
-	else
-		return false;
 
+	/*움직일 수 없음*/
+	_bool blockX = false;
+	_bool blockZ = false;
+
+	/*X축 검사*/
+	_float4 testX = Get_Position();
+	testX.x += tmpAxis.x;
+	TILE_INDEX testIdxX = tileSystem->Get_IndexByPosition(testX);
+	if (tileSystem->Get_TileFlagByIndex(testIdxX) & static_cast<_uint>(CANT_WALK))
+		blockX = true;
+
+	/*Z축 검사*/
+	_float4 testZ = Get_Position();
+	testZ.z += tmpAxis.y;
+	TILE_INDEX testIdxZ = tileSystem->Get_IndexByPosition(testZ);
+
+	if (tileSystem->Get_TileFlagByIndex(testIdxZ) & static_cast<_uint>(CANT_WALK))
+		blockZ = true;
+
+	if (blockX)
+	{
+		tmpAxis.x = 0.f;
+		tmpAxis.y -= 0.2f * (moveAxis.x > 0 ? -1 : 1);
+	}
+	if (blockZ) {
+		tmpAxis.x -= 0.2f * (moveAxis.y < 0 ? -1 : 1);
+		tmpAxis.y = 0.0f;
+	}
+
+	moveAxis = tmpAxis;
+
+	if (tmpAxis.x != 0.f || tmpAxis.y != 0.f)
+		return true;
+
+	return false;
 }
 
 TILE_INDEX CPlayer::Get_FowardIndex()

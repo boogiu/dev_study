@@ -14,7 +14,7 @@ CPlayerState_TransTool::CPlayerState_TransTool()
 
 void CPlayerState_TransTool::OnEnter()
 {
-	//Animator->Release_AnimationBlend();
+
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Release_AnimationBlend();
 
@@ -60,6 +60,11 @@ CState* CPlayerState_TransTool::HandleTransition()
 
 void CPlayerState_TransTool::Render_State()
 {
+}
+
+_uint CPlayerState_TransTool::Get_InputMask() const
+{
+	return OnlyTrans;
 }
 
 CPlayerState_TransTool* CPlayerState_TransTool::Create()

@@ -15,7 +15,6 @@ CPlayerState_AxeAction::CPlayerState_AxeAction()
 void CPlayerState_AxeAction::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Release_AnimationBlend();
 }
 
 void CPlayerState_AxeAction::OnUpdate(_float dt)
