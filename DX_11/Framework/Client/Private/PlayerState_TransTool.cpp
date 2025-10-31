@@ -12,7 +12,7 @@ CPlayerState_TransTool::CPlayerState_TransTool()
 {
 }
 
-void CPlayerState_TransTool::OnEnter()
+HRESULT CPlayerState_TransTool::OnEnter()
 {
 
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
@@ -20,13 +20,15 @@ void CPlayerState_TransTool::OnEnter()
 
 	auto Pack = m_pPlayer->Get_ItemPacket();
 
-	if (Pack.DstItem.eType == ITEM_TYPE::NONE) {
+	if (Pack.DstItem.eType == TOOL_TYPE::NONE) {
 		Animator->Change_Animation("Base_EquipOff.anim");
 	}
 	else {
 		Animator->Change_Animation("Base_EquipOn.anim");
 	}
 	m_bTransed = false;
+
+	return S_OK;
 }
 
 void CPlayerState_TransTool::OnUpdate(_float dt)
@@ -43,8 +45,9 @@ void CPlayerState_TransTool::OnUpdate(_float dt)
 	
 }
 
-void CPlayerState_TransTool::OnExit()
+HRESULT CPlayerState_TransTool::OnExit()
 {
+	return S_OK;
 }
 
 CState* CPlayerState_TransTool::HandleTransition()
@@ -64,7 +67,7 @@ void CPlayerState_TransTool::Render_State()
 
 _uint CPlayerState_TransTool::Get_InputMask() const
 {
-	return OnlyTrans;
+	return 0;
 }
 
 CPlayerState_TransTool* CPlayerState_TransTool::Create()

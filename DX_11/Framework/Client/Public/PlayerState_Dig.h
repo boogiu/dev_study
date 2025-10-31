@@ -9,9 +9,9 @@ private:
     virtual ~CPlayerState_Dig() DEFAULT;
 
 public:
-    virtual void OnEnter();
+    virtual HRESULT OnEnter();
     virtual void OnUpdate(_float dt);
-    virtual void OnExit();
+    virtual HRESULT OnExit();
     virtual CState* HandleTransition();
 
 public:
@@ -20,6 +20,7 @@ public:
 
 private:
     void Make_Hole();
+    void Burry_Hole();
 
 private:
     _bool m_isTree = { false };

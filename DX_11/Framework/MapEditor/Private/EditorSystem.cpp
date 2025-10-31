@@ -186,6 +186,17 @@ void CEditorSystem::ConvertMaterial(string brushType, TILE_INDEX Index)
 		if (brushType == "Base_0") {
 			m_pTileSystem->Set_Material_ID(Index, { 1.f,1.f,0.f,0.f });
 		}
+		else if ("Cliff") {
+			CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
+			objDesc->TypeName = brushType;
+			objDesc->index = Index;
+			CGameObject* pObject = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
+				.Position({ 0,15,0 })
+				.Scale({ 1,1,1 })
+				.Add_ObjDesc(objDesc)
+				.Build(brushType);
+			m_pObjMgr->Add_Object(pObject, { "Editor_Level","Tile_Layer" });
+		}
 		else {
 			CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
 			objDesc->TypeName = brushType;

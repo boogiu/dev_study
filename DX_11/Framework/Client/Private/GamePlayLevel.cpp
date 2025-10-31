@@ -17,7 +17,7 @@
 #include "PlayerPart_Hand.h"
 #include "MapLoader.h"
 #include "AutoTile.h"
-#include "Plant_Fruit.h"
+#include "Item_Fruit.h"
 #include "ClientHelper.h"
 #include "Layer.h"
 #include "FieldHole.h"
@@ -154,7 +154,7 @@ void CGamePlayLevel::PreLoad_Level()
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_ClothParts",CClothParts::Create());
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_AutoTile",CAutoTile::Create());
 
-    pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_PlantFruit",CPlant_Fruit::Create());
+    pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_PlantFruit",CItem_Fruit::Create());
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_FieldHole",CFieldHole::Create());
 
  }

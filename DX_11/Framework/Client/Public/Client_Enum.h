@@ -36,6 +36,16 @@ inline _bool operator == (TILE_FLAG a, unsigned int b) {
 inline _bool operator != (TILE_FLAG a, unsigned int b) {
     return !(a == b);
 }
+/*겹치는 거 있다!*/
+inline _bool operator && (TILE_FLAG a, TILE_FLAG b) {
+    return (static_cast<unsigned int>(a) & static_cast<unsigned int>(b)) != 0;
+}
+inline _bool operator && (unsigned int a, TILE_FLAG b) {
+    return (a & static_cast<unsigned int>(b)) != 0;
+}
+inline _bool operator && (TILE_FLAG a, unsigned int b) {
+    return (b & static_cast<unsigned int>(a)) != 0;
+}
 
 const TILE_FLAG CANT_WALK = 
 TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_SWIMMABLE | 
@@ -50,7 +60,7 @@ TILE_FLAG::FLAG_TILE | TILE_FLAG::FLAG_SWIMMABLE;
 const TILE_FLAG CANT_ITEM =   TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_SWIMMABLE |
 TILE_FLAG::FLAG_STONE | TILE_FLAG::FLAG_ONITEM;
 
-enum class ITEM_TYPE {
+enum class TOOL_TYPE {
     NONE, AXE,SCOOP,NET
 };
 
@@ -66,10 +76,9 @@ enum class STATE_LAYER
 enum class InputMask : unsigned int {
         MOVE = 1 << 0,
         ACTION = 1 << 1,
-        TOOL = 1 << 2,
-        INTERACT = 1 << 3,
-        UI = 1 << 4,
-        CUT = 1 << 5,
+        PICKUP = 1 << 2,
+        BAG = 1 << 3,
+        ADD = 1 << 4,
 };       
 inline constexpr  unsigned int operator & (InputMask a, InputMask b) {
     return (static_cast<unsigned int>(a) & static_cast<unsigned int>(b));
@@ -99,9 +108,9 @@ inline _bool operator != (InputMask a, unsigned int b) {
     return !(a == b);
 }
 
-static  constexpr unsigned int OnlyMove = InputMask::ACTION | InputMask::TOOL | InputMask::INTERACT | InputMask::UI;
-static  constexpr unsigned int OnlyTool = InputMask::ACTION  | InputMask::INTERACT | InputMask::UI | InputMask::MOVE;
-static  constexpr unsigned int ToolAndAction = InputMask::INTERACT | InputMask::UI | InputMask::MOVE;
-static  constexpr unsigned int OnlyAction = InputMask::TOOL | InputMask::INTERACT | InputMask::UI| InputMask::MOVE;
-static  constexpr unsigned int OnlyTrans = InputMask::ACTION | InputMask::TOOL | InputMask::INTERACT | InputMask::UI | InputMask::MOVE;
-static  constexpr unsigned int OnlyInteraction = InputMask::ACTION | InputMask::TOOL | InputMask::MOVE | InputMask::UI;
+/*무브 스테이트에서 받을 수 없는 ㅆ는 입력*/
+static  constexpr unsigned int FlagForMove = 0xffffffff;
+static  constexpr unsigned int FlagForAction = InputMask::ACTION | InputMask::PICKUP;
+static  constexpr unsigned int OnlyAction = 0xffffffff;
+static  constexpr unsigned int OnlyTrans = 0xffffffff;
+static  constexpr unsigned int OnlyInteraction = 0xffffffff;

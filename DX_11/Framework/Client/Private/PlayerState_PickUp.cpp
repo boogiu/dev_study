@@ -11,10 +11,12 @@ CPlayerState_PickUp::CPlayerState_PickUp()
 {
 }
 
-void CPlayerState_PickUp::OnEnter()
+HRESULT CPlayerState_PickUp::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->ForceChange_Animation("Pickup.anim", false);
+	HRESULT hr = Animator->ForceChange_Animation("Pickup.anim", false);
+	Animator->Stop_AnimationBlend();
+	return hr;
 }
 
 void CPlayerState_PickUp::OnUpdate(_float dt)
@@ -26,8 +28,11 @@ void CPlayerState_PickUp::OnUpdate(_float dt)
 	}
 }
 
-void CPlayerState_PickUp::OnExit()
+HRESULT CPlayerState_PickUp::OnExit()
 {
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	Animator->Restart_AnimationBlend(); 
+	return S_OK;
 }
 
 CState* CPlayerState_PickUp::HandleTransition()

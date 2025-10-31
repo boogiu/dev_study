@@ -15,7 +15,8 @@ public:
     void Priority_Update(_float dt) override;
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
- 
+public:
+    virtual void Render_GUI() override;
 private:
     _float m_fDistance = {};
     _float m_fYaw = {};

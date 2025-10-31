@@ -346,3 +346,54 @@ void CTileObject::Free()
 {
 	__super::Free();
 }
+
+HRESULT CTileObject::Save_TileMap()
+{
+	wstring path = L"../../Resources/Data/TileMap.json";
+
+	// 배열 형태로 초기화
+	json jScene = json::array();
+
+	HANDLE hFile = ::CreateFileW(
+		path.c_str(),
+		GENERIC_WRITE,
+		0,
+		NULL,
+		CREATE_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+
+	for (auto& pair : TileMapTable)
+	{
+		const string& key = pair.first;
+		const vector<string>& values = pair.second;
+
+		if (values.size() >= 5)
+		{
+			json entry = {
+				{"Key",					key},
+				{"ID",						stoi(values[0])},
+				{"Model",				values[1]},
+				{"Mat",					values[2]},
+				{"ModelPath",	values[3]},
+				{"MatPath",			values[4]}
+			};
+			jScene.push_back(entry);
+		}
+	}
+
+	string jsonText = jScene.dump(4); // UTF-8 문자열
+
+	if (hFile != INVALID_HANDLE_VALUE)
+	{
+		DWORD written = 0;
+		::WriteFile(hFile, jsonText.data(), (DWORD)jsonText.size(), &written, NULL);
+		::CloseHandle(hFile);
+	}
+	else
+	{
+		MessageBoxW(nullptr, L"파일 저장 실패", L"Error", MB_OK);
+	}
+
+	return S_OK;
+}

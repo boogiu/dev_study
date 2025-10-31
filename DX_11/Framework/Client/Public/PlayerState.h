@@ -11,9 +11,9 @@ protected:
 	virtual ~CPlayerState() DEFAULT;
 
 public:
-	virtual void OnEnter() {}
+	virtual HRESULT OnEnter() { return S_OK; }
 	virtual void OnUpdate(_float dt) {}
-	virtual void OnExit() {}
+	virtual HRESULT OnExit() { return S_OK; }
 	virtual CState* HandleTransition() { return nullptr; }
 
 public:

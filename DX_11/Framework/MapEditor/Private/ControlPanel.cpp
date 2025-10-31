@@ -7,7 +7,7 @@
 #include "GameInstance.h" 
 #include "ITileService.h"
 #include "MapObject.h"
-vector<string> tileType = {"Base_0","RoadDarkSoil","RoadSoil","RoadSand","RoadBrick","RoadFanPattern","RoadStone","RoadTile", "RoadWood","River"};
+vector<string> tileType = {"Base_0","RoadDarkSoil","RoadSoil","RoadSand","RoadBrick","RoadFanPattern","RoadStone","RoadTile", "RoadWood","River","Cliff"};
 
 CControlPanel::CControlPanel(GUI_CONTEXT* context)
 	:CBasePanel{ context }

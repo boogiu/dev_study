@@ -34,7 +34,7 @@ HRESULT CModelLevel::Initialize()
 
 	CGameObject* Camera = Builder::Create_Object({ m_LevelKey ,"Proto_GameObject_Camera" })
 		.Camera({ (float)g_iWinSizeX / g_iWinSizeY })
-		.Position({ 0,0,-10 })
+		.Position({ 0,0,-30 })
 		.Build("Main_Camera");
 
 	CGameObject* Option = Builder::Create_Object({ m_LevelKey ,"Proto_GameObject_OptionUI" }).Build("Option");

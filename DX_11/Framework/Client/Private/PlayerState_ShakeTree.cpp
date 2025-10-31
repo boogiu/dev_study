@@ -9,14 +9,16 @@ CPlayerState_ShakeTree::CPlayerState_ShakeTree()
 {
 }
 
-void CPlayerState_ShakeTree::OnEnter()
+HRESULT CPlayerState_ShakeTree::OnEnter()
 {
 	KeepTime = 0.f;
 	isLooped = false;
 	isFinished = false;
 
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Change_Animation("Tree_Shake.anim", true);
+	HRESULT hr = Animator->Change_Animation("Tree_Shake.anim", true);
+
+	return hr;
 
 }
 
@@ -49,9 +51,10 @@ void CPlayerState_ShakeTree::OnUpdate(_float dt)
 	}
 }
 
-void CPlayerState_ShakeTree::OnExit()
+HRESULT CPlayerState_ShakeTree::OnExit()
 {
 	m_pPlayer->ActiveCollider_Tool(false, "");
+	return S_OK;
 }
 
 CState* CPlayerState_ShakeTree::HandleTransition()

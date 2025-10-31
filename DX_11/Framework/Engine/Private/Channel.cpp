@@ -103,6 +103,50 @@ HRESULT CChannel::ConvertAnimateMatrix(vector<_float4x4>& transfomationMatrices,
 	return S_OK;
 }
 
+HRESULT CChannel::ConvertByCurrentMatrix(vector<_float4x4>& transfomationMatrices, _float ConvertDuration, _float PrevTrackPosition, _float ConversionTrackPosition, CChannel* NextChannel)
+{
+	_uint iCurrentKeyIndex = { m_iNumKeyFrames - 1 };
+
+	for (size_t i = 0; i < m_iNumKeyFrames; i++)
+	{
+		if (i > 0 && !m_KeyFrames[i].IsBefore(PrevTrackPosition)) {
+			iCurrentKeyIndex = i - 1;
+			break;
+		}
+	}
+
+	KEYFRAME SrcKeyFrame = m_KeyFrames[iCurrentKeyIndex];
+
+	_float4x4 ConvertingKeyFrame = transfomationMatrices[m_iBoneIndex];
+	KEYFRAME nowKey = {};
+	_vector ConvertingS, ConvertingR, ConvertingT;
+	XMMatrixDecompose(&ConvertingS, &ConvertingR, &ConvertingT, XMLoadFloat4x4(&ConvertingKeyFrame));
+
+	XMStoreFloat3(&nowKey.vScale, ConvertingS);
+	XMStoreFloat4(&nowKey.vRotation, ConvertingR);
+	XMStoreFloat3(&nowKey.vTranslation, ConvertingT);
+
+
+	KEYFRAME DestKeyFrame = {};
+
+	if (nullptr == NextChannel)
+	{
+		/*이때는 기준이 달라야 해.*/
+		DestKeyFrame = m_KeyFrames.front();
+	}
+	else {
+		DestKeyFrame = NextChannel->m_KeyFrames.front();
+	}
+
+	/*만약 같은 본을 쓰게 된다면, 원래 진행하던대로 Lerp줌*/
+	_XMKeyFrame keyFrame = {};
+	keyFrame = nowKey.LerpKeyFram(DestKeyFrame, ConversionTrackPosition, ConvertDuration);
+	_matrix TransformationMatrix = XMMatrixAffineTransformation(keyFrame.vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), keyFrame.vRotation, keyFrame.vTranslation);
+	XMStoreFloat4x4(&transfomationMatrices[m_iBoneIndex], TransformationMatrix);
+
+	return S_OK;
+}
+
 void CChannel::Render_GUI()
 {
 	string key = "Channel : " + m_ChannelName + "(" + to_string(m_iBoneIndex) + ")";

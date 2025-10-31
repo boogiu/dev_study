@@ -20,26 +20,24 @@ public:
 
     struct TileInfoPacket{
         TILE_INDEX nowIndex = {};
+        TILE_INFO Range_FowardInfo = {};
         _uint neighboValidFlag = {};
         vector<TILE_INFO> infos;
     };
 
     struct ItemPacket {
-        ITEM_DATA_DESC  CurItem = {};
-        ITEM_DATA_DESC  DstItem = {};
+        TOOL_DATA_DESC  CurItem = {};
+        TOOL_DATA_DESC  DstItem = {};
     };
 
     struct ControlPacket {
-        _bool MsgMove = false;
-        _bool MsgDash = false;
-        _bool MsgAction = false;
-        _bool MsgToolUse = false;
-        _bool MsgInteraction = false;
-        _bool MsgUI = false;
-        _bool MsgCut = false;
-
+        _bool MsgMove = false; //방향키
+        _bool MsgAction = false; //도구 사용키 스페이스
+        _bool MsgPickup = false;
+        _bool MsgBag = false;
+        _bool MsgAdd = false; //시프트 키
         void Reset() {
-            MsgMove = MsgDash= MsgAction = MsgToolUse = MsgInteraction= MsgUI= MsgCut = false;
+            MsgMove = MsgAdd = MsgAction = MsgPickup = MsgBag = false;
         }
     };
 
@@ -72,8 +70,8 @@ public:
     TILE_INDEX Get_FowardIndex();
 
 public:
-    void Change_Item(ITEM_DATA_DESC desc);
-    void Set_CurItemData(ITEM_DATA_DESC desc);
+    void Change_Item(TOOL_DATA_DESC desc);
+    void Set_CurItemData(TOOL_DATA_DESC desc);
 
 public:
     void ActiveCollider_Tool(_bool active, string Event = {});
@@ -86,7 +84,7 @@ private:
 private:
     class CPlayerStateMachine* m_pStateMachine= { nullptr };
  
-
+    _float m_fRange = {8};
     MovementPacket m_MovementPack = {};
     TileInfoPacket m_TileInfoPack = {};
     ItemPacket m_ItemPack = {};

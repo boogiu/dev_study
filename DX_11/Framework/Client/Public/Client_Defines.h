@@ -18,3 +18,16 @@ using namespace Client;
 #include "Engine_Defines.h"
 #include "Client_Enum.h"
 #include "Client_Structs.h"
+
+
+constexpr Engine::TILE_INDEX NEIGHBOR_OFFSET[9] = {
+	{ 0,  0}, // CENTER
+	{+1,  0}, // RIGHT
+	{+1, -1}, // RIGHT_BOTTOM
+	{ 0, -1}, // BOTTOM
+	{-1, -1}, // BOTTOM_LEFT
+	{-1,  0}, // LEFT
+	{-1, +1}, // LEFT_TOP
+	{ 0, +1}, // TOP
+	{+1, +1}, // TOP_RIGHT
+};

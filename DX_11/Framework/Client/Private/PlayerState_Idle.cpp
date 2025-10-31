@@ -11,34 +11,24 @@ CPlayerState_Idle::CPlayerState_Idle()
 {
 }
 
-void CPlayerState_Idle::OnEnter()
+HRESULT CPlayerState_Idle::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->ForceChange_Animation("Base_Wait.anim", true);
+	HRESULT hr = Animator->Change_Animation("Base_Wait.anim", true);
+	if (FAILED(hr)) {
+		return hr;
+	}
+	return hr;
 }
 
 void CPlayerState_Idle::OnUpdate(_float dt)
 {
 
-	ITEM_TYPE nowType = m_pPlayer->Get_ItemPacket().CurItem.eType;
-	switch (nowType)
-	{
-	case ITEM_TYPE::NONE:
-		m_pStateMachine->Request_ChangeState(STATE_LAYER::TOOL, "Tool_Hand_State");
-		break;
-	case ITEM_TYPE::AXE:
-		m_pStateMachine->Request_ChangeState(STATE_LAYER::TOOL, "Tool_Axe_State");
-		break;
-	case ITEM_TYPE::SCOOP:
-		m_pStateMachine->Request_ChangeState(STATE_LAYER::TOOL, "Tool_Scoop_State");
-		break;
-	default:
-		break;
-	}
 }
 
-void CPlayerState_Idle::OnExit()
+HRESULT CPlayerState_Idle::OnExit()
 {
+	return S_OK;
 }
 
 CState* CPlayerState_Idle::HandleTransition()
@@ -47,20 +37,27 @@ CState* CPlayerState_Idle::HandleTransition()
 	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	CPlayer::ControlPacket control = m_pPlayer->Get_ControlPack();
-
-	if (control.MsgMove) {
-
-		if (control.MsgDash)
-			return m_pLayer->Get_State("Movement_Run_State");
-		else
-			return m_pLayer->Get_State("Movement_Walk_State");
-	}
-
-	auto TilePack = m_pPlayer->Get_TileInfoPacket();
-	_uint Flag = TilePack.infos[Get_Index(NEIGHBOR_INDEX::UP)].TileFlag;
-		Flag |= TilePack.infos[Get_Index(NEIGHBOR_INDEX::CENTER)].TileFlag;
 	
-	return nullptr;
+	CState* nextState = nullptr;
+
+	if (control.MsgBag)
+	{
+
+	}
+	else if (control.MsgPickup) {
+
+	}
+	else if (control.MsgAction) {
+		nextState = m_pLayer->Get_State("Action_Hub_State");
+	}
+	else if (control.MsgMove) {
+		nextState = m_pLayer->Get_State("Movement_Walk_State");
+	}
+	else
+		return nullptr;
+
+	return nextState;
+
 }
 
 CPlayerState_Idle* CPlayerState_Idle::Create()

@@ -13,7 +13,7 @@ namespace Engine
 	typedef struct tagKeyDesc {
 		_bool PrevDown = false;
 		_bool CurrDown = false;
-		KEY_STATE state = KEY_STATE::Center;
+		KEY_STATE state = KEY_STATE::NONE;
 	}KEY_DESC;
 
 	typedef struct  tagMouseDesc
@@ -156,6 +156,7 @@ namespace Engine
 			_float fRatio = nowTrackPosition / Distance;
 
 			_float4 nextRot = nextFrame.vRotation;
+
 			_vector nextRotation = XMLoadFloat4(&nextRot);
 			_vector nowRotation = XMLoadFloat4(&vRotation);
 

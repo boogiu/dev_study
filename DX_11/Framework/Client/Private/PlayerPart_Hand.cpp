@@ -93,7 +93,7 @@ void CPlayerPart_Hand::OnCollisionStay(COLLISION_CONTEXT context)
 
 }
 
-void CPlayerPart_Hand::Change_Item(ITEM_DATA_DESC data)
+void CPlayerPart_Hand::Change_Item(TOOL_DATA_DESC data)
 {
 	m_pToolItem->Set_Item(data);
 	m_eItemType = data.eType;

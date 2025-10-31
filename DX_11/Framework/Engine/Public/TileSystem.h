@@ -21,24 +21,29 @@ public:
 
 public:
     virtual TILESYSTEM_INFO Get_TileSystemInfo() override { return m_tTileInfo; };
-    virtual _float Get_TileHeightByPosition(_float4 WorldPos)override;
-    virtual TILE_INDEX Get_IndexByPosition(_float4 WorldPos) override;
-    virtual _float4 Get_PositionByIndex(TILE_INDEX tileIndex, ANCHOR anchor ) override;
     virtual TILE_INDEX Register_Tile(class CTileBlock* block, TILE_INDEX index, _bool CanFail)override;
+
+    /*NeighBor*/
     virtual _uint Get_NeighborInfoByIndex(TILE_INDEX index, vector<TILE_INFO>& container) override;
     virtual vector<class CTileBlock*> Get_NeighborByIndex(TILE_INDEX index) override;
 
     virtual vector<TILE_INDEX> Get_IndeciesByArea(_float4 vMin, _float4 vMax) override;
+    virtual TILE_INDEX Get_IndexByPosition(_float4 WorldPos) override;
+    virtual _float4 Get_PositionByIndex(TILE_INDEX tileIndex, ANCHOR anchor) override;
+
+    /*Flag*/
     virtual HRESULT Add_TileFlagByIndex(vector<TILE_INDEX> indices, _uint flag) override;
     virtual HRESULT Add_TileFlagByIndex(TILE_INDEX index, _uint flag) override;
-
     virtual HRESULT Remove_TileFlagByIndex(vector<TILE_INDEX> indices, _uint flag) override;
     virtual HRESULT Remove_TileFlagByIndex(TILE_INDEX index, _uint flag) override;
     virtual _uint Get_TileFlagByIndex(TILE_INDEX index) override;
     virtual _bool Check_TileFlagByPosition(_float4 WorldPos, _uint flag) override;
+
+    /*Info*/
     virtual TILE_INFO Get_InfoByIndex(TILE_INDEX index) override;
     virtual INSTANCE_TILE Get_InstanceInfoByIndex(TILE_INDEX index) override;
     virtual void Change_CornerHeight(TILE_INDEX index,_float leftTop, _float rightTop, _float rightBottom, _float leftBottom) override;
+    virtual _float Get_TileHeightByPosition(_float4 WorldPos)override;
 
 public:
     virtual HRESULT Save_TileSystemData(const string& SavePath) override;

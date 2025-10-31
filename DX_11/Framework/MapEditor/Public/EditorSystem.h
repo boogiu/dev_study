@@ -29,6 +29,7 @@ public:
 		string baseType = {"Base_0"};
 		TILESYSTEM_INFO ContextTileInfo = {};
 		_float4 m_fConerHeight = {};
+		_float ObjHeight = {0.1f};
 	};
 
 private:

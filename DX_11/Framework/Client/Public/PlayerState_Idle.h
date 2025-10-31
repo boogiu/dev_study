@@ -9,9 +9,9 @@ private:
     virtual ~CPlayerState_Idle() DEFAULT;
 
 public:
-    virtual void OnEnter();
+    virtual HRESULT OnEnter();
     virtual void OnUpdate(_float dt);
-    virtual void OnExit();
+    virtual HRESULT OnExit();
     virtual CState* HandleTransition();
 
 public:

@@ -10,44 +10,47 @@ CPlayerState_Dig::CPlayerState_Dig()
 {
 }
 
-//("GamePlay_Level", "ToolScoop_Air.anim", "Player", false);
-//("GamePlay_Level", "ToolScoop_BuryHole.anim", "Player", false);
-//("GamePlay_Level", "ToolScoop_Dig.anim", "Player", false);
-//("GamePlay_Level", "ToolScoop_DigStump.anim", "Player", false);
-//("GamePlay_Level", "ToolScoop_Repelled.anim", "Player", false);
-
-void CPlayerState_Dig::OnEnter()
+HRESULT CPlayerState_Dig::OnEnter()
 {
-	m_DigComplete = false;
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Stop_AnimationBlend();
 
-	auto TilePack = m_pPlayer->Get_TileInfoPacket();
-	_uint Flag = TilePack.infos[Get_Index(NEIGHBOR_INDEX::UP)].TileFlag;
+	m_DigComplete = false;
 
-	if ((TILE_FLAG::FLAG_TREE & Flag) != 0) {
-		Animator->Change_Animation("ToolScoop_DigStump.anim");
+	auto TilePack = m_pPlayer->Get_TileInfoPacket();
+	_uint Flag = TilePack.Range_FowardInfo.TileFlag;
+
+	HRESULT hr; 
+
+	if ((TILE_FLAG::FLAG_DIGGED & Flag) != 0) {
+		hr=Animator->Change_Animation("ToolScoop_BuryHole.anim");
+		m_isDigged = true;
+	}
+	else if ((TILE_FLAG::FLAG_TREE & Flag) != 0) {
+		hr = Animator->Change_Animation("ToolScoop_DigStump.anim");
 		m_isTree = true;
 	}
 	else if ((CANT_DIG_REPELL & Flag) != 0)
 	{
-		Animator->Change_Animation("ToolScoop_Repelled.anim");
+		hr = Animator->Change_Animation("ToolScoop_Repelled.anim");
 	}
+
 	else if ((CANT_DIG_AIR & Flag) != 0) {
-		Animator->Change_Animation("ToolScoop_Air.anim");
+		hr = Animator->Change_Animation("ToolScoop_Air.anim");
 	}
+	
 	else {
-		Animator->Change_Animation("ToolScoop_Dig.anim");
+		hr = Animator->Change_Animation("ToolScoop_Dig.anim");
 		m_isDiggable = true;
 	}
 
+	return hr;
 }
 
 void CPlayerState_Dig::OnUpdate(_float dt)
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
-
 
 	if (m_isTree) {
 		if (Animator->isOverAnimTiming(0.5f)) {
@@ -61,15 +64,22 @@ void CPlayerState_Dig::OnUpdate(_float dt)
 			Make_Hole();
 		}
 	}
+
+	if (m_isDigged) {
+		Burry_Hole();
+	}
 }
 
-void CPlayerState_Dig::OnExit()
+HRESULT CPlayerState_Dig::OnExit()
 {
 	m_pPlayer->ActiveCollider_Tool(false, "");
 	m_isTree = false;
 	m_isDiggable = false;
 	m_isDigged = false;
 	m_DigComplete = false;
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	Animator->Restart_AnimationBlend();
+	return S_OK;
 }
 
 CState* CPlayerState_Dig::HandleTransition()
@@ -77,7 +87,7 @@ CState* CPlayerState_Dig::HandleTransition()
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 
 
-	if (Animator->isCurrentAnimEnd()) {
+	if (Animator->isOverAnimTiming(0.95f)) {
 		return m_pLayer->Get_State("Movement_Idle_State");
 	}
 	return nullptr;
@@ -89,7 +99,7 @@ void CPlayerState_Dig::Render_State()
 
 _uint CPlayerState_Dig::Get_InputMask() const
 {
-	return OnlyTool;
+	return 0xffffffff;
 }
 
 void CPlayerState_Dig::Make_Hole()
@@ -107,6 +117,14 @@ void CPlayerState_Dig::Make_Hole()
 
 	CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObj, { "GamePlay_Level","Field_Layer" });
 	m_DigComplete = true;
+}
+
+void CPlayerState_Dig::Burry_Hole()
+{
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	if (Animator->isOverAnimTiming(0.5f)) {
+		m_pPlayer->ActiveCollider_Tool(true, "BurryHole");
+	}
 }
 
 CPlayerState_Dig* CPlayerState_Dig::Create()

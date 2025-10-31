@@ -10,8 +10,9 @@ CPlayerState_HandAction::CPlayerState_HandAction()
 
 }
 
-void CPlayerState_HandAction::OnEnter()
+HRESULT CPlayerState_HandAction::OnEnter()
 {
+	return S_OK;
 
 }
 
@@ -20,28 +21,25 @@ void CPlayerState_HandAction::OnUpdate(_float dt)
 
 }
 
-void CPlayerState_HandAction::OnExit()
+HRESULT CPlayerState_HandAction::OnExit()
 {
+	return S_OK;
 }
 
 CState* CPlayerState_HandAction::HandleTransition()
 {
-	auto TilePack = m_pPlayer->Get_TileInfoPacket();
-	_uint Flag = TilePack.infos[Get_Index(NEIGHBOR_INDEX::UP)].TileFlag;
-	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
-	CPlayer::ControlPacket control = m_pPlayer->Get_ControlPack();
-
-	_uint ItemFlag = Flag|TilePack.infos[Get_Index(NEIGHBOR_INDEX::CENTER)].TileFlag;
-
-	if (control.MsgAction) {
-		if ((TILE_FLAG::FLAG_ONITEM & ItemFlag) != 0) {
-			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Movement_PickUp_State");
-		}
-		else if ((TILE_FLAG::FLAG_TREE & Flag) != 0) {
- 			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TreeShake_State");
-		}
+	TOOL_TYPE nowType = m_pPlayer->Get_ItemPacket().CurItem.eType;
+	switch (nowType)
+	{
+	case TOOL_TYPE::NONE:
+		return m_pLayer->Get_State("Tool_Hand_State");
+	case TOOL_TYPE::AXE:
+		return m_pLayer->Get_State("Tool_Axe_State");
+	case TOOL_TYPE::SCOOP:
+		return m_pLayer->Get_State("Tool_Scoop_State");
+	default:
+		break;
 	}
-
 	return nullptr;
 }
 

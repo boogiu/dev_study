@@ -118,6 +118,7 @@ HRESULT CTileSystem::Set_Material_ID(TILE_INDEX tileIndex, _float4 materialID)
 	m_InstanceTiles[tileIndex.IndexX + tileIndex.IndexZ * m_tTileInfo.iTileCountX].vMaterialType = materialID;
 	return S_OK;
 }
+
 _float CTileSystem::Get_TileHeightByPosition(_float4 WorldPos)
 {
 	TILE_INDEX dstIndex = Get_IndexByPosition(WorldPos);

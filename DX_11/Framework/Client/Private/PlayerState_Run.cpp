@@ -3,7 +3,6 @@
 #include  "Player.h"
 #include "Animator3D.h"
 #include "Transform.h"
-#include "PlayerState_Movement.h"
 #include "GameInstance.h"
 #include "IInputService.h"
 
@@ -11,12 +10,13 @@ CPlayerState_Run::CPlayerState_Run()
 {
 }
 
-void CPlayerState_Run::OnEnter()
+HRESULT CPlayerState_Run::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	HRESULT hr = Animator->Change_Animation("Move_Dash_F.anim", false, 0.05);
-	m_bFliping = false;
+     m_bFliping = false;
 	m_fDuration = 0;
+	return hr;
 }
 
 void CPlayerState_Run::OnUpdate(_float dt)
@@ -36,7 +36,7 @@ void CPlayerState_Run::OnUpdate(_float dt)
 
 		m_pPlayer->Can_Walk(myAxis);
 		CTransform* pTransform = m_pPlayer->Get_Component<CTransform>();
-		pTransform->Translate({ myAxis.x ,0,myAxis.y });
+		pTransform->Translate({ myAxis.x ,tMovePacket.fPlayerHeight * MoveSpeed * 1.5f* dt,myAxis.y });
 		m_vLastAxis = Player_InputAxis;
 	}
 
@@ -51,7 +51,7 @@ void CPlayerState_Run::OnUpdate(_float dt)
 
 			m_pPlayer->Can_Walk(breakAxis);
 			CTransform* pTransform = m_pPlayer->Get_Component<CTransform>();
-			pTransform->Translate({ breakAxis.x ,0,breakAxis.y });
+			pTransform->Translate({ breakAxis.x ,tMovePacket.fPlayerHeight * MoveSpeed * 1.5f * dt,breakAxis.y });
 			m_vLastAxis.x *= 0.98;
 			m_vLastAxis.y *= 0.98;
 
@@ -69,10 +69,10 @@ void CPlayerState_Run::OnUpdate(_float dt)
 	pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(TurnDegree));
 }
 
-void CPlayerState_Run::OnExit()
+HRESULT CPlayerState_Run::OnExit()
 {
-	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Stop_Animation();
+	m_bFliping = false;
+	return S_OK;
 }
 
 CState* CPlayerState_Run::HandleTransition()
@@ -85,15 +85,8 @@ CState* CPlayerState_Run::HandleTransition()
 	if (m_bFliping)
 		return nullptr;
 
-	if (!control.MsgMove && !control.MsgDash) {
-		Animator->Change_Animation("ToStop_DashLatter_L.anim", false, 0.02f);
-		return m_pLayer->Get_State("Movement_Idle_State");
-	}
-
-	//if (m_bFliping && control.MsgDash) {
-	//	HRESULT hr = Animator->Change_Animation("MoveTurn_Dash_L.anim", false, 0.01f);
-	//}
-	else if (!control.MsgDash&&control.MsgMove) {
+	if (!control.MsgAdd)
+	{
 		return m_pLayer->Get_State("Movement_Walk_State");
 	}
 
@@ -107,7 +100,7 @@ void CPlayerState_Run::Render_State()
 
 _uint CPlayerState_Run::Get_InputMask() const
 {
-	return OnlyMove;
+	return FlagForMove;
 }
 
 

@@ -80,6 +80,25 @@ _bool CAnimationClip::ConvertTo(vector<_float4x4>& transfomationMatrices, CAnima
 		return false;
 }
 
+_bool CAnimationClip::ConvertByCurrentMatrix(vector<_float4x4>& transfomationMatrices, CAnimationClip& DestAnimation, _float fConvertDuration, _float PrevTrackPosition, _float ConversionTrackPosition)
+{
+	for (auto& SrcChannel : m_Channels) {
+		CChannel* nextChannel = DestAnimation.Find_ChannelByBoneName(SrcChannel->Get_Name());
+
+		SrcChannel->ConvertByCurrentMatrix(
+			transfomationMatrices,
+			fConvertDuration,
+			PrevTrackPosition,
+			ConversionTrackPosition,
+			nextChannel);
+	}
+
+	if (fConvertDuration <= ConversionTrackPosition)
+		return true;
+	else
+		return false;
+}
+
 CChannel* CAnimationClip::Find_ChannelByBoneName(const string& boneName)
 {
 	auto iter = find_if(m_Channels.begin(), m_Channels.end(), [&](CChannel* pChannel)->bool {

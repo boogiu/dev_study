@@ -79,6 +79,7 @@ HRESULT CAnimator3D::Add_AnimClips(const string& LevelKey, const string& AnimKey
 		return E_FAIL;
 
 	m_pAnimClips.push_back(pClips);
+	Safe_AddRef(pClips);
 	m_pAnimNames.emplace(AnimKey, m_pAnimClips.size() - 1);
 	m_pAnimLoops.push_back(Loop);
 
@@ -119,7 +120,7 @@ void CAnimator3D::Update_Animation(_float dt)
 			Blend_Out(dt);
 			break;
 		case Engine::CAnimator3D::BLENDER_STATE::BLEND_PAUSE:
-			m_fBlendDuration += dt * m_fBlendWeight;
+			//m_fBlendDuration += dt * m_fBlendWeight;
 			break;
 		default:
 			break;
@@ -160,16 +161,10 @@ HRESULT CAnimator3D::Change_Animation(string animName, _bool overrideSame, _floa
 		return S_OK;
 	}
 
-	if (m_eState == ANIMATOR_STATE::CONVERTING)
-	{
-		if (!m_QueuedAnim.IsQueued) {
-			m_QueuedAnim.ConvertTime = convertDuration;
-			m_QueuedAnim.IsQueued = true;
-			m_QueuedAnim.Name = animName;
-			m_QueuedAnim.animIndex = iter->second;
-		}
-		return S_OK;
-	}
+	//if (m_eState == ANIMATOR_STATE::CONVERTING)
+	//{
+	//	return E_FAIL;
+	//}
 
 	m_eState = ANIMATOR_STATE::CONVERTING;
 	m_fPrevTrackPosition = m_fCurrentTrackPosition;
@@ -261,6 +256,12 @@ HRESULT CAnimator3D::Stop_AnimationBlend()
 {
 	m_eBlendState = BLENDER_STATE::BLEND_PAUSE;
 
+	return S_OK;
+}
+
+HRESULT CAnimator3D::Restart_AnimationBlend()
+{
+	m_eBlendState = BLENDER_STATE::BLEND_IN;
 	return S_OK;
 }
 
@@ -363,14 +364,14 @@ void CAnimator3D::Animation_Convert(_float dt)
 	}
 
 
-	_bool ConvertComplete = m_pAnimClips[m_iCurrentClipIndex]->ConvertTo(
+	_bool ConvertComplete = m_pAnimClips[m_iCurrentClipIndex]->ConvertByCurrentMatrix(
 		m_TransfromationMatrices,
 		*m_pAnimClips[m_iNextClipIndex],
 		m_fConvertDuration,
 		m_fPrevTrackPosition,
 		m_fCurrentTrackPosition);
 
-	Blend_Convert(dt);
+	//Blend_Convert(dt);
 
 	if (ConvertComplete) {
 		m_fConvertDuration = 0;
@@ -380,12 +381,6 @@ void CAnimator3D::Animation_Convert(_float dt)
 		m_iCurrentClipIndex = m_iNextClipIndex;
 		m_iNextClipIndex = UINT_MAX;
 		isAnimEnd = false;
-
-		if (m_QueuedAnim.IsQueued)
-		{
-			Change_Animation(m_QueuedAnim.Name, m_QueuedAnim.ConvertTime);
-			m_QueuedAnim.IsQueued = false;
-		}
 	}
 
 }

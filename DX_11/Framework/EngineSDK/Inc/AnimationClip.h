@@ -28,6 +28,13 @@ public:
 		_float PrevTrackPosition, 
 		_float ConversionTrackPosition);
 
+	_bool ConvertByCurrentMatrix(
+		vector<_float4x4>& transfomationMatrices, 
+		CAnimationClip& DestAnimation,
+		_float fConvertDuration,
+		_float PrevTrackPosition,
+		_float ConversionTrackPosition);
+
 public:
 	class CChannel* Find_ChannelByBoneName(const string& boneName);
 

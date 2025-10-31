@@ -4,7 +4,7 @@
 namespace Engine
 {
 
-	enum class KEY_STATE { Center, TAP, HOLD, AWAY };
+	enum class KEY_STATE { NONE, TAP, HOLD, AWAY };
 
 	enum class MOUSE_BTN { LB, RB, MB };
 

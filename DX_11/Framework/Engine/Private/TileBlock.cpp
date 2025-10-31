@@ -55,7 +55,7 @@ void CTileBlock::Update_Position(TILESYSTEM_INFO& systemInfo)
 {
 
 	_float tileSizeX = systemInfo.SizePerTile().x;
-	_float tileSizeY = systemInfo.SizePerTile().y;
+	_float tileSizeY = m_pOwner->Get_Position().y;
 	_float tileSizeZ = systemInfo.SizePerTile().z;
 
 	
@@ -75,7 +75,7 @@ void CTileBlock::Update_Position(TILESYSTEM_INFO& systemInfo)
 
 		worldPos = {
 			anchor.x + halfSizeX,
-			anchor.y,
+			m_pOwner->Get_Position().y,
 			anchor.z + halfSizeZ
 		};
 
@@ -83,7 +83,7 @@ void CTileBlock::Update_Position(TILESYSTEM_INFO& systemInfo)
 	else {//모델 없으면 그냥 중점에 맞추는걸로
 		worldPos = {
 		anchor.x + tileSizeX * 0.5f,
-		anchor.y,
+		m_pOwner->Get_Position().y,
 		anchor.z + tileSizeZ * 0.5f
 		};
 	}

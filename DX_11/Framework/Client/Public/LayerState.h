@@ -27,8 +27,10 @@ public:
 private:
 	class CStateMachine* m_pStateMachine = { nullptr };
 	class CState* m_pCurrent = { nullptr };
+	class CState* m_pNextState = { nullptr };
 	unordered_map<string, class CState*> m_States;
 
+	_bool m_bPendingState = {};
 public:
 	static CLayerState* Create();
 	virtual void Free();

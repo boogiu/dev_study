@@ -44,7 +44,7 @@ HRESULT CToolItem::Initialize(INIT_DESC* pArg)
 		XMMatrixRotationX(XMConvertToRadians(180))
 	);*/
 	m_InstanceTag = "None";
-	Get_Component<COBB_Collider>()->Make_MinMaxCollider({ {-3,-6,-2},{7,1,4} });
+	Get_Component<COBB_Collider>()->Make_MinMaxCollider({ {-2,-6,-1},{5,1,3} });
 	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
 	return S_OK;
 }
@@ -69,29 +69,29 @@ void CToolItem::Render_GUI()
 	//ImGui::InputFloat3()
 }
 
-void CToolItem::AdjustByItem(ITEM_TYPE type)
+void CToolItem::AdjustByItem(TOOL_TYPE type)
 {
 	m_pTransform->Reset_Rotation();
 	m_pTransform->Set_Pos({0,0,0});
 
 	switch (type) {
-		case ITEM_TYPE::AXE:
+		case TOOL_TYPE::AXE:
 			m_pTransform->Override_Rotation({0,1,0,0}, XMConvertToRadians(180));
 			break;
-		case ITEM_TYPE::SCOOP:
+		case TOOL_TYPE::SCOOP:
 			m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
 			break;
-		case ITEM_TYPE::NET:
+		case TOOL_TYPE::NET:
 			m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
 			break;
 	}
 }
 
-void CToolItem::Set_Item(ITEM_DATA_DESC data)
+void CToolItem::Set_Item(TOOL_DATA_DESC data)
 {
 	m_InstanceTag = data.TypeTag;
 	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
-	if (data.eType == ITEM_TYPE::NONE) {
+	if (data.eType == TOOL_TYPE::NONE) {
 		Get_Component<CModel>()->Set_CompActive(false);
 		return;
 	}

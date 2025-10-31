@@ -10,10 +10,11 @@ CPlayerState_Walk::CPlayerState_Walk()
 {
 }
 
-void CPlayerState_Walk::OnEnter()
+HRESULT CPlayerState_Walk::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	HRESULT hr = Animator->Change_Animation("Move_Run_F.anim");
+	return hr;
 }
 
 void CPlayerState_Walk::OnUpdate(_float dt)
@@ -28,7 +29,7 @@ void CPlayerState_Walk::OnUpdate(_float dt)
 
 		if (m_pPlayer->Can_Walk(myAxis)) {
 			CTransform* pTransform = m_pPlayer->Get_Component<CTransform>();
-			pTransform->Translate({ myAxis.x ,0,myAxis.y });
+			pTransform->Translate({ myAxis.x ,tMovePacket.fPlayerHeight * tMovePacket.fMoveSpeed * dt,myAxis.y });
 		}
 	}
 
@@ -36,40 +37,29 @@ void CPlayerState_Walk::OnUpdate(_float dt)
 	pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(tMovePacket.fCurrentDegree));
 }
 
-void CPlayerState_Walk::OnExit()
+HRESULT CPlayerState_Walk::OnExit()
 {
-	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Stop_Animation();
+	return S_OK;
 }
 
 CState* CPlayerState_Walk::HandleTransition()
 {
-	CPlayer::MovementPacket tPacket = m_pPlayer->Get_MovementPacket();
 	CPlayer::ControlPacket control = m_pPlayer->Get_ControlPack();
-	_float2 InputAxis = tPacket.vInputAxis;
-
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 
-
-	if (!isFlipping && !control.MsgMove) {
-		Animator->Change_Animation("ToStop_RunLatter_L.anim");
-
-		if (Animator->isCurrentAnimEnd()) {
-			return m_pLayer->Get_State("Movement_Idle_State");
-		}
+	if (false == control.MsgMove) {
+		Animator->Change_Animation("ToStop_RunLatter_L.anim",0.05f);
+		return m_pLayer->Get_State("Movement_Idle_State");
 	}
-	else if (control.MsgDash) {
+	else if (control.MsgAdd) {
 		return m_pLayer->Get_State("Movement_Run_State");
-	}
-	else {
-		HRESULT hr = Animator->Change_Animation("Move_Run_F.anim");
 	}
 	return nullptr;
 }
 
 _uint CPlayerState_Walk::Get_InputMask() const
 {
-	return OnlyMove;
+	return FlagForMove;
 }
 
 CPlayerState_Walk* CPlayerState_Walk::Create()

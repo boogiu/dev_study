@@ -246,7 +246,7 @@ technique11 DefaultTechnique
     }
     pass Instancing
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Wireframe);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_INSTANCE();

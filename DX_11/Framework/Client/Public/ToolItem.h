@@ -23,9 +23,9 @@ public:
     virtual void Render_GUI();
 
 private:
-    void AdjustByItem(ITEM_TYPE type);
+    void AdjustByItem(TOOL_TYPE type);
 public:
-    void Set_Item(ITEM_DATA_DESC data);
+    void Set_Item(TOOL_DATA_DESC data);
 public:
     static CToolItem* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

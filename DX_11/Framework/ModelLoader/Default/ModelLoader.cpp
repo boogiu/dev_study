@@ -56,14 +56,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     _float      fTimeAcc = {};
 
+    _bool Break = false;
     while (true) {
-        if (msg.message == WM_QUIT) break;
+        while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+            if (msg.message == WM_QUIT) {
+                Break = true;
+            }
 
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-
+        if (Break) {
+            break;
+        }
         timer->Update_Timer("Default_Timer");
         fTimeAcc += timer->Get_DeltaTime("Default_Timer");
 

@@ -4,6 +4,7 @@
 #include "State.h"
 #include "Animator3D.h"
 
+
 CLayerState::CLayerState()
 {
 }
@@ -13,21 +14,20 @@ void CLayerState::Excute(CState* rootState)
 	m_pCurrent = rootState;
 	m_pCurrent->OnEnter();
 }
-
 void CLayerState::Update(_float dt)
 {
 	CState* next = nullptr;
 	CState* state = m_pCurrent;
 
-	next = state->HandleTransition(); // 리프부터 부모까지 검사
+	next = state->HandleTransition();
 
 	if (next && next != m_pCurrent)
 	{
-		m_pCurrent->OnExit();
+		HRESULT exit = m_pCurrent->OnExit();
 
 		m_pCurrent = next;
 
-		m_pCurrent->OnEnter();
+		HRESULT enter = m_pCurrent->OnEnter();
 	}
 
 	m_pCurrent->OnUpdate(dt);
@@ -43,10 +43,8 @@ void CLayerState::Request_ChangeState(const string& NextState)
 		return;
 
 	m_pCurrent->OnExit();
-	m_pCurrent = m_States[NextState];
+	m_pCurrent = iter->second;
 	m_pCurrent->OnEnter();
-
-	return;
 }
 
 CState* CLayerState::Get_State(const string& name)
@@ -70,7 +68,6 @@ _uint CLayerState::Get_CurrentMask()
 void CLayerState::Render_State()
 {
 	ImGui::SeparatorText(m_pCurrent->GetName().c_str());
-	m_pCurrent->Render_State();
 }
 
 CLayerState* CLayerState::Create()

@@ -124,6 +124,7 @@ private:
     void Update_State(_uint N_State);
 public:
     static HRESULT PrepareForTile(const string& baseFolderPath);
+    HRESULT Save_TileMap();
 
 private:
     string ModelName = {};
@@ -138,7 +139,8 @@ public:
     CGameObject* Clone(INIT_DESC* pArg) override;
     virtual void Free();
 
-  
+
+    static unordered_map<string, vector<string>>TileMapTable;
 };
 
 NS_END

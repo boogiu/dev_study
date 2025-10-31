@@ -56,7 +56,7 @@ void CFree_Camera::Priority_Update(_float dt)
 			return;
 		}
 	}
-	m_fDistance += CGameInstance::GetInstance()->Get_InputDev()->Mouse_DeltaW() * -dt * 4 * m_fSpeed;
+ 	m_fDistance += CGameInstance::GetInstance()->Get_InputDev()->Mouse_DeltaW() * -dt * 6 * m_fSpeed;
 
 	if (m_fDistance < 1.f) {
 		m_fDistance = 1.f;
@@ -76,6 +76,12 @@ void CFree_Camera::Update(_float dt)
 
 void CFree_Camera::Late_Update(_float dt)
 {
+}
+
+void CFree_Camera::Render_GUI()
+{
+	_float test = CGameInstance::GetInstance()->Get_InputDev()->Mouse_DeltaW();
+	ImGui::Text("%.3f", test);
 }
 
 CFree_Camera* CFree_Camera::Create()

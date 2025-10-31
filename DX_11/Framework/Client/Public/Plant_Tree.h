@@ -63,7 +63,7 @@ private:
     _uint m_AxeHitCount = {};
     Tree_State m_eState = { IDLE };
 
-    class CPlant_Fruit* m_pFruits[3];
+    class CItem_Fruit* m_pFruits[3];
 
     _bool m_isAbleToDrop = { true };
     _float2 LeafPalette = {};

@@ -93,8 +93,10 @@ void CPlayer::Priority_Update(_float dt)
 
 void CPlayer::Update(_float dt)
 {
-	Update_TileInfo(dt); 
+	Update_TileInfo(dt);
 	Update_Movement(dt);
+
+
 	m_pStateMachine->Update(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
@@ -111,8 +113,8 @@ void CPlayer::Render_GUI()
 	ImGui::Begin("Item Control");
 
 	if (ImGui::Button("None")) {
-		ITEM_DATA_DESC Data = {};
-		Data.eType = ITEM_TYPE::NONE;
+		TOOL_DATA_DESC Data = {};
+		Data.eType = TOOL_TYPE::NONE;
 		Data.materialName = "";
 		Data.modelName = "";
 		Data.TypeTag = "None";
@@ -120,8 +122,8 @@ void CPlayer::Render_GUI()
 	}
 
 	if (ImGui::Button("Axe")) {
-		ITEM_DATA_DESC Data = {};
-		Data.eType = ITEM_TYPE::AXE;
+		TOOL_DATA_DESC Data = {};
+		Data.eType = TOOL_TYPE::AXE;
 		Data.materialName = "ToolAxeFirst.mat";
 		Data.modelName = "ToolAxeFirst.model";
 		Data.TypeTag = "Axe";
@@ -129,8 +131,8 @@ void CPlayer::Render_GUI()
 	}
 
 	if (ImGui::Button("Net")) {
-		ITEM_DATA_DESC Data = {};
-		Data.eType = ITEM_TYPE::NET;
+		TOOL_DATA_DESC Data = {};
+		Data.eType = TOOL_TYPE::NET;
 		Data.materialName = "ToolNetFirst.mat";
 		Data.modelName = "ToolNetFirst.model";
 		Data.TypeTag = "Net";
@@ -138,8 +140,8 @@ void CPlayer::Render_GUI()
 	}
 
 	if (ImGui::Button("Scoop")) {
-		ITEM_DATA_DESC Data = {};
-		Data.eType = ITEM_TYPE::SCOOP;
+		TOOL_DATA_DESC Data = {};
+		Data.eType = TOOL_TYPE::SCOOP;
 		Data.materialName = "ToolScoopFirst.mat";
 		Data.modelName = "ToolScoopFirst.model";
 		Data.TypeTag = "Scoop";
@@ -148,12 +150,9 @@ void CPlayer::Render_GUI()
 	ImGui::End();
 
 	ImGui::Begin("Control_Packet");
-	ImGui::Checkbox("MsgMove", &m_ControlPack.MsgMove);
-	ImGui::Checkbox("MsgDash", &m_ControlPack.MsgDash);
-	ImGui::Checkbox("MsgAction", &m_ControlPack.MsgAction);
-	ImGui::Checkbox("MsgToolUse", &m_ControlPack.MsgToolUse);
-	ImGui::Checkbox("MsgInteraction", &m_ControlPack.MsgInteraction);
-	ImGui::Checkbox("MsgUI", &m_ControlPack.MsgUI);
+	TILE_INDEX index = Get_FowardIndex();
+		ImGui::InputInt2("nowIndex", reinterpret_cast<int*>(&m_TileInfoPack.nowIndex));
+		ImGui::InputInt2("NextIndex", reinterpret_cast<int*>(&index));
 	ImGui::End();
 }
 
@@ -164,30 +163,31 @@ void CPlayer::Update_Input(_float dt)
 	control.Reset();
 
 	_uint StateActionMask = m_pStateMachine->Get_CurrentMask(STATE_LAYER::ACTION);
-	_uint StateToolMask = m_pStateMachine->Get_CurrentMask(STATE_LAYER::TOOL);
+	auto AllowAction = [&](InputMask type) {return (StateActionMask & (1 << static_cast<_uint>(type))) != 0; };
 
-	auto AllowAction = [&](InputMask type) {return (StateActionMask & (1 << static_cast<_uint>(type))) != 0;};
-	auto AllowTool = [&](InputMask type) {return (StateToolMask & (1 << static_cast<_uint>(type))) != 0;};
+	if (pInpuDev->Key_Down(VK_SHIFT))
+		control.MsgAdd = true; /*대쉬*/
 
+	/*해당 상태에서 해당 키입혁 마스크가 가능한가*/
 	if (AllowAction(InputMask::MOVE))
 	{
 		_float2 moveAxis = { 0.f, 0.f };
-		if (pInpuDev->Key_Down(VK_UP))				
+		if (pInpuDev->Key_Down(VK_UP))
 			moveAxis.y = -1.f;
-		if (pInpuDev->Key_Down(VK_DOWN))		
+		if (pInpuDev->Key_Down(VK_DOWN))
 			moveAxis.y = +1.f;
-		if (pInpuDev->Key_Down(VK_LEFT))			
+		if (pInpuDev->Key_Down(VK_LEFT))
 			moveAxis.x = +1.f;
-		if (pInpuDev->Key_Down(VK_RIGHT))		
+		if (pInpuDev->Key_Down(VK_RIGHT))
 			moveAxis.x = -1.f;
 
 		if (moveAxis.x != 0 || moveAxis.y != 0)
 			control.MsgMove = true;
-		else 
+		else {
+			OutputDebugStringA("NoMove!");
 			control.MsgMove = false;
+		}
 
-		if (pInpuDev->Key_Down(VK_SHIFT) && control.MsgMove)
-			control.MsgDash = true;
 		XMStoreFloat2(&m_MovementPack.vInputAxis, XMVector2Normalize(XMLoadFloat2(&moveAxis)));
 	}
 
@@ -195,11 +195,16 @@ void CPlayer::Update_Input(_float dt)
 		if (pInpuDev->Key_Down(VK_SPACE))
 			control.MsgAction = true;
 	}
-	if (AllowAction(InputMask::TOOL)) {
-		if (pInpuDev->Key_Down(VK_SPACE))
-				control.MsgToolUse = true;
+
+	if (AllowAction(InputMask::PICKUP)) {
+		if (pInpuDev->Key_Down(VK_CONTROL))
+			control.MsgPickup = true;
 	}
 
+	if (AllowAction(InputMask::BAG)) {
+		if (pInpuDev->Key_Down('I'))
+			control.MsgBag = true;
+	}
 }
 
 void CPlayer::Update_Movement(_float dt)
@@ -207,6 +212,7 @@ void CPlayer::Update_Movement(_float dt)
 	auto pInput = CGameInstance::GetInstance()->Get_InputDev();
 
 	_float2 moveAxis = m_MovementPack.vInputAxis;
+
 	if (fabs(moveAxis.x) > 0.01f || fabs(moveAxis.y) > 0.01f)
 		m_MovementPack.fTargetDegree = XMConvertToDegrees(atan2(moveAxis.x, moveAxis.y));
 
@@ -216,12 +222,12 @@ void CPlayer::Update_Movement(_float dt)
 	while (DeltaDegree > 180.f) DeltaDegree -= 360.f;
 	while (DeltaDegree < -180.f) DeltaDegree += 360.f;
 
-	_float RotSpeed = dt * 480;
+	_float RotSpeed = dt * 400;
 
 	if (fabs(DeltaDegree) > 150.f)
 		m_MovementPack.bFliping = true;
 
-	if (fabs(DeltaDegree) > 10.f) {
+	if (fabs(DeltaDegree) > 6.f) {
 		if (m_MovementPack.bFliping)
 			m_MovementPack.fCurrentDegree -= RotSpeed;
 		else
@@ -232,6 +238,8 @@ void CPlayer::Update_Movement(_float dt)
 		m_MovementPack.bFliping = false;
 		m_MovementPack.fCurrentDegree = m_MovementPack.fTargetDegree;
 	}
+	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
+	m_MovementPack.fPlayerHeight = (TileSys->Get_TileHeightByPosition(Get_Position()) - Get_Position().y);
 }
 
 void CPlayer::Update_TileInfo(_float dt)
@@ -240,8 +248,8 @@ void CPlayer::Update_TileInfo(_float dt)
 	auto Info = TileSys->Get_TileSystemInfo();
 
 	m_TileInfoPack.nowIndex = TileSys->Get_IndexByPosition(Get_Position());
+	m_TileInfoPack.Range_FowardInfo = TileSys->Get_InfoByIndex(Get_FowardIndex());
 	m_TileInfoPack.infos.resize(9);
-
 	vector<TILE_INFO> worldInfo = {};
 	_uint ValidIndex = TileSys->Get_NeighborInfoByIndex(m_TileInfoPack.nowIndex, worldInfo);
 	/*현재 y축 회전값을 360으로 나머지 연산*/
@@ -260,32 +268,55 @@ void CPlayer::Update_TileInfo(_float dt)
 			m_TileInfoPack.neighboValidFlag |= static_cast<_uint>(Rotate45_CCW(neighbor, RotCount));
 		}
 	}
-	Get_Index(NEIGHBOR_INDEX::UP);
 }
 
 void CPlayer::Adjust_To_Foward()
 {
-	//현재 룩벡터
+	// 현재 룩 벡터
+	_vector vLook = m_pTransform->Dir(STATE::LOOK);
+	vLook = XMVector3Normalize(vLook);
 
-	//바라봐야하는 벡터
-	TILE_INDEX index = Get_FowardIndex();
+	// 바라봐야 하는 타일의 중심 위치
+	TILE_INDEX forwardIndex = Get_FowardIndex();
+	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
 
-	//사이각/
+	_float4 vDestPos = TileSys->Get_PositionByIndex(forwardIndex, ANCHOR::Center);
 
-	//목표 각으로 전환
+	// 현재 위치
+	_float4 vNowPos = Get_Position();
+
+	_vector vTargetDir = XMLoadFloat4(&vDestPos) - XMLoadFloat4(&vNowPos);
+	vTargetDir = XMVector3Normalize(vTargetDir);
+
+	// 방향 각도 계산 (Y축 기준 평면 상)
+	_float angle =
+		atan2(
+			XMVectorGetX(vTargetDir),  // x 성분
+			XMVectorGetZ(vTargetDir)   // z 성분
+		) -
+		atan2(
+			XMVectorGetX(vLook),
+			XMVectorGetZ(vLook)
+		);
+
+	if (angle > XM_PI) angle -= XM_2PI;
+	if (angle < -XM_PI) angle += XM_2PI;
+
+	m_MovementPack.fTargetDegree = XMConvertToDegrees(angle);
 }
 
 
-void CPlayer::Change_Item(ITEM_DATA_DESC desc)
+
+void CPlayer::Change_Item(TOOL_DATA_DESC desc)
 {
 	if (m_ItemPack.CurItem.modelName == desc.modelName) {
 		return;
 	}
 	m_ItemPack.DstItem = desc;
-	m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION,"Action_TransTool_State");
+	m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TransTool_State");
 }
 
-void CPlayer::Set_CurItemData(ITEM_DATA_DESC desc)
+void CPlayer::Set_CurItemData(TOOL_DATA_DESC desc)
 {
 	if (m_ItemPack.CurItem.modelName == desc.modelName) {
 		return;
@@ -300,12 +331,12 @@ void CPlayer::Set_CurItemData(ITEM_DATA_DESC desc)
 _bool CPlayer::Can_Walk(_float2& moveAxis)
 {
 	//대각선 블럭 대응 못하는 중
-	if (m_ControlPack.MsgMove== false)
+	if (m_ControlPack.MsgMove == false)
 		return false;
 
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	_float2 tmpAxis = moveAxis;
-	_float4  NextPos =Get_Position();
+	_float4  NextPos = Get_Position();
 	NextPos.x += tmpAxis.x;
 	NextPos.z += tmpAxis.y;
 	TILE_INDEX nextIndex = CGameInstance::GetInstance()->Get_TileSystem()->Get_IndexByPosition(NextPos);
@@ -353,29 +384,23 @@ _bool CPlayer::Can_Walk(_float2& moveAxis)
 
 TILE_INDEX CPlayer::Get_FowardIndex()
 {
-	_float4 LookVec = {};
-	XMStoreFloat4(&LookVec, m_pTransform->Dir(STATE::LOOK));
-	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-	TILE_INDEX index = TileSystem->Get_IndexByPosition(Get_Position());
+	_vector Look = XMVector4Normalize(m_pTransform->Dir(STATE::LOOK));
+	Look *= m_fRange;
 
-	if (LookVec.x > -0.2f)
-		index.IndexX += 1;
-	if(LookVec.x < 0.2f)
-		index.IndexX -= 1;
+	_float4 myPos = Get_Position();
+	_float4 DstPos;
 
-	if (LookVec.z> -0.2f)
-		index.IndexZ += 1;
-	if (LookVec.z < 0.2f)
-		index.IndexZ -= 1;
+	XMStoreFloat4(&DstPos, XMLoadFloat4(&myPos) + Look);
+	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 
-	return index;
+	return tileSystem->Get_IndexByPosition(DstPos);
 }
 
 void CPlayer::ActiveCollider_Tool(_bool active, string Event)
 {
 	CGameObject* pHand = Get_Component<CObjectContainer>()->Find_ObjectByName("Right_Hand");
 	CPlayerPart_Hand* pHandPart = dynamic_cast<CPlayerPart_Hand*>(pHand);
-	pHandPart->Active_ColliderTool(active,Event);
+	pHandPart->Active_ColliderTool(active, Event);
 }
 
 void CPlayer::ActiveCollider_LeftHand(_bool active, string Event)

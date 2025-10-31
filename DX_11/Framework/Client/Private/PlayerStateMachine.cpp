@@ -22,13 +22,10 @@
 #include "PlayerState_Net.h"
 #include "PlayerState_Scoop.h"
 
-
+#include "PlayerState_ActionHub.h"
 #include "PlayerState_ShakeTree.h"
 #include "PlayerState_Dig.h"
-#include	 "PlayerState_Repelled.h"
-#include "PlayerState_Air.h"
 #include "PlayerState_ChopTree.h"
-#include "PlayerState_AxeAction.h"
 
 CPlayerStateMachine::CPlayerStateMachine(CPlayer* pPlayer)
 	:m_pOwner(pPlayer)
@@ -39,8 +36,8 @@ HRESULT CPlayerStateMachine::Initialize()
 {
 	auto actionLayer = CLayerState::Create();
 	actionLayer->Set_Machine(this);
-	m_LayerStates.emplace(STATE_LAYER::ACTION, actionLayer);
 
+	m_LayerStates.emplace(STATE_LAYER::ACTION, actionLayer);
 	auto Trans_Tool = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_TransTool>("Action_TransTool_State");
 	Trans_Tool->Set_Owner(m_pOwner);
 
@@ -48,19 +45,22 @@ HRESULT CPlayerStateMachine::Initialize()
 	toolLayer->Set_Machine(this);
 	m_LayerStates.emplace(STATE_LAYER::TOOL, toolLayer);
 
-	auto ToolBase = m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_ToolBase>("Tool_Base_State");
 	auto Idle = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Idle>("Movement_Idle_State");
 	auto Walk = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Walk>("Movement_Walk_State");
 	auto Run = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Run>("Movement_Run_State");
-	auto PickUP = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_PickUp>("Movement_PickUp_State");
 
-	auto Hand = m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_HandAction>("Tool_Hand_State");
+	auto PickUP = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_PickUp>("PickUp_Base_State");
+
+	auto ActionHub = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ActionHub>("Action_Hub_State");
 	auto TreeShake = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ShakeTree>("Action_TreeShake_State");
-
-	auto Axe= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Axe>("Tool_Axe_State");
-	auto TreeChop = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ChopTree>("Action_TreeChop_State");
-	auto Scoop= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Scoop>("Tool_Scoop_State");
 	auto DigAction= m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Dig>("Action_Dig_State");
+	auto TreeChop = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ChopTree>("Action_TreeChop_State");
+
+	/*ToolPoseSTate*/
+	auto Hand = m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_HandAction>("Tool_Hand_State");
+	auto ToolBase = m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_ToolBase>("Tool_Base_State");
+	auto Axe= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Axe>("Tool_Axe_State");
+	auto Scoop= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Scoop>("Tool_Scoop_State");
 	auto Net= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Net>("Tool_Net_State");
 
 	Idle->Set_Owner(m_pOwner);
@@ -75,6 +75,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	Scoop->Set_Owner(m_pOwner);
 	DigAction->Set_Owner(m_pOwner);
 	Net->Set_Owner(m_pOwner);
+	ActionHub->Set_Owner(m_pOwner);
 
 	m_LayerStates[STATE_LAYER::TOOL]->Excute(ToolBase);
 	m_LayerStates[STATE_LAYER::ACTION]->Excute(Idle);
@@ -96,7 +97,7 @@ void CPlayerStateMachine::Request_ChangeState(STATE_LAYER eLayer, const string& 
 	auto iter = m_LayerStates.find(eLayer);
 	if (iter == m_LayerStates.end())
 		return;
-
+	
 	iter->second->Request_ChangeState(NextState);
 }
 
@@ -111,6 +112,7 @@ void CPlayerStateMachine::Render_State(CPlayer* pPlayer)
 		LayerState.second->Render_State();
 	}
 	ImGui::End();
+	
 }
 
 _uint CPlayerStateMachine::Get_CurrentMask(STATE_LAYER eLayer)
@@ -131,4 +133,5 @@ void CPlayerStateMachine::Free()
 {
 	__super::Free();
 }
+
 

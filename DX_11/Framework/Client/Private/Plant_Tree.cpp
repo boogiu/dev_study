@@ -16,7 +16,7 @@
 #include "Texture.h"
 #include "Animator3D.h"
 
-#include "Plant_Fruit.h"
+#include "Item_Fruit.h"
 #include "Builder.h"
 
 
@@ -265,7 +265,7 @@ void CPlant_Tree::Make_Fruits()
 			Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlantFruit" })
 			.Build("Fruit" + to_string(i));
 
-		m_pFruits[i] = dynamic_cast<CPlant_Fruit*>(pObject);
+		m_pFruits[i] = dynamic_cast<CItem_Fruit*>(pObject);
 		Get_Component<CObjectContainer>()->Add_Child(pObject, false);
 	}
 	m_pFruits[0]->Dangle_Fruit("Armature_PlantTop", { 0,25,-4 });

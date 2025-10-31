@@ -64,6 +64,9 @@ void CResourceMgr::Clear_Resource(const string& levelTag)
 		for(auto& materialData : pair.second)
 			Safe_Release(materialData);
 
+	for (auto& pair : m_Resources[index].m_Animations)
+			Safe_Release(pair.second);
+
 	m_Resources[index] = {};
 }
 

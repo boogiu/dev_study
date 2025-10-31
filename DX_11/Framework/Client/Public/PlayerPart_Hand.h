@@ -28,15 +28,15 @@ public:
     void OnCollisionStay(COLLISION_CONTEXT context);
 
 public:
-    void Change_Item(ITEM_DATA_DESC data);
+    void Change_Item(TOOL_DATA_DESC data);
     void Active_ColliderTool(_bool Active, string Event);
     void Active_ColliderHand(_bool Active, string Event);
 
 public:
-    ITEM_TYPE Get_CurrentItemType() { return m_eItemType; };
+    TOOL_TYPE Get_CurrentItemType() { return m_eItemType; };
 
 private:
-    ITEM_TYPE m_eItemType = { ITEM_TYPE::NONE };
+    TOOL_TYPE m_eItemType = { TOOL_TYPE::NONE };
     class CToolItem* m_pToolItem = { nullptr };
     CGameObject* m_pOwner = { nullptr };
     string m_OwnerBone = {};

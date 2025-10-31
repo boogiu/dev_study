@@ -5,7 +5,7 @@ NS_BEGIN(Client)
 class CFieldHole :
     public CGameObject
 {
-    enum HoleState{Digged, Barried};
+    enum HoleState{Digged, BarriedNothing, BarriedSomeThing, Ready_Delete, IDLE};
 private:
     CFieldHole();
     CFieldHole(const CFieldHole& rhs);
@@ -18,9 +18,12 @@ public:
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
     virtual void Render_GUI()override;
-
+public:
+    void OnCollisionEnter(COLLISION_CONTEXT context) override;
 protected:
     HoleState m_eState = { Digged };
+    _float m_fLifeTime = { 0.f };
+    //_bool Barried = { false };
 public:
     static CFieldHole* Create();
     void Free() override;

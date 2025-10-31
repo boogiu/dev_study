@@ -9,14 +9,12 @@ private:
     virtual ~CPlayerState_Walk() DEFAULT;
 
 public:
-    virtual void OnEnter();
+    virtual HRESULT OnEnter();
     virtual void OnUpdate(_float dt);
-    virtual void OnExit();
+    virtual HRESULT OnExit();
     virtual CState* HandleTransition();
     virtual _uint Get_InputMask() const override;
 
-private:
-    _bool isFlipping = { false };
 public:
     static CPlayerState_Walk* Create();
     virtual void Free();
