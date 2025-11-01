@@ -149,8 +149,14 @@ HRESULT CAnimator3D::Change_Animation(string animName, _bool overrideSame, _floa
 	if (iter->second == m_iCurrentClipIndex) {
 		if (!overrideSame) {
 			m_eState = ANIMATOR_STATE::RUNNING;
-			return E_FAIL;
 		}
+		else {
+			//m_eState = ANIMATOR_STATE::CONVERTING;
+			//m_fConvertDuration = convertDuration;
+			//m_fCurrentTrackPosition = 0;
+		}
+
+		return E_FAIL;
 	}
 
 	if (m_iCurrentClipIndex == -1) {
@@ -370,8 +376,6 @@ void CAnimator3D::Animation_Convert(_float dt)
 		m_fConvertDuration,
 		m_fPrevTrackPosition,
 		m_fCurrentTrackPosition);
-
-	//Blend_Convert(dt);
 
 	if (ConvertComplete) {
 		m_fConvertDuration = 0;

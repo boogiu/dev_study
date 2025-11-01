@@ -48,7 +48,7 @@ HRESULT CFieldObject::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> m
 	hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);
 	m_iObjType = objHeader.Object_type;
 	m_pTransform->TranslateMatrix(XMLoadFloat4x4(&objHeader.vWorldMatrix));
-	
+
 	return S_OK;
 }
 

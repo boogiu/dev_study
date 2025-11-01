@@ -4,6 +4,13 @@ NS_BEGIN(Client)
 class CField_Stone :
     public CFieldObject
 {
+    enum  State
+    {
+        HITTED,
+        IDLE,
+        READY_TO_DESTROY
+    };
+
 private:
     CField_Stone();
     CField_Stone(const CField_Stone& rhs);
@@ -18,9 +25,22 @@ public:
     virtual void Render_GUI();
     virtual HRESULT Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable) override;
 
+public:
+    void OnCollisionEnter(COLLISION_CONTEXT context) override;
+    void OnCollisionStay(COLLISION_CONTEXT context)override;
+    void OnCollisionExit(COLLISION_CONTEXT context)override;
+
 private:
     void Override_Pass();
+private:
+    void HittedMove(_float dt);
 
+private:
+    _float ItemSpawnCoolTime = {};
+    State m_eState = {IDLE};
+    _float4 m_vMoveVector = {};
+    _float4 m_vHittedPos = {};
+    _bool m_isJustHitted = { false };
 public:
     static CField_Stone* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

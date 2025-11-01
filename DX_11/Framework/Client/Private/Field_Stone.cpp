@@ -9,6 +9,7 @@
 #include"TileBlock.h"
 #include "GameInstance.h"
 #include "ITileService.h"
+#include "Item_Object.h"
 
 CField_Stone::CField_Stone()
 {
@@ -41,18 +42,21 @@ void CField_Stone::Priority_Update(_float dt)
 
 void CField_Stone::Update(_float dt)
 {
-	static _float dg = {};
-	dg += dt * 50;
-	Get_Component<CSkeletalModel>()->Control_BoneByIndex(5, XMMatrixRotationY(XMConvertToRadians(dg)));
+	ItemSpawnCoolTime += dt;
+	if (m_eState == HITTED)
+		HittedMove(dt);
 }
 
 void CField_Stone::Late_Update(_float dt)
 {
+
 }
 
 void CField_Stone::Render_GUI()
 {
 	__super::Render_GUI();
+	ImGui::Text("nowIndex X : %d, Z : %d", m_SyncedIndex.IndexX, m_SyncedIndex.IndexZ);
+
 }
 
 HRESULT CField_Stone::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
@@ -65,7 +69,6 @@ HRESULT CField_Stone::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> m
 
 	auto vector = Get_Component<CModel>()->Get_MeshBoundingBox();
 
-	/*나무 기둥의 콜라이더를 따로 가져와야함. 트렁크로?*/
 	Get_Component<CAABB_Collider>()->Make_MinMaxCollider(
 		{
 				{-5,0,-5}, {5,10,5}
@@ -74,16 +77,91 @@ HRESULT CField_Stone::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> m
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	TILE_INDEX index = tileSystem->Get_IndexByPosition(Get_Position());
 	
-	tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED| 
-		 TILE_FLAG::FLAG_STONE));
-
+	tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED| TILE_FLAG::FLAG_STONE));
+	m_SyncedIndex = objHeader.Index;
 	tileSystem->Set_Material_ID(objHeader.Index, {1,1,0,0});
 
 	return S_OK; 
 }
 
+void CField_Stone::OnCollisionEnter(COLLISION_CONTEXT context)
+{
+	if (context.Owner->Has_Tag("Scoop")) {
+		if (context.EventTag == "Digged")
+		{
+			if (m_eState != HITTED) {
+
+			m_eState = HITTED;
+			m_vHittedPos =Get_Position();
+
+			_vector HitterPos = context.Owner->Get_Component<CTransform>()->Get_WorldPos();
+			_vector MyPos = m_pTransform->Get_Pos();
+			HitterPos =XMVectorSetY(HitterPos, 0);
+			MyPos = XMVectorSetY(MyPos, 0);
+
+			_vector MoveVector = MyPos - HitterPos;
+			MoveVector = XMVector4Normalize(MoveVector);
+			XMStoreFloat4(&m_vMoveVector, MoveVector);
+
+			if (ItemSpawnCoolTime > 1.f) {
+				_float4 pos = Get_Position();
+				CItem_Object::DROP_ITEM_DESC* pStone = new CItem_Object::DROP_ITEM_DESC;
+				pStone->itemDesc.modelName = "UnitIconStone.model";
+				pStone->itemDesc.materialName = "UnitIconStone.mat";
+				pStone->itemDesc.TypeTag = "Stone";
+
+
+				CGameObject* pObject =
+					Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ItemStone" })
+					.Position({ pos.x,pos.y + 5,pos.z + 2 })
+					.Add_ObjDesc(pStone)
+					.Build("Stone");
+
+				CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { "GamePlay_Level","Item_Layer" });
+				ItemSpawnCoolTime = 0;
+				m_isJustHitted = true;
+			}
+			}
+		}
+	}
+}
+
+void CField_Stone::OnCollisionStay(COLLISION_CONTEXT context)
+{
+}
+
+void CField_Stone::OnCollisionExit(COLLISION_CONTEXT context)
+{
+}
+
 void CField_Stone::Override_Pass()
 {
+}
+
+void CField_Stone::HittedMove(_float dt)
+{
+	if (m_isJustHitted) {
+		/*처음 부딪히면 5만 큼 이동함*/
+		m_pTransform->Translate(XMLoadFloat4(&m_vMoveVector)*20*dt);
+	}
+
+	/*맞은 곳에서부터 거리 체크*/
+	_vector HittedPos = XMLoadFloat4(&m_vHittedPos);
+	_vector movedDistance = m_pTransform->Get_Pos() - HittedPos;
+	_vector distance = XMVector3Length(movedDistance);
+
+	if (XMVectorGetX(distance) > 3.f) {
+		m_isJustHitted = false;
+	}
+
+	if (!m_isJustHitted) {
+		m_pTransform->Translate(XMLoadFloat4(&m_vMoveVector) * -20 * dt);
+		if (XMVectorGetX(distance) < 0.3f) {
+			m_eState = IDLE;
+			m_pTransform->Set_Pos({ m_vHittedPos.x, m_vHittedPos.y, m_vHittedPos.z });
+		}
+	}
+
 }
 
 CField_Stone* CField_Stone::Create()

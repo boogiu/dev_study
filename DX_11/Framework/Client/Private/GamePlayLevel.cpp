@@ -21,7 +21,7 @@
 #include "ClientHelper.h"
 #include "Layer.h"
 #include "FieldHole.h"
-
+#include "Item_Stone.h"
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
     :CLevel{ LevelKey },
@@ -156,6 +156,7 @@ void CGamePlayLevel::PreLoad_Level()
 
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_PlantFruit",CItem_Fruit::Create());
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_FieldHole",CFieldHole::Create());
+    pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_ItemStone",CItem_Stone::Create());
 
  }
 

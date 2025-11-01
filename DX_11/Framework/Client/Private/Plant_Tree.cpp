@@ -141,7 +141,7 @@ void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 			m_eState = DIGGED;
 	}
 
-	else if (context.Owner->Has_Tag("None")) {
+	else if (context.Owner->Has_Tag("Player_Hand")) {
 		m_eState = SHAKE;
 	}
 
@@ -152,17 +152,16 @@ void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 
 void CPlant_Tree::OnCollisionStay(COLLISION_CONTEXT context)
 {
-	if (context.Owner->Has_Tag("None")) {
+	if (context.Owner->Has_Tag("Player_Hand")) {
 		if (context.EventTag == "KeepShake") {
 			m_eState = SHAKING;
-			Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeLWait.anim", false);
 		}
 	}
 }
 
 void CPlant_Tree::OnCollisionExit(COLLISION_CONTEXT context)
 {
-	if (context.Owner->Has_Tag("None")) {
+	if (context.Owner->Has_Tag("Player_Hand")) {
 		Get_Component<CAnimator3D>()->Stop_Animation();
 		m_eState = IDLE;
 	}
@@ -209,9 +208,7 @@ void CPlant_Tree::PlayAnim_Cut()
 	}
 
 	if (Get_Component<CAnimator3D>()->isCurrentAnimEnd()) {
-
 		Get_Component<CModel>()->Link_Model("GamePlay_Level", m_ModelName + "Stump.model");
-		
 		m_eState = IDLE;
 		m_InstanceTag = "Stump";
 	}
@@ -239,10 +236,14 @@ void CPlant_Tree::PlayAnim_Shake()
 
 void CPlant_Tree::PlayAnim_Shaking()
 {
+	
 	if (m_fShakeTime > 1.5)
 	{
 		Drop_Items();
 		m_fShakeTime = 0;
+	}
+	if (m_fShakeTime > 0.033 ) {
+		return;
 	}
 	if (m_iGrownLevel >= 2) {
 		Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeLWait.anim", false);

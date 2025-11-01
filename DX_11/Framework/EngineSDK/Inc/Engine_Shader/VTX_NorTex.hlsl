@@ -10,9 +10,8 @@ struct VS_IN
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
-    float4 vShade : TEXCOORD1;
-    float  fSpecular : TEXCOORD2;
 };
 
 
@@ -27,32 +26,21 @@ VS_OUT VS_MAIN(VS_IN In)
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     Out.vTexcoord = In.vTexcoord;
-    
-    //노멀 벡터를 월드 변환해줌
-    vector vWorldNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
-    vector vWorldPos = mul(vector(In.vPosition, 0.f), matWorld[TransformIndex]);
-    
-    //빛의 방향의 반대와 월드노멀의 내적을 통해 그 각도를 구해줌 (최소 0을 내려가지 않도록)
-    Out.vShade = saturate(max(dot(normalize(vLightDir) * -1.f, normalize(vWorldNormal)), 0.f) + (vLightAmbient * vMtrlAmbient));
-    vector vReflect = reflect(normalize(vLightDir), normalize(vWorldNormal));
-    vector vLook = vWorldPos - vCamPosition;
-    
-    //제곱 pow
-    Out.fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), fSpecularPow*100);
+    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
     return Out;
 }
 
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
-    float4 vShade : TEXCOORD1;
-    float fSpecular : TEXCOORD2;
 };
 
 struct PS_OUT
 {
-    vector vColor : SV_TARGET0;
+    vector vDiffuse : SV_TARGET0;
+    vector vNormal : SV_TARGET1;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -64,9 +52,9 @@ PS_OUT PS_MAIN(PS_IN In)
     if (vMtrlDiffuse.a < 0.3f)
         discard;
     
-    //빛의 색상 * 빛의 강도 * 텍스처 색깔
-    Out.vColor = vLightDiffuse * vMtrlDiffuse * In.vShade +
-        (vLightSpecular * vMtrlSpecular) * In.fSpecular;
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+
     
     return Out;
 }
@@ -80,6 +68,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 }

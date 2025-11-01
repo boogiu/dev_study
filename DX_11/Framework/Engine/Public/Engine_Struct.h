@@ -320,7 +320,15 @@ namespace Engine
 		STATE eState = STATE::NONE;
 		_uint iGeneration = {};
 
-		bool IsValid() const { return eState != STATE::DEAD && pCollider != nullptr; }
+		bool IsValid() const
+		{
+			if (eState == STATE::DEAD)
+				return false;
+			if (pCollider == nullptr)
+				return false;
+			return true;
+		}
+
 		bool IsActive() const { return eState == STATE::ACTIVE && pCollider != nullptr; }
 	};
 

@@ -190,6 +190,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\OBB_Collider.h" />
     <ClInclude Include="..\Public\RayReceiver.h" />
     <ClInclude Include="..\Public\RaySystem.h" />
+    <ClInclude Include="..\Public\RenderTarget.h" />
     <ClInclude Include="..\Public\SkeletalModel.h" />
     <ClInclude Include="..\Public\AnimationClip.h" />
     <ClInclude Include="..\Public\Animator3D.h" />
@@ -267,6 +268,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\Sphere_Collider.h" />
     <ClInclude Include="..\Public\Sprite2D.h" />
     <ClInclude Include="..\Public\StaticModel.h" />
+    <ClInclude Include="..\Public\Target_Manager.h" />
     <ClInclude Include="..\Public\Texture.h" />
     <ClInclude Include="..\Public\TileBlock.h" />
     <ClInclude Include="..\Public\TileSystem.h" />
@@ -299,6 +301,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\OBB_Collider.cpp" />
     <ClCompile Include="..\Private\RayReceiver.cpp" />
     <ClCompile Include="..\Private\RaySystem.cpp" />
+    <ClCompile Include="..\Private\RenderTarget.cpp" />
     <ClCompile Include="..\Private\SkeletalModel.cpp" />
     <ClCompile Include="..\Private\AnimationClip.cpp" />
     <ClCompile Include="..\Private\Animator3D.cpp" />
@@ -351,6 +354,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\Sphere_Collider.cpp" />
     <ClCompile Include="..\Private\Sprite2D.cpp" />
     <ClCompile Include="..\Private\StaticModel.cpp" />
+    <ClCompile Include="..\Private\Target_Manager.cpp" />
     <ClCompile Include="..\Private\Texture.cpp" />
     <ClCompile Include="..\Private\TileBlock.cpp" />
     <ClCompile Include="..\Private\TileSystem.cpp" />
@@ -376,6 +380,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Public\NFD_Inc\nfd_win.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Public\Engine_Shader\Shader_Deferred.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\Shader_Define.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\Shader_State.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_Debug.hlsl" />

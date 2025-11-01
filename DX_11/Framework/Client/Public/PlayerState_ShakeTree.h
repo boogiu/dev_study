@@ -22,6 +22,7 @@ private:
     _float KeepTime = { 0.f };
     _bool isLooped = { false };
     _bool isFinished = { false };
+    _bool isTree = { false };
 public:
     static CPlayerState_ShakeTree* Create();
     virtual void Free();

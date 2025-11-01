@@ -21,13 +21,13 @@ using namespace Client;
 
 
 constexpr Engine::TILE_INDEX NEIGHBOR_OFFSET[9] = {
+	{-1, +1}, // LEFT_TOP
+	{ 0, +1}, // TOP
+	{+1, +1}, // TOP_RIGHT
+	{-1,  0}, // LEFT
 	{ 0,  0}, // CENTER
 	{+1,  0}, // RIGHT
 	{+1, -1}, // RIGHT_BOTTOM
 	{ 0, -1}, // BOTTOM
 	{-1, -1}, // BOTTOM_LEFT
-	{-1,  0}, // LEFT
-	{-1, +1}, // LEFT_TOP
-	{ 0, +1}, // TOP
-	{+1, +1}, // TOP_RIGHT
 };

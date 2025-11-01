@@ -339,6 +339,7 @@ void CResourceMgr::Load_InitialResource()
 	m_Resources[0].m_Shaders.emplace("VTX_Debug.hlsl", CShader::Create(m_pDevice,			"../Bin/ShaderFiles/VTX_Debug.hlsl", "VTX_Debug.hlsl"));
 	m_Resources[0].m_Shaders.emplace("VTX_Tile.hlsl", CShader::Create(m_pDevice,				"../Bin/ShaderFiles/VTX_Tile.hlsl", "VTX_Tile.hlsl"));
 	m_Resources[0].m_Shaders.emplace("VTX_Field.hlsl", CShader::Create(m_pDevice,				"../Bin/ShaderFiles/VTX_Field.hlsl", "VTX_Field.hlsl"));
+	m_Resources[0].m_Shaders.emplace("Shader_Deferred.hlsl", CShader::Create(m_pDevice,				"../Bin/ShaderFiles/Shader_Deferred.hlsl", "Shader_Deferred.hlsl"));
 }
 
 

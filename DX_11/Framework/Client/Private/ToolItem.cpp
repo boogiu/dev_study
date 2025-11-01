@@ -44,7 +44,7 @@ HRESULT CToolItem::Initialize(INIT_DESC* pArg)
 		XMMatrixRotationX(XMConvertToRadians(180))
 	);*/
 	m_InstanceTag = "None";
-	Get_Component<COBB_Collider>()->Make_MinMaxCollider({ {-2,-6,-1},{5,1,3} });
+	Get_Component<COBB_Collider>()->Make_MinMaxCollider({ {-2,-2,-2},{2,2,2} });
 	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
 	return S_OK;
 }
@@ -102,6 +102,7 @@ void CToolItem::Set_Item(TOOL_DATA_DESC data)
 
 	Get_Component<CModel>()->Link_Model("GamePlay_Level", data.modelName);
 	Get_Component<CMaterial>()->Link_Material("GamePlay_Level", data.materialName);
+	Get_Component<CCollider>()->Make_MinMaxCollider(Get_Component<CModel>()->Get_LocalBoundingBox());
 }
 
 CToolItem* CToolItem::Create()

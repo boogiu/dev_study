@@ -89,15 +89,15 @@ void CPlayer::Priority_Update(_float dt)
 {
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 	Update_Input(dt);
+	Update_TileInfo(dt);
 }
 
 void CPlayer::Update(_float dt)
 {
-	Update_TileInfo(dt);
+	m_pStateMachine->Update(dt);
 	Update_Movement(dt);
 
 
-	m_pStateMachine->Update(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
@@ -151,8 +151,11 @@ void CPlayer::Render_GUI()
 
 	ImGui::Begin("Control_Packet");
 	TILE_INDEX index = Get_FowardIndex();
-		ImGui::InputInt2("nowIndex", reinterpret_cast<int*>(&m_TileInfoPack.nowIndex));
-		ImGui::InputInt2("NextIndex", reinterpret_cast<int*>(&index));
+		_float4 Look = {};
+		XMStoreFloat4(&Look,XMVector4Normalize(m_pTransform->Dir(STATE::LOOK)));
+		ImGui::Text("nowIndex X : %d, Z : %d", m_TileInfoPack.nowIndex.IndexX, m_TileInfoPack.nowIndex.IndexZ);
+		ImGui::Text("nextIndex X : %d, Z : %d", index.IndexX, index.IndexZ);
+		ImGui::InputFloat4("Look Vector", reinterpret_cast<_float*>(&Look));
 	ImGui::End();
 }
 
@@ -197,7 +200,7 @@ void CPlayer::Update_Input(_float dt)
 	}
 
 	if (AllowAction(InputMask::PICKUP)) {
-		if (pInpuDev->Key_Down(VK_CONTROL))
+		if (pInpuDev->Key_Tap(VK_CONTROL))
 			control.MsgPickup = true;
 	}
 
@@ -215,7 +218,6 @@ void CPlayer::Update_Movement(_float dt)
 
 	if (fabs(moveAxis.x) > 0.01f || fabs(moveAxis.y) > 0.01f)
 		m_MovementPack.fTargetDegree = XMConvertToDegrees(atan2(moveAxis.x, moveAxis.y));
-
 	_float DeltaDegree = m_MovementPack.fTargetDegree - m_MovementPack.fCurrentDegree;
 
 	// -180~180 범위로 정규화
@@ -240,6 +242,8 @@ void CPlayer::Update_Movement(_float dt)
 	}
 	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
 	m_MovementPack.fPlayerHeight = (TileSys->Get_TileHeightByPosition(Get_Position()) - Get_Position().y);
+	m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(m_MovementPack.fCurrentDegree));
+
 }
 
 void CPlayer::Update_TileInfo(_float dt)
@@ -287,6 +291,8 @@ void CPlayer::Adjust_To_Foward()
 
 	_vector vTargetDir = XMLoadFloat4(&vDestPos) - XMLoadFloat4(&vNowPos);
 	vTargetDir = XMVector3Normalize(vTargetDir);
+	vLook = XMVectorSetY(vLook, 0.f);
+	vTargetDir = XMVectorSetY(vTargetDir, 0.f);
 
 	// 방향 각도 계산 (Y축 기준 평면 상)
 	_float angle =
@@ -295,6 +301,7 @@ void CPlayer::Adjust_To_Foward()
 			XMVectorGetZ(vTargetDir)   // z 성분
 		) -
 		atan2(
+		
 			XMVectorGetX(vLook),
 			XMVectorGetZ(vLook)
 		);
@@ -302,7 +309,7 @@ void CPlayer::Adjust_To_Foward()
 	if (angle > XM_PI) angle -= XM_2PI;
 	if (angle < -XM_PI) angle += XM_2PI;
 
-	m_MovementPack.fTargetDegree = XMConvertToDegrees(angle);
+	m_MovementPack.fTargetDegree = m_MovementPack.fCurrentDegree + XMConvertToDegrees(angle);
 }
 
 
@@ -406,6 +413,13 @@ void CPlayer::ActiveCollider_Tool(_bool active, string Event)
 void CPlayer::ActiveCollider_LeftHand(_bool active, string Event)
 {
 	CGameObject* pHand = Get_Component<CObjectContainer>()->Find_ObjectByName("Left_Hand");
+	CPlayerPart_Hand* pHandPart = dynamic_cast<CPlayerPart_Hand*>(pHand);
+	pHandPart->Active_ColliderHand(active, Event);
+}
+
+void CPlayer::ActiveCollider_RightHand(_bool active, string Event)
+{
+	CGameObject* pHand = Get_Component<CObjectContainer>()->Find_ObjectByName("Right_Hand");
 	CPlayerPart_Hand* pHandPart = dynamic_cast<CPlayerPart_Hand*>(pHand);
 	pHandPart->Active_ColliderHand(active, Event);
 }

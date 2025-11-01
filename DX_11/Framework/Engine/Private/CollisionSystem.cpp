@@ -28,13 +28,15 @@ HRESULT CCollisionSystem::Initialize()
 		pShaderByteCode, iShaderByteCodeLength, &m_pInputLayout)))
 		return E_FAIL;
 #endif
+	m_Colliders.reserve(1000);
 
 	return S_OK;
 }
 
 void CCollisionSystem::Update(_float dt)
 {
- 	for (auto& slot : m_Colliders)
+	Clean_Up();
+	for (auto& slot : m_Colliders)
 	{
 		if (slot.eState == COLLIDER_SLOT::STATE::DEAD ||
 			slot.pCollider == nullptr)
@@ -56,11 +58,11 @@ void CCollisionSystem::Update(_float dt)
 		m_Colliders[firstIndex].pCollider->Intersect(&m_Colliders[SecondIndex]);
 		m_Colliders[SecondIndex].pCollider->Intersect(&m_Colliders[firstIndex]);
 	}
-	Clean_Up();
 }
 
 void CCollisionSystem::Late_Update(_float dt)
 {
+	Clean_Up();
 	for (auto& col : m_Colliders) {
 
 		if (col.eState == COLLIDER_SLOT::STATE::DEAD ||

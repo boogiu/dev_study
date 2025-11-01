@@ -30,6 +30,10 @@ HRESULT CPlayerState_Dig::OnEnter()
 		hr = Animator->Change_Animation("ToolScoop_DigStump.anim");
 		m_isTree = true;
 	}
+	else if ((TILE_FLAG::FLAG_STONE & Flag) != 0) {
+		hr = Animator->Change_Animation("ToolScoop_Repelled.anim");
+		m_isStone = true;
+	}
 	else if ((CANT_DIG_REPELL & Flag) != 0)
 	{
 		hr = Animator->Change_Animation("ToolScoop_Repelled.anim");
@@ -57,6 +61,11 @@ void CPlayerState_Dig::OnUpdate(_float dt)
 			m_pPlayer->ActiveCollider_Tool(true,"Digged");
 		}
 	}
+	if (m_isStone) {
+		if (Animator->isOverAnimTiming(0.1f)) {
+			m_pPlayer->ActiveCollider_Tool(true,"Digged");
+		}
+	}
 
 	if (m_isTree || m_isDiggable) {
 		if (Animator->isOverAnimTiming(0.6f)&& !m_DigComplete) {
@@ -77,6 +86,7 @@ HRESULT CPlayerState_Dig::OnExit()
 	m_isDiggable = false;
 	m_isDigged = false;
 	m_DigComplete = false;
+	m_isStone = false;
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
 	return S_OK;

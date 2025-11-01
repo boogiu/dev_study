@@ -25,7 +25,6 @@ void RenderPass::BindConstant(ID3D11DeviceContext* pContext, CModel* pModel, CMa
 	pCurShader = pMaterial->Get_Shader(MaterialIndex);
 	pPipeLine->Bind_PaletteTexture(pCurShader);
 	pCurShader->SetConstantBuffer("FrameBuffer", pPipeLine->Get_FrameBuffer());
-	pCurShader->SetConstantBuffer("LightBuffer", pPipeLine->Get_LightBuffer());
 	pCurShader->SetConstantBuffer("ObjectBufferArray", pPipeLine->Get_ObjectArrayBuffer());
 
 	SHADER_PARAM SkinningMatricedParam = {};

@@ -23,6 +23,7 @@ public:
 protected:
     HoleState m_eState = { Digged };
     _float m_fLifeTime = { 0.f };
+    TILE_INDEX m_SyncedIndex = {};
     //_bool Barried = { false };
 public:
     static CFieldHole* Create();

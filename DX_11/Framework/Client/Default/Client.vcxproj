@@ -185,6 +185,7 @@
     <ClInclude Include="..\Public\HairCapParts.h" />
     <ClInclude Include="..\Public\HairParts.h" />
     <ClInclude Include="..\Public\Item_Object.h" />
+    <ClInclude Include="..\Public\Item_Stone.h" />
     <ClInclude Include="..\Public\LayerState.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\LoadingLevel.h" />
@@ -247,6 +248,7 @@
     <ClCompile Include="..\Private\HairCapParts.cpp" />
     <ClCompile Include="..\Private\HairParts.cpp" />
     <ClCompile Include="..\Private\Item_Object.cpp" />
+    <ClCompile Include="..\Private\Item_Stone.cpp" />
     <ClCompile Include="..\Private\LayerState.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\LoadingLevel.cpp" />

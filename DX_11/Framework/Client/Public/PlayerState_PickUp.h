@@ -19,6 +19,8 @@ public:
 public:
     virtual _uint Get_InputMask() const override;
 
+private:
+    _bool Item_Found = false;
 public:
     static CPlayerState_PickUp* Create();
     virtual void Free();

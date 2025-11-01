@@ -30,9 +30,9 @@ HRESULT CFieldHole::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
 
-	TILE_INDEX index= CGameInstance::GetInstance()->Get_TileSystem()->Get_IndexByPosition(Get_Position());
-	CGameInstance::GetInstance()->Get_TileSystem()->Add_TileFlagByIndex(index,static_cast<_uint>(TILE_FLAG::FLAG_DIGGED | TILE_FLAG::FLAG_BLOCKED));
-	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-1,0,-1},{1,1,1} });
+	m_SyncedIndex = CGameInstance::GetInstance()->Get_TileSystem()->Get_IndexByPosition(Get_Position());
+	CGameInstance::GetInstance()->Get_TileSystem()->Add_TileFlagByIndex(m_SyncedIndex,static_cast<_uint>(TILE_FLAG::FLAG_DIGGED | TILE_FLAG::FLAG_BLOCKED));
+	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-3,0,-3},{3,1,3} });
 	return S_OK;
 }
 
@@ -53,7 +53,9 @@ void CFieldHole::Update(_float dt)
 	if (m_eState == Ready_Delete) {
 		m_fLifeTime += dt;
 
-		if (m_fLifeTime > 1.1f) {
+		if (m_fLifeTime > 0.5f) {
+			auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+			TileSystem->Remove_TileFlagByIndex(m_SyncedIndex, static_cast<_uint>(TILE_FLAG::FLAG_DIGGED | TILE_FLAG::FLAG_BLOCKED));
 			CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
 			m_eState = IDLE;
 		}

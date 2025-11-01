@@ -337,6 +337,12 @@
     <Filter Include="01. Utility\11. CollisionSystem">
       <UniqueIdentifier>{d9d35ee7-e451-48f3-be89-fda5eb5fc594}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\06. RenderSystem\RenderTarget">
+      <UniqueIdentifier>{1d938744-e947-4f29-ae4d-9084f299c44e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\06. RenderSystem\RenderTarget\TargetManager">
+      <UniqueIdentifier>{ae831e89-18d6-4af6-9b6d-dee3e14f20fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -593,6 +599,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sphere_Collider.cpp">
       <Filter>01. Utility\04. Components\StaticComponent\09. Collider\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RenderTarget.cpp">
+      <Filter>01. Utility\06. RenderSystem\RenderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Target_Manager.cpp">
+      <Filter>01. Utility\06. RenderSystem\RenderTarget\TargetManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -929,6 +941,12 @@
     <ClInclude Include="..\Public\ICollisionService.h">
       <Filter>01. Utility\98. Services\16. ICollisionService</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\RenderTarget.h">
+      <Filter>01. Utility\06. RenderSystem\RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Target_Manager.h">
+      <Filter>01. Utility\06. RenderSystem\RenderTarget\TargetManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Public\Engine_Shader\VTX_TexPos.hlsl">
@@ -956,6 +974,9 @@
       <Filter>98. Default_HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Public\Engine_Shader\VTX_Field.hlsl">
+      <Filter>98. Default_HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Public\Engine_Shader\Shader_Deferred.hlsl">
       <Filter>98. Default_HLSL</Filter>
     </FxCompile>
   </ItemGroup>

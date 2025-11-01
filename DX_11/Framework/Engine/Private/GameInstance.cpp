@@ -41,11 +41,12 @@ _bool CGameInstance::Init_Engine(const ENGINE_DESC& engine)
 	m_pPrototypeManager = CPrototypeMgr::Create();
 	m_pObjectManager = CObjectMgr::Create();
 	m_pResourceManager = CResourceMgr::Create(m_pDevice, m_pDeviceContext);
-	m_pRenderSystem = CRenderSystem::Create(m_pDevice, m_pDeviceContext);
+
 	m_pCameraManager = CCameraMgr::Create();
 	m_pUIManager = CUI_Manager::Create();
 	m_pLightService = CLightMgr::Create();
 	m_pRaySystem = CRaySystem::Create();
+	m_pRenderSystem = CRenderSystem::Create(m_pDevice, m_pDeviceContext);
 	m_pCollisionSystem = CCollisionSystem::Create(m_pDevice, m_pDeviceContext);
 
 #if defined _USING_GUI
@@ -79,7 +80,6 @@ void CGameInstance::Update_Engine(_float dt)
 {
 	/*엔진 제어 업데이트 -> 동기화용*/
 	m_pObjectManager->Pre_EngineUpdate(dt);
-	m_pCollisionSystem->Update(dt);
 
 
 	/*클라 제어 업데이트 -> 게임 로직*/
@@ -97,10 +97,13 @@ void CGameInstance::Update_Engine(_float dt)
 #endif
 	if (m_pTileSystem)
 		m_pTileSystem->Update(dt);
+
+	m_pCollisionSystem->Update(dt);
+	m_pCollisionSystem->Late_Update(dt);
+
 	m_pObjectManager->Late_Update(dt);
 	m_pUIManager->Late_Update(dt);
 	/*엔진 제어 업데이트 -> 렌더 패킷 제출용*/
-	m_pCollisionSystem->Late_Update(dt);
 	m_pInputDevice->Update();
 	m_pObjectManager->Post_EngineUpdate(dt);
 	m_pUIManager->Post_EngineUpdate(dt);

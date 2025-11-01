@@ -181,7 +181,7 @@ _vector CTransform::Dir(STATE eState)
 	if (Check_Dirty())
 		Update_Transform();
 
-	_matrix worldMat = XMLoadFloat4x4(&m_LocalMatrix);
+	_matrix worldMat = XMLoadFloat4x4(&m_WorldMatrix);
 	return XMVector3Normalize(worldMat.r[static_cast<int>(eState)]);
 }
 

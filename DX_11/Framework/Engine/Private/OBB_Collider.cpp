@@ -44,9 +44,6 @@ void COBB_Collider::Update()
 {
 	if ((m_pDesc == nullptr) || (m_pOriginalDesc == nullptr)) return;
 
-	m_prevCollider.clear();
-	m_prevCollider = m_CurrentCollider;
-	m_CurrentCollider.clear();
 
 	_float4x4 OwnerMatrix = m_pOwner->Get_Component<CTransform>()->Get_WorldMatrix();
 	_matrix     TransformMatrix = XMLoadFloat4x4(&OwnerMatrix);
@@ -109,6 +106,11 @@ void COBB_Collider::Late_Update()
 			m_pOwner->OnCollisionExit(pCol->Get_Context());
 		}
 	}
+
+
+	m_prevCollider.swap(m_CurrentCollider);
+	m_CurrentCollider.clear();
+
 }
 
 _bool COBB_Collider::Intersect(COLLIDER_SLOT* pSlot)
@@ -137,7 +139,7 @@ _bool COBB_Collider::Intersect(COLLIDER_SLOT* pSlot)
 	}
 
 	if (onCollision) {
-		m_CurrentCollider.emplace(pSlot);
+		m_CurrentCollider.insert(pSlot);
 	}
 
 	return onCollision;

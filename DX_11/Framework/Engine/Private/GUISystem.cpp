@@ -178,6 +178,8 @@ void CGUISystem::Render_GUI()
 	}
 	
 	Render_Frame();
+	CGameInstance::GetInstance()->Get_RenderSystem()->Render_GUI();
+
 	GUI_End();
 }
 

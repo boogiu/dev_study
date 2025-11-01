@@ -21,6 +21,7 @@ struct VS_INSTANCE_IN
 struct VS_INSTANCE_OUT
 {
     float4 vPosition : SV_Position;
+    float3 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 iMtlType : TEXCOORD2;
@@ -59,6 +60,7 @@ VS_INSTANCE_OUT VS_INSTANCE(VS_INSTANCE_IN In)
     Out.vWorldPos = worldPos;
     Out.vTexcoord = In.vTexcoord;
     Out.iMtlType = In.iMtlType;
+    Out.vNormal = mul(vector(In.vNormal, 0.f), instWorld);
 
     return Out;
 }
@@ -75,10 +77,9 @@ struct VS_IN
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
+    float3 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
-    float4 vShade : TEXCOORD1;
-    float fSpecular : TEXCOORD2;
-    float4 vWorldPos : TEXCOORD3;
+    float4 vWorldPos : TEXCOORD1;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -92,22 +93,16 @@ VS_OUT VS_MAIN(VS_IN In)
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     Out.vTexcoord = In.vTexcoord;
-    
-    //노멀 벡터를 월드 변환해줌
-    vector vWorldNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
+    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
     Out.vWorldPos = mul(vector(In.vPosition, 1.f), matWorld[TransformIndex]);
     
-    //빛의 방향의 반대와 월드노멀의 내적을 통해 그 각도를 구해줌 (최소 0을 내려가지 않도록)
-    Out.vShade = saturate(max(dot(normalize(vLightDir) * -1.f, normalize(vWorldNormal)), 0.f) + (vLightAmbient * vMtrlAmbient));
-    vector vReflect = reflect(normalize(vLightDir), normalize(vWorldNormal));
-    vector vLook = Out.vWorldPos - vCamPosition;
-    
-    Out.fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), fSpecularPow * 100);
     return Out;
 }
+
 struct PS_INSTATNCE_IN
 {
     float4 vPosition : SV_Position;
+    float3 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 iMtlType : TEXCOORD2;
@@ -116,15 +111,15 @@ struct PS_INSTATNCE_IN
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
+    float3 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
-    float4 vShade : TEXCOORD1;
-    float fSpecular : TEXCOORD2;
-    float4 vWorldPos : TEXCOORD3;
+    float4 vWorldPos : TEXCOORD1;
 };
 
 struct PS_OUT
 {
-    vector vColor : SV_TARGET0;
+    vector vDiffuse : SV_TARGET0;
+    vector vNormal : SV_TARGET1;
 };
 
 PS_OUT PS_BASE(PS_IN In)
@@ -158,7 +153,9 @@ PS_OUT PS_BASE(PS_IN In)
     if (Mtrl.a < 0.2f)
         discard;
 
-    Out.vColor = BaseColor;
+    Out.vDiffuse = BaseColor;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+
     return Out;
 }
 
@@ -183,8 +180,8 @@ PS_OUT PS_EDGE(PS_IN In)
 
     if (Grd.a < 0.2f)
         discard;
-
-    Out.vColor = Grd;
+    Out.vDiffuse = Grd;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     return Out;
 }
 
@@ -219,9 +216,10 @@ PS_OUT PS_TILE_INSTANCE(PS_INSTATNCE_IN In)
     vector Palette2 = g_PaletteTexture.Sample(LinearSampler, float2(PalettePixel.x + (1 - Mask2.r) * Mask2.b, PalettePixel.y));
     vector Grd = (Palette * (1 - Mask.a) + (Palette2) * (Mask.a));
     Diffuse = Grd;
-  
-    Out.vColor = Diffuse;
-    
+    if (Diffuse.a < 0.2f)
+        discard;
+    Out.vDiffuse = Diffuse;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     return Out;
 }
 
@@ -234,6 +232,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_BASE();
     }
     pass Edge
@@ -242,14 +241,16 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_EDGE();
     }
     pass Instancing
     {
-        SetRasterizerState(RS_Wireframe);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_INSTANCE();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_TILE_INSTANCE();
     }
 }

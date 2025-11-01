@@ -30,9 +30,8 @@ private:
     void Update_ByState(_float dt);
 
 private:
-    void OnGround() override;
-    void MoveToIndex(_float dt) override;
-    void FollowHand(_float dt) override;
+    _bool IsDangled = { false };
+    _float3 m_Offset = {};
 
 public:
     static CItem_Fruit* Create();

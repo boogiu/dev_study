@@ -14,10 +14,8 @@ struct VS_IN
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
-    float4 vShade : TEXCOORD1;
-    float fSpecular : TEXCOORD2;
-    float4 vWorldPos : TEXCOORD3;
 };
 
 
@@ -43,30 +41,21 @@ VS_OUT VS_MAIN(VS_IN In)
     
     Out.vPosition = mul(vPosition, matWVP);
     Out.vTexcoord = In.vTexcoord;
-    
-    float4 vWorldPos = mul(vPosition, matWorld[TransformIndex]);
-    float4 vWorldNormal = mul(vNormal, matWorld[TransformIndex]);
-    
-    //빛의 방향의 반대와 월드노멀의 내적을 통해 그 각도를 구해줌 (최소 0을 내려가지 않도록)
-    Out.vShade = saturate(max(dot(normalize(vLightDir) * -1.f, normalize(vWorldNormal)), 0.f) + (vLightAmbient * vMtrlAmbient));
-    float4 vReflect = reflect(normalize(vLightDir), normalize(vWorldNormal));
-    float4 vLook = vWorldPos - vCamPosition;
-    Out.vWorldPos = mul(vPosition, matWorld[TransformIndex]);
-    Out.fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), fSpecularPow * 100);
+    Out.vNormal  = mul(vNormal, matWorld[TransformIndex]);
     return Out;
 }
 
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
-    float4 vShade : TEXCOORD1;
-    float fSpecular : TEXCOORD2;
 };
 
 struct PS_OUT
 {
-    vector vColor : SV_TARGET0;
+    vector vDiffuse : SV_TARGET0;
+    vector vNormal : SV_TARGET1;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -74,10 +63,12 @@ PS_OUT PS_MAIN(PS_IN In)
     PS_OUT Out;
     
     vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-   //빛의 색상 * 빛의 강도 * 텍스처 색깔
-    Out.vColor = vLightDiffuse * vMtrlDiffuse * In.vShade +
-       (vLightSpecular * vMtrlSpecular) * In.fSpecular;
+    if (vMtrlDiffuse.a < 0.2)
+    {
+        discard;
+    }
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
 
     return Out;
 }
@@ -85,31 +76,17 @@ PS_OUT PS_MAIN(PS_IN In)
 PS_OUT PS_SKIN(PS_IN In)
 {
     PS_OUT Out;
-    
+     
     vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     
     vMtrlDiffuse -=  float4(0.06, 0.23, 0.38, 0.f);
-    if (vMtrlDiffuse.a < 0.3)
+    if (vMtrlDiffuse.a < 0.2)
     {
         discard;
     }
-    Out.vColor = vMtrlDiffuse;
-    
-    return Out;
-}
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
 
-PS_OUT PS_BLEND(PS_IN In)
-{
-    PS_OUT Out;
-    
-    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-   //빛의 색상 * 빛의 강도 * 텍스처 색깔
-    Out.vColor = vMtrlDiffuse;
-    
-    Out.vColor.a = 0.4f;
-    Out.vColor.b += 0.05f;
-    
     return Out;
 }
 
@@ -121,8 +98,14 @@ PS_OUT PS_TREE(PS_IN In)
     vector vAlbGry = AlbedoGrayTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vMtrlDiffuse = g_PaletteTexture.Sample(DefaultSampler, float2((1 - vAlbGry.r), 0.6));
     
-     Out.vColor =vMtrlDiffuse;
-    
+    if (vMtrlDiffuse.a < 0.2)
+    {
+        discard;
+    }
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+
+
     return Out;
 }
 
@@ -137,12 +120,12 @@ PS_OUT PS_LEAF(PS_IN In)
     
     if (vOpacity.r > 0)
     {
-        Out.vColor = vMtrlDiffuse;
+        Out.vDiffuse = vMtrlDiffuse;
+        Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
 
     }
     else
         discard;
-
 
     return Out;
 }
@@ -155,6 +138,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
@@ -164,17 +148,9 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_SKIN();
     } 
-
-    pass ForceBlend
-    {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-        VertexShader = compile vs_5_0 VS_MAIN();
-    PixelShader = compile ps_5_0 PS_BLEND();
-    }
 
     pass Tree
     {
@@ -182,6 +158,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_TREE();
     }
     pass Leaf
@@ -190,6 +167,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_LEAF();
     }
 }

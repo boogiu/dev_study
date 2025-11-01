@@ -14,16 +14,30 @@ HRESULT CPlayerState_ShakeTree::OnEnter()
 	KeepTime = 0.f;
 	isLooped = false;
 	isFinished = false;
+	isTree = false;
 
-	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	HRESULT hr = Animator->Change_Animation("Tree_Shake.anim", true);
+	_uint Flag = m_pPlayer->Get_TileInfoPacket().Range_FowardInfo.TileFlag;
+	if ((TILE_FLAG::FLAG_TREE & Flag) != 0) {
+		isTree = true;
+	}
+
+	HRESULT hr = E_FAIL;
+
+	if (isTree)
+	{
+		auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+		 hr = Animator->Change_Animation("Tree_Shake.anim", true);
+
+	}
 
 	return hr;
-
 }
 
 void CPlayerState_ShakeTree::OnUpdate(_float dt)
 {
+	if (!isTree)
+		return;
+
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
 
@@ -31,9 +45,11 @@ void CPlayerState_ShakeTree::OnUpdate(_float dt)
 	if (InputDev->Key_Down(VK_SPACE)) {
 		KeepTime += dt;
 		if (isLooped == false) {
+			
 			if (KeepTime > 0.5f) {// /5초 이상 누르면 루프 진입
 				isLooped = true;
-				m_pPlayer->ActiveCollider_Tool(true, "KeepShake"); 
+				m_pPlayer->ActiveCollider_LeftHand(true, "KeepShake");
+				m_pPlayer->ActiveCollider_RightHand(true, "KeepShake");
 				Animator->Change_Animation("Tree_ShakeReadyKeep.anim", false);
 			}
 		}
@@ -46,28 +62,30 @@ void CPlayerState_ShakeTree::OnUpdate(_float dt)
 	}
 	if (!isLooped) {
 		if (Animator->isOverAnimTiming(0.2f)) {
-			m_pPlayer->ActiveCollider_Tool(true);
+			m_pPlayer->ActiveCollider_LeftHand(true, "Shake");
+			m_pPlayer->ActiveCollider_RightHand(true, "Shake");
 		}
 	}
 }
 
 HRESULT CPlayerState_ShakeTree::OnExit()
 {
-	m_pPlayer->ActiveCollider_Tool(false, "");
+	m_pPlayer->ActiveCollider_LeftHand(false, "");
+	m_pPlayer->ActiveCollider_RightHand(false, "");
 	return S_OK;
 }
 
 CState* CPlayerState_ShakeTree::HandleTransition()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-
 	
+	if(!isTree)
+		return m_pLayer->Get_State("Movement_Idle_State");
+
 	if (!isLooped && Animator->isCurrentAnimEnd()) {
-		//m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Movement_Idle_State");
 		return m_pLayer->Get_State("Movement_Idle_State");
 	}
 	else if (isFinished && isLooped) {
-		//m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Movement_Idle_State");
 		return m_pLayer->Get_State("Movement_Idle_State");
 	}
 	return nullptr;

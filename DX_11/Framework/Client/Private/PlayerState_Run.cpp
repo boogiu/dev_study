@@ -65,8 +65,6 @@ void CPlayerState_Run::OnUpdate(_float dt)
 			m_fDuration = 0;
 		}
 	}
-	_float TurnDegree = tMovePacket.fCurrentDegree;
-	pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(TurnDegree));
 }
 
 HRESULT CPlayerState_Run::OnExit()

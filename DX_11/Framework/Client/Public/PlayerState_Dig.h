@@ -24,6 +24,7 @@ private:
 
 private:
     _bool m_isTree = { false };
+    _bool m_isStone = { false };
     _bool m_isDigged = { false };
     _bool m_isDiggable = { false };
     _bool m_DigComplete = { false };

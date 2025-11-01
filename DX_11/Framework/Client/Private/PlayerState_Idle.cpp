@@ -45,7 +45,7 @@ CState* CPlayerState_Idle::HandleTransition()
 
 	}
 	else if (control.MsgPickup) {
-
+		nextState = m_pLayer->Get_State("PickUp_Base_State");
 	}
 	else if (control.MsgAction) {
 		nextState = m_pLayer->Get_State("Action_Hub_State");

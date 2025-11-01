@@ -22,6 +22,8 @@ public:
 
 protected:
     _uint m_iObjType = {};
+    TILE_INDEX m_SyncedIndex = {};
+
 public:
     void Free() override;
 };

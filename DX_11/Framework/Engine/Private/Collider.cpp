@@ -19,6 +19,8 @@ HRESULT CCollider::Initialize_Prototype()
 HRESULT CCollider::Initialize(COMPONENT_DESC* pArg)
 {
 	m_CollisionContext.Owner = m_pOwner;
+	m_CurrentCollider.reserve(256);
+	m_prevCollider.reserve(256);
 	return S_OK;
 }
 
@@ -48,6 +50,7 @@ void CCollider::Set_CompActive(_bool bActive)
 
 void CCollider::Releas_Component()
 {
+	int i = 0;
 }
 
 _bool CCollider::Compare_Same(COLLIDER_SLOT* prev, COLLIDER_SLOT* current)

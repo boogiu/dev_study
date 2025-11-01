@@ -55,7 +55,7 @@ HRESULT CPlayerPart_Hand::Initialize(INIT_DESC* pArg)
 
 	m_pToolItem = dynamic_cast<CToolItem*>(pTool);
 	Get_Component<CObjectContainer>()->Add_Child(pTool, true);
-	Get_Component<CCollider>()->Make_MinMaxCollider({ {-3,-3,-3},{3,3,3} });
+	Get_Component<CCollider>()->Make_MinMaxCollider({ {-3,-3,-3},{5,3,5} });
 	Get_Component<CCollider>()->Set_ColliderActive(false);
 	return S_OK;
 }

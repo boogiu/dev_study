@@ -32,9 +32,6 @@ void CPlayerState_Walk::OnUpdate(_float dt)
 			pTransform->Translate({ myAxis.x ,tMovePacket.fPlayerHeight * tMovePacket.fMoveSpeed * dt,myAxis.y });
 		}
 	}
-
-	CTransform* pTransform = m_pPlayer->Get_Component<CTransform>();
-	pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(tMovePacket.fCurrentDegree));
 }
 
 HRESULT CPlayerState_Walk::OnExit()

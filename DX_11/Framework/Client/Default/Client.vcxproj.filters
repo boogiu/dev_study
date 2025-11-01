@@ -190,6 +190,9 @@
     <Filter Include="02. GameObjects\07. EventListner">
       <UniqueIdentifier>{6621ca6c-940c-4775-baf7-1ed26f73f1e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\06. Item\Drop\Stone">
+      <UniqueIdentifier>{3fde9748-4aa4-4ee7-950e-b4559fc911c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -387,6 +390,9 @@
     <ClInclude Include="..\Public\EventListner.h">
       <Filter>02. GameObjects\07. EventListner</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Item_Stone.h">
+      <Filter>02. GameObjects\06. Item\Drop\Stone</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -567,6 +573,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\EventListner.cpp">
       <Filter>02. GameObjects\07. EventListner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Item_Stone.cpp">
+      <Filter>02. GameObjects\06. Item\Drop\Stone</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

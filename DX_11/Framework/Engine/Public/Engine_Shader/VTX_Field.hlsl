@@ -11,9 +11,8 @@ struct VS_IN
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
-    float4 vShade : TEXCOORD1;
-    float fSpecular : TEXCOORD2;
     float4 vWorldPos : TEXCOORD3;
 };
 
@@ -30,15 +29,9 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vTexcoord = In.vTexcoord;
     
     //노멀 벡터를 월드 변환해줌
-    vector vWorldNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
+    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
     Out.vWorldPos = mul(vector(In.vPosition, 1.f), matWorld[TransformIndex]);
-    
-    //빛의 방향의 반대와 월드노멀의 내적을 통해 그 각도를 구해줌 (최소 0을 내려가지 않도록)
-    Out.vShade = saturate(max(dot(normalize(vLightDir) * -1.f, normalize(vWorldNormal)), 0.f) + (vLightAmbient * vMtrlAmbient));
-    vector vReflect = reflect(normalize(vLightDir), normalize(vWorldNormal));
-    vector vLook = Out.vWorldPos - vCamPosition;
-    
-    Out.fSpecular = pow(max(dot(normalize(vReflect) * -1.f, normalize(vLook)), 0.f), fSpecularPow * 100);
+   
     return Out;
 }
 
@@ -46,15 +39,15 @@ VS_OUT VS_MAIN(VS_IN In)
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
-    float4 vShade : TEXCOORD1;
-    float fSpecular : TEXCOORD2;
     float4 vWorldPos : TEXCOORD3;
 };
 
 struct PS_OUT
 {
-    vector vColor : SV_TARGET0;
+    vector vDiffuse : SV_TARGET0;
+    vector vNormal : SV_TARGET1;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -63,17 +56,14 @@ PS_OUT PS_MAIN(PS_IN In)
     
     vector vMtrlDiffuse = DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
     
-   //빛의 색상 * 빛의 강도 * 텍스처 색깔
-  Out.vColor = vLightDiffuse * vMtrlDiffuse * In.vShade +
-     (vLightSpecular * vMtrlSpecular) * In.fSpecular;
+    Out.vDiffuse = vMtrlDiffuse;
     
-    if (Out.vColor.a < 0.2)
+    if (Out.vDiffuse.a < 0.2)
     {
-        Out.vColor = float4(0.2f, .2f, 0.2f, 0.2f);
-
-        //discard;
+        discard;
     }
     
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     return Out;
 }
 
@@ -93,7 +83,8 @@ PS_OUT PS_BASE(PS_IN In)
 
     vector Grd = (Palette * (1 - Mask.a) + (Palette2) * (Mask.a));
 
-    Out.vColor = Grd;
+    Out.vDiffuse = Grd;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     
     return Out;
 }
@@ -119,8 +110,8 @@ PS_OUT PS_EDGE(PS_IN In)
 
     if (Grd.a < 0.2f)
         discard;
-
-    Out.vColor = Grd;
+    Out.vDiffuse = Grd;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     return Out;
 }
 
@@ -134,7 +125,8 @@ PS_OUT PS_WATER(PS_IN In)
     float blue = vSample.b;
 
     // 파란색 톤으로 보이게
-    Out.vColor = float4(0, 0, blue, 1.0)  ; // baseColor × intensity
+    Out.vDiffuse = blue;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     return Out;
 }
 
@@ -146,6 +138,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
@@ -155,6 +148,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_BASE();
     }
 
@@ -164,6 +158,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_EDGE();
     }
     pass Water
@@ -172,6 +167,7 @@ technique11 DefaultTechnique
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_WATER();
     }
 
