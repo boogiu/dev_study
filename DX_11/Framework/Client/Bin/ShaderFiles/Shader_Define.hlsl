@@ -103,4 +103,7 @@ StructuredBuffer<TileIndex> g_TileIndecies : register(t20);
 
 Texture2DArray g_TileAlbedo : register(t21);
 Texture2DArray g_TilePalette : register(t22);
+
+// 式式式式式式式式式式式式式  Sprite 式式式式式式式式式式式式式
+Texture2D SpriteTexture : register(t23);
 #endif // __SHADER_DEFINE_HLSL__

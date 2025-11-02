@@ -3,6 +3,7 @@
 #include "IResourceService.h"
 #include "Texture.h"
 #include "MaterialInstance.h"
+#include "Sprite2D.h"
 _uint CMaterialData::s_NextID = 1;
 
 
@@ -43,10 +44,10 @@ HRESULT CMaterialData::Initialize(const string& levelKey, ifstream& ifs, const s
 			TEXTURE_INFO_HEADER textureInfoHeader = {};
 			ifs.read(reinterpret_cast<char*>(&textureInfoHeader), sizeof(TEXTURE_INFO_HEADER));
 			CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(
-				ParentName+textureInfoHeader.TextureKey,
+				ParentName+ "_" +textureInfoHeader.TextureKey,
 				directory + textureInfoHeader.TextureKey);
 
-			Link_Texture(levelKey, ParentName + textureInfoHeader.TextureKey, static_cast<TEXTURE_TYPE>(textureHeader.typeID));
+			Link_Texture(levelKey, ParentName + "_" + textureInfoHeader.TextureKey, static_cast<TEXTURE_TYPE>(textureHeader.typeID));
 		}
 	}
 
@@ -177,6 +178,7 @@ HRESULT CMaterialData::Link_Shader(const string& levelKey, const string& shaderK
 	Safe_AddRef(m_pShader);
 	return S_OK;
 }
+
 
 string CMaterialData::ConvertToConstant(TEXTURE_TYPE eType)
 {

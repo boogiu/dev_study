@@ -42,7 +42,7 @@ CState* CPlayerState_Idle::HandleTransition()
 
 	if (control.MsgBag)
 	{
-
+		nextState = m_pLayer->Get_State("Action_OpenInven_State");
 	}
 	else if (control.MsgPickup) {
 		nextState = m_pLayer->Get_State("PickUp_Base_State");

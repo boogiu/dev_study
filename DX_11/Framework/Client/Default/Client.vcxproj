@@ -205,6 +205,7 @@
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
     <ClInclude Include="..\Public\PlayerState_Net.h" />
     <ClInclude Include="..\Public\PlayerState_Dig.h" />
+    <ClInclude Include="..\Public\PlayerState_OpenInven.h" />
     <ClInclude Include="..\Public\PlayerState_ToolBase.h" />
     <ClInclude Include="..\Public\PlayerState_PickUp.h" />
     <ClInclude Include="..\Public\PlayerState_Run.h" />
@@ -212,10 +213,13 @@
     <ClInclude Include="..\Public\PlayerState_ShakeTree.h" />
     <ClInclude Include="..\Public\PlayerState_TransTool.h" />
     <ClInclude Include="..\Public\PlayerState_Walk.h" />
+    <ClInclude Include="..\Public\Player_Inventory.h" />
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\Public\Target_Camera.h" />
     <ClInclude Include="..\PUblic\ToolItem.h" />
+    <ClInclude Include="..\Public\UI_Cursor.h" />
+    <ClInclude Include="..\Public\UI_EmptySlot.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -268,6 +272,7 @@
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
     <ClCompile Include="..\Private\PlayerState_Net.cpp" />
     <ClCompile Include="..\Private\PlayerState_Dig.cpp" />
+    <ClCompile Include="..\Private\PlayerState_OpenInven.cpp" />
     <ClCompile Include="..\Private\PlayerState_ToolBase.cpp" />
     <ClCompile Include="..\Private\PlayerState_PickUp.cpp" />
     <ClCompile Include="..\Private\PlayerState_Run.cpp" />
@@ -275,10 +280,13 @@
     <ClCompile Include="..\Private\PlayerState_ShakeTree.cpp" />
     <ClCompile Include="..\Private\PlayerState_TransTool.cpp" />
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
+    <ClCompile Include="..\Private\Player_Inventory.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\Private\Target_Camera.cpp" />
     <ClCompile Include="..\Private\ToolItem.cpp" />
+    <ClCompile Include="..\Private\UI_Cursor.cpp" />
+    <ClCompile Include="..\Private\UI_EmptySlot.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>

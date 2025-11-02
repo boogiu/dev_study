@@ -21,7 +21,9 @@ HRESULT CPlayerState_ChopTree::OnEnter()
 	_uint Flag = TilePack.Range_FowardInfo.TileFlag;
 
 	m_bOnTree = false;
-	HRESULT hr;
+
+	HRESULT hr = E_FAIL;
+
 	if ((TILE_FLAG::FLAG_TREE& Flag)==0) {
 		if ((TILE_FLAG::FLAG_BLOCKED & Flag) != 0) {
 			 hr = Animator->Change_Animation("ToolAxe_Repelled.anim", true);
@@ -34,7 +36,7 @@ HRESULT CPlayerState_ChopTree::OnEnter()
 		hr = Animator->Change_Animation("ToolAxe_Hit.anim", true);
 		m_bOnTree = true;
 	}
-	m_bInCycle = true;
+
 	return hr;
 }
 
@@ -50,16 +52,14 @@ void CPlayerState_ChopTree::OnUpdate(_float dt)
 		}
 	}
 
-	if (Animator->isCurrentAnimEnd() ) {
- 		m_bInCycle = false;
-	}
-
 }
 
 HRESULT CPlayerState_ChopTree::OnExit()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
+	m_pPlayer->ActiveCollider_Tool(false);
+
 	return S_OK;
 }
 
@@ -68,11 +68,10 @@ CState* CPlayerState_ChopTree::HandleTransition()
 	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 
-	if (!m_bInCycle) {
-		m_pPlayer->ActiveCollider_Tool(false);
-		//m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Movement_Idle_State");
+	if (Animator->isCurrentAnimEnd()) {
 		return m_pLayer->Get_State("Movement_Idle_State");
 	}
+
 	return nullptr; 
 }
 

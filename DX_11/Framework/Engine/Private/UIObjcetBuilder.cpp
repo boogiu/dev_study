@@ -53,15 +53,16 @@ CUI_Object* CUIObjcetBuilder::Build(const string& instanceKey, _uint* id)
 		m_pObjDesc->CompDesc[pair.first] = pair.second;
 
 	//프로토 매니저에서 가져오기
-	CGameObject* Object = m_pGameInstance->Get_PrototypeMgr()->Clone_Prototype(m_CloneDesc->OriginLevel, m_CloneDesc->protoTag, m_pObjDesc);
+	CGameObject* Object = m_pGameInstance->Get_PrototypeMgr()->
+		Clone_Prototype(m_CloneDesc->OriginLevel, m_CloneDesc->protoTag, m_pObjDesc);
 	CUI_Object* instance = dynamic_cast<CUI_Object*>(Object);
 
 	if (!instance) {
 		return nullptr;
 	}
 
-	//오브젝트 레이어에 삽입
-	m_pGameInstance->Get_UIMgr()->Add_UIObject(instance, m_LevelTag);
+	////오브젝트 레이어에 삽입 ->
+
 	if(m_bPivoted)
 		instance->Align_To(m_eAnchor, m_vPivot);
 

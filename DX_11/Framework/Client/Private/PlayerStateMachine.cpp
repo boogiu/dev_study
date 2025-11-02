@@ -13,9 +13,7 @@
 
 
 #include "PlayerState_Hand.h"
-#include "PlayerState_TransTool.h"
 #include "PlayerState_PickUp.h"
-
 
 #include "PlayerState_ToolBase.h"
 #include "PlayerState_Axe.h"
@@ -26,6 +24,9 @@
 #include "PlayerState_ShakeTree.h"
 #include "PlayerState_Dig.h"
 #include "PlayerState_ChopTree.h"
+
+#include "PlayerState_OpenInven.h"
+#include "PlayerState_TransTool.h"
 
 CPlayerStateMachine::CPlayerStateMachine(CPlayer* pPlayer)
 	:m_pOwner(pPlayer)
@@ -38,8 +39,11 @@ HRESULT CPlayerStateMachine::Initialize()
 	actionLayer->Set_Machine(this);
 
 	m_LayerStates.emplace(STATE_LAYER::ACTION, actionLayer);
+
 	auto Trans_Tool = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_TransTool>("Action_TransTool_State");
+	auto Open_Inven = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_OpenInven>("Action_OpenInven_State");
 	Trans_Tool->Set_Owner(m_pOwner);
+	Open_Inven->Set_Owner(m_pOwner);
 
 	auto toolLayer = CLayerState::Create();
 	toolLayer->Set_Machine(this);

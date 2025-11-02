@@ -133,6 +133,7 @@ void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 			m_eState = CUTTED;
 			_float RLCheck = context.Owner->Get_Position().x;
 			m_isTargetRight = Get_Position().x < RLCheck;
+			m_isCutted = true;
 		}
 	}
 
@@ -199,14 +200,16 @@ void CPlant_Tree::Check_State(_float dt)
 
 void CPlant_Tree::PlayAnim_Cut()
 {
-
-	if (m_isTargetRight) {
-		Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "CutR0.anim", false);
+	if (m_isCutted) {
+		if (m_isTargetRight) {
+			Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "CutR0.anim", false);
+		}
+		else {
+			Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "CutL0.anim", false);
+		}
+		m_isCutted = false;
 	}
-	else {
-		Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "CutL0.anim", false);
-	}
-
+	
 	if (Get_Component<CAnimator3D>()->isCurrentAnimEnd()) {
 		Get_Component<CModel>()->Link_Model("GamePlay_Level", m_ModelName + "Stump.model");
 		m_eState = IDLE;

@@ -59,6 +59,9 @@ public:
     void Update_Movement(_float dt);
     void Update_TileInfo(_float dt);
     void Adjust_To_Foward();
+    void Adjust_To_WorldFoward();
+    void Camera_Zoom_In();
+    void Camera_Zoom_Out();
 
 public:
     MovementPacket& Get_MovementPacket() { return m_MovementPack; }
@@ -70,8 +73,15 @@ public:
     TILE_INDEX Get_FowardIndex();
 
 public:
+    void OnCollisionEnter(COLLISION_CONTEXT context) override;
+    void OnCollisionStay(COLLISION_CONTEXT context) override;
+    void OnCollisionExit(COLLISION_CONTEXT context) override;
+public:
+    void Open_Inventory();
+    void Close_Inventory();
     void Change_Item(TOOL_DATA_DESC desc);
     void Set_CurItemData(TOOL_DATA_DESC desc);
+    HRESULT Add_ITEM(ITEM_DATA_DESC item);
 
 public:
     void ActiveCollider_Tool(_bool active, string Event = {});
@@ -81,6 +91,8 @@ public:
 private:
     void Add_AnimationClips();
     void Add_PartObjects();
+    void Add_Inventory();
+    void Set_TargetCamera();
 
 private:
     class CPlayerStateMachine* m_pStateMachine= { nullptr };
@@ -91,6 +103,8 @@ private:
     ItemPacket m_ItemPack = {};
     ControlPacket m_ControlPack = {};
 
+    class CTarget_Camera* m_pCamera = { nullptr };
+    class CPlayer_Inventory* m_pInventory = { nullptr };
 public:
     static CPlayer* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

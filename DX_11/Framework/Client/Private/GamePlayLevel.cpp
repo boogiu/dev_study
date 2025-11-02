@@ -23,6 +23,10 @@
 #include "FieldHole.h"
 #include "Item_Stone.h"
 
+#include "Player_Inventory.h"
+#include "UI_EmptySlot.h"
+#include "UI_Cursor.h"
+
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
     :CLevel{ LevelKey },
     m_pGameInstance(CGameInstance::GetInstance())
@@ -42,25 +46,14 @@ HRESULT CGamePlayLevel::Initialize()
 
     CGameObject* pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 550,0,550 }).Build("Player");
 
-    
-    CTarget_Camera::TARGET_CAM_DESC* pCamDesc = new CTarget_Camera::TARGET_CAM_DESC;
-    pCamDesc->pTarget = pPlayer;
-
-    CGameObject* pCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_TargetCamera" })
-        .Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
-        .Add_ObjDesc(pCamDesc)
-        .Build("Main_Cam");
-
     CGameObject* pFreeCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_FreeCamera" })
         .Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
         .Position({ 550,10,550 })
         .Build("Free_Cam");
 
     m_pObjectManager->Add_Object(pPlayer, { "GamePlay_Level", "Player_Layer" });
-    m_pObjectManager->Add_Object(pCamera, { "GamePlay_Level", "Camera_Layer" });
     m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
-
-    CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pCamera->Get_Component<CCamera>());
+    //CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
 
     return S_OK;
 }
@@ -138,6 +131,9 @@ void CGamePlayLevel::PreLoad_Level()
     ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Icon");
     ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Icon");
 
+    /*Texture Path*/
+    ClientHelper::Add_TexturePathFromDirectory("../../Resources/UI");
+
     /*Object_Prototype*/
     auto pProtoMgr = CGameInstance::GetInstance()->Get_PrototypeMgr();
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_Player",CPlayer::Create());
@@ -157,6 +153,10 @@ void CGamePlayLevel::PreLoad_Level()
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_PlantFruit",CItem_Fruit::Create());
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_FieldHole",CFieldHole::Create());
     pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_ItemStone",CItem_Stone::Create());
+
+    pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameUI_PlayerInventory", CPlayer_Inventory::Create());
+    pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_UI_EmptySlot",CUI_EmptySlot::Create());
+    pProtoMgr->Add_ProtoType("GamePlay_Level","GamePlay_GameObject_UI_Cursor",CUI_Cursor::Create());
 
  }
 

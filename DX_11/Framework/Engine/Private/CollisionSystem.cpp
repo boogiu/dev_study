@@ -206,7 +206,7 @@ void CCollisionSystem::Render_Debug()
 	m_pContext->IASetInputLayout(m_pInputLayout);
 
 	m_pBatch->Begin();
-
+	m_pContext->GSSetShader(nullptr, nullptr, 0); // ¡ç ¿©±â!
 	for (size_t i = 0; i < m_Colliders.size(); i++)
 	{
 		if (m_Colliders[i].IsActive()) {

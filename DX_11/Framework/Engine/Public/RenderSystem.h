@@ -30,10 +30,10 @@ public:
 
 public:
 	HRESULT Get_InputLayout(class CModel* pModel, class CShader* pShader, _uint DrawIndex, const string& passConstant,  ID3D11InputLayout** ppInputLayout);
+	HRESULT Get_BufferInputLayout(class CVIBuffer* pBuffer, class CShader* pShader,const string& passConstant,  ID3D11InputLayout** ppInputLayout);
 	class CPipeLine* Get_Pipeline() { return m_pPipeLine; }
 
 private:
-	HRESULT Get_EngineInputLayout(class CVIBuffer* pBuffer, class CShader* pShader,const string& passConstant,  ID3D11InputLayout** ppInputLayout);
 private:
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = {nullptr};

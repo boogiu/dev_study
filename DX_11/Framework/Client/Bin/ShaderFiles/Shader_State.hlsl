@@ -7,6 +7,14 @@ RasterizerState RS_Default
     CullMode = Back;
     FrontCounterClockwise = false;
 };
+
+RasterizerState RS_CW
+{
+    FillMode = Solid;
+    CullMode = Back;
+    FrontCounterClockwise = true;
+};
+
 RasterizerState RS_NoCull
 {
     FillMode = Solid;

@@ -80,6 +80,7 @@ void CGameInstance::Update_Engine(_float dt)
 {
 	/*엔진 제어 업데이트 -> 동기화용*/
 	m_pObjectManager->Pre_EngineUpdate(dt);
+	m_pUIManager->Pre_EngineUpdate(dt);
 
 
 	/*클라 제어 업데이트 -> 게임 로직*/

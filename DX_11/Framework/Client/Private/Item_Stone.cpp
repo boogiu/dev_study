@@ -61,6 +61,7 @@ void CItem_Stone::OnCollisionEnter(COLLISION_CONTEXT context)
 		if (context.EventTag == "Pick_Up") {
 			m_eState = PICKED;
 			m_pOwnerMatrix = context.Owner->Get_WorldMatrix();
+			Get_Component<CCollider>()->Set_ContextEvent("Picked");
 		}
 	}
 }

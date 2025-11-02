@@ -149,6 +149,7 @@ HRESULT CAnimator3D::Change_Animation(string animName, _bool overrideSame, _floa
 	if (iter->second == m_iCurrentClipIndex) {
 		if (!overrideSame) {
 			m_eState = ANIMATOR_STATE::RUNNING;
+			return E_FAIL;
 		}
 		else {
 			//m_eState = ANIMATOR_STATE::CONVERTING;
@@ -156,7 +157,6 @@ HRESULT CAnimator3D::Change_Animation(string animName, _bool overrideSame, _floa
 			//m_fCurrentTrackPosition = 0;
 		}
 
-		return E_FAIL;
 	}
 
 	if (m_iCurrentClipIndex == -1) {

@@ -13,6 +13,8 @@
 #include "SkeletalModel.h"
 #include "InstanceModel.h"
 #include "TileSystem.h"
+#include "Sprite2D.h"
+#include "VIBuffer.h"
 
 RenderPass::RenderPass(CRenderSystem* pRenderSystem)
 	:m_pRenderSystem(pRenderSystem)
@@ -35,6 +37,19 @@ void RenderPass::BindConstant(ID3D11DeviceContext* pContext, CModel* pModel, CMa
 
 	ID3D11InputLayout* pLayout;
 	m_pRenderSystem->Get_InputLayout(pModel, pCurShader, DrawIndex, pMaterial->GetPassConstant(MaterialIndex), &pLayout);
+	pContext->IASetInputLayout(pLayout);
+}
+
+void RenderPass::BindConstant(ID3D11DeviceContext* pContext,  CSprite2D* pSprite, string passConstant)
+{
+	CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
+	pCurShader = pSprite->Get_Shader();
+	pPipeLine->Bind_PaletteTexture(pCurShader);
+	pCurShader->SetConstantBuffer("FrameBuffer", pPipeLine->Get_FrameBuffer());
+	pCurShader->SetConstantBuffer("ObjectBufferArray", pPipeLine->Get_ObjectArrayBuffer());
+
+	ID3D11InputLayout* pLayout;
+	m_pRenderSystem->Get_BufferInputLayout(pSprite->Get_Buffer(), pCurShader, passConstant, &pLayout);
 	pContext->IASetInputLayout(pLayout);
 }
 
@@ -167,22 +182,32 @@ void InstancePass::Submit(INSTANCE_PACKET packet)
 #pragma region UI_PASS
 void UIPass::Execute(ID3D11DeviceContext* pContext)
 {
-	CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
+ 	CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
 	pCurShader = { nullptr };
 
-	if (!m_Packets.empty()) {
-		UI_PACKET packet = m_Packets.front();
-		BindConstant(pContext, packet.pModel, packet.pMaterial, packet.DrawIndex, packet.MaterialIndex);
+	/*패킷이 비어 있으면 리턴*/
+	if (m_Packets.empty())
+		return;
+
+	/*상수 버퍼 및 SRV 세팅*/
+	pPipeLine->Begin_ObjectBuffer(pContext);
+	for (auto& packet : m_Packets)
+	{
+		_uint TransformIndex = pPipeLine->Write_ObjectData(*packet.pWorldMatrix);
+		packet.TransformIndex = TransformIndex;
 	}
+	pPipeLine->End_ObjectBuffer(pContext);
 
 	for (auto& packet : m_Packets)
 	{
-		if (packet.pMaterial->Get_Shader(packet.MaterialIndex) != pCurShader) {
-			BindConstant(pContext, packet.pModel, packet.pMaterial, packet.DrawIndex, packet.MaterialIndex);
+		if (packet.pSprite2D->Get_Shader() != pCurShader) {
+			
+			BindConstant(pContext, packet.pSprite2D, packet.pSprite2D->Get_PassConstant());
 		}
-
-		packet.pMaterial->Apply_Material(pContext, packet.MaterialIndex);
-		packet.pModel->Draw(pContext, packet.DrawIndex);
+		SHADER_PARAM WorldMatParam{ &packet.TransformIndex, "uint",sizeof(UINT) };
+		pCurShader->Bind_Value("TransformIndex", WorldMatParam);
+		packet.pSprite2D->Apply_Shader(pContext);
+		packet.pSprite2D->Draw_Sprite(pContext);
 	}
 
 	m_Packets.clear();
@@ -190,7 +215,7 @@ void UIPass::Execute(ID3D11DeviceContext* pContext)
 
 void UIPass::Submit(UI_PACKET packet)
 {
-	if (packet.pModel == nullptr || packet.pMaterial == nullptr) return;
+	if (packet.pSprite2D == nullptr ) return;
 	m_Packets.push_back(packet);
 }
 #pragma endregion

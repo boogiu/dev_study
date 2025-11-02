@@ -84,13 +84,17 @@ void CPlayerPart_Hand::Render_GUI()
 void CPlayerPart_Hand::OnCollisionEnter(COLLISION_CONTEXT context)
 {
 	
-	
+	m_pOwner->OnCollisionEnter(context);
 }
-
 
 void CPlayerPart_Hand::OnCollisionStay(COLLISION_CONTEXT context)
 {
+	m_pOwner->OnCollisionStay(context);
+}
 
+void CPlayerPart_Hand::OnCollisionExit(COLLISION_CONTEXT context)
+{
+	m_pOwner->OnCollisionExit(context);
 }
 
 void CPlayerPart_Hand::Change_Item(TOOL_DATA_DESC data)

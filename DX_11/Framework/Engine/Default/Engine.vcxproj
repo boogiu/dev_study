@@ -287,6 +287,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\VIBuffer.h" />
     <ClInclude Include="..\Public\VI_Cube.h" />
     <ClInclude Include="..\Public\VI_Plane.h" />
+    <ClInclude Include="..\Public\VI_Point.h" />
     <ClInclude Include="..\Public\VI_Rect.h" />
     <ClInclude Include="..\Public\VI_Terrain.h" />
   </ItemGroup>
@@ -367,6 +368,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\VIBuffer.cpp" />
     <ClCompile Include="..\Private\VI_Cube.cpp" />
     <ClCompile Include="..\Private\VI_Plane.cpp" />
+    <ClCompile Include="..\Private\VI_Point.cpp" />
     <ClCompile Include="..\Private\VI_Rect.cpp" />
     <ClCompile Include="..\Private\VI_Terrain.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\backends\imgui_impl_dx11.cpp" />
@@ -390,6 +392,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <FxCompile Include="..\Public\Engine_Shader\VTX_SkinMesh.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_TexPos.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_Tile.hlsl" />
+    <FxCompile Include="..\Public\Engine_Shader\VTX_UI.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

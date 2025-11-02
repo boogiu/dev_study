@@ -59,6 +59,7 @@ private:
     _uint m_iGrownLevel = {};
     _float m_fShakeTime = {};
     _bool m_isTargetRight = {};
+    _bool m_isCutted = {false};
 
     _uint m_AxeHitCount = {};
     Tree_State m_eState = { IDLE };

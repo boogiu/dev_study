@@ -26,6 +26,7 @@ public:
 public:
     void OnCollisionEnter(COLLISION_CONTEXT context);
     void OnCollisionStay(COLLISION_CONTEXT context);
+    void OnCollisionExit(COLLISION_CONTEXT context);
 
 public:
     void Change_Item(TOOL_DATA_DESC data);

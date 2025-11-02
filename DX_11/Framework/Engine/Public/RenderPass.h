@@ -4,8 +4,6 @@
 
 NS_BEGIN(Engine)
 
-
-
 class RenderPass abstract : public CBase {
 protected:
 	RenderPass(class CRenderSystem* pRenderSystem);
@@ -14,6 +12,7 @@ public:
 	virtual void Execute(ID3D11DeviceContext* pContext) PURE;
 protected:
 	void BindConstant(ID3D11DeviceContext* pContext,class CModel* pModel, class CMaterial* pMaterial , _uint DrawIndex, _uint MaterialIndex);
+	void BindConstant(ID3D11DeviceContext* pContext,class CSprite2D* pSprite , string passConstant);
 protected:
 	class CRenderSystem* m_pRenderSystem = { nullptr };
 	class CShader* pCurShader = { nullptr };
@@ -30,8 +29,10 @@ private:
 public:
 	void Execute(ID3D11DeviceContext* pContext) override;
 	void Submit(OPAQUE_PACKET packet);
+
 private:
 	vector<OPAQUE_PACKET> m_Packets;
+
 public:
 	static OpaquePass* Create(class CRenderSystem* pRenderSystem) { return new OpaquePass(pRenderSystem); }
 	virtual void Free() override {__super::Free(); m_Packets.clear();};

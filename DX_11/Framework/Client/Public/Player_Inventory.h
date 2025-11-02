@@ -1,0 +1,57 @@
+#pragma once
+#include "UI_Object.h"
+
+NS_BEGIN(Client)
+class CPlayer_Inventory :
+    public CUI_Object
+{
+    enum InvenState {Openning, Opened, Closing, Closed};
+public:
+    typedef struct tagCharacterPartsDesc : UI_DESC {
+        CGameObject* pOwner = { nullptr };
+    }CHARACTER_PARTS_DESC;
+
+private:
+    CPlayer_Inventory();
+    CPlayer_Inventory(const CPlayer_Inventory& rhs);
+    virtual ~CPlayer_Inventory() override;
+
+public:
+    HRESULT Initialize_Prototype() override;
+    HRESULT Initialize(INIT_DESC* pArg) override;
+    void Priority_Update(_float dt) override;
+    void Update(_float dt) override;
+    void Late_Update(_float dt) override;
+    virtual void Render_GUI() override;
+
+public:
+    void Open_Inventory();
+    void Close_Inventory();
+    HRESULT Add_ItemToInventory(ITEM_DATA_DESC desc);
+private:
+    void Batch_Slots();
+    void DeActive_Slots();
+    void Openning_Inven(_float dt);
+    void Closing_Inven(_float dt);
+
+private:
+    void Selecting_Item(_float dt);
+
+private:
+    InvenState m_eState = {Closed};
+    vector<class CUI_EmptySlot*> m_pSlots;
+    class CUI_Cursor* m_pCursor = { nullptr };
+    _float4 m_vTimer = {  0,0,0,0  };
+    _float2 m_vOpenSize = {  450,150  };
+    _float2 m_vCloseSize = { };
+    _float2 m_vOpenPos = {  1280 / 2,250  };
+    _float2 m_vPointPos = { 1280 / 2.4,290 };
+    _float2 m_vClosePos = { 1280 / 2,300 };
+    _int nowIndex = {};
+public:
+    static CPlayer_Inventory* Create();
+    CGameObject* Clone(INIT_DESC* pArg) override;
+    void Free() override;
+};
+
+NS_END

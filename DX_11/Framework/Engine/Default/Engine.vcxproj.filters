@@ -343,6 +343,9 @@
     <Filter Include="01. Utility\06. RenderSystem\RenderTarget\TargetManager">
       <UniqueIdentifier>{ae831e89-18d6-4af6-9b6d-dee3e14f20fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\10. VIBuffer\VI_Point">
+      <UniqueIdentifier>{352c40e4-2aab-4e69-934f-746a49390f9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -605,6 +608,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Target_Manager.cpp">
       <Filter>01. Utility\06. RenderSystem\RenderTarget\TargetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VI_Point.cpp">
+      <Filter>01. Utility\10. VIBuffer\VI_Point</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -947,6 +953,9 @@
     <ClInclude Include="..\Public\Target_Manager.h">
       <Filter>01. Utility\06. RenderSystem\RenderTarget\TargetManager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VI_Point.h">
+      <Filter>01. Utility\10. VIBuffer\VI_Point</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Public\Engine_Shader\VTX_TexPos.hlsl">
@@ -977,6 +986,9 @@
       <Filter>98. Default_HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Public\Engine_Shader\Shader_Deferred.hlsl">
+      <Filter>98. Default_HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Public\Engine_Shader\VTX_UI.hlsl">
       <Filter>98. Default_HLSL</Filter>
     </FxCompile>
   </ItemGroup>

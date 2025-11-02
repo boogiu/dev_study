@@ -81,8 +81,8 @@ HRESULT CRenderSystem::Render()
 #ifdef _DEBUG
 	m_pDebugPass->Execute(m_pContext);
 #endif // _DEBUG
-	m_pUIPass->Execute(m_pContext);
 
+	m_pUIPass->Execute(m_pContext);
 	return S_OK;
 }
 
@@ -100,7 +100,7 @@ HRESULT CRenderSystem::Render_LightAcc()
 	if (FAILED(m_pTargetManager->Begin_MRT("MRT_LightAcc"))) return E_FAIL;
 
 	ID3D11InputLayout* pLayout;
-	Get_EngineInputLayout(m_pVIBuffer, m_pShader, "Combined", &pLayout);
+	Get_BufferInputLayout(m_pVIBuffer, m_pShader, "Combined", &pLayout);
 	m_pContext->IASetInputLayout(pLayout);
 
 	SHADER_PARAM NoramlParam = {};
@@ -112,8 +112,6 @@ HRESULT CRenderSystem::Render_LightAcc()
 	WorldMat.typeName = "float4x4";
 	WorldMat.pData = &m_WorldMatrix;
 	m_pShader->Bind_Value("g_WorldMatrix", WorldMat);
-
-
 
 	m_pShader->Apply("Directional", m_pContext);
 	m_pVIBuffer->Bind_Buffer(m_pContext);
@@ -129,7 +127,7 @@ HRESULT CRenderSystem::Render_Combined()
 	m_pShader->SetConstantBuffer("FrameBuffer", m_pPipeLine->Get_FrameBuffer());
 
 	ID3D11InputLayout* pLayout;
-	Get_EngineInputLayout(m_pVIBuffer, m_pShader, "Combined", &pLayout);
+	Get_BufferInputLayout(m_pVIBuffer, m_pShader, "Combined", &pLayout);
 	m_pContext->IASetInputLayout(pLayout);
 
 	SHADER_PARAM NoramlParam = {};
@@ -197,7 +195,7 @@ HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CShader* pShader, _uint D
 	return S_OK;
 }
 
-HRESULT CRenderSystem::Get_EngineInputLayout(class CVIBuffer* pBuffer, CShader* pShader, const string& passConstant, ID3D11InputLayout** ppInputLayout)
+HRESULT CRenderSystem::Get_BufferInputLayout(class CVIBuffer* pBuffer, CShader* pShader, const string& passConstant, ID3D11InputLayout** ppInputLayout)
 {
 	if ( !pBuffer||!pShader || !ppInputLayout)
 		return E_FAIL;

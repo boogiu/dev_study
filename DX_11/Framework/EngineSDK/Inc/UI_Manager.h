@@ -10,17 +10,26 @@ private:
 	CUI_Manager();
 	virtual ~CUI_Manager();
 public:
-	virtual void Post_EngineUpdate(_float dt) override;
+	virtual void Pre_EngineUpdate(_float dt) override;
 	virtual void Priority_Update(_float dt) override;
 	virtual void Update(_float dt) override;
 	virtual void Late_Update(_float dt) override;
+	virtual void Post_EngineUpdate(_float dt) override;
+
 public:
 	virtual void Clear(const string& LevelTag) override;
 	virtual HRESULT Sync_To_Level() override;
-	virtual void Add_UIObject(class CUI_Object* object, const string& level) override;
+public:
+	HRESULT Add_UIObject(class CUI_Object* object, const string& level);
+	virtual void Remove_UIObject(class CUI_Object* object);
+
+private:
+	void Add_Object_Recursive(const string& LevelTag, class CUI_Object* object);
+	void Sort_UI();
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	unordered_map<string, UIobjects> m_UIObjects;
+	vector<CUI_Object*> DeleteUIs;
 
 public:
 	static CUI_Manager* Create();

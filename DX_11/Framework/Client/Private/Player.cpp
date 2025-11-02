@@ -22,6 +22,7 @@
 #include "HairParts.h"
 #include "ClothParts.h"
 #include "PlayerPart_Hand.h"
+#include "Player_Inventory.h"
 #include "AABB_Collider.h"
 
 CPlayer::CPlayer()
@@ -53,10 +54,10 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
 
-
 	Add_AnimationClips();
 	Add_PartObjects();
-
+	Set_TargetCamera();
+	Add_Inventory();
 	m_pStateMachine = CPlayerStateMachine::Create(this);
 	Get_Component<CSkeletalModel>()->SetDrawable(5, false);
 	Get_Component<CSkeletalModel>()->SetDrawable(8, false);
@@ -109,7 +110,6 @@ void CPlayer::Late_Update(_float dt)
 void CPlayer::Render_GUI()
 {
 	__super::Render_GUI();
-	m_pStateMachine->Render_State(this);
 	ImGui::Begin("Item Control");
 
 	if (ImGui::Button("None")) {
@@ -149,14 +149,16 @@ void CPlayer::Render_GUI()
 	}
 	ImGui::End();
 
-	ImGui::Begin("Control_Packet");
-	TILE_INDEX index = Get_FowardIndex();
-		_float4 Look = {};
-		XMStoreFloat4(&Look,XMVector4Normalize(m_pTransform->Dir(STATE::LOOK)));
-		ImGui::Text("nowIndex X : %d, Z : %d", m_TileInfoPack.nowIndex.IndexX, m_TileInfoPack.nowIndex.IndexZ);
-		ImGui::Text("nextIndex X : %d, Z : %d", index.IndexX, index.IndexZ);
-		ImGui::InputFloat4("Look Vector", reinterpret_cast<_float*>(&Look));
-	ImGui::End();
+	//ImGui::Begin("Control_Packet");
+	//TILE_INDEX index = Get_FowardIndex();
+	//	_float4 Look = {};
+	//	XMStoreFloat4(&Look,XMVector4Normalize(m_pTransform->Dir(STATE::LOOK)));
+	//	ImGui::Text("nowIndex X : %d, Z : %d", m_TileInfoPack.nowIndex.IndexX, m_TileInfoPack.nowIndex.IndexZ);
+	//	ImGui::Text("nextIndex X : %d, Z : %d", index.IndexX, index.IndexZ);
+	//	ImGui::InputFloat4("Look Vector", reinterpret_cast<_float*>(&Look));
+	//ImGui::End();
+
+	//m_pStateMachine->Render_State(this);
 }
 
 void CPlayer::Update_Input(_float dt)
@@ -205,7 +207,7 @@ void CPlayer::Update_Input(_float dt)
 	}
 
 	if (AllowAction(InputMask::BAG)) {
-		if (pInpuDev->Key_Down('I'))
+		if (pInpuDev->Key_Tap('I'))
 			control.MsgBag = true;
 	}
 }
@@ -312,8 +314,43 @@ void CPlayer::Adjust_To_Foward()
 	m_MovementPack.fTargetDegree = m_MovementPack.fCurrentDegree + XMConvertToDegrees(angle);
 }
 
+void CPlayer::Adjust_To_WorldFoward()
+{
+	m_MovementPack.fTargetDegree = 0;
+}
 
+void CPlayer::OnCollisionEnter(COLLISION_CONTEXT context)
+{
+	if (context.EventTag == "Picked")
+	{
+		int i = 0;
+	}
+}
 
+void CPlayer::OnCollisionStay(COLLISION_CONTEXT context)
+{
+}
+
+void CPlayer::OnCollisionExit(COLLISION_CONTEXT context)
+{
+}
+
+void CPlayer::Camera_Zoom_In()
+{
+	m_pCamera->Execute_ZoomIn();
+}
+void CPlayer::Camera_Zoom_Out()
+{
+	m_pCamera->Release_ZoomIn();
+}
+void CPlayer::Open_Inventory()
+{
+	m_pInventory->Open_Inventory();
+}
+void CPlayer::Close_Inventory()
+{
+	m_pInventory->Close_Inventory();
+}
 void CPlayer::Change_Item(TOOL_DATA_DESC desc)
 {
 	if (m_ItemPack.CurItem.modelName == desc.modelName) {
@@ -333,6 +370,11 @@ void CPlayer::Set_CurItemData(TOOL_DATA_DESC desc)
 	m_ItemPack.DstItem = {};
 	CGameObject* pObj = Get_Component<CObjectContainer>()->Find_ObjectByName("Right_Hand");
 	dynamic_cast<CPlayerPart_Hand*>(pObj)->Change_Item(desc);
+}
+
+HRESULT CPlayer::Add_ITEM(ITEM_DATA_DESC item)
+{
+	return m_pInventory->Add_ItemToInventory(item);
 }
 
 _bool CPlayer::Can_Walk(_float2& moveAxis)
@@ -457,7 +499,6 @@ void CPlayer::Add_AnimationClips()
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Lower.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Middle.anim", "Player", false);
 
-
 	/*Åø = SCOOP*/
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_APose.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_Air.anim", "Player", false);
@@ -471,6 +512,8 @@ void CPlayer::Add_AnimationClips()
 
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_EquipOff.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_EquipOn.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Menu_Think.anim", "Player", true);
+
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Pickup.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Pickup_Get.anim", "Player", false);
 }
@@ -531,6 +574,31 @@ void CPlayer::Add_PartObjects()
 	Get_Component<CObjectContainer>()->Add_Child(pBottom, true);
 }
 
+void CPlayer::Add_Inventory()
+{
+	CUI_Object* pUI = Builder::Create_UIObject({ "GamePlay_Level","GamePlay_GameUI_PlayerInventory" })
+		.Add_To_Level("GamePlay_Level")
+		.Build("Inventory");
+
+	CGameInstance::GetInstance()->Get_UIMgr()->Add_UIObject(pUI, "GamePlay_Level");
+	m_pInventory = dynamic_cast<CPlayer_Inventory*>(pUI);
+}
+
+void CPlayer::Set_TargetCamera()
+{
+	CTarget_Camera::TARGET_CAM_DESC* pCamDesc = new CTarget_Camera::TARGET_CAM_DESC;
+	pCamDesc->pTarget = this;
+
+	CGameObject* pCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_TargetCamera" })
+		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
+		.Add_ObjDesc(pCamDesc)
+		.Build("Target_Cam");
+	m_pCamera = dynamic_cast<CTarget_Camera*>(pCamera);
+	Safe_AddRef(m_pCamera);
+	Get_Component<CObjectContainer>()->Add_Child(pCamera, false);
+	CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pCamera->Get_Component<CCamera>());
+}
+
 CPlayer* CPlayer::Create()
 {
 	CPlayer* instance = new CPlayer();
@@ -560,4 +628,5 @@ void CPlayer::Free()
 {
 	__super::Free();
 	Safe_Release(m_pStateMachine);
+	Safe_Release(m_pCamera);
 }

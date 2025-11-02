@@ -53,12 +53,7 @@ namespace Engine {
 	}INSTANCE_PACKET;
 
 	typedef struct DrawUIPacket : BASE_PACKET {
-		_uint DrawIndex = {};
-		_uint MaterialIndex = {};
-		_float4x4* pWorldMatrix;
-		_float4x4* pViewMatrix;
-		class CModel* pModel = { nullptr };
-		class CMaterial* pMaterial = { nullptr };
+		class CSprite2D* pSprite2D = { nullptr };
 	}UI_PACKET;
 
 	typedef struct DrawDebugPacket : BASE_PACKET {

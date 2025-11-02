@@ -52,9 +52,6 @@
     <Filter Include="02. GameObjects\01. Camera\FreeCam">
       <UniqueIdentifier>{7e62ca0a-c37d-44b1-9a39-9871688c83fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\01. Camera\TargetCam">
-      <UniqueIdentifier>{80e56668-eae3-4b45-9da5-296339788533}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96. GUI_Inc">
       <UniqueIdentifier>{121d598e-996e-4cdd-9692-1c32ada1ac6c}</UniqueIdentifier>
     </Filter>
@@ -127,12 +124,6 @@
     <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\03. PickUp">
       <UniqueIdentifier>{17468ac2-e60a-4991-a5be-087d5768675a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\03. TransAction">
-      <UniqueIdentifier>{fc4cbe9d-729c-4c03-9dab-7591488063a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\03. TransAction\01. TransItem">
-      <UniqueIdentifier>{b062d2a2-0c2b-491c-bec8-bcdc2c6ba9f2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\02. Field\Hole">
       <UniqueIdentifier>{a639926f-a9d5-48a2-af46-c71bb34da43c}</UniqueIdentifier>
     </Filter>
@@ -192,6 +183,27 @@
     </Filter>
     <Filter Include="02. GameObjects\06. Item\Drop\Stone">
       <UniqueIdentifier>{3fde9748-4aa4-4ee7-950e-b4559fc911c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\03. ForcedState">
+      <UniqueIdentifier>{fc4cbe9d-729c-4c03-9dab-7591488063a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\03. ForcedState\01. TransItem">
+      <UniqueIdentifier>{b062d2a2-0c2b-491c-bec8-bcdc2c6ba9f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\03. ForcedState\02. OpneInven">
+      <UniqueIdentifier>{de3fff68-e621-49fc-a540-81597512df9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\01. Camera\TargetCam">
+      <UniqueIdentifier>{80e56668-eae3-4b45-9da5-296339788533}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\Inventory">
+      <UniqueIdentifier>{70b3a9b4-ecf8-45c0-8e08-ef486aff3de2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\Inventory\EmptySlot">
+      <UniqueIdentifier>{70c062b6-443c-4ccd-b71d-ae481fa73e10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\Inventory\Cursor">
+      <UniqueIdentifier>{73446fac-99cf-4397-891a-079b6f0260dc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -328,7 +340,7 @@
       <Filter>02. GameObjects\02. Field\Field_Tree</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_TransTool.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\03. TransAction\01. TransItem</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\01. TransItem</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Field_Stone.h">
       <Filter>02. GameObjects\02. Field\FieldStone</Filter>
@@ -392,6 +404,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\Item_Stone.h">
       <Filter>02. GameObjects\06. Item\Drop\Stone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_OpenInven.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\02. OpneInven</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player_Inventory.h">
+      <Filter>02. GameObjects\00. Player\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_EmptySlot.h">
+      <Filter>02. GameObjects\00. Player\Inventory\EmptySlot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Cursor.h">
+      <Filter>02. GameObjects\00. Player\Inventory\Cursor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -515,7 +539,7 @@
       <Filter>02. GameObjects\02. Field\Field_Tree</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_TransTool.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\03. TransAction\01. TransItem</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\01. TransItem</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Field_Stone.cpp">
       <Filter>02. GameObjects\02. Field\FieldStone</Filter>
@@ -576,6 +600,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\Item_Stone.cpp">
       <Filter>02. GameObjects\06. Item\Drop\Stone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_OpenInven.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\02. OpneInven</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player_Inventory.cpp">
+      <Filter>02. GameObjects\00. Player\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_EmptySlot.cpp">
+      <Filter>02. GameObjects\00. Player\Inventory\EmptySlot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Cursor.cpp">
+      <Filter>02. GameObjects\00. Player\Inventory\Cursor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
