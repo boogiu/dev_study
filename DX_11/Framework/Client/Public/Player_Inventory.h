@@ -5,7 +5,7 @@ NS_BEGIN(Client)
 class CPlayer_Inventory :
     public CUI_Object
 {
-    enum InvenState {Openning, Opened, Closing, Closed};
+    enum InvenState {Openning, Opened, Selected, Closing, Closed};
 public:
     typedef struct tagCharacterPartsDesc : UI_DESC {
         CGameObject* pOwner = { nullptr };
@@ -28,6 +28,7 @@ public:
     void Open_Inventory();
     void Close_Inventory();
     HRESULT Add_ItemToInventory(ITEM_DATA_DESC desc);
+
 private:
     void Batch_Slots();
     void DeActive_Slots();
@@ -35,11 +36,12 @@ private:
     void Closing_Inven(_float dt);
 
 private:
-    void Selecting_Item(_float dt);
+    void Pointing_Item(_float dt);
+    void Select_Item(_float dt);
 
 private:
     InvenState m_eState = {Closed};
-    vector<class CUI_EmptySlot*> m_pSlots;
+    vector<class CUI_InvenSlot*> m_pSlots;
     class CUI_Cursor* m_pCursor = { nullptr };
     _float4 m_vTimer = {  0,0,0,0  };
     _float2 m_vOpenSize = {  450,150  };

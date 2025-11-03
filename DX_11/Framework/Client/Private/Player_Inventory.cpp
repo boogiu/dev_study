@@ -3,7 +3,7 @@
 #include "Sprite2D.h"
 #include "GameInstance.h"
 #include "ObjectContainer.h"
-#include "UI_EmptySlot.h"
+#include "UI_InvenSlot.h"
 #include "UI_Cursor.h"
 CPlayer_Inventory::CPlayer_Inventory()
 {
@@ -34,19 +34,19 @@ HRESULT CPlayer_Inventory::Initialize(INIT_DESC* pArg)
 	Get_Component<CSprite2D>()->Set_CompActive(false);
 
 	m_eState = Closed;
-	m_fX = m_vOpenPos.x; m_fY = m_vOpenPos.y;
+	m_fLocalX = m_vOpenPos.x; m_fLocalY = m_vOpenPos.y;
 	for (size_t i = 0; i < 20; i++)
 	{
-		CUI_Object* pUI =Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_EmptySlot" })
+		CUI_Object* pUI =Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_InvenSlot" })
 			.Add_To_Level("GamePlay_Level")
 			.Build("Slot");
 		Get_Component<CObjectContainer>()->Add_Child(pUI, false);
-		m_pSlots.push_back(dynamic_cast<CUI_EmptySlot*>(pUI));
+		m_pSlots.push_back(dynamic_cast<CUI_InvenSlot*>(pUI));
 	}
 
 	CUI_Object* pUI = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Cursor" })
 		.Add_To_Level("GamePlay_Level")
-		.Scale({35,35 })
+		.Scale({50,50 })
 		.Position({0,0})
 		.Build("Cursor");
 
@@ -58,6 +58,14 @@ HRESULT CPlayer_Inventory::Initialize(INIT_DESC* pArg)
 
 void CPlayer_Inventory::Priority_Update(_float dt)
 {
+	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
+		if (m_eState == Opened)
+			m_eState = Selected;
+	}
+	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SHIFT)) {
+		if (m_eState == Selected)
+			m_eState = Opened;
+	}
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
@@ -69,7 +77,12 @@ void CPlayer_Inventory::Update(_float dt)
 		Openning_Inven(dt);
 		break;
 	case Client::CPlayer_Inventory::Opened:
-		Selecting_Item(dt);
+		Pointing_Item(dt);
+		Get_Component<CObjectContainer>()->UpdateChild(dt);
+		break;
+	case Client::CPlayer_Inventory::Selected:
+		Select_Item(dt);
+		Get_Component<CObjectContainer>()->UpdateChild(dt);
 		break;
 	case Client::CPlayer_Inventory::Closing:
 		Closing_Inven(dt);
@@ -79,7 +92,6 @@ void CPlayer_Inventory::Update(_float dt)
 	default:
 		break;
 	}
-	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
 void CPlayer_Inventory::Late_Update(_float dt)
@@ -106,7 +118,20 @@ void CPlayer_Inventory::Close_Inventory()
 
 HRESULT CPlayer_Inventory::Add_ItemToInventory(ITEM_DATA_DESC desc)
 {
-	return E_NOTIMPL;
+	if (desc.TypeTag == itemType::None)
+	{
+		return E_FAIL;
+	}
+	else {
+		for (size_t i = 0; i < m_pSlots.size(); i++)
+		{
+			if (m_pSlots[i]->isAbleToContain(desc)) {
+				m_pSlots[i]->Add_Data(desc);
+				return S_OK;
+			}
+		}
+	}
+	return E_FAIL;
 }
 
 void CPlayer_Inventory::Batch_Slots()
@@ -122,7 +147,7 @@ void CPlayer_Inventory::Batch_Slots()
 		float y = sinf(x * XM_PI);/*0부터 파이까지*/
 		float xOffset = spacing * (i - 5.f) + 20.f;
 		m_pSlots[i]->Set_CenterPos({ xOffset,amplitude * y - 10 });
-		m_pSlots[i]->Set_Size({ 15, 15 });
+		m_pSlots[i]->Set_Size(_vector{ 15, 15 });
 		m_pSlots[i]->Get_Component<CSprite2D>()->Set_CompActive(true);
 	}
 
@@ -134,7 +159,7 @@ void CPlayer_Inventory::Batch_Slots()
 		float xOffset = spacing * (i - 5.f) + 20.f;
 
 		m_pSlots[i+slotColumn]->Set_CenterPos({ xOffset,amplitude * y + 40 });
-		m_pSlots[i+slotColumn]->Set_Size({ 15, 15 });
+		m_pSlots[i+slotColumn]->Set_Size(_vector{ 15, 15 });
 		m_pSlots[i + slotColumn]->Get_Component<CSprite2D>()->Set_CompActive(true);
 	}
 	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);
@@ -155,10 +180,9 @@ void CPlayer_Inventory::Openning_Inven(_float dt)
 	m_vTimer.x += dt * 3.f;
 	float t = clamp(m_vTimer.x, 0.f, 1.f);
 
-
 	_vector pos;
 	_vector size;
-	_float2 CurPos = { m_fX,m_fY};
+	_float2 CurPos = { m_fLocalX,m_fLocalY};
 	if (t < 0.5f) {
 		pos = XMVectorLerp(XMLoadFloat2(&m_vClosePos), XMLoadFloat2(&m_vPointPos), t);
 	}
@@ -174,8 +198,8 @@ void CPlayer_Inventory::Openning_Inven(_float dt)
 
 	m_fSizeX = vSize.x;
 	m_fSizeY = vSize.y;
-	m_fX = vPos.x;
-	m_fY = vPos.y;
+	m_fLocalX = vPos.x;
+	m_fLocalY = vPos.y;
 
 	if (m_vTimer.x > 1.f) {
 		Batch_Slots();
@@ -183,6 +207,7 @@ void CPlayer_Inventory::Openning_Inven(_float dt)
 		m_vTimer.x = 0;
 	}
 }
+
 void CPlayer_Inventory::Closing_Inven(_float dt)
 {
 	m_vTimer.x += dt * 5;
@@ -199,8 +224,8 @@ void CPlayer_Inventory::Closing_Inven(_float dt)
 	m_fSizeX = vSize.x;
 	m_fSizeY = vSize.y;
 
-	m_fX = vPos.x;
-	m_fY = vPos.y;
+	m_fLocalX = vPos.x;
+	m_fLocalY = vPos.y;
 
 	if (m_vTimer.x > 1.f) {
 		m_vTimer.x = 0;
@@ -209,7 +234,7 @@ void CPlayer_Inventory::Closing_Inven(_float dt)
 	}
 }
 
-void CPlayer_Inventory::Selecting_Item(_float dt)
+void CPlayer_Inventory::Pointing_Item(_float dt)
 {
 	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
 
@@ -230,14 +255,24 @@ void CPlayer_Inventory::Selecting_Item(_float dt)
 		}
 	}
 	else if (InputDev->Key_Tap(VK_UP)) {
-		if (nowIndex - 10 > 0) {
+		if (nowIndex - 10 >=0) {
 			m_pSlots[nowIndex]->isHoverOut();
 			nowIndex -= 10;
 		}
 	}
 
 	m_pSlots[nowIndex]->isHovered();
-	m_pCursor->Align_To(ANCHOR::Left|ANCHOR::Top, m_pSlots[nowIndex]->Get_CenterPos());
+	m_pCursor->Set_Pivot(m_pSlots[nowIndex]->Get_CenterPos());
+}
+
+void CPlayer_Inventory::Select_Item(_float dt)
+{
+	if(!m_pSlots[nowIndex]->isItemFilled()){
+		m_eState = Opened;
+		return;
+	}
+	m_pSlots[nowIndex]->isHovered();
+
 }
 
 

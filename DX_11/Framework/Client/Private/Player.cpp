@@ -5,6 +5,9 @@
 #include "IInputService.h"
 #include "ITileService.h"
 #include "ICameraService.h"
+#include "ILevelService.h"
+#include "Level.h"
+#include "ItemSpawner.h"
 
 #include "SkeletalModel.h"
 #include "Material.h"
@@ -24,6 +27,8 @@
 #include "PlayerPart_Hand.h"
 #include "Player_Inventory.h"
 #include "AABB_Collider.h"
+
+#include "Item_Object.h"
 
 CPlayer::CPlayer()
 {
@@ -111,54 +116,28 @@ void CPlayer::Render_GUI()
 {
 	__super::Render_GUI();
 	ImGui::Begin("Item Control");
-
+	auto ItemSpawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
 	if (ImGui::Button("None")) {
 		TOOL_DATA_DESC Data = {};
-		Data.eType = TOOL_TYPE::NONE;
-		Data.materialName = "";
-		Data.modelName = "";
-		Data.TypeTag = "None";
 		Change_Item(Data);
 	}
 
 	if (ImGui::Button("Axe")) {
-		TOOL_DATA_DESC Data = {};
-		Data.eType = TOOL_TYPE::AXE;
-		Data.materialName = "ToolAxeFirst.mat";
-		Data.modelName = "ToolAxeFirst.model";
-		Data.TypeTag = "Axe";
+		TOOL_DATA_DESC Data = ItemSpawner->Get_ItemData("ToolAxeFirst");
 		Change_Item(Data);
 	}
 
 	if (ImGui::Button("Net")) {
-		TOOL_DATA_DESC Data = {};
-		Data.eType = TOOL_TYPE::NET;
-		Data.materialName = "ToolNetFirst.mat";
-		Data.modelName = "ToolNetFirst.model";
-		Data.TypeTag = "Net";
+		TOOL_DATA_DESC Data = ItemSpawner->Get_ItemData("ToolNetFirst");
 		Change_Item(Data);
 	}
 
 	if (ImGui::Button("Scoop")) {
-		TOOL_DATA_DESC Data = {};
-		Data.eType = TOOL_TYPE::SCOOP;
-		Data.materialName = "ToolScoopFirst.mat";
-		Data.modelName = "ToolScoopFirst.model";
-		Data.TypeTag = "Scoop";
+		TOOL_DATA_DESC Data = ItemSpawner->Get_ItemData("ToolScoopFirst");
 		Change_Item(Data);
 	}
 	ImGui::End();
 
-	//ImGui::Begin("Control_Packet");
-	//TILE_INDEX index = Get_FowardIndex();
-	//	_float4 Look = {};
-	//	XMStoreFloat4(&Look,XMVector4Normalize(m_pTransform->Dir(STATE::LOOK)));
-	//	ImGui::Text("nowIndex X : %d, Z : %d", m_TileInfoPack.nowIndex.IndexX, m_TileInfoPack.nowIndex.IndexZ);
-	//	ImGui::Text("nextIndex X : %d, Z : %d", index.IndexX, index.IndexZ);
-	//	ImGui::InputFloat4("Look Vector", reinterpret_cast<_float*>(&Look));
-	//ImGui::End();
-
-	//m_pStateMachine->Render_State(this);
 }
 
 void CPlayer::Update_Input(_float dt)
@@ -321,9 +300,11 @@ void CPlayer::Adjust_To_WorldFoward()
 
 void CPlayer::OnCollisionEnter(COLLISION_CONTEXT context)
 {
-	if (context.EventTag == "Picked")
-	{
-		int i = 0;
+	if (context.Owner->Has_Tag("Item")) {
+		if (context.EventTag == "Picked")
+		{
+			m_pInventory->Add_ItemToInventory(dynamic_cast<CItem_Object*>(context.Owner)->Get_ItemData());
+		}
 	}
 }
 

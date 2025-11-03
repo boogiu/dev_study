@@ -12,13 +12,16 @@
 #include "ITileService.h"
 #include "IResourceService.h"
 #include "IObjectService.h"
+#include "ILevelService.h"
+#include "Level.h"
+#include "ItemSpawner.h"
 
 #include "Texture.h"
 #include "Animator3D.h"
 
 #include "Item_Fruit.h"
 #include "Builder.h"
-
+#include "IObjectService.h"
 
 CPlant_Tree::CPlant_Tree()
 {
@@ -58,13 +61,14 @@ HRESULT CPlant_Tree::Initialize(INIT_DESC* pArg)
 
 void CPlant_Tree::Priority_Update(_float dt)
 {
-	
 	Check_State(dt);
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
 void CPlant_Tree::Update(_float dt)
 {
+	m_fLifeTime += dt;
+	Make_Fruits();
 	Get_Component<CAnimator3D>()->Update_Animation(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
@@ -86,7 +90,6 @@ void CPlant_Tree::Render_GUI()
 
 HRESULT CPlant_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
-
 	/*00. Base*/
 	Normalize_Name(modelMapTable[0]);
 
@@ -117,10 +120,8 @@ HRESULT CPlant_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mo
 	tileSystem->Set_Material_ID(objHeader.Index, { 1,1,0,0 });
 
 	Add_Animation();
-	if (m_iGrownLevel >= 4) {
-		Make_Fruits();
-	}
 	Adjust_Material();
+
 	return S_OK;
 }
 
@@ -263,18 +264,39 @@ void CPlant_Tree::PlayAnim_Encounter()
 
 void CPlant_Tree::Make_Fruits()
 {
-	for (size_t i = 0; i < 3; i++)
-	{
-		CGameObject* pObject =
-			Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlantFruit" })
-			.Build("Fruit" + to_string(i));
-
-		m_pFruits[i] = dynamic_cast<CItem_Fruit*>(pObject);
-		Get_Component<CObjectContainer>()->Add_Child(pObject, false);
+	if (m_iGrownLevel < 4) return;
+	if (m_isCutted == true) return;
+	if (m_eState != IDLE) return;
+	if (m_HasFruit == true) return;
+	if (m_fLifeTime <15.f) return;
+	
+	if (m_pFruits[0] == nullptr) {
+		for (size_t i = 0; i < 3; i++)
+		{
+			if (m_pFruits[i] != nullptr) continue;
+			CItem_Object::DROP_ITEM_DESC* pDesc = new CItem_Object::DROP_ITEM_DESC;
+			auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
+			pDesc->itemDesc = spawner->Get_ItemData("UnitIconPltFruitApple");
+	
+			CGameObject* pObject =
+				Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ItemFruit" })
+				.Add_ObjDesc(pDesc)
+				.Build("Fruit" + to_string(i));
+	
+			CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { "GamePlay_Level" ,"Field_Layer" });
+			m_pFruits[i] = dynamic_cast<CItem_Fruit*>(pObject);
+			Get_Component<CObjectContainer>()->Add_Child(pObject, false);
+		}
+	
+		m_pFruits[0]->Dangle_Fruit("Armature_PlantTop", { 0,25,-4 });
+		m_pFruits[1]->Dangle_Fruit("Armature_Plant01", { 5,15,-8 });
+		m_pFruits[2]->Dangle_Fruit("Armature_Plant02", { -5,15,-8 });
 	}
-	m_pFruits[0]->Dangle_Fruit("Armature_PlantTop", { 0,25,-4 });
-	m_pFruits[1]->Dangle_Fruit("Armature_Plant01", { 5,15,-8 });
-	m_pFruits[2]->Dangle_Fruit("Armature_Plant02", { -5,15,-8 });
+	else {
+		Regenerate_Items();
+	}
+	m_fLifeTime = 15.f;
+	m_HasFruit = true;
 }
 
 void CPlant_Tree::Adjust_Material()
@@ -329,26 +351,32 @@ void CPlant_Tree::Adjust_Material()
 
 void CPlant_Tree::Drop_Items()
 {
-	if (!m_isAbleToDrop) return;
+	if (!m_HasFruit) return;
 	if (m_iGrownLevel <= 3) return;
 	for (size_t i = 0; i < 3; i++)
 	{
 		m_pFruits[i]->Get_Component<CModel>()->Set_CompActive(false);
+
 		_float4 pos =m_pFruits[i]->Get_Position();
 
+		CItem_Object::DROP_ITEM_DESC* pDesc = new CItem_Object::DROP_ITEM_DESC;
+		pDesc->itemDesc = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>()->Get_ItemData("UnitIconPltFruitApple");
+
 		CGameObject* pObject =
-			Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlantFruit" })
+			Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ItemFruit" })
 			.Position({ pos.x,pos.y,pos.z })
+			.Add_ObjDesc(pDesc)
 			.Build("Fruit" + to_string(i));
 
 		CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { "GamePlay_Level","Item_Layer" });
 	}
-	m_isAbleToDrop = false;
+	m_fLifeTime = 0;
+	m_HasFruit = false;
 }
 
 void CPlant_Tree::Regenerate_Items()
 {
-	m_isAbleToDrop = true;
+	m_HasFruit = true;
 
 	for (size_t i = 0; i < 3; i++)
 	{

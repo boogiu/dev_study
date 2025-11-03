@@ -20,11 +20,13 @@ public:
 public:
     void Apply_Shader(ID3D11DeviceContext* pContext);
     void Draw_Sprite(ID3D11DeviceContext* pContext);
+    HRESULT ChangeSprite(_uint Index);
+
 public:
     class CShader* Get_Shader() {return m_pShader;};
     class  CVIBuffer* Get_Buffer();
     const string& Get_PassConstant() { return m_PassConstant; }
-
+    
 public:
     _bool IsValid();
 public:

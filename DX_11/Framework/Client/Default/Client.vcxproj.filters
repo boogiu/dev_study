@@ -79,14 +79,8 @@
     <Filter Include="02. GameObjects\02. Field\FieldStone">
       <UniqueIdentifier>{b6b7dbc3-a4ae-4215-ba76-aef13c63c007}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\03. Plant">
-      <UniqueIdentifier>{ec53743e-ff98-42c5-b9e3-bce29f2710a8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. Utility\CharacterState">
       <UniqueIdentifier>{e897b336-7122-491b-8964-6aec3bf74b0a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\03. Plant\Plant_Tree">
-      <UniqueIdentifier>{37022cc5-4b02-4058-8287-09d623ee402a}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\04. Tools">
       <UniqueIdentifier>{5166a32c-bb2a-43be-a27f-dc8bc2cd477d}</UniqueIdentifier>
@@ -178,9 +172,6 @@
     <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolPose\Net">
       <UniqueIdentifier>{7792f16a-b9ea-45b9-8a91-7e9d29f0cde3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\07. EventListner">
-      <UniqueIdentifier>{6621ca6c-940c-4775-baf7-1ed26f73f1e4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\06. Item\Drop\Stone">
       <UniqueIdentifier>{3fde9748-4aa4-4ee7-950e-b4559fc911c7}</UniqueIdentifier>
     </Filter>
@@ -199,11 +190,44 @@
     <Filter Include="02. GameObjects\00. Player\Inventory">
       <UniqueIdentifier>{70b3a9b4-ecf8-45c0-8e08-ef486aff3de2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\00. Player\Inventory\EmptySlot">
+    <Filter Include="02. GameObjects\07. LevelObject">
+      <UniqueIdentifier>{6621ca6c-940c-4775-baf7-1ed26f73f1e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EventListner">
+      <UniqueIdentifier>{f30ebd76-dc08-489b-8e87-468ccce4bd7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\ItemSpawner">
+      <UniqueIdentifier>{4ae5044e-a38c-489f-9b15-b55b342f9b9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\03. Plant">
+      <UniqueIdentifier>{ec53743e-ff98-42c5-b9e3-bce29f2710a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\03. Plant\Plant_Tree">
+      <UniqueIdentifier>{37022cc5-4b02-4058-8287-09d623ee402a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\Inventory\InvenSlot">
       <UniqueIdentifier>{70c062b6-443c-4ccd-b71d-ae481fa73e10}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\00. Player\Inventory\Cursor">
+    <Filter Include="02. GameObjects\00. Player\Inventory\InvenSlot\ItemIcon">
+      <UniqueIdentifier>{f966ea67-95a8-4bf7-8017-d1ae4670682f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\Inventory\InvenSlot\ItemText">
+      <UniqueIdentifier>{ada3bd19-1c74-4a68-9ff8-4991de3b8280}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI">
+      <UniqueIdentifier>{348eb223-35c0-4eb7-9bd9-5fe66fbf4c37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\SelectPanel">
+      <UniqueIdentifier>{6e6020a5-bee8-4af4-aae6-83880ef220c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\TexturePanel">
+      <UniqueIdentifier>{c1324510-86f8-4feb-b6ca-db36ddba02fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Cursor">
       <UniqueIdentifier>{73446fac-99cf-4397-891a-079b6f0260dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Text">
+      <UniqueIdentifier>{6eb06499-1daa-49b1-a07c-f0ed86e66a30}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -346,7 +370,7 @@
       <Filter>02. GameObjects\02. Field\FieldStone</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Plant_Tree.h">
-      <Filter>02. GameObjects\03. Plant\Plant_Tree</Filter>
+      <Filter>02. GameObjects\02. Field\03. Plant\Plant_Tree</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
       <Filter>02. GameObjects\00. Player</Filter>
@@ -399,9 +423,6 @@
     <ClInclude Include="..\Public\PlayerState_ActionHub.h">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\00. ActionHub</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\EventListner.h">
-      <Filter>02. GameObjects\07. EventListner</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Item_Stone.h">
       <Filter>02. GameObjects\06. Item\Drop\Stone</Filter>
     </ClInclude>
@@ -411,11 +432,32 @@
     <ClInclude Include="..\Public\Player_Inventory.h">
       <Filter>02. GameObjects\00. Player\Inventory</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_EmptySlot.h">
-      <Filter>02. GameObjects\00. Player\Inventory\EmptySlot</Filter>
+    <ClInclude Include="..\Public\UI_InvenSlot.h">
+      <Filter>02. GameObjects\00. Player\Inventory\InvenSlot</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_Cursor.h">
-      <Filter>02. GameObjects\00. Player\Inventory\Cursor</Filter>
+      <Filter>02. GameObjects\08. UI\Cursor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ItemSpawner.h">
+      <Filter>02. GameObjects\07. LevelObject\ItemSpawner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EventListner.h">
+      <Filter>02. GameObjects\07. LevelObject\EventListner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_ItemIcon.h">
+      <Filter>02. GameObjects\00. Player\Inventory\InvenSlot\ItemIcon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_ItemText.h">
+      <Filter>02. GameObjects\00. Player\Inventory\InvenSlot\ItemText</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SelectPanel.h">
+      <Filter>02. GameObjects\08. UI\SelectPanel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TexturePanel.h">
+      <Filter>02. GameObjects\08. UI\TexturePanel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Text.h">
+      <Filter>02. GameObjects\08. UI\Text</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -545,7 +587,7 @@
       <Filter>02. GameObjects\02. Field\FieldStone</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Plant_Tree.cpp">
-      <Filter>02. GameObjects\03. Plant\Plant_Tree</Filter>
+      <Filter>02. GameObjects\02. Field\03. Plant\Plant_Tree</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Item_Fruit.cpp">
       <Filter>02. GameObjects\06. Item\Drop\Fruit</Filter>
@@ -595,9 +637,6 @@
     <ClCompile Include="..\Private\PlayerState_ActionHub.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\00. ActionHub</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\EventListner.cpp">
-      <Filter>02. GameObjects\07. EventListner</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Item_Stone.cpp">
       <Filter>02. GameObjects\06. Item\Drop\Stone</Filter>
     </ClCompile>
@@ -607,11 +646,32 @@
     <ClCompile Include="..\Private\Player_Inventory.cpp">
       <Filter>02. GameObjects\00. Player\Inventory</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_EmptySlot.cpp">
-      <Filter>02. GameObjects\00. Player\Inventory\EmptySlot</Filter>
+    <ClCompile Include="..\Private\UI_InvenSlot.cpp">
+      <Filter>02. GameObjects\00. Player\Inventory\InvenSlot</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_Cursor.cpp">
-      <Filter>02. GameObjects\00. Player\Inventory\Cursor</Filter>
+      <Filter>02. GameObjects\08. UI\Cursor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ItemSpawner.cpp">
+      <Filter>02. GameObjects\07. LevelObject\ItemSpawner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EventListner.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EventListner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_ItemIcon.cpp">
+      <Filter>02. GameObjects\00. Player\Inventory\InvenSlot\ItemIcon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_ItemText.cpp">
+      <Filter>02. GameObjects\00. Player\Inventory\InvenSlot\ItemText</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SelectPanel.cpp">
+      <Filter>02. GameObjects\08. UI\SelectPanel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TexturePanel.cpp">
+      <Filter>02. GameObjects\08. UI\TexturePanel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Text.cpp">
+      <Filter>02. GameObjects\08. UI\Text</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

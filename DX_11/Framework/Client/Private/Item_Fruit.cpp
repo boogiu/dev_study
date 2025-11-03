@@ -34,8 +34,6 @@ HRESULT CItem_Fruit::Initialize_Prototype()
 HRESULT CItem_Fruit::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
-
-	m_InstanceTag += "Fruit";
 	return S_OK;
 }
 

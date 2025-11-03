@@ -26,16 +26,14 @@ public:
    virtual  void Late_Update(_float dt) override;
    virtual  virtual void Render_GUI()override;
 
-public:
-    void OnCollisionEnter(COLLISION_CONTEXT context) override;
-    void OnCollisionStay(COLLISION_CONTEXT context)override;
-    void OnCollisionExit(COLLISION_CONTEXT context)override;
-
 protected:
    virtual void Find_Ground();
    virtual void MoveToIndex(_float dt);
    virtual void FollowHand(_float dt);
    virtual void Remove_Item();
+
+public:
+    ITEM_DATA_DESC Get_ItemData() { return m_ItemInfo; }
 
 protected:
     _float m_MarginY = {};
@@ -43,8 +41,9 @@ protected:
     TILE_INDEX m_SyncedIndex = {};
     _float4 m_DstPosition = {};
     ITEM_STATE m_eState = { DROP };
-
+    ITEM_DATA_DESC m_ItemInfo = {};
     _float4x4* m_pOwnerMatrix = {};
-public:    void Free() override;
+public:    
+    void Free() override;
 };
 NS_END

@@ -48,26 +48,29 @@ public:
 
 public:
 	void Set_Layer(class CLayer* pLayer);
-	const vector<CGameObject*> Get_Children();
-
+	class CLayer* Get_Layer() { return m_pLayer; };
+	void Set_Level(class CLevel* pLevel);
+	class CLevel* Get_Level() { return m_pLevel; };
 public:
 	const string& Get_InstanceName() { return m_InstanceName; }
 	const _uint Get_ObjectID() { return m_ObjectID; }
 	_float4x4* Get_WorldMatrix();
 	_float4 Get_Position();
-	class CLayer* Get_Layer() { return m_pLayer; };
 	_bool Is_Root() { return m_isRootObject; };
+	const vector<CGameObject*> Get_Children();
 
 private:
 	HRESULT Make_OpaquePacket();
 	HRESULT Make_InstancePacket();
 
-
 protected:
 	_bool m_isRootObject = { true };
 	_uint m_ObjectID = {};
 	CTransform* m_pTransform = { nullptr };
+
 	class CLayer* m_pLayer = { nullptr };
+	class CLevel* m_pLevel = {};
+
 	string m_InstanceName = {};
 	string m_InstanceTag = {};
 

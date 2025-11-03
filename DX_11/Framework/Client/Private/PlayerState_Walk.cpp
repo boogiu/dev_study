@@ -48,7 +48,7 @@ CState* CPlayerState_Walk::HandleTransition()
 		Animator->Change_Animation("ToStop_RunLatter_L.anim",0.05f);
 		return m_pLayer->Get_State("Movement_Idle_State");
 	}
-	else if (control.MsgAdd) {
+	else if (control.MsgAdd&& control.MsgMove) {
 		return m_pLayer->Get_State("Movement_Run_State");
 	}
 	return nullptr;

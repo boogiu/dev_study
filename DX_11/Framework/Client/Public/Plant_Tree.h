@@ -54,20 +54,25 @@ private:
 
 private:
     TILE_INDEX m_Index = {};
+
     string m_ModelName = {};
     string m_TypeName = {};
     _uint m_iGrownLevel = {};
-    _float m_fShakeTime = {};
+
     _bool m_isTargetRight = {};
     _bool m_isCutted = {false};
 
+    _float m_fShakeTime = {};
     _uint m_AxeHitCount = {};
     Tree_State m_eState = { IDLE };
 
-    class CItem_Fruit* m_pFruits[3];
+    class CItem_Fruit* m_pFruits[3] = { nullptr, nullptr, nullptr};
 
-    _bool m_isAbleToDrop = { true };
+    _bool m_HasFruit = { false };
+    _float m_fLifeTime = {};
+
     _float2 LeafPalette = {};
+
 public:
     static CPlant_Tree* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

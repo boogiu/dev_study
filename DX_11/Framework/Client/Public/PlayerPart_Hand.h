@@ -34,10 +34,10 @@ public:
     void Active_ColliderHand(_bool Active, string Event);
 
 public:
-    TOOL_TYPE Get_CurrentItemType() { return m_eItemType; };
+    itemType Get_CurrentItemType() { return m_eItemType; };
 
 private:
-    TOOL_TYPE m_eItemType = { TOOL_TYPE::NONE };
+    itemType m_eItemType = { itemType::None };
     class CToolItem* m_pToolItem = { nullptr };
     CGameObject* m_pOwner = { nullptr };
     string m_OwnerBone = {};

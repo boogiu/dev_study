@@ -22,9 +22,13 @@ public:
 public :
 	_uint Get_Priority() { return m_iPriority; };
 	void Set_Priority(_uint priority) { m_iPriority = priority; }
-	void Set_CenterPos(_float2 pos) { m_fX = pos.x; m_fY = pos.y; }
+	void Set_CenterPos(_float2 pos) { m_fLocalX = pos.x; m_fLocalY = pos.y; }
 	void Set_Size(_float2 size) { m_fSizeX = size.x; m_fSizeY = size.y; }
-	_float2 Get_CenterPos() { return{ m_fX ,m_fY }; }
+	void Set_Size(_fvector size);
+
+	void Size_To(_fvector size, _float Speed);
+
+	_float2 Get_CenterPos() { return{ m_fLocalX ,m_fLocalY }; }
 
 public:
 	void Render_GUI() override;
@@ -38,17 +42,17 @@ public:
 	_float HalfY() { return m_fSizeY * 0.5f; }
 
 	/*Get Anchor*/
-	_float2 LT() { return { m_fX - HalfX(), m_fY - HalfY() }; }
-	_float2 LC() { return { m_fX - HalfX(), m_fY  }; }
-	_float2 LB() { return { m_fX - HalfX(), m_fY + HalfY() }; }
+	_float2 LT() { return { m_fLocalX - HalfX(), m_fLocalY - HalfY() }; }
+	_float2 LC() { return { m_fLocalX - HalfX(), m_fLocalY  }; }
+	_float2 LB() { return { m_fLocalX - HalfX(), m_fLocalY + HalfY() }; }
 
-	_float2 CT() { return { m_fX , m_fY - HalfY() }; }
-	_float2 Center() { return {m_fX,m_fY}; }
-	_float2 CB() { return { m_fX , m_fY + HalfY() }; }
+	_float2 CT() { return { m_fLocalX , m_fLocalY - HalfY() }; }
+	_float2 Center() { return {m_fLocalX,m_fLocalY}; }
+	_float2 CB() { return { m_fLocalX , m_fLocalY + HalfY() }; }
 
-	_float2 RT() { return { m_fX + HalfX(), m_fY - HalfY() }; }
-	_float2 RC() { return { m_fX + HalfX(), m_fY }; }
-	_float2 RB() { return   {m_fX + HalfX(), m_fY + HalfY()}; }
+	_float2 RT() { return { m_fLocalX + HalfX(), m_fLocalY - HalfY() }; }
+	_float2 RC() { return { m_fLocalX + HalfX(), m_fLocalY }; }
+	_float2 RB() { return   {m_fLocalX + HalfX(), m_fLocalY + HalfY()}; }
 
 	
 	_float2 Align_To(ANCHOR pivot, _float2 _pivot);
@@ -62,8 +66,8 @@ protected:
 	_float m_WinSizeX = {};
 	_float m_WinSizeY = {};
 
-	_float m_fX = {};
-	_float m_fY = {};
+	_float m_fLocalX = {};
+	_float m_fLocalY = {};
 	_float m_fSizeX = {};
 	_float m_fSizeY = {};
 	_uint m_iPriority = {UINT_MAX};
@@ -72,6 +76,9 @@ protected:
 
 	string m_Level = {};
 	_int m_SystemIndex = {-1};
+
+	_float m_fWorldX = {};
+	_float m_fWorldY = {};
 public:
 	virtual void Free() override;
 };

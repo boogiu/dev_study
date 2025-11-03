@@ -17,7 +17,7 @@
 #include "RaySystem.h"
 #include "TileSystem.h"
 #include "CollisionSystem.h"
-
+#include "FontSystem.h"
 IMPLEMENT_SINGLETON(CGameInstance)
 
 CGameInstance::CGameInstance()
@@ -48,7 +48,7 @@ _bool CGameInstance::Init_Engine(const ENGINE_DESC& engine)
 	m_pRaySystem = CRaySystem::Create();
 	m_pRenderSystem = CRenderSystem::Create(m_pDevice, m_pDeviceContext);
 	m_pCollisionSystem = CCollisionSystem::Create(m_pDevice, m_pDeviceContext);
-
+	m_pFontSystem = CFontSystem::Create(m_pDevice, m_pDeviceContext);
 #if defined _USING_GUI
 	m_pGuiSystem = CGUISystem::Create(engine, m_pDevice, m_pDeviceContext);
 #endif
@@ -130,6 +130,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pRaySystem);
 	Safe_Release(m_pTileSystem);
 	Safe_Release(m_pCollisionSystem);
+	Safe_Release(m_pFontSystem);
 
 	DestroyInstance();
 }
@@ -215,10 +216,10 @@ HRESULT CGameInstance::Draw()
 {
 	m_pRenderSystem->Render();
 	m_pLevelManager->Render(m_pDeviceContext);
+	m_pFontSystem->Render_Font();
 #if defined _DEBUG
 	m_pCollisionSystem->Render_Debug();
 #endif
-
 #if defined _USING_GUI
 	m_pGuiSystem->Render_GUI();
 #endif

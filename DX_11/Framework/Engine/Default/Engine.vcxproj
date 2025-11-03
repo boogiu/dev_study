@@ -180,13 +180,17 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\BoneFollower.h" />
     <ClInclude Include="..\Public\Collider.h" />
     <ClInclude Include="..\Public\CollisionSystem.h" />
+    <ClInclude Include="..\Public\CustomFont.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
     <ClInclude Include="..\Public\DebugRender.h" />
     <ClInclude Include="..\Public\Engine_Layouts.h" />
+    <ClInclude Include="..\Public\FontSystem.h" />
     <ClInclude Include="..\Public\ICollisionService.h" />
+    <ClInclude Include="..\Public\IFontService.h" />
     <ClInclude Include="..\Public\InstanceModel.h" />
     <ClInclude Include="..\Public\IRayService.h" />
     <ClInclude Include="..\Public\ITileService.h" />
+    <ClInclude Include="..\Public\LevelObject.h" />
     <ClInclude Include="..\Public\OBB_Collider.h" />
     <ClInclude Include="..\Public\RayReceiver.h" />
     <ClInclude Include="..\Public\RaySystem.h" />
@@ -269,6 +273,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\Sprite2D.h" />
     <ClInclude Include="..\Public\StaticModel.h" />
     <ClInclude Include="..\Public\Target_Manager.h" />
+    <ClInclude Include="..\Public\TextSlot.h" />
     <ClInclude Include="..\Public\Texture.h" />
     <ClInclude Include="..\Public\TileBlock.h" />
     <ClInclude Include="..\Public\TileSystem.h" />
@@ -296,9 +301,12 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\BoneFollower.cpp" />
     <ClCompile Include="..\Private\Collider.cpp" />
     <ClCompile Include="..\Private\CollisionSystem.cpp" />
+    <ClCompile Include="..\Private\CustomFont.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
     <ClCompile Include="..\Private\DebugRender.cpp" />
+    <ClCompile Include="..\Private\FontSystem.cpp" />
     <ClCompile Include="..\Private\InstanceModel.cpp" />
+    <ClCompile Include="..\Private\LevelObject.cpp" />
     <ClCompile Include="..\Private\OBB_Collider.cpp" />
     <ClCompile Include="..\Private\RayReceiver.cpp" />
     <ClCompile Include="..\Private\RaySystem.cpp" />
@@ -356,6 +364,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\Sprite2D.cpp" />
     <ClCompile Include="..\Private\StaticModel.cpp" />
     <ClCompile Include="..\Private\Target_Manager.cpp" />
+    <ClCompile Include="..\Private\TextSlot.cpp" />
     <ClCompile Include="..\Private\Texture.cpp" />
     <ClCompile Include="..\Private\TileBlock.cpp" />
     <ClCompile Include="..\Private\TileSystem.cpp" />

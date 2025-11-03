@@ -37,6 +37,14 @@ void CUI_Cursor::Priority_Update(_float dt)
 
 void CUI_Cursor::Update(_float dt)
 {
+
+	if (m_fFloatingTime >1) {
+		m_fFloatingSpeed *= -1;
+	}
+	else if(m_fFloatingTime <-1 ) {
+		m_fFloatingSpeed *= -1;
+	}
+	m_fFloatingTime += m_fFloatingSpeed*dt;
 }
 
 void CUI_Cursor::Late_Update(_float dt)
@@ -45,6 +53,13 @@ void CUI_Cursor::Late_Update(_float dt)
 
 void CUI_Cursor::Render_GUI()
 {
+}
+
+void CUI_Cursor::Set_Pivot(_float2 Pivot, _float2 Offset, _float2 Movevec)
+{
+	m_vPivot = Pivot;
+	m_fLocalX = m_vPivot.x + Offset.x+m_fFloatingTime*Movevec.x;
+	m_fLocalY = m_vPivot.y + Offset.y+m_fFloatingTime*Movevec.y;
 }
 
 CUI_Cursor* CUI_Cursor::Create()

@@ -23,7 +23,7 @@ public:
     virtual void Render_GUI();
 
 private:
-    void AdjustByItem(TOOL_TYPE type);
+    void AdjustByItem(itemType type);
 public:
     void Set_Item(TOOL_DATA_DESC data);
 public:

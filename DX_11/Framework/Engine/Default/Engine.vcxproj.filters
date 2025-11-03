@@ -346,6 +346,21 @@
     <Filter Include="01. Utility\10. VIBuffer\VI_Point">
       <UniqueIdentifier>{352c40e4-2aab-4e69-934f-746a49390f9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. GameObject\LevelObject">
+      <UniqueIdentifier>{b6963e33-c015-4908-a4bd-29e68c00e9b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\12. FontSystem">
+      <UniqueIdentifier>{4d479def-3620-4cf9-a839-e74e50d1c168}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\12. FontSystem\Font">
+      <UniqueIdentifier>{b1823acf-7ed7-4825-b697-bd3313b1b358}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. Services\17. IFontService">
+      <UniqueIdentifier>{24db8977-930e-42a4-8ebe-1ac48c818b9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Components\StaticComponent\14. TextSlot">
+      <UniqueIdentifier>{07906aac-ac19-47de-8815-7e6edee479ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -611,6 +626,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\VI_Point.cpp">
       <Filter>01. Utility\10. VIBuffer\VI_Point</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LevelObject.cpp">
+      <Filter>01. Utility\03. GameObject\LevelObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CustomFont.cpp">
+      <Filter>01. Utility\12. FontSystem\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FontSystem.cpp">
+      <Filter>01. Utility\12. FontSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TextSlot.cpp">
+      <Filter>01. Utility\04. Components\StaticComponent\14. TextSlot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -955,6 +982,21 @@
     </ClInclude>
     <ClInclude Include="..\Public\VI_Point.h">
       <Filter>01. Utility\10. VIBuffer\VI_Point</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LevelObject.h">
+      <Filter>01. Utility\03. GameObject\LevelObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CustomFont.h">
+      <Filter>01. Utility\12. FontSystem\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IFontService.h">
+      <Filter>01. Utility\98. Services\17. IFontService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FontSystem.h">
+      <Filter>01. Utility\12. FontSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TextSlot.h">
+      <Filter>01. Utility\04. Components\StaticComponent\14. TextSlot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

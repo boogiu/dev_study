@@ -337,6 +337,16 @@ namespace Engine
 		class CGameObject* Owner = {nullptr};
 	}COLLISION_CONTEXT;
 
+	typedef struct tagUITextInfo {
+		wstring		Text = {};
+		_float2		TextPos = {};
+		_float4		TextColor = {};
+		string FontTag;
+		_float Scale = 1.f;     
+		_float Rotation = 0.f;  
+		_float2 Origin = { 0.f, 0.f }; // 회전읮 중점
+	}TEXT_INFO;
+
 #pragma pack(pop)
 
 }

@@ -29,14 +29,14 @@ HRESULT CPlayerState_Axe::OnExit()
 
 CState* CPlayerState_Axe::HandleTransition()
 {
-	TOOL_TYPE nowType = m_pPlayer->Get_ItemPacket().CurItem.eType;
+	itemType nowType = m_pPlayer->Get_ItemPacket().CurItem.TypeTag;
 	switch (nowType)
 	{
-	case TOOL_TYPE::NONE:
+	case itemType::None:
 		return m_pLayer->Get_State("Tool_Hand_State");
-	case TOOL_TYPE::AXE:
+	case itemType::Axe:
 		return m_pLayer->Get_State("Tool_Axe_State");
-	case TOOL_TYPE::SCOOP:
+	case itemType::Scoop:
 		return m_pLayer->Get_State("Tool_Scoop_State");
 	default:
 		break;

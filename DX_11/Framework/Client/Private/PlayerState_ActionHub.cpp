@@ -38,21 +38,21 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 
 	CState* nextState = nullptr;
 
-	switch (tPacket.CurItem.eType)
+	switch (tPacket.CurItem.TypeTag)
 	{
-	case TOOL_TYPE::NONE:
+	case itemType::None:
 		if (Forward_Flag && TILE_FLAG::ONCHARACTER)
 			nextState =nullptr;
 		else
 			nextState = m_pLayer->Get_State("Action_TreeShake_State");
 		break;
-	case TOOL_TYPE::AXE:
+	case itemType::Axe:
 			nextState = m_pLayer->Get_State("Action_TreeChop_State");
 		break;
-	case TOOL_TYPE::SCOOP:
+	case itemType::Scoop:
 		nextState = m_pLayer->Get_State("Action_Dig_State");
 		break;
-	case TOOL_TYPE::NET:
+	case itemType::Net:
 		break;
 	default:
 		break;

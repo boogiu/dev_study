@@ -1,6 +1,8 @@
 #include "Level.h"
 #include "GameInstance.h"
 #include "ILevelService.h"
+#include "LevelObject.h"
+
 CLevel::CLevel(const string& LevelKey)
 	:m_LevelKey{ LevelKey }
 {
@@ -13,5 +15,10 @@ HRESULT CLevel::Render(ID3D11DeviceContext* pContext)
 
 void CLevel::Free()
 {
-	//CGameInstance::GetInstance()->Get_LevelMgr().clear
+	__super::Free();
+
+	for (auto& pair : m_pLevelObjects) {
+		Safe_Release(pair.second);
+	}
+
 }

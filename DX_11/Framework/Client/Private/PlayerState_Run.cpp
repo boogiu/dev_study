@@ -82,12 +82,15 @@ CState* CPlayerState_Run::HandleTransition()
 
 	if (m_bFliping)
 		return nullptr;
-
+	if (!control.MsgMove)
+	{
+		return m_pLayer->Get_State("Movement_Idle_State");
+	}
 	if (!control.MsgAdd)
 	{
 		return m_pLayer->Get_State("Movement_Walk_State");
 	}
-
+	
 	return nullptr;
 }
 

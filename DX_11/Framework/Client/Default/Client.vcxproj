@@ -184,6 +184,7 @@
     <ClInclude Include="..\Public\GamePlayLevel.h" />
     <ClInclude Include="..\Public\HairCapParts.h" />
     <ClInclude Include="..\Public\HairParts.h" />
+    <ClInclude Include="..\Public\ItemSpawner.h" />
     <ClInclude Include="..\Public\Item_Object.h" />
     <ClInclude Include="..\Public\Item_Stone.h" />
     <ClInclude Include="..\Public\LayerState.h" />
@@ -214,12 +215,17 @@
     <ClInclude Include="..\Public\PlayerState_TransTool.h" />
     <ClInclude Include="..\Public\PlayerState_Walk.h" />
     <ClInclude Include="..\Public\Player_Inventory.h" />
+    <ClInclude Include="..\Public\SelectPanel.h" />
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\Public\Target_Camera.h" />
+    <ClInclude Include="..\Public\TexturePanel.h" />
     <ClInclude Include="..\PUblic\ToolItem.h" />
     <ClInclude Include="..\Public\UI_Cursor.h" />
-    <ClInclude Include="..\Public\UI_EmptySlot.h" />
+    <ClInclude Include="..\Public\UI_InvenSlot.h" />
+    <ClInclude Include="..\Public\UI_ItemIcon.h" />
+    <ClInclude Include="..\Public\UI_ItemText.h" />
+    <ClInclude Include="..\Public\UI_Text.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -251,6 +257,7 @@
     <ClCompile Include="..\Private\GamePlayLevel.cpp" />
     <ClCompile Include="..\Private\HairCapParts.cpp" />
     <ClCompile Include="..\Private\HairParts.cpp" />
+    <ClCompile Include="..\Private\ItemSpawner.cpp" />
     <ClCompile Include="..\Private\Item_Object.cpp" />
     <ClCompile Include="..\Private\Item_Stone.cpp" />
     <ClCompile Include="..\Private\LayerState.cpp" />
@@ -281,12 +288,17 @@
     <ClCompile Include="..\Private\PlayerState_TransTool.cpp" />
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
     <ClCompile Include="..\Private\Player_Inventory.cpp" />
+    <ClCompile Include="..\Private\SelectPanel.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\Private\Target_Camera.cpp" />
+    <ClCompile Include="..\Private\TexturePanel.cpp" />
     <ClCompile Include="..\Private\ToolItem.cpp" />
     <ClCompile Include="..\Private\UI_Cursor.cpp" />
-    <ClCompile Include="..\Private\UI_EmptySlot.cpp" />
+    <ClCompile Include="..\Private\UI_InvenSlot.cpp" />
+    <ClCompile Include="..\Private\UI_ItemText.cpp" />
+    <ClCompile Include="..\Private\UI_ItemIcon.cpp" />
+    <ClCompile Include="..\Private\UI_Text.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>

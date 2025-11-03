@@ -32,8 +32,8 @@ HRESULT CPlayerState_Net::OnExit()
 
 CState* CPlayerState_Net::HandleTransition()
 {
-	TOOL_TYPE nowType = m_pPlayer->Get_ItemPacket().CurItem.eType;
-	if (nowType != TOOL_TYPE::NET)
+	itemType nowType = m_pPlayer->Get_ItemPacket().CurItem.TypeTag;
+	if (nowType != itemType::Net)
 	{
 		return m_pLayer->Get_State("Tool_Base_State");
 	}

@@ -17,6 +17,7 @@
 #include "DirectXTK_Inc/VertexTypes.h"
 #include "DirectXTK_Inc/PrimitiveBatch.h"
 #include "DirectXTK_Inc/Effects.h"
+#include <DirectXTK_Inc/CommonStates.h>
 
 #include <vector>
 #include <list>

@@ -8,6 +8,9 @@
 
 #include"TileBlock.h"
 #include "GameInstance.h"
+#include "LevelMgr.h"
+#include "GamePlayLevel.h"
+#include "ItemSpawner.h"
 #include "ITileService.h"
 #include "Item_Object.h"
 
@@ -104,12 +107,12 @@ void CField_Stone::OnCollisionEnter(COLLISION_CONTEXT context)
 			XMStoreFloat4(&m_vMoveVector, MoveVector);
 
 			if (ItemSpawnCoolTime > 1.f) {
-				_float4 pos = Get_Position();
-				CItem_Object::DROP_ITEM_DESC* pStone = new CItem_Object::DROP_ITEM_DESC;
-				pStone->itemDesc.modelName = "UnitIconStone.model";
-				pStone->itemDesc.materialName = "UnitIconStone.mat";
-				pStone->itemDesc.TypeTag = "Stone";
+				auto ItemSpawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
 
+				_float4 pos = Get_Position();
+				
+				CItem_Object::DROP_ITEM_DESC* pStone = new CItem_Object::DROP_ITEM_DESC;
+				pStone->itemDesc = ItemSpawner->Get_ItemData("UnitIconStone");
 
 				CGameObject* pObject =
 					Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ItemStone" })

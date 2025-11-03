@@ -24,6 +24,7 @@ public :
     virtual const vector<string> Get_LevelList()override; //레벨 키 모음
     virtual _bool Check_ValidateLevel(const string& LevelTag)override;
     virtual const string& Get_NowLevelKey()override;
+    virtual  class CLevel* Get_CurrentLevel()override { return m_pCurrentLevel; };
 #pragma endregion
 
 #pragma region For_LoadingLevel

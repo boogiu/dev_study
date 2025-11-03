@@ -16,3 +16,4 @@
 #include "IRayService.h"
 #include "ITileService.h"
 #include "ICollisionService.h"
+#include "IFontService.h"

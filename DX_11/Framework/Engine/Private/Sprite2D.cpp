@@ -58,6 +58,19 @@ void CSprite2D::Draw_Sprite(ID3D11DeviceContext* pContext)
 	}
 }
 
+HRESULT CSprite2D::ChangeSprite(_uint Index)
+{
+	if (Index >= m_pTextures.size()) {
+		return E_FAIL;
+	}
+
+	if(m_pTextures[Index] == nullptr)
+		return E_FAIL;
+
+	m_iDrawIndex = Index;
+	return S_OK;
+}
+
 CVIBuffer* CSprite2D::Get_Buffer()
 {
 	return m_pPoint;

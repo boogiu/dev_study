@@ -69,34 +69,45 @@ void CToolItem::Render_GUI()
 	//ImGui::InputFloat3()
 }
 
-void CToolItem::AdjustByItem(TOOL_TYPE type)
+void CToolItem::AdjustByItem(itemType type)
 {
 	m_pTransform->Reset_Rotation();
 	m_pTransform->Set_Pos({0,0,0});
+	m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
 
-	switch (type) {
-		case TOOL_TYPE::AXE:
-			m_pTransform->Override_Rotation({0,1,0,0}, XMConvertToRadians(180));
-			break;
-		case TOOL_TYPE::SCOOP:
-			m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
-			break;
-		case TOOL_TYPE::NET:
-			m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
-			break;
-	}
 }
 
 void CToolItem::Set_Item(TOOL_DATA_DESC data)
 {
-	m_InstanceTag = data.TypeTag;
+	switch (data.TypeTag)
+	{
+	case itemType::None:
+		m_InstanceTag = "None";
+		break;
+	case itemType::Drop:
+		m_InstanceTag = "None";
+		break;
+	case itemType::Axe:
+		m_InstanceTag = "Axe";
+		break;
+	case itemType::Scoop:
+		m_InstanceTag = "Scoop";
+		break;
+	case itemType::Net:
+		m_InstanceTag = "Net";
+		break;
+	default:
+		break;
+	}
+
 	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
-	if (data.eType == TOOL_TYPE::NONE) {
+
+	if (data.TypeTag == itemType::None) {
 		Get_Component<CModel>()->Set_CompActive(false);
 		return;
 	}
 	else {
-		AdjustByItem(data.eType);
+		AdjustByItem(data.TypeTag);
 		Get_Component<CModel>()->Set_CompActive(true);
 	}
 

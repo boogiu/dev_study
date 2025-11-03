@@ -30,11 +30,12 @@ HRESULT CItem_Object::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
 	DROP_ITEM_DESC* pDesc = dynamic_cast<DROP_ITEM_DESC*>(pArg);
-
+	//pDesc->itemDesc.
 	if (pDesc != nullptr)
 	{
 		Get_Component<CStaticModel>()->Link_Model("GamePlay_Level", pDesc->itemDesc.modelName);
 		Get_Component<CMaterial>()->Link_Material("GamePlay_Level", pDesc->itemDesc.materialName);
+		m_ItemInfo = pDesc->itemDesc;
 	}
 	else {
 		Get_Component<CStaticModel>()->Link_Model("GamePlay_Level", "UnitIconPltFruitApple.model");
@@ -44,7 +45,6 @@ HRESULT CItem_Object::Initialize(INIT_DESC* pArg)
 	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	m_SyncedIndex = TileSystem->Get_IndexByPosition(Get_Position());
 	m_MarginY = TileSystem->Get_TileHeightByPosition(Get_Position());
-
 	m_InstanceTag = "Item";
 
 	return S_OK;
@@ -66,20 +66,6 @@ void CItem_Object::Render_GUI()
 {
 	__super::Render_GUI();
 	ImGui::Text("nowIndex X : %d, Z : %d", m_SyncedIndex.IndexX, m_SyncedIndex.IndexZ);
-}
-
-void CItem_Object::OnCollisionEnter(COLLISION_CONTEXT context)
-{
-
-}
-
-void CItem_Object::OnCollisionStay(COLLISION_CONTEXT context)
-{
-}
-
-void CItem_Object::OnCollisionExit(COLLISION_CONTEXT context)
-{
-
 }
 
 

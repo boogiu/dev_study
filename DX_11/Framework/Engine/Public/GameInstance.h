@@ -49,6 +49,7 @@ public:
 	class IRayService* Get_RayMgr() { return m_pRaySystem; }
 	class ITileService* Get_TileSystem() { return m_pTileSystem; }
 	class ICollisionService* Get_CollisionSystem () { return m_pCollisionSystem; }
+	class IFontService* Get_FontSystem () { return m_pFontSystem; }
 
 private:
 	class IGraphicService* m_pGraphicDevice = { nullptr };
@@ -67,6 +68,7 @@ private:
 	class IRayService* m_pRaySystem = { nullptr };
 	class ITileService* m_pTileSystem = { nullptr };
 	class ICollisionService* m_pCollisionSystem = { nullptr };
+	class IFontService* m_pFontSystem = { nullptr };
 #pragma endregion
 
 private:

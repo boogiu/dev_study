@@ -100,7 +100,7 @@ void CPlayerPart_Hand::OnCollisionExit(COLLISION_CONTEXT context)
 void CPlayerPart_Hand::Change_Item(TOOL_DATA_DESC data)
 {
 	m_pToolItem->Set_Item(data);
-	m_eItemType = data.eType;
+	m_eItemType = data.TypeTag;
 }
 
 void CPlayerPart_Hand::Active_ColliderTool(_bool Active, string Event)

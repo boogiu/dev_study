@@ -32,7 +32,6 @@ HRESULT CItem_Stone::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
 
-	m_InstanceTag += "Stone";
 	m_eState = { DROP };
 	return S_OK;
 }

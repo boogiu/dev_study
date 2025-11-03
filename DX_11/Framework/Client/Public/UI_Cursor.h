@@ -18,7 +18,13 @@ public:
     void Late_Update(_float dt) override;
     virtual void Render_GUI() override;
 
+public :
+    void Set_Pivot(_float2 Pivot, _float2 Offset = { 25,25 },_float2 Movevec = {1,1});
 private:
+    _float2 m_vPivot = {};
+    _float m_fFloatingTime = {  };
+    _float m_fFloatingSpeed = { 10.f};
+
 
 public:
     static CUI_Cursor* Create();

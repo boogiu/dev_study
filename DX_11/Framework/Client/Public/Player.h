@@ -76,6 +76,7 @@ public:
     void OnCollisionEnter(COLLISION_CONTEXT context) override;
     void OnCollisionStay(COLLISION_CONTEXT context) override;
     void OnCollisionExit(COLLISION_CONTEXT context) override;
+
 public:
     void Open_Inventory();
     void Close_Inventory();

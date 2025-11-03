@@ -1,0 +1,144 @@
+#include "TextSlot.h"
+#include "GameInstance.h"
+#include "IFontService.h"
+#include "CustomFont.h"
+
+CTextSlot::CTextSlot()
+{
+}
+
+CTextSlot::CTextSlot(const CTextSlot& rhs)
+	:m_Info(rhs.m_Info)
+{
+}
+
+HRESULT CTextSlot::Initialize_Prototype()
+{
+	return S_OK;
+}
+
+HRESULT CTextSlot::Initialize(COMPONENT_DESC* pArg)
+{
+	return S_OK;
+}
+
+HRESULT CTextSlot::Set_Font(const string FontTag)
+{
+	CCustomFont* pFont = CGameInstance::GetInstance()->Get_FontSystem()->Get_Font(FontTag);
+	if (!pFont)
+		return E_FAIL;
+
+	if (m_pFont)
+		Safe_Release(m_pFont);
+
+	m_pFont = pFont;
+	m_Info.FontTag = FontTag;
+
+	Safe_AddRef(m_pFont);
+	return S_OK;
+}
+
+void CTextSlot::Set_Color(_float4 color)
+{
+	m_Info.TextColor = color;
+}
+
+void CTextSlot::Set_Size(_float scale)
+{
+	m_Info.Scale = scale;
+}
+
+void CTextSlot::Set_Position(_float2 Pos)
+{
+	m_Info.TextPos = Pos;
+}
+
+void CTextSlot::Push_Text()
+{
+	if (!m_bActive || m_Info.Text.empty() || m_Info.FontTag.empty()) {
+		return;
+	}
+	if (m_AnchorInfo.bAutoPos) {
+		Set_Anchor(m_AnchorInfo.eAnchor, m_AnchorInfo.vPivot);
+	}
+	CGameInstance::GetInstance()->Get_FontSystem()->Push_Text(m_Info);
+}
+
+void CTextSlot::Set_AutoPos(ANCHOR anchor, _float2 Pivot)
+{
+	m_AnchorInfo.bAutoPos = true;
+	m_AnchorInfo.vPivot = Pivot;
+	m_AnchorInfo.eAnchor = anchor;
+}
+
+void CTextSlot::Set_Anchor(ANCHOR anchot, _float2 Pivot)
+{
+	_vector size = m_pFont->TextSize(m_Info.Text);
+	float w = XMVectorGetX(size);
+	float h = XMVectorGetY(size);
+
+	float baselineOffset = m_pFont->LineSpace() * 0.25f; // 글씨 높이 대비 약간 위로 보정
+
+	_uint anchor = static_cast<_uint>(anchot);
+	if (anchor & static_cast<_uint>(ANCHOR::Left))
+		m_Info.TextPos.x = Pivot.x;
+	else if (anchor & static_cast<_uint>(ANCHOR::Right))
+		m_Info.TextPos.x = Pivot.x - w;
+	else
+		m_Info.TextPos.x = Pivot.x - w * 0.5f;
+
+	// Y축
+	if (anchor & static_cast<_uint>(ANCHOR::Top))
+		m_Info.TextPos.y = Pivot.y;
+	else if (anchor & static_cast<_uint>(ANCHOR::Bottom))
+		m_Info.TextPos.y = Pivot.y - h;
+	else
+		m_Info.TextPos.y = Pivot.y - h * 0.5f;
+}
+
+_float2 CTextSlot::Get_Anchor(ANCHOR anchot)
+{
+	_vector Size = m_pFont->TextSize(m_Info.Text);
+	_uint anchorFlags = static_cast<_uint>(anchot);
+	_float2 result = {};
+
+	if (anchorFlags & static_cast<_uint>(ANCHOR::Left))
+		result.x = m_Info.TextPos.x;
+	else if (anchorFlags & static_cast<_uint>(ANCHOR::Right))
+		result.x = m_Info.TextPos.x+ XMVectorGetX(Size);
+	else
+		result.x = m_Info.TextPos.x - XMVectorGetX(Size) * 0.5f;
+
+
+	if (anchorFlags & static_cast<_uint>(ANCHOR::Top))
+		result.y = m_Info.TextPos.y;
+	else if (anchorFlags & static_cast<_uint>(ANCHOR::Bottom))
+		result.y = m_Info.TextPos.y + XMVectorGetY(Size);
+	else
+		result.y = m_Info.TextPos.y + XMVectorGetY(Size)*0.5f;
+
+
+	return result;
+}
+
+CTextSlot* CTextSlot::Create()
+{
+	CTextSlot* instance = new CTextSlot();
+	if (FAILED(instance->Initialize_Prototype()))
+	{
+		Safe_Release(instance);
+		MSG_BOX("CTextSlot Comp Failed To Create : CTextSlot");
+	}
+	return instance;
+}
+
+CComponent* CTextSlot::Clone()
+{
+	return new CTextSlot(*this);
+}
+
+void CTextSlot::Free()
+{
+	__super::Free();
+	Safe_Release(m_pFont);
+}

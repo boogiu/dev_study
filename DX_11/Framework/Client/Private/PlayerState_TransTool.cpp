@@ -20,7 +20,7 @@ HRESULT CPlayerState_TransTool::OnEnter()
 
 	auto Pack = m_pPlayer->Get_ItemPacket();
 
-	if (Pack.DstItem.eType == TOOL_TYPE::NONE) {
+	if (Pack.DstItem.TypeTag == itemType::None) {
 		Animator->Change_Animation("Base_EquipOff.anim");
 	}
 	else {

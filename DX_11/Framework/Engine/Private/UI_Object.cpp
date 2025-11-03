@@ -13,8 +13,8 @@ CUI_Object::CUI_Object()
 CUI_Object::CUI_Object(const CUI_Object& rhs)
     :CGameObject(rhs)
 {
-    m_fX = rhs.m_fX;
-    m_fY = rhs.m_fY;
+    m_fLocalX = rhs.m_fLocalX;
+    m_fLocalY = rhs.m_fLocalY;
     m_fSizeX = rhs.m_fSizeX;
     m_fSizeY = rhs.m_fSizeY;
     m_fRadian = rhs.m_fRadian;
@@ -40,8 +40,8 @@ HRESULT CUI_Object::Initialize(INIT_DESC* pArg)
      UI_DESC* uiDesc = static_cast<UI_DESC*>(pArg);
 
      if (pArg != nullptr) {
-        m_fX = uiDesc->fX;
-        m_fY = uiDesc->fY;
+        m_fLocalX = uiDesc->fX;
+        m_fLocalY = uiDesc->fY;
 
         m_fSizeX = uiDesc->fSizeX;
         m_fSizeY = uiDesc->fSizeY;
@@ -55,7 +55,6 @@ HRESULT CUI_Object::Initialize(INIT_DESC* pArg)
 void CUI_Object::Pre_EngineUpdate(_float dt)
 {
     __super::Pre_EngineUpdate(dt);
-    Update_UITransform();
 }
 
 void CUI_Object::Priority_Update(_float dt)
@@ -73,6 +72,7 @@ void CUI_Object::Late_Update(_float dt)
 
 void CUI_Object::Post_EngineUpdate(_float dt)
 {
+    Update_UITransform();
     UI_PACKET packet;
     packet.pSprite2D = Get_Component<CSprite2D>();
     packet.pWorldMatrix = m_pTransform->Get_WorldMatrix_Ptr();
@@ -93,16 +93,42 @@ void CUI_Object::Post_EngineUpdate(_float dt)
     }
 }
 
+void CUI_Object::Set_Size(_fvector size)
+{
+    _float2 vSize = {  };
+    XMStoreFloat2(&vSize, size);
+    m_fSizeX = vSize.x;
+    m_fSizeY = vSize.y;
+}
+
+void CUI_Object::Size_To(_fvector size, _float Speed)
+{
+    _float2 vSize = { m_fSizeX,m_fSizeY };
+
+    _vector length = XMVector2Length(size - XMLoadFloat2(&vSize));
+    _vector nextSize;
+
+    if (XMVectorGetX(length) < 0.2f) {
+        nextSize = size;
+    }
+    else {
+        nextSize = XMVectorLerp(XMLoadFloat2(&vSize), size, Speed);
+    }
+    XMStoreFloat2(&vSize, nextSize);
+    m_fSizeX = vSize.x;
+    m_fSizeY = vSize.y;
+}
+
 void CUI_Object::Render_GUI()
 {
     __super::Render_GUI();
     ImGui::SeparatorText("Position");
-    if (ImGui::Button("Left"))  m_fX -= 10.f;
+    if (ImGui::Button("Left"))  m_fLocalX -= 10.f;
     ImGui::SameLine();
-    if (ImGui::Button("Right")) m_fX += 10.f;
-    if (ImGui::Button("Up"))			m_fY -= 10.f;
+    if (ImGui::Button("Right")) m_fLocalX += 10.f;
+    if (ImGui::Button("Up"))			m_fLocalY -= 10.f;
     ImGui::SameLine();
-    if (ImGui::Button("Down"))    m_fY += 10.f;
+    if (ImGui::Button("Down"))    m_fLocalY += 10.f;
 
     ImGui::SeparatorText("Scale");
     if (ImGui::Button("Sub X"))       m_fSizeX -= 10.f;
@@ -119,17 +145,26 @@ void CUI_Object::Update_UITransform()
     m_WinSizeY = CGameInstance::GetInstance()->Get_ClientSize().y;
 
     m_pTransform->Scale({ m_fSizeX, m_fSizeY, 1.f });
-    m_pTransform->Set_Pos({ m_fX - m_WinSizeX * 0.5f, -m_fY + m_WinSizeY * 0.5f, 0.f });
     m_pTransform->Rotate({ 0, 0, m_fRadian });
 
     if (auto pChildComp = Get_Component<CChild>())
     {
         if (auto pParent = dynamic_cast<CUI_Object*>(pChildComp->Get_Parent()))
         {
-            m_pTransform->Set_Pos({ (m_fX + pParent->m_fX) - m_WinSizeX * 0.5f, -(m_fY + pParent->m_fY) + m_WinSizeY * 0.5f, 0.f });
+            m_fWorldX = m_fLocalX + pParent->m_fWorldX;
+            m_fWorldY = m_fLocalY + pParent->m_fWorldY;
+        }
+        else {
+            m_fWorldX = m_fLocalX;
+            m_fWorldY = m_fLocalY;
         }
     }
+    else {
+        m_fWorldX = m_fLocalX;
+        m_fWorldY = m_fLocalY;
+    }
 
+    m_pTransform->Set_Pos({ m_fWorldX - m_WinSizeX * 0.5f, -m_fWorldY + m_WinSizeY * 0.5f, 0.f });
 }
 
 void CUI_Object::Rotate_Left(_float _radian)
@@ -143,20 +178,20 @@ _float2 CUI_Object::Align_To(ANCHOR anchor, _float2 _pivot)
     _uint anchorFlags = static_cast<_uint>(anchor);
 
     if (anchorFlags & static_cast<_uint>(ANCHOR::Left))
-        m_fX = _pivot.x + HalfX();
+        m_fLocalX = _pivot.x + HalfX();
     else if (anchorFlags & static_cast<_uint>(ANCHOR::Right))
-        m_fX = _pivot.x - HalfX();
+        m_fLocalX = _pivot.x - HalfX();
     else 
-        m_fX = _pivot.x;
+        m_fLocalX = _pivot.x;
 
     if (anchorFlags & static_cast<_uint>(ANCHOR::Top))
-        m_fY = _pivot.y + HalfY();
+        m_fLocalY = _pivot.y + HalfY();
     else if (anchorFlags & static_cast<_uint>(ANCHOR::Bottom))
-        m_fY = _pivot.y - HalfY();
+        m_fLocalY = _pivot.y - HalfY();
     else 
-        m_fY = _pivot.y;
+        m_fLocalY = _pivot.y;
 
-    return _float2(m_fX, m_fY);
+    return _float2(m_fLocalX, m_fLocalY);
 }
 
 void CUI_Object::Free()

@@ -13,6 +13,7 @@ public:
 
     virtual void Update(_float dt)PURE;
     virtual HRESULT Render(ID3D11DeviceContext* pContext)PURE;
+    virtual  class CLevel* Get_CurrentLevel()PURE;
 
     virtual void Register_Level(const string& levelID, LEVEL_CREATOR creator)PURE;
     virtual _uint Get_LevelCount() PURE;
