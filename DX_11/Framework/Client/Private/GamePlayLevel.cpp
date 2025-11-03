@@ -31,7 +31,7 @@
 #include "UI_ItemText.h"
 #include "TexturePanel.h"
 #include "SelectPanel.h"
-
+#include "UI_Text.h"
 #include "ItemSpawner.h"
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
@@ -170,6 +170,7 @@ void CGamePlayLevel::PreLoad_Level()
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_TexturePanel", CTexturePanel::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_SelectPanel", CSelectPanel::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_BaseText", CUI_Text::Create());
 }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)

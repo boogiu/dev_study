@@ -5,6 +5,8 @@
 #include "ObjectContainer.h"
 #include "UI_InvenSlot.h"
 #include "UI_Cursor.h"
+#include "SelectPanel.h"
+
 CPlayer_Inventory::CPlayer_Inventory()
 {
 }
@@ -50,8 +52,17 @@ HRESULT CPlayer_Inventory::Initialize(INIT_DESC* pArg)
 		.Position({0,0})
 		.Build("Cursor");
 
+		CUI_Object* pSelectUI = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_SelectPanel" })
+		.Add_To_Level("GamePlay_Level")
+		.Scale({0,0 })
+		.Position({180,120})
+		.Build("Select");
+
 	Get_Component<CObjectContainer>()->Add_Child(pUI, false);
+	Get_Component<CObjectContainer>()->Add_Child(pSelectUI, false);
+
 	m_pCursor= dynamic_cast<CUI_Cursor*>(pUI);
+	m_pSelectPanel = dynamic_cast<CSelectPanel*>(pSelectUI);
 
 	return S_OK;
 }
@@ -63,8 +74,10 @@ void CPlayer_Inventory::Priority_Update(_float dt)
 			m_eState = Selected;
 	}
 	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SHIFT)) {
-		if (m_eState == Selected)
+		if (m_eState == Selected) {
+			m_pSelectPanel->DeActive();
 			m_eState = Opened;
+		}
 	}
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
@@ -114,6 +127,7 @@ void CPlayer_Inventory::Close_Inventory()
 {
 	m_eState = Closing;
 	DeActive_Slots();
+	m_pSelectPanel->DeActive();
 }
 
 HRESULT CPlayer_Inventory::Add_ItemToInventory(ITEM_DATA_DESC desc)
@@ -233,37 +247,42 @@ void CPlayer_Inventory::Closing_Inven(_float dt)
 		Get_Component<CSprite2D>()->Set_CompActive(false);
 	}
 }
-
 void CPlayer_Inventory::Pointing_Item(_float dt)
 {
 	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
+	bool moved = false; // 이번 프레임에 인덱스가 변했는가
 
 	if (InputDev->Key_Tap(VK_RIGHT)) {
 		m_pSlots[nowIndex]->isHoverOut();
-		nowIndex += 1;
-		nowIndex = clamp(nowIndex, 0, 19);
+		nowIndex = clamp(nowIndex + 1, 0, 19);
+		moved = true;
 	}
 	else if (InputDev->Key_Tap(VK_LEFT)) {
 		m_pSlots[nowIndex]->isHoverOut();
-		nowIndex -= 1;
-		nowIndex = clamp(nowIndex, 0, 19);
+		nowIndex = clamp(nowIndex - 1, 0, 19);
+		moved = true;
 	}
 	else if (InputDev->Key_Tap(VK_DOWN)) {
 		if (nowIndex + 10 < 20) {
 			m_pSlots[nowIndex]->isHoverOut();
-			nowIndex +=10;
+			nowIndex += 10;
+			moved = true;
 		}
 	}
 	else if (InputDev->Key_Tap(VK_UP)) {
-		if (nowIndex - 10 >=0) {
+		if (nowIndex - 10 >= 0) {
 			m_pSlots[nowIndex]->isHoverOut();
 			nowIndex -= 10;
+			moved = true;
 		}
 	}
 
+	if (moved) {
+	}
 	m_pSlots[nowIndex]->isHovered();
 	m_pCursor->Set_Pivot(m_pSlots[nowIndex]->Get_CenterPos());
 }
+
 
 void CPlayer_Inventory::Select_Item(_float dt)
 {
@@ -271,8 +290,38 @@ void CPlayer_Inventory::Select_Item(_float dt)
 		m_eState = Opened;
 		return;
 	}
-	m_pSlots[nowIndex]->isHovered();
 
+	m_pSlots[nowIndex]->isHovered();
+	m_pSelectPanel->Size_To({ 208,111 }, dt * 6);
+	m_pSelectPanel->Get_Component<CSprite2D>()->Set_CompActive(true);
+
+	ITEM_DATA_DESC Data = dynamic_cast<CUI_InvenSlot*>(m_pSlots[nowIndex])->Get_Data();
+	m_pSelectPanel->Set_Selecte(Switch_ItemSelect(Data.TypeTag));
+	m_pSelectPanel->Active();
+	_int selectedAction = m_pSelectPanel->Check_Select();
+	if (selectedAction != -1) {
+
+	}
+}
+
+vector<wstring> CPlayer_Inventory::Switch_ItemSelect(itemType type)
+{
+	switch (type)
+	{
+	case itemType::None:
+		return vector<wstring>();
+	case itemType::Drop:
+		return {L"버리기",L"손"};
+	case itemType::Axe:
+		break;
+	case itemType::Scoop:
+		break;
+	case itemType::Net:
+		break;
+	default:
+		break;
+	}
+	return vector<wstring>();
 }
 
 

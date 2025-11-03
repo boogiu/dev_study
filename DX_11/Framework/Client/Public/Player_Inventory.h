@@ -38,18 +38,22 @@ private:
 private:
     void Pointing_Item(_float dt);
     void Select_Item(_float dt);
-
+    vector<wstring> Switch_ItemSelect(itemType type);
 private:
     InvenState m_eState = {Closed};
     vector<class CUI_InvenSlot*> m_pSlots;
     class CUI_Cursor* m_pCursor = { nullptr };
+    class CSelectPanel* m_pSelectPanel = { nullptr };
+
     _float4 m_vTimer = {  0,0,0,0  };
     _float2 m_vOpenSize = {  450,150  };
     _float2 m_vCloseSize = { };
     _float2 m_vOpenPos = {  1280 / 2,250  };
     _float2 m_vPointPos = { 1280 / 2.4,290 };
     _float2 m_vClosePos = { 1280 / 2,300 };
+
     _int nowIndex = {};
+    _int prevIndex = {-1};
 public:
     static CPlayer_Inventory* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

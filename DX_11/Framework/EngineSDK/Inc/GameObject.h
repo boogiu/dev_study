@@ -56,7 +56,7 @@ public:
 	const _uint Get_ObjectID() { return m_ObjectID; }
 	_float4x4* Get_WorldMatrix();
 	_float4 Get_Position();
-	_bool Is_Root() { return m_isRootObject; };
+ 	_bool Is_Root() { return m_isRootObject; };
 	const vector<CGameObject*> Get_Children();
 
 private:

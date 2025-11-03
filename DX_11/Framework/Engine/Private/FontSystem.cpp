@@ -18,7 +18,8 @@ HRESULT CFontSystem::Initialize()
 		return E_FAIL;
 	return S_OK;
 }
-//MakeSpriteFont "Asia신디나루M" Sindy.spritefont / FontSize:20 / CharacterRegion : 0xAC00 - 0xD7A3 / FastPack
+//MakeSpriteFont "Asia신디나루M" "Sindy.spritefont" /FontSize:20 /CharacterRegion:0xAC00-0xD7A3 /FastPack
+
 
 HRESULT CFontSystem::Add_Font(string FontName, const wstring& FontFilePath)
 {
@@ -80,7 +81,7 @@ HRESULT CFontSystem::Render_Font()
 		}
 
 		pFont->Draw(m_pBatch,
-			m_Texts[i].info.Text.c_str(),
+			m_Texts[i].info.Text,
 			m_Texts[i].info.TextPos,
 			XMLoadFloat4(&m_Texts[i].info.TextColor),
 			m_Texts[i].info.Rotation,

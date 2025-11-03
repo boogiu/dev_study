@@ -29,6 +29,7 @@ public:
     _bool isAbleToContain(ITEM_DATA_DESC desc);
     _bool isItemFilled() { return m_itemData.itemCount != 0; };
     HRESULT Add_Data(ITEM_DATA_DESC desc);
+    ITEM_DATA_DESC Get_Data() { return m_itemData.itemData; };
 
 private:
     void SizeControl(_float dt);

@@ -16,9 +16,17 @@ public:
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
     virtual void Render_GUI() override;
+public:
+    void Active();
+    void DeActive();
+    void Set_Selecte(vector<wstring> select);
+    _int Check_Select() { return m_SelectedIndex; };
 
 private:
-    vector<class CUI_ItemText*>m_pTexts;
+    _bool m_bActive = { false };
+    _uint m_NowIndex = {};
+    _int m_SelectedIndex = {-1};
+    vector<class CUI_Text*>m_pTexts;
 
 public:
     static CSelectPanel* Create();

@@ -22,6 +22,7 @@ HRESULT CTexturePanel::Initialize_Prototype()
 
 HRESULT CTexturePanel::Initialize(INIT_DESC* pArg)
 {
+
 	__super::Initialize(pArg);
 	return S_OK;
 }

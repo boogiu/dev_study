@@ -20,14 +20,7 @@ HRESULT CObjectMgr::Initialize()
 
 void CObjectMgr::Pre_EngineUpdate(_float dt)
 {
- 	for (auto pObject : DeleteObjs)
-	{
-		_uint ObjectID = pObject->Get_ObjectID();
-		pObject->Get_Layer()->Remove_GameObject(ObjectID);
-		pObject->Set_Layer(nullptr);
-	}
-
-	DeleteObjs.clear();
+ 
 
 	for (auto& pair : m_Layers)
 		for (auto& layers : pair.second)
@@ -60,6 +53,15 @@ void CObjectMgr::Late_Update(_float dt)
 	for (auto& pair : m_Layers)
 		for (auto& layers : pair.second)
 			layers.second->Late_Update(dt);
+
+	for (auto pObject : DeleteObjs)
+	{
+		_uint ObjectID = pObject->Get_ObjectID();
+		pObject->Get_Layer()->Remove_GameObject(ObjectID);
+		pObject->Set_Layer(nullptr);
+	}
+
+	DeleteObjs.clear();
 }
 
 void CObjectMgr::Add_Object(CGameObject* object, const LAYER_DESC& layer)
@@ -98,6 +100,13 @@ void CObjectMgr::Add_Object_Recursive(CLayer* pLayer, CGameObject* object)
 
 void CObjectMgr::Remove_Object(CGameObject* object)
 {
+	if (!object)
+		return;
+
+	auto it = find(DeleteObjs.begin(), DeleteObjs.end(), object);
+	if (it != DeleteObjs.end())
+		return;
+
 	DeleteObjs.push_back(object);
 }
 

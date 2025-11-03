@@ -10,7 +10,7 @@ private:
 
 public:
 	HRESULT Initialize(ID3D11Device* pDevice,  const wstring& FontFilePath);
-	void Draw(SpriteBatch* pBatch, const _tchar* pText, const _float2& vPosition, _fvector vColor,
+	void Draw(SpriteBatch* pBatch, wstring pText, const _float2& vPosition, _fvector vColor,
 		_float rotation, const _float2& origin, _float scale);
 	
 	_vector TextSize(wstring text, _bool ignorWhite = false) { return m_pFont->MeasureString(text.c_str(), ignorWhite); }

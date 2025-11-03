@@ -12,12 +12,12 @@ HRESULT CCustomFont::Initialize(ID3D11Device* pDevice, const wstring& FontFilePa
     return S_OK;
 }
 
-void CCustomFont::Draw(SpriteBatch* pBatch,const _tchar* pText,const _float2& vPosition, _fvector vColor,
+void CCustomFont::Draw(SpriteBatch* pBatch,wstring pText,const _float2& vPosition, _fvector vColor,
     _float rotation,const _float2& origin,_float scale)
 {
     if (!m_pFont) return; // 폰트 로드 실패 시 안전하게 리턴
     m_pFont->DrawString(
-        pBatch,pText,vPosition,vColor,
+        pBatch, pText.c_str(), vPosition, vColor,
         rotation,    origin,  scale      
     );
 
