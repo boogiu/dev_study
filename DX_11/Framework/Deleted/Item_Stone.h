@@ -23,9 +23,6 @@ public:
     void OnCollisionStay(COLLISION_CONTEXT context)override;
     void OnCollisionExit(COLLISION_CONTEXT context)override;
 
-private:
-    void Update_ByState(_float dt);
-
 public:
     static CItem_Stone* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

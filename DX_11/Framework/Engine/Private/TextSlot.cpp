@@ -53,6 +53,13 @@ void CTextSlot::Set_Position(_float2 Pos)
 	m_Info.TextPos = Pos;
 }
 
+void CTextSlot::Set_OutLine(_float Thickness, _float4 OutlineColor)
+{
+	m_Info.OutLined = true;
+	m_Info.OutLineColor = OutlineColor;
+	m_Info.Thickness = Thickness;
+}
+
 void CTextSlot::Push_Text()
 {
 	if (!m_bActive || m_Info.Text.empty() || m_Info.FontTag.empty()) {
@@ -61,7 +68,12 @@ void CTextSlot::Push_Text()
 	if (m_AnchorInfo.bAutoPos) {
 		Set_Anchor(m_AnchorInfo.eAnchor, m_AnchorInfo.vPivot);
 	}
-	CGameInstance::GetInstance()->Get_FontSystem()->Push_Text(m_Info);
+	if(isOutLined){
+		CGameInstance::GetInstance()->Get_FontSystem()->Push_Text(m_Info);
+	}
+	else {
+		CGameInstance::GetInstance()->Get_FontSystem()->Push_Text(m_Info);
+	}
 }
 
 void CTextSlot::Set_AutoPos(ANCHOR anchor, _float2 Pivot)
@@ -74,10 +86,11 @@ void CTextSlot::Set_AutoPos(ANCHOR anchor, _float2 Pivot)
 void CTextSlot::Set_Anchor(ANCHOR anchot, _float2 Pivot)
 {
 	_vector size = m_pFont->TextSize(m_Info.Text);
-	float w = XMVectorGetX(size);
-	float h = XMVectorGetY(size);
+	/*글꼴 패딩 보정*/
+	float w = XMVectorGetX(size) * 0.88f;
+	float h = XMVectorGetY(size) * 0.9f;
 
-	float baselineOffset = m_pFont->LineSpace() * 0.25f; // 글씨 높이 대비 약간 위로 보정
+	float baselineOffset = m_pFont->LineSpace() * 0.1f; // 글씨 높이 대비 약간 위로 보정
 
 	_uint anchor = static_cast<_uint>(anchot);
 	if (anchor & static_cast<_uint>(ANCHOR::Left))
@@ -119,6 +132,14 @@ _float2 CTextSlot::Get_Anchor(ANCHOR anchot)
 
 
 	return result;
+}
+
+_float CTextSlot::Get_TextSize()
+{
+	if (m_pFont)
+		return XMVectorGetX(m_pFont->TextSize(m_Info.Text));
+	else 
+		return 0.f;
 }
 
 CTextSlot* CTextSlot::Create()

@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine_Defines.h"
+#include <random>
 
 namespace Helper
 {
@@ -20,5 +21,7 @@ namespace Helper
 	ENGINE_DLL string  ToLower(const string& fileName);
 	ENGINE_DLL HRESULT SaveTextureToDDs(ID3D11DeviceContext* pContext,const string& filePath, ID3D11ShaderResourceView* pSRV);
 	ENGINE_DLL HRESULT SaveTextureToDDs(ID3D11DeviceContext* pContext,const wstring& filePath, ID3D11ShaderResourceView* pSRV);
+	ENGINE_DLL _int Get_Random_Int(_int min, _int max);
+	ENGINE_DLL _float Get_Random_Float(_float min, _float max);
 };
 

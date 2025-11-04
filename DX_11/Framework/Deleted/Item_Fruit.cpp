@@ -82,6 +82,7 @@ void CItem_Fruit::Render_GUI()
 {
 	__super::Render_GUI();
 }
+
 void CItem_Fruit::Dangle_Fruit(const string& boneName, _float3 offset)
 {
 	m_Offset = offset;
@@ -89,30 +90,6 @@ void CItem_Fruit::Dangle_Fruit(const string& boneName, _float3 offset)
 	CGameObject* pObj = Get_Component<CChild>()->Get_Parent();
 	Get_Component<CBoneFollower>()->Link_Bone(pObj->Get_Component<CAnimator3D>(), boneName);
 	Get_Component<CBoneFollower>()->Set_Offset(XMMatrixTranslation(offset.x, offset.y, offset.z));
-}
-
-void CItem_Fruit::Update_ByState(_float dt)
-{
-	switch (m_eState) {
-	case DROP: {
-		m_pTransform->Translate({ 0,-dt * 35,0 });
-		if (Get_Position().y <= m_MarginY) {
-			Find_Ground();
-		}
-	}
-			 break;
-	case  BOUND:
-		MoveToIndex(dt);
-		break;
-	case  PICKED:
-		FollowHand(dt);
-		break;
-	case  READY_DESTROY: {
-		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
-	}
-				 m_eState = IDLE;
-				 break;
-	}
 }
 
 CItem_Fruit* CItem_Fruit::Create()

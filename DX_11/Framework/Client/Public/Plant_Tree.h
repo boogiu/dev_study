@@ -66,7 +66,7 @@ private:
     _uint m_AxeHitCount = {};
     Tree_State m_eState = { IDLE };
 
-    class CItem_Fruit* m_pFruits[3] = { nullptr, nullptr, nullptr};
+    class CItem_Object* m_pFruits[3] = { nullptr, nullptr, nullptr};
 
     _bool m_HasFruit = { false };
     _float m_fLifeTime = {};

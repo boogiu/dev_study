@@ -212,6 +212,11 @@ namespace Engine
 		_int IndexZ = { -1 };
 	}TILE_INDEX;
 
+	inline  _bool operator == (const tagTileIndex& a, const tagTileIndex& b)
+	{
+		return (a.IndexX == b.IndexX) && (a.IndexZ == b.IndexZ);
+	}
+
 	typedef struct tagTileSystemInfo {
 		/*몇개씩?*/
 		_uint iTileCountX = {};
@@ -345,6 +350,10 @@ namespace Engine
 		_float Scale = 1.f;     
 		_float Rotation = 0.f;  
 		_float2 Origin = { 0.f, 0.f }; // 회전읮 중점
+
+		_bool OutLined = { false };
+		_float Thickness = 0.f;
+		_float4 OutLineColor = {};
 	}TEXT_INFO;
 
 #pragma pack(pop)

@@ -79,15 +79,28 @@ HRESULT CFontSystem::Render_Font()
 				nullptr, nullptr, nullptr, nullptr, XMMatrixIdentity()
 			);
 		}
-
-		pFont->Draw(m_pBatch,
-			m_Texts[i].info.Text,
-			m_Texts[i].info.TextPos,
-			XMLoadFloat4(&m_Texts[i].info.TextColor),
-			m_Texts[i].info.Rotation,
-			m_Texts[i].info.Origin,
-			m_Texts[i].info.Scale
-		);
+		if (m_Texts[i].info.OutLined) {
+			pFont->DrawOutlinedText(m_pBatch,
+				m_Texts[i].info.Text,
+				m_Texts[i].info.TextPos,
+				XMLoadFloat4(&m_Texts[i].info.OutLineColor),
+				XMLoadFloat4(&m_Texts[i].info.TextColor),
+				m_Texts[i].info.Thickness,
+				m_Texts[i].info.Rotation,
+				m_Texts[i].info.Origin,
+				m_Texts[i].info.Scale
+			);
+		}
+		else {
+			pFont->Draw(m_pBatch,
+				m_Texts[i].info.Text,
+				m_Texts[i].info.TextPos,
+				XMLoadFloat4(&m_Texts[i].info.TextColor),
+				m_Texts[i].info.Rotation,
+				m_Texts[i].info.Origin,
+				m_Texts[i].info.Scale
+			);
+		}
 	}
 
 	if (pFont) 

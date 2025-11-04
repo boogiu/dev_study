@@ -84,7 +84,7 @@ void CToolItem::Set_Item(TOOL_DATA_DESC data)
 	case itemType::None:
 		m_InstanceTag = "None";
 		break;
-	case itemType::Drop:
+	case itemType::Fruit:
 		m_InstanceTag = "None";
 		break;
 	case itemType::Axe:

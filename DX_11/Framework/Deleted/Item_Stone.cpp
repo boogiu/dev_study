@@ -31,8 +31,8 @@ HRESULT CItem_Stone::Initialize_Prototype()
 HRESULT CItem_Stone::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
-
 	m_eState = { DROP };
+
 	return S_OK;
 }
 
@@ -73,29 +73,6 @@ void CItem_Stone::OnCollisionExit(COLLISION_CONTEXT context)
 {
 	if (context.Owner->Has_Tag("Player_Hand")) {
 		m_eState = READY_DESTROY;
-	}
-}
-
-
-
-void CItem_Stone::Update_ByState(_float dt)
-{
-	switch (m_eState) {
-	case DROP: {
-		Find_Ground();
-	}
-			 break;
-	case  BOUND:
-		MoveToIndex(dt);
-		break;
-	case  PICKED:
-		FollowHand(dt);
-		break;
-	case  READY_DESTROY: {
-		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
-		 m_eState = IDLE;
-		}
-		 break;
 	}
 }
 

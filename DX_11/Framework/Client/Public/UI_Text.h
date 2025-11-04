@@ -19,6 +19,8 @@ public:
 public:
     void Set_Active(_bool active) { m_bActive = active; }
     void Set_Anchor(ANCHOR eAnchor) { m_eAnchor = eAnchor; }
+    _float Text_Length();
+
 
 private:
     _bool m_bActive = { false };

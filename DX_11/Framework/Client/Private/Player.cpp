@@ -88,11 +88,21 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	Get_Component<CAABB_Collider>()->Make_MinMaxCollider(
 		{ { -2,0,-2 }, {2,5,2} }
 	);
+
+	/*Debug*/
+	auto ItemSpawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
+	TOOL_DATA_DESC AxeData = ItemSpawner->Get_ItemData("ToolAxeFirst");
+	TOOL_DATA_DESC NetData = ItemSpawner->Get_ItemData("ToolNetFirst");
+	TOOL_DATA_DESC ScoopData = ItemSpawner->Get_ItemData("ToolScoopFirst");
+	Add_ITEM(AxeData);
+	Add_ITEM(NetData);
+	Add_ITEM(ScoopData);
 	return S_OK;
 }
 
 void CPlayer::Priority_Update(_float dt)
 {
+	m_vPrevPos = Get_Position();
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 	Update_Input(dt);
 	Update_TileInfo(dt);
@@ -100,10 +110,9 @@ void CPlayer::Priority_Update(_float dt)
 
 void CPlayer::Update(_float dt)
 {
-	m_pStateMachine->Update(dt);
 	Update_Movement(dt);
-
-
+	m_pStateMachine->Update(dt);
+	Mark_TileFlag(); /*대충 로직 끝난 후에 타일 플래그 정비*/
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
@@ -138,6 +147,7 @@ void CPlayer::Render_GUI()
 	}
 	ImGui::End();
 
+	m_pInventory->Render_GUI();
 }
 
 void CPlayer::Update_Input(_float dt)
@@ -328,6 +338,7 @@ void CPlayer::Open_Inventory()
 {
 	m_pInventory->Open_Inventory();
 }
+
 void CPlayer::Close_Inventory()
 {
 	m_pInventory->Close_Inventory();
@@ -357,6 +368,32 @@ HRESULT CPlayer::Add_ITEM(ITEM_DATA_DESC item)
 {
 	return m_pInventory->Add_ItemToInventory(item);
 }
+
+HRESULT CPlayer::Set_InvenEvent(ITEM_DATA_DESC item, _int Slot, wstring SelectedEvent)
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	auto Spawner = nowLevel->Get_LevelObject<CItemSpawner>();
+	if (SelectedEvent == L"근처에 두기")
+	{
+		m_pInventory->PullOut_Item(Slot);
+		Spawner->ThrowItem(item.FileName, m_pTransform->Get_Pos(), m_pTransform->Dir(STATE::LOOK));
+	}
+
+	else if (SelectedEvent == L"1개 꺼내기") {
+		m_pInventory->PullOut_ToOtherSlot(Slot);
+	}
+
+	else if (SelectedEvent == L"1개 먹기") {
+		m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TransTool_State");
+	}
+	else if (SelectedEvent == L"들기") {
+		m_ControlPack.MsgBag = false;
+		Change_Item(item);
+	}
+
+	return S_OK;
+}
+
 
 _bool CPlayer::Can_Walk(_float2& moveAxis)
 {
@@ -471,7 +508,7 @@ void CPlayer::Add_AnimationClips()
 
 	/*툴 = NET*/
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_APose.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_APoseDash.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_AimWalk_F.anim", "Player", true);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_Get.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_Slip.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_Swing.anim", "Player", false);
@@ -563,6 +600,7 @@ void CPlayer::Add_Inventory()
 
 	CGameInstance::GetInstance()->Get_UIMgr()->Add_UIObject(pUI, "GamePlay_Level");
 	m_pInventory = dynamic_cast<CPlayer_Inventory*>(pUI);
+	m_pInventory->Set_Player(this);
 }
 
 void CPlayer::Set_TargetCamera()
@@ -578,6 +616,19 @@ void CPlayer::Set_TargetCamera()
 	Safe_AddRef(m_pCamera);
 	Get_Component<CObjectContainer>()->Add_Child(pCamera, false);
 	CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pCamera->Get_Component<CCamera>());
+}
+
+void CPlayer::Mark_TileFlag()
+{
+	auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
+	TILE_INDEX prevIndex = tileSys->Get_IndexByPosition(m_vPrevPos);
+
+	if (m_TileInfoPack.nowIndex == prevIndex) {
+		return;
+	}
+
+	tileSys->Remove_TileFlagByIndex(prevIndex,static_cast<_uint>(TILE_FLAG::ONPLAYER));
+	tileSys->Add_TileFlagByIndex(m_TileInfoPack.nowIndex,static_cast<_uint>(TILE_FLAG::ONPLAYER));
 }
 
 CPlayer* CPlayer::Create()

@@ -38,6 +38,8 @@ CState* CPlayerState_Axe::HandleTransition()
 		return m_pLayer->Get_State("Tool_Axe_State");
 	case itemType::Scoop:
 		return m_pLayer->Get_State("Tool_Scoop_State");
+	case itemType::Net:
+		return m_pLayer->Get_State("Tool_Net_State");
 	default:
 		break;
 	}

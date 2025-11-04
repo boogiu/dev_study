@@ -418,3 +418,21 @@ ENGINE_DLL HRESULT Helper::SaveTextureToDDs(ID3D11DeviceContext* pContext, const
 	}
 	return hr;
 }
+static mt19937& RNG()
+{
+	static mt19937 rng(random_device{}());
+	return rng;
+}
+
+ENGINE_DLL _int Helper::Get_Random_Int(_int min, _int max)
+{
+	uniform_int_distribution<_int> dist(min, max);
+	return dist(RNG());
+}
+
+ENGINE_DLL _float Helper::Get_Random_Float(_float min, _float max)
+{
+	uniform_real_distribution<_float> dist(min, max);
+	return dist(RNG());
+
+}

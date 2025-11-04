@@ -18,6 +18,8 @@
 #include "TileSystem.h"
 #include "CollisionSystem.h"
 #include "FontSystem.h"
+
+#include "Level.h"
 IMPLEMENT_SINGLETON(CGameInstance)
 
 CGameInstance::CGameInstance()
@@ -149,6 +151,13 @@ HRESULT CGameInstance::Excute_TileSystem(const TILESYSTEM_INFO& tileInfo)
 		return E_FAIL;
 }
 
+CLevel* CGameInstance::Get_CurrentLevel()
+{
+	if (!m_pLevelManager)
+		return nullptr;
+
+	return m_pLevelManager->Get_CurrentLevel();
+}
 HRESULT CGameInstance::Excute_TileSystemByData(const string& LoadPath)
 {
 	if (m_pTileSystem)

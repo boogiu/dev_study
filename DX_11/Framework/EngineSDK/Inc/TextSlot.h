@@ -24,6 +24,8 @@ public:
     void Set_Size(_float scale);
     void Set_Position(_float2 Pos);
     void Set_Text(wstring Text) { m_Info.Text = Text; };
+    void Set_OutLine(_float Thickness, _float4 OutlineColor);
+    void ReSet_OutLine() { m_Info.OutLined = false; };
 
 public:
     void Push_Text();
@@ -35,12 +37,13 @@ public:
 public:
     void Set_Anchor(ANCHOR anchot, _float2 Pivot);
     _float2 Get_Anchor(ANCHOR anchot);
+    _float Get_TextSize();
 
 private:
     class CCustomFont* m_pFont = { nullptr };
-    TEXT_INFO m_Info = { L"",{0,0},{1,1,1,1},"",1.f,0.f,{0.f,0.f} };
+    TEXT_INFO m_Info = { };
     AnchorInfo m_AnchorInfo = {};
-
+    _bool isOutLined = { false };
 public:
     static CTextSlot* Create();
     virtual CComponent* Clone() override;

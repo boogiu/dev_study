@@ -10,7 +10,7 @@
 #include "PlayerState_Walk.h"
 #include "PlayerState_Idle.h"
 #include "PlayerState_Run.h"
-
+#include "PlayerState_AimWalk.h"
 
 #include "PlayerState_Hand.h"
 #include "PlayerState_PickUp.h"
@@ -24,6 +24,7 @@
 #include "PlayerState_ShakeTree.h"
 #include "PlayerState_Dig.h"
 #include "PlayerState_ChopTree.h"
+#include "PlayerState_NetSwing.h"
 
 #include "PlayerState_OpenInven.h"
 #include "PlayerState_TransTool.h"
@@ -52,6 +53,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	auto Idle = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Idle>("Movement_Idle_State");
 	auto Walk = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Walk>("Movement_Walk_State");
 	auto Run = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Run>("Movement_Run_State");
+	auto AimWalk = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_AimWalk>("Movement_AimWalk_State");
 
 	auto PickUP = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_PickUp>("PickUp_Base_State");
 
@@ -59,6 +61,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	auto TreeShake = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ShakeTree>("Action_TreeShake_State");
 	auto DigAction= m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Dig>("Action_Dig_State");
 	auto TreeChop = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ChopTree>("Action_TreeChop_State");
+	auto NetSwing = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_NetSwing>("Action_NetSwing_State");
 
 	/*ToolPoseSTate*/
 	auto Hand = m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_HandAction>("Tool_Hand_State");
@@ -70,6 +73,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	Idle->Set_Owner(m_pOwner);
 	Walk->Set_Owner(m_pOwner);
 	Run->Set_Owner(m_pOwner);
+	AimWalk->Set_Owner(m_pOwner);
 	PickUP->Set_Owner(m_pOwner);
 	ToolBase->Set_Owner(m_pOwner);
 	Hand->Set_Owner(m_pOwner);
@@ -79,6 +83,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	Scoop->Set_Owner(m_pOwner);
 	DigAction->Set_Owner(m_pOwner);
 	Net->Set_Owner(m_pOwner);
+	NetSwing->Set_Owner(m_pOwner);
 	ActionHub->Set_Owner(m_pOwner);
 
 	m_LayerStates[STATE_LAYER::TOOL]->Excute(ToolBase);

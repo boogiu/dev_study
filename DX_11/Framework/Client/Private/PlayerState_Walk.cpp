@@ -48,6 +48,9 @@ CState* CPlayerState_Walk::HandleTransition()
 		Animator->Change_Animation("ToStop_RunLatter_L.anim",0.05f);
 		return m_pLayer->Get_State("Movement_Idle_State");
 	}
+	else if (m_pPlayer->Get_ControlPack().MsgAction && m_pPlayer->Get_ItemPacket().CurItem.TypeTag == itemType::Net) {
+		return m_pLayer->Get_State("Movement_AimWalk_State");
+	}
 	else if (control.MsgAdd&& control.MsgMove) {
 		return m_pLayer->Get_State("Movement_Run_State");
 	}

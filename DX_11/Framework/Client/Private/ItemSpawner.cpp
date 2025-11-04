@@ -3,6 +3,9 @@
 #include "Helper_Func.h"
 #include "GameInstance.h"
 #include "IResourceService.h"
+#include "Builder.h"
+#include "Item_Object.h"
+#include "Level.h"
 
 CItemSpawner::CItemSpawner()
 {
@@ -84,15 +87,15 @@ HRESULT CItemSpawner::Read_ItemData(wstring filePath)
 			if (item.contains("FullCount"))
 			{
 				if (item["FullCount"].is_number_integer())
-					data.fullCount = item["FullCount"].get<_int>(); 
+					data.fullCount = item["FullCount"].get<_int>();
 				else if (item["FullCount"].is_string())
 					data.fullCount = std::stoul(item["FullCount"].get<string>());
 			}
 
-			data.modelName =	   item.value("Name", "")+".model";
-			data.materialName =item.value("Name", "")+".mat";
+			data.modelName = item.value("Name", "") + ".model";
+			data.materialName = item.value("Name", "") + ".mat";
 			data.ItemName = Helper::ConvertToWideString(item.value("ItemName", ""));
-			data.IconName = "MenuLayout_"+item.value("IconName", "");
+			data.IconName = "MenuLayout_" + item.value("IconName", "");
 			data.FileName = item.value("Name", "");
 
 			if (key.empty())
@@ -125,6 +128,62 @@ ITEM_DATA_DESC CItemSpawner::Get_ItemData(string ItemTag)
 	}
 	else
 		return iter->second;
+}
+
+CItem_Object* CItemSpawner::SpawnItem(string ItemTag, _float3 pos)
+{
+	CItem_Object::DROP_ITEM_DESC* pDesc = new CItem_Object::DROP_ITEM_DESC;
+	pDesc->itemDesc = Get_ItemData(ItemTag);
+
+	CGameObject* pObject =
+		Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_DropItem" })
+		.Add_ObjDesc(pDesc)
+		.Position(pos)
+		.Build(ItemTag);
+
+	if (pObject) {
+		CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { m_pOwner->Get_Key(),"Item_Layer" });
+		return dynamic_cast<CItem_Object*>(pObject);
+	}
+
+	return nullptr;
+}
+
+CItem_Object* CItemSpawner::SpawnItem(string ItemTag)
+{
+	CItem_Object::DROP_ITEM_DESC* pDesc = new CItem_Object::DROP_ITEM_DESC;
+	pDesc->itemDesc = Get_ItemData(ItemTag);
+
+	CGameObject* pObject =
+		Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_DropItem" })
+		.Add_ObjDesc(pDesc)
+		.Build(ItemTag);
+
+	if (pObject) {
+		CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { m_pOwner->Get_Key(),"Item_Layer" });
+		return dynamic_cast<CItem_Object*>(pObject);
+	}
+
+	return nullptr;
+}
+
+CItem_Object* CItemSpawner::ThrowItem(string ItemTag, _fvector pos, _cvector MoveDir)
+{
+	CItem_Object::DROP_ITEM_DESC* pDesc = new CItem_Object::DROP_ITEM_DESC;
+	pDesc->itemDesc = Get_ItemData(ItemTag);
+
+	CGameObject* pObject =
+		Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_DropItem" })
+		.Add_ObjDesc(pDesc)
+		.Build(ItemTag);
+
+	if (pObject) {
+		CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { m_pOwner->Get_Key(),"Item_Layer" });
+		CItem_Object* item = dynamic_cast<CItem_Object*>(pObject);
+		item->Set_Throw(pos, MoveDir);
+		return item;
+	}
+	return nullptr;
 }
 
 CItemSpawner* CItemSpawner::Create()

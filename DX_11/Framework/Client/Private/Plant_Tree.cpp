@@ -19,9 +19,8 @@
 #include "Texture.h"
 #include "Animator3D.h"
 
-#include "Item_Fruit.h"
+#include "Item_Object.h"
 #include "Builder.h"
-#include "IObjectService.h"
 
 CPlant_Tree::CPlant_Tree()
 {
@@ -98,7 +97,7 @@ HRESULT CPlant_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mo
 		m_iGrownLevel = m_ModelName.back() - '0';
 		m_TypeName = m_ModelName.substr(0, m_ModelName.size() - 1);
 	}
-	
+
 	m_pTransform->TranslateMatrix(XMLoadFloat4x4(&objHeader.vWorldMatrix));
 	m_iObjType = objHeader.Object_type;
 
@@ -115,7 +114,7 @@ HRESULT CPlant_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mo
 	m_Index = tileSystem->Get_IndexByPosition(Get_Position());
 
 	tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(
-		TILE_FLAG::FLAG_BLOCKED| TILE_FLAG::FLAG_TREE));
+		TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_TREE));
 
 	tileSystem->Set_Material_ID(objHeader.Index, { 1,1,0,0 });
 
@@ -139,7 +138,7 @@ void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 	}
 
 	if (context.Owner->Has_Tag("Scoop")) {
-		if(context.EventTag == "Digged")
+		if (context.EventTag == "Digged")
 			m_eState = DIGGED;
 	}
 
@@ -210,7 +209,7 @@ void CPlant_Tree::PlayAnim_Cut()
 		}
 		m_isCutted = false;
 	}
-	
+
 	if (Get_Component<CAnimator3D>()->isCurrentAnimEnd()) {
 		Get_Component<CModel>()->Link_Model("GamePlay_Level", m_ModelName + "Stump.model");
 		m_eState = IDLE;
@@ -240,13 +239,13 @@ void CPlant_Tree::PlayAnim_Shake()
 
 void CPlant_Tree::PlayAnim_Shaking()
 {
-	
+
 	if (m_fShakeTime > 1.5)
 	{
 		Drop_Items();
 		m_fShakeTime = 0;
 	}
-	if (m_fShakeTime > 0.033 ) {
+	if (m_fShakeTime > 0.033) {
 		return;
 	}
 	if (m_iGrownLevel >= 2) {
@@ -268,29 +267,31 @@ void CPlant_Tree::Make_Fruits()
 	if (m_isCutted == true) return;
 	if (m_eState != IDLE) return;
 	if (m_HasFruit == true) return;
-	if (m_fLifeTime <15.f) return;
-	
+	if (m_fLifeTime < 15.f) return;
+
 	if (m_pFruits[0] == nullptr) {
 		for (size_t i = 0; i < 3; i++)
 		{
 			if (m_pFruits[i] != nullptr) continue;
-			CItem_Object::DROP_ITEM_DESC* pDesc = new CItem_Object::DROP_ITEM_DESC;
+			//CItem_Object::DROP_ITEM_DESC* pDesc = new CItem_Object::DROP_ITEM_DESC;
+			//pDesc->itemDesc = spawner->Get_ItemData("UnitIconPltFruitApple");
+			//CGameObject* pObject =
+			//	Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_DropItem" })
+			//	.Add_ObjDesc(pDesc)
+			//	.Build("Fruit" + to_string(i));
+			//
+			//CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { "GamePlay_Level" ,"Field_Layer" });
 			auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
-			pDesc->itemDesc = spawner->Get_ItemData("UnitIconPltFruitApple");
-	
-			CGameObject* pObject =
-				Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ItemFruit" })
-				.Add_ObjDesc(pDesc)
-				.Build("Fruit" + to_string(i));
-	
-			CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { "GamePlay_Level" ,"Field_Layer" });
-			m_pFruits[i] = dynamic_cast<CItem_Fruit*>(pObject);
-			Get_Component<CObjectContainer>()->Add_Child(pObject, false);
+			CItem_Object* pFruit = spawner->SpawnItem("UnitIconPltFruitApple");
+			if (pFruit) {
+				m_pFruits[i] = pFruit;
+				Get_Component<CObjectContainer>()->Add_Child(pFruit, false);
+			}
 		}
-	
-		m_pFruits[0]->Dangle_Fruit("Armature_PlantTop", { 0,25,-4 });
-		m_pFruits[1]->Dangle_Fruit("Armature_Plant01", { 5,15,-8 });
-		m_pFruits[2]->Dangle_Fruit("Armature_Plant02", { -5,15,-8 });
+
+		m_pFruits[0]->Dangle_Item("Armature_PlantTop", { 0,25,-4 });
+		m_pFruits[1]->Dangle_Item("Armature_Plant01", { 5,15,-8 });
+		m_pFruits[2]->Dangle_Item("Armature_Plant02", { -5,15,-8 });
 	}
 	else {
 		Regenerate_Items();
@@ -301,14 +302,14 @@ void CPlant_Tree::Make_Fruits()
 
 void CPlant_Tree::Adjust_Material()
 {
-	 Get_Component<CModel>()->SetDrawable(1, false);
-	 Get_Component<CModel>()->SetDrawable(2,false);
+	Get_Component<CModel>()->SetDrawable(1, false);
+	Get_Component<CModel>()->SetDrawable(2, false);
 
 	auto pMaterial = Get_Component<CMaterial>();
 	if (!pMaterial) return;
 	auto pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
 
-	auto TruckInstance = pMaterial->Get_MaterialInstanceByName("m"+m_TypeName + "Trunk");
+	auto TruckInstance = pMaterial->Get_MaterialInstanceByName("m" + m_TypeName + "Trunk");
 
 	if (TruckInstance) {
 		SHADER_PARAM palette = {};
@@ -318,25 +319,25 @@ void CPlant_Tree::Adjust_Material()
 		TruckInstance->Set_Param("g_PaletteTexture", palette);
 		TruckInstance->Override_Pass("Tree");
 	}
-	
+
 	SHADER_PARAM Leaf = {};
 	Leaf.iSize = sizeof(_float2);
 	Leaf.typeName = "float2";
 	Leaf.pData = &LeafPalette;
 
-	auto LeafInstance =pMaterial->Get_MaterialInstanceByName("mTreeOakLeaf");
+	auto LeafInstance = pMaterial->Get_MaterialInstanceByName("mTreeOakLeaf");
 	if (LeafInstance) {
 		SHADER_PARAM palette = {};
 		palette.iSize = 0;
 		palette.typeName = "Texture2D";
 		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "Palette_mPltTreeOakLeafColor_Grd.png")->Get_SRV();
-	
+
 		LeafInstance->Set_Param("g_PaletteTexture", palette);
 		//LeafInstance->Set_Param("leafPalette", Leaf);
 		LeafInstance->Override_Pass("Leaf");
 	}
 
-	auto BackLeafInstance =pMaterial->Get_MaterialInstanceByName("mTreeOakLeafBack");
+	auto BackLeafInstance = pMaterial->Get_MaterialInstanceByName("mTreeOakLeafBack");
 
 	if (BackLeafInstance) {
 		SHADER_PARAM palette = {};
@@ -357,18 +358,10 @@ void CPlant_Tree::Drop_Items()
 	{
 		m_pFruits[i]->Get_Component<CModel>()->Set_CompActive(false);
 
-		_float4 pos =m_pFruits[i]->Get_Position();
+		_float4 pos = m_pFruits[i]->Get_Position();
 
-		CItem_Object::DROP_ITEM_DESC* pDesc = new CItem_Object::DROP_ITEM_DESC;
-		pDesc->itemDesc = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>()->Get_ItemData("UnitIconPltFruitApple");
-
-		CGameObject* pObject =
-			Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ItemFruit" })
-			.Position({ pos.x,pos.y,pos.z })
-			.Add_ObjDesc(pDesc)
-			.Build("Fruit" + to_string(i));
-
-		CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { "GamePlay_Level","Item_Layer" });
+		auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
+		CItem_Object* pFruit = spawner->SpawnItem("UnitIconPltFruitApple",{ pos.x,pos.y,pos.z});
 	}
 	m_fLifeTime = 0;
 	m_HasFruit = false;

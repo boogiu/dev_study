@@ -5,6 +5,8 @@
 #include "GameInstance.h"
 #include "IUI_Service.h"
 #include "UI_ItemText.h"
+#include "TextSlot.h"
+#include "UI_Text.h"
 CUI_InvenSlot::CUI_InvenSlot()
 {
 }
@@ -45,9 +47,23 @@ HRESULT CUI_InvenSlot::Initialize(INIT_DESC* pArg)
 	m_pText = dynamic_cast<CUI_ItemText*>(pObj);
 
 	Add_Component<CObjectContainer>()->Add_Child(m_pIcon, false);
-	Add_Component<CObjectContainer>()->Add_Child(m_pText, false);
+	Add_Component<CObjectContainer>()->Add_Child(m_pText, false); /*Ç¥½Ã */
 	m_pText->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_ItemText.png");
 	m_pText->Get_Component<CSprite2D>()->Set_CompActive(false);
+
+
+	CUI_Object* pCount = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_BaseText" })
+		.Add_To_Level("GamePlay_Level")
+		.Position({15,15})
+		.Scale({ 12,12 })
+		.Build("Text");
+
+	Get_Component<CObjectContainer>()->Add_Child(pCount, false);
+	m_pCount = dynamic_cast<CUI_Text*>(pCount);
+	m_pCount->Get_Component<CTextSlot>()->Set_Color(_float4(0.447, 0.365, 0.259, 1.0));
+	m_pCount->Get_Component<CTextSlot>()->Set_Font("Sindy");
+	m_pCount->Get_Component<CTextSlot>()->Set_Size(0.7);
+	m_pCount->Get_Component<CTextSlot>()->Set_OutLine(1.f, { 1.0f, 0.984f, 0.905f ,1.5f });
 	return S_OK;
 }
 
@@ -59,11 +75,40 @@ void CUI_InvenSlot::Priority_Update(_float dt)
 
 void CUI_InvenSlot::Update(_float dt)
 {
+
+	if (m_itemData.itemCount >1 ) {
+		m_pCount->Set_Active(true);
+		m_pCount->Get_Component<CTextSlot>()->Set_Text(to_wstring(m_itemData.itemCount));
+	}
+	else
+	{
+		m_pCount->Set_Active(false);
+	}
+
+	if (m_itemData.itemCount == 0) {
+		m_itemData = {};
+		m_pCount->Set_Active(false);
+	}
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
-
-void CUI_InvenSlot::Late_Update(_float dt)
+void CUI_InvenSlot::Active()
 {
+	m_pCount->Set_Active(true);
+	m_pText->Get_Component<CSprite2D>()->Set_CompActive(true);
+	m_pText->Get_Component<CTextSlot>()->Set_CompActive(true);
+	m_pIcon->Get_Component<CSprite2D>()->Set_CompActive(true);
+	Get_Component<CSprite2D>()->Set_CompActive(true);
+}
+void CUI_InvenSlot::DeActive()
+{
+	m_pCount->Set_Active(false);
+	m_pText->Get_Component<CSprite2D>()->Set_CompActive(false);
+	m_pText->Get_Component<CTextSlot>()->Set_CompActive(false);
+	m_pIcon->Get_Component<CSprite2D>()->Set_CompActive(false);
+	Get_Component<CSprite2D>()->Set_CompActive(false);
+}
+
+void CUI_InvenSlot::Late_Update(_float dt){
 	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
 }
 
@@ -106,6 +151,19 @@ HRESULT CUI_InvenSlot::Add_Data(ITEM_DATA_DESC desc)
 	}
 
 	return S_OK;
+}
+
+void CUI_InvenSlot::PullOut_Data()
+{
+	if (m_itemData.itemCount > 0)
+		m_itemData.itemCount--;
+
+	if (m_itemData.itemCount == 0) {
+		m_itemData = {};
+		m_pText->Get_Component<CSprite2D>()->Set_CompActive(false);
+		m_pIcon->Get_Component<CSprite2D>()->Set_CompActive(false);
+		m_pCount->Set_Active(false);
+	}
 }
 
 void CUI_InvenSlot::SizeControl(_float dt)

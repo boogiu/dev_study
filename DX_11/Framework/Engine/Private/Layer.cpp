@@ -74,22 +74,27 @@ void CLayer::Late_Update(_float dt)
 
 CGameObject* CLayer::Pop_GameObject(_uint ObjectID)
 {
-	CGameObject* Poped = { nullptr };
-
 	auto iter = m_IndexByID.find(ObjectID);
-
 	if (iter == m_IndexByID.end())
 		return nullptr;
 
-	else {
-		_uint ObjectIndex = iter->second;
-		Poped =  m_GameObjects[ObjectIndex];
-		m_GameObjects[ObjectIndex] = nullptr;
-		m_IndexByID.erase(iter);
-		Poped->Set_Layer(nullptr);
+	const _uint removeIdx = iter->second;
+	const _uint lastIdx = static_cast<_uint>(m_GameObjects.size() - 1);
+
+	CGameObject* popped = m_GameObjects[removeIdx];
+	popped->Set_Layer(nullptr);
+
+	if (removeIdx != lastIdx)
+	{
+		m_GameObjects[removeIdx] = m_GameObjects[lastIdx];
+		const _uint movedID = m_GameObjects[removeIdx]->Get_ObjectID();
+		m_IndexByID[movedID] = removeIdx;
 	}
 
-	return Poped;
+	m_GameObjects.pop_back();
+	m_IndexByID.erase(iter);
+
+	return popped;
 }
 
 void CLayer::Remove_GameObject(_uint ObjectID)
@@ -99,13 +104,32 @@ void CLayer::Remove_GameObject(_uint ObjectID)
 	if (iter == m_IndexByID.end())
 		return ;
 
-	else {
-		_uint ObjectIndex = iter->second;
-		m_GameObjects[ObjectIndex]->Set_Layer(nullptr);
-		Safe_Release(m_GameObjects[ObjectIndex]);
-		m_GameObjects[ObjectIndex] = nullptr;
-		m_IndexByID.erase(iter);
+	const _uint removeIdx = iter->second; //삭제해야할 오브젝트 인덱스
+	const _uint lastIdx = static_cast<_uint>(m_GameObjects.size() - 1); //마지막 친구
+
+	if (auto pRemove = m_GameObjects[removeIdx])
+	{
+		pRemove->Set_Layer(nullptr);
+		Safe_Release(pRemove); //일단 지움
 	}
+
+	if (removeIdx != lastIdx)
+	{//만약 두개가 다르면 뒤에 있는거 끌어옴
+		m_GameObjects[removeIdx] = m_GameObjects[lastIdx];
+
+		//그리고 인덱스 매핑 재정의(바꾼 친구의 아이디 칸에 바뀐 인덱스 넣어줌
+		m_IndexByID[m_GameObjects[removeIdx]->Get_ObjectID()] = removeIdx;
+	}
+	m_GameObjects.pop_back();
+	m_IndexByID.erase(iter);
+	//
+	//else {
+	//	_uint ObjectIndex = iter->second;
+	//	m_GameObjects[ObjectIndex]->Set_Layer(nullptr);
+	//	Safe_Release(m_GameObjects[ObjectIndex]);
+	//	m_GameObjects[ObjectIndex] = nullptr;
+	//	m_IndexByID.erase(iter);
+	//}
 }
 
 CGameObject* CLayer::Find_ObjectByID(_uint ObjectID)

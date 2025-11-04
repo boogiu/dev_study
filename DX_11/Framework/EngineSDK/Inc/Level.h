@@ -11,6 +11,7 @@ protected:
      
 public:
     virtual HRESULT Initialize() PURE;
+    virtual HRESULT Awake(); /*레벨의 이니셜라이즈는 레벨이 확정 되기 전에 불러지니까, 레벨이 확정된 이후에 불러지는거 하나*/
     virtual void Update() PURE;
     virtual HRESULT Render(ID3D11DeviceContext* pContext);
     virtual HRESULT Render() PURE;

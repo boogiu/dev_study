@@ -6,15 +6,18 @@ enum class TILE_FLAG : unsigned int {
     FLAG_WALKABLE = 1 << 0,
     FLAG_BLOCKED = 1 << 1,
     FLAG_SWIMMABLE = 1 << 2,
+
     /**/
     FLAG_DIGGED= 1 << 4,
 
     FLAG_TILE = 1 << 5,
     FLAG_TREE = 1 << 6,
     FLAG_STONE = 1 << 7,
+    FLAG_INSECT = 1 << 8,
 
     /*ON*/
-    FLAG_ONITEM= 1 << 30,
+    FLAG_ONITEM= 1 << 29,
+    ONPLAYER= 1 << 30,
     ONCHARACTER = 1 << 31,
 };
 
@@ -60,7 +63,7 @@ TILE_FLAG::FLAG_TILE | TILE_FLAG::FLAG_SWIMMABLE;
 const TILE_FLAG CANT_ITEM =   TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_SWIMMABLE |
 TILE_FLAG::FLAG_STONE | TILE_FLAG::FLAG_ONITEM;
 
-enum class itemType { None, Drop, Axe, Scoop, Net };
+enum class itemType { None, Fruit, Ore, Plant, Axe,  Net, Scoop,};
 
 enum class STATE_LAYER
 {

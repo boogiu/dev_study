@@ -5,8 +5,11 @@
 #include "IResourceService.h"
 #include "IFontService.h"
 
+#include "ClientHelper.h"
 #include "Builder.h"
+
 #include "Player.h"
+
 #include "Target_Camera.h"
 #include "Free_Camera.h"
 #include "Camera.h"
@@ -18,13 +21,12 @@
 #include "PlayerPart_Hand.h"
 #include "MapLoader.h"
 #include "AutoTile.h"
-#include "Item_Fruit.h"
-#include "ClientHelper.h"
 #include "Layer.h"
 #include "FieldHole.h"
-#include "Item_Stone.h"
 
 #include "Player_Inventory.h"
+#include "Item_Object.h"
+
 #include "UI_InvenSlot.h"
 #include "UI_Cursor.h"
 #include "UI_ItemIcon.h"
@@ -32,7 +34,9 @@
 #include "TexturePanel.h"
 #include "SelectPanel.h"
 #include "UI_Text.h"
+
 #include "ItemSpawner.h"
+#include "Insect_Object.h"
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 	:CLevel{ LevelKey },
@@ -53,7 +57,14 @@ HRESULT CGamePlayLevel::Initialize()
 	CMapLoader::Load_ModelData();
 	CMapLoader::Load_MapData("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });
 
+	return S_OK;
+}
+
+HRESULT CGamePlayLevel::Awake()
+{
+
 	CGameObject* pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 550,0,550 }).Build("Player");
+	CGameObject* pInsect = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Insect_Object" }).Position({ 550,10,550 }).Build("Insect");
 
 	CGameObject* pFreeCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_FreeCamera" })
 		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
@@ -61,10 +72,11 @@ HRESULT CGamePlayLevel::Initialize()
 		.Build("Free_Cam");
 
 	m_pObjectManager->Add_Object(pPlayer, { "GamePlay_Level", "Player_Layer" });
+	m_pObjectManager->Add_Object(pInsect, { "GamePlay_Level", "Insect_Layer" });
 	m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
 
-	return S_OK;
+	return E_NOTIMPL;
 }
 
 void CGamePlayLevel::Update()
@@ -159,9 +171,12 @@ void CGamePlayLevel::PreLoad_Level()
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_FieldHole", CFieldHole::Create());
 
-	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_ItemFruit", CItem_Fruit::Create());
-	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_ItemStone", CItem_Stone::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_DropItem", CItem_Object::Create());
+	//pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_ItemFruit", CItem_Fruit::Create());
+	//pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_ItemStone", CItem_Stone::Create());
 
+
+	/*UI_ZONE*/
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameUI_PlayerInventory", CPlayer_Inventory::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_InvenSlot", CUI_InvenSlot::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_Cursor", CUI_Cursor::Create());
@@ -171,6 +186,8 @@ void CGamePlayLevel::PreLoad_Level()
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_TexturePanel", CTexturePanel::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_SelectPanel", CSelectPanel::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_BaseText", CUI_Text::Create());
+
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Insect_Object", CInsect_Object::Create());
 }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)

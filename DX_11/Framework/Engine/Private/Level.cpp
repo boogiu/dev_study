@@ -8,6 +8,11 @@ CLevel::CLevel(const string& LevelKey)
 {
 }
 
+HRESULT CLevel::Awake()
+{
+	return S_OK;
+}
+
 HRESULT CLevel::Render(ID3D11DeviceContext* pContext)
 {
 	return S_OK;

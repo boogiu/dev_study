@@ -6,6 +6,7 @@
 #include "UI_InvenSlot.h"
 #include "UI_Cursor.h"
 #include "SelectPanel.h"
+#include "Player.h"
 
 CPlayer_Inventory::CPlayer_Inventory()
 {
@@ -69,14 +70,16 @@ HRESULT CPlayer_Inventory::Initialize(INIT_DESC* pArg)
 
 void CPlayer_Inventory::Priority_Update(_float dt)
 {
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
-		if (m_eState == Opened)
-			m_eState = Selected;
-	}
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SHIFT)) {
-		if (m_eState == Selected) {
-			m_pSelectPanel->DeActive();
-			m_eState = Opened;
+	if (m_eState != Closing) {
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
+			if (m_eState == Opened)
+				m_eState = Selected;
+		}
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SHIFT)) {
+			if (m_eState == Selected) {
+				m_pSelectPanel->DeActive();
+				m_eState = Opened;
+			}
 		}
 	}
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
@@ -117,6 +120,11 @@ void CPlayer_Inventory::Render_GUI()
 	__super::Render_GUI();
 }
 
+void CPlayer_Inventory::Set_Player(CPlayer* pPlayer)
+{
+	m_pPlayer = pPlayer;
+}
+
 void CPlayer_Inventory::Open_Inventory()
 {
 	Get_Component<CSprite2D>()->Set_CompActive(true);
@@ -126,8 +134,6 @@ void CPlayer_Inventory::Open_Inventory()
 void CPlayer_Inventory::Close_Inventory()
 {
 	m_eState = Closing;
-	DeActive_Slots();
-	m_pSelectPanel->DeActive();
 }
 
 HRESULT CPlayer_Inventory::Add_ItemToInventory(ITEM_DATA_DESC desc)
@@ -148,6 +154,34 @@ HRESULT CPlayer_Inventory::Add_ItemToInventory(ITEM_DATA_DESC desc)
 	return E_FAIL;
 }
 
+HRESULT CPlayer_Inventory::PullOut_Item(_int Slot)
+{
+	if (m_pSlots[Slot]->isItemFilled()) {
+		m_pSlots[Slot]->PullOut_Data();
+	}
+	else
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CPlayer_Inventory::PullOut_ToOtherSlot(_int Slot)
+{
+	ITEM_DATA_DESC desc=m_pSlots[Slot]->Get_Data();
+
+	for (size_t i = 0; i < m_pSlots.size(); i++)
+	{
+		if (i == Slot) continue;
+
+		if (m_pSlots[i]->isAbleToContain(desc)) {
+			m_pSlots[i]->Add_Data(desc);
+			m_pSlots[Slot]->PullOut_Data();
+			return S_OK;
+		}
+	}
+	return E_FAIL;
+}
+
 void CPlayer_Inventory::Batch_Slots()
 {
 	const _uint slotColumn = 10;
@@ -162,7 +196,7 @@ void CPlayer_Inventory::Batch_Slots()
 		float xOffset = spacing * (i - 5.f) + 20.f;
 		m_pSlots[i]->Set_CenterPos({ xOffset,amplitude * y - 10 });
 		m_pSlots[i]->Set_Size(_vector{ 15, 15 });
-		m_pSlots[i]->Get_Component<CSprite2D>()->Set_CompActive(true);
+		m_pSlots[i]->Active();
 	}
 
 	for (size_t i =0; i < slotColumn; i++)
@@ -183,7 +217,7 @@ void CPlayer_Inventory::DeActive_Slots()
 {
 	for (auto& slot : m_pSlots)
 	{
-		slot->Get_Component<CSprite2D>()->Set_CompActive(false);
+		slot->DeActive();
 	}
 	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(false);
 
@@ -191,12 +225,15 @@ void CPlayer_Inventory::DeActive_Slots()
 
 void CPlayer_Inventory::Openning_Inven(_float dt)
 {
+	if (m_eState != Openning) return;
+
 	m_vTimer.x += dt * 3.f;
 	float t = clamp(m_vTimer.x, 0.f, 1.f);
 
 	_vector pos;
 	_vector size;
 	_float2 CurPos = { m_fLocalX,m_fLocalY};
+
 	if (t < 0.5f) {
 		pos = XMVectorLerp(XMLoadFloat2(&m_vClosePos), XMLoadFloat2(&m_vPointPos), t);
 	}
@@ -224,8 +261,10 @@ void CPlayer_Inventory::Openning_Inven(_float dt)
 
 void CPlayer_Inventory::Closing_Inven(_float dt)
 {
-	m_vTimer.x += dt * 5;
+	DeActive_Slots();
+	m_pSelectPanel->DeActive();
 
+	m_vTimer.x += dt * 8;
 	_vector pos = XMVectorLerp(XMLoadFloat2(&m_vOpenPos), XMLoadFloat2(&m_vClosePos), m_vTimer.x);
 	_vector size = XMVectorLerp(XMLoadFloat2(&m_vOpenSize), XMLoadFloat2(&m_vCloseSize), m_vTimer.x);
 
@@ -249,6 +288,7 @@ void CPlayer_Inventory::Closing_Inven(_float dt)
 }
 void CPlayer_Inventory::Pointing_Item(_float dt)
 {
+	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);
 	auto InputDev = CGameInstance::GetInstance()->Get_InputDev();
 	bool moved = false; // 이번 프레임에 인덱스가 변했는가
 
@@ -290,38 +330,56 @@ void CPlayer_Inventory::Select_Item(_float dt)
 		m_eState = Opened;
 		return;
 	}
-
+	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(false);
 	m_pSlots[nowIndex]->isHovered();
-	m_pSelectPanel->Size_To({ 208,111 }, dt * 6);
+	m_pSelectPanel->Size_To({ 208,111 }, dt * 8);
 	m_pSelectPanel->Get_Component<CSprite2D>()->Set_CompActive(true);
 
 	ITEM_DATA_DESC Data = dynamic_cast<CUI_InvenSlot*>(m_pSlots[nowIndex])->Get_Data();
-	m_pSelectPanel->Set_Selecte(Switch_ItemSelect(Data.TypeTag));
+	auto vector = Switch_ItemSelect(Data.TypeTag, m_pSlots[nowIndex]->Get_Count());
+	m_pSelectPanel->Set_Selecte(vector);
 	m_pSelectPanel->Active();
 	_int selectedAction = m_pSelectPanel->Check_Select();
-	if (selectedAction != -1) {
 
+	if (selectedAction != -1) {
+		m_pPlayer->Set_InvenEvent(Data, nowIndex, vector[selectedAction]);
+		//DeActive_Slots();
+		m_pSelectPanel->DeActive();
+		if(m_eState != Closing)
+			m_eState = Opened;
 	}
 }
 
-vector<wstring> CPlayer_Inventory::Switch_ItemSelect(itemType type)
+vector<wstring> CPlayer_Inventory::Switch_ItemSelect(itemType type, _uint count)
 {
+	vector<wstring>SelectScript;
+
 	switch (type)
 	{
 	case itemType::None:
 		return vector<wstring>();
-	case itemType::Drop:
-		return {L"버리기",L"손"};
+
+	case itemType::Fruit:
+		SelectScript= { L"근처에 두기",L"1개 먹기"};
+		if (count > 1)
+			SelectScript.push_back(L"1개 꺼내기");
+			break;
+
+	case itemType::Ore:
+		SelectScript = { L"근처에 두기" };
+		if (count > 1)
+			SelectScript.push_back(L"1개 꺼내기");
+		break;
+
 	case itemType::Axe:
-		break;
 	case itemType::Scoop:
-		break;
 	case itemType::Net:
+		SelectScript = { L"들기" , L"배치하기", L"근처에 두기" };
 		break;
 	default:
 		break;
 	}
-	return vector<wstring>();
+	return SelectScript;
 }
 
 

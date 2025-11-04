@@ -21,12 +21,12 @@ HRESULT CLevelMgr::Initialize()
     return S_OK;
 }
 
-HRESULT CLevelMgr::Request_ChangeLevel(string imguiID,_bool Load)
+HRESULT CLevelMgr::Request_ChangeLevel(string LevelID,_bool Load)
 {
-    if (!m_LevelCreators.count(imguiID))
+    if (!m_LevelCreators.count(LevelID))
         return E_FAIL;
 
-    m_NextLevelTag = imguiID;
+    m_NextLevelTag = LevelID;
     if (Load) //로딩 설정이 없으면 그냥 바로 로드되었다 치고 다음레벨로 넘어감.
         m_eState = LEVEL_STATE::REQUEST;
     else
@@ -60,6 +60,7 @@ void CLevelMgr::Update(_float dt)
             m_pCurrentLevel = m_LevelCreators[m_NextLevelTag](); 
             m_eState = LEVEL_STATE::STABLE;
             m_NextLevelTag.clear();
+            m_pCurrentLevel->Awake(); //확정 후 초기화
         }
         break;
     case Engine::LEVEL_STATE::STABLE: //안정적으로 레벨이 돌아가고 있는 상태 -> 레벨 체인지 요청이 안들어온 상태

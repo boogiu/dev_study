@@ -33,11 +33,19 @@ HRESULT CPlayerState_Net::OnExit()
 CState* CPlayerState_Net::HandleTransition()
 {
 	itemType nowType = m_pPlayer->Get_ItemPacket().CurItem.TypeTag;
-	if (nowType != itemType::Net)
+	switch (nowType)
 	{
-		return m_pLayer->Get_State("Tool_Base_State");
+	case itemType::None:
+		return m_pLayer->Get_State("Tool_Hand_State");
+	case itemType::Axe:
+		return m_pLayer->Get_State("Tool_Axe_State");
+	case itemType::Scoop:
+		return m_pLayer->Get_State("Tool_Scoop_State");
+		case itemType::Net:
+	return m_pLayer->Get_State("Tool_Net_State"); 
+	default:
+		break;
 	}
-
 
 	return nullptr;
 }

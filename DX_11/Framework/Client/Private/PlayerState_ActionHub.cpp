@@ -42,17 +42,18 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 	{
 	case itemType::None:
 		if (Forward_Flag && TILE_FLAG::ONCHARACTER)
-			nextState =nullptr;
+			nextState = nullptr;
 		else
 			nextState = m_pLayer->Get_State("Action_TreeShake_State");
 		break;
 	case itemType::Axe:
-			nextState = m_pLayer->Get_State("Action_TreeChop_State");
+		nextState = m_pLayer->Get_State("Action_TreeChop_State");
 		break;
 	case itemType::Scoop:
 		nextState = m_pLayer->Get_State("Action_Dig_State");
 		break;
 	case itemType::Net:
+		nextState = m_pLayer->Get_State("Action_NetSwing_State");
 		break;
 	default:
 		break;

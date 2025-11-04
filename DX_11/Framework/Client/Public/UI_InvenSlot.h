@@ -29,8 +29,12 @@ public:
     _bool isAbleToContain(ITEM_DATA_DESC desc);
     _bool isItemFilled() { return m_itemData.itemCount != 0; };
     HRESULT Add_Data(ITEM_DATA_DESC desc);
+    void PullOut_Data();
     ITEM_DATA_DESC Get_Data() { return m_itemData.itemData; };
-
+    _uint Get_Count() { return m_itemData.itemCount; };
+public:
+    void Active();
+    void DeActive();
 private:
     void SizeControl(_float dt);
 
@@ -42,6 +46,7 @@ private:
 
     CUI_Object* m_pIcon = { nullptr };
     class CUI_ItemText* m_pText = { nullptr };
+    class CUI_Text* m_pCount= { nullptr };
 public:
     static CUI_InvenSlot* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

@@ -1,10 +1,12 @@
 #include "Client_Defines.h"
 #include "Item_Object.h"
-
+#include "BoneFollower.h"
 #include "StaticModel.h"
 #include "Material.h"
 #include "AABB_Collider.h"
 #include "GameInstance.h"
+#include "Child.h"
+#include "Animator3D.h"
 
 CItem_Object::CItem_Object()
 {
@@ -22,6 +24,7 @@ HRESULT CItem_Object::Initialize_Prototype()
 	Add_Component<CStaticModel>();
 	Add_Component<CMaterial>();
 	Add_Component<CAABB_Collider>();
+	Add_Component<CBoneFollower>();
 
 	return S_OK;
 }
@@ -29,6 +32,7 @@ HRESULT CItem_Object::Initialize_Prototype()
 HRESULT CItem_Object::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
+
 	DROP_ITEM_DESC* pDesc = dynamic_cast<DROP_ITEM_DESC*>(pArg);
 	//pDesc->itemDesc.
 	if (pDesc != nullptr)
@@ -56,10 +60,81 @@ void CItem_Object::Priority_Update(_float dt)
 
 void CItem_Object::Update(_float dt)
 {
+	if (IsDangled)
+	{
+		if (Get_Component<CBoneFollower>()->HasOwner())
+			Get_Component<CBoneFollower>()->Sync_Transform(dt, m_pTransform);
+	}
+	else
+		Update_ByState(dt);
 }
 
 void CItem_Object::Late_Update(_float dt)
 {
+}
+
+void CItem_Object::OnCollisionEnter(COLLISION_CONTEXT context)
+{
+	if (context.Owner->Has_Tag("Player_Hand")) {
+		if (context.EventTag == "Pick_Up") {
+			m_eState = PICKED;
+			m_pOwnerMatrix = context.Owner->Get_WorldMatrix();
+			Get_Component<CCollider>()->Set_ContextEvent("Picked");
+		}
+	}
+}
+
+void CItem_Object::OnCollisionStay(COLLISION_CONTEXT context)
+{
+}
+
+void CItem_Object::OnCollisionExit(COLLISION_CONTEXT context)
+{
+	if (context.Owner->Has_Tag("Player_Hand")) {
+		m_eState = READY_DESTROY;
+	}
+}
+
+/*Y값 보정됨. 위에서 아래로 떨어지는 형태로*/
+void CItem_Object::Set_Throw(_fvector StartPos, _fvector throwDir)
+{
+	/*10 이하면 10으로 맞춰줄 것.*/
+	_float4 pos = {};
+	XMStoreFloat4(&pos, StartPos);
+	if (pos.y < 10.f)
+		pos.y = 10.f;
+	
+	m_pTransform->Set_Pos(pos);
+	/*여기서 더해주니까 방향 벡터는 보정 없음*/
+	XMStoreFloat4(&m_DstPosition, StartPos + XMVector4Normalize(throwDir) * 5);
+	m_eState = THROW;
+}
+
+void CItem_Object::Update_ByState(_float dt)
+{
+	switch (m_eState) {
+	case THROW:
+		Throw_Item(dt);
+			  break;
+	case DROP: {
+		//m_pTransform->Translate({ 0,-dt * 45,0 });
+		if (Get_Position().y <= m_MarginY) {
+			Find_Ground();
+		}
+	}
+			 break;
+	case  BOUND:
+		MoveToIndex(dt);
+		break;
+	case  PICKED:
+		FollowHand(dt);
+		break;
+	case  READY_DESTROY: {
+		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
+		m_eState = IDLE;
+	}
+					   break;
+	}
 }
 
 void CItem_Object::Render_GUI()
@@ -68,6 +143,44 @@ void CItem_Object::Render_GUI()
 	ImGui::Text("nowIndex X : %d, Z : %d", m_SyncedIndex.IndexX, m_SyncedIndex.IndexZ);
 }
 
+
+void CItem_Object::Dangle_Item(const string& boneName, _float3 offset)
+{
+	m_Offset = offset;
+	IsDangled = true;
+	CGameObject* pObj = Get_Component<CChild>()->Get_Parent();
+	Get_Component<CBoneFollower>()->Link_Bone(pObj->Get_Component<CAnimator3D>(), boneName);
+	Get_Component<CBoneFollower>()->Set_Offset(XMMatrixTranslation(offset.x, offset.y, offset.z));
+}
+
+void CItem_Object::Throw_Item(_float dt)
+{
+	m_fBoundingTime += dt;
+	_vector DstPos = XMLoadFloat4(&m_DstPosition);
+	_vector CurPos = m_pTransform->Get_Pos();
+
+	_vector MovedPos = XMVectorLerp(CurPos, DstPos, dt * 15);
+
+	_float4 pos = {};
+	XMStoreFloat4(&pos, MovedPos);
+
+	/*포물선 느낌으로*/
+	_float4 movePos;
+	XMStoreFloat4(&movePos, MovedPos);
+	movePos.y += 3 * sinf(XMConvertToRadians(45)) - m_fBoundingTime * 3.2f;
+
+	if (movePos.y <= m_MarginY) {
+		movePos.y = m_MarginY;
+	}
+
+	m_pTransform->Set_Pos(_float3(movePos.x, movePos.y, movePos.z));
+
+	if (Get_Position().y <= m_MarginY) {
+		m_fBoundingTime = 0;
+		m_eState = DROP;
+		m_pTransform->Set_Y(m_MarginY);
+ 	}
+}
 
 void CItem_Object::Find_Ground()
 {
@@ -83,7 +196,7 @@ void CItem_Object::Find_Ground()
 		if (m_eState == FINDED) {
 			TileSystem->Add_TileFlagByIndex(m_SyncedIndex, static_cast<_uint>(TILE_FLAG::FLAG_ONITEM));
 			Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-2,-2,-2},{2,4,2} });
-			m_eState = IDLE;
+   			m_eState = IDLE;
 			return;
 		}
 		else {	//현재 인덱스를 아직 찾지 못한 상태
@@ -143,7 +256,6 @@ void CItem_Object::Find_Ground()
 	}
 }
 
-
 void CItem_Object::MoveToIndex(_float dt)
 {
 	/*Bound State*/
@@ -154,7 +266,7 @@ void CItem_Object::MoveToIndex(_float dt)
 	_vector vDst = XMLoadFloat4(&m_DstPosition);
 
 	// Lerp Position
-	_vector vMove = XMVectorLerp(vNow, vDst, dt * 10);
+	_vector vMove = XMVectorLerp(vNow, vDst, dt * 15);
 
 	// Compare Position vDst-vNow
 	_vector vDiff = XMVector3Length(XMVectorSubtract(vDst, vNow));
@@ -198,6 +310,30 @@ void CItem_Object::Remove_Item()
 	TileSystem->Remove_TileFlagByIndex(m_SyncedIndex, static_cast<_uint>(TILE_FLAG::FLAG_ONITEM));
 }
 
+CItem_Object* CItem_Object::Create()
+{
+	CItem_Object* instance = new CItem_Object();
+	if (FAILED(instance->Initialize_Prototype()))
+	{
+		MSG_BOX("Object Create Failed : CItem_Object");
+		Safe_Release(instance);
+	}
+
+	return instance;
+}
+
+CGameObject* CItem_Object::Clone(INIT_DESC* pArg)
+{
+	CItem_Object* instance = new CItem_Object(*this);
+
+	if (FAILED(instance->Initialize(pArg)))
+	{
+		MSG_BOX("Object Clone Failed : CItem_Object");
+		Safe_Release(instance);
+	}
+
+	return instance;
+}
 void CItem_Object::Free()
 {
 	__super::Free();

@@ -16,6 +16,7 @@ HRESULT CPlayerState_PickUp::OnEnter()
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	HRESULT hr =E_FAIL;
 	_uint Flag =m_pPlayer->Get_TileInfoPacket().Range_FowardInfo.TileFlag;
+
 	if ((TILE_FLAG::FLAG_ONITEM & Flag) != 0) {
 		Animator->Stop_AnimationBlend();
 		Item_Found = true;

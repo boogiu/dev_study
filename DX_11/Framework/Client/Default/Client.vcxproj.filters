@@ -124,12 +124,6 @@
     <Filter Include="02. GameObjects\06. Item">
       <UniqueIdentifier>{709fd50e-737c-43b9-91fa-e10df5f674df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\06. Item\Drop">
-      <UniqueIdentifier>{1e789958-226b-4a05-9bbf-98ddf40a22b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Item\Drop\Fruit">
-      <UniqueIdentifier>{9ed31946-94ed-4b07-9bce-21017d469509}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action">
       <UniqueIdentifier>{478962d0-3091-4e8e-8cac-73579fa74114}</UniqueIdentifier>
     </Filter>
@@ -141,15 +135,6 @@
     </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\02. Run">
       <UniqueIdentifier>{ea599003-fbe9-44d5-b832-0c4c9abbb9d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. Chop_Tree">
-      <UniqueIdentifier>{ba372d42-7c1f-440c-9a48-c8631faa0eff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\05. TreeShake">
-      <UniqueIdentifier>{55108e52-1e19-4591-ad77-e4937cf853fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\06. ScoopAction">
-      <UniqueIdentifier>{631e3917-8a27-4bd9-bb3e-c5f321abc5e8}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolPose">
       <UniqueIdentifier>{3093c514-6323-4442-acb6-80c50e19658e}</UniqueIdentifier>
@@ -168,12 +153,6 @@
     </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\00. ActionHub">
       <UniqueIdentifier>{a131d647-dc8b-436e-9754-24c6becc7f59}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolPose\Net">
-      <UniqueIdentifier>{7792f16a-b9ea-45b9-8a91-7e9d29f0cde3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\06. Item\Drop\Stone">
-      <UniqueIdentifier>{3fde9748-4aa4-4ee7-950e-b4559fc911c7}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\03. ForcedState">
       <UniqueIdentifier>{fc4cbe9d-729c-4c03-9dab-7591488063a5}</UniqueIdentifier>
@@ -228,6 +207,27 @@
     </Filter>
     <Filter Include="02. GameObjects\08. UI\Text">
       <UniqueIdentifier>{6eb06499-1daa-49b1-a07c-f0ed86e66a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolPose\04. Net">
+      <UniqueIdentifier>{7792f16a-b9ea-45b9-8a91-7e9d29f0cde3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\01. Chop_Tree">
+      <UniqueIdentifier>{ba372d42-7c1f-440c-9a48-c8631faa0eff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\02. TreeShake">
+      <UniqueIdentifier>{55108e52-1e19-4591-ad77-e4937cf853fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\03. ScoopAction">
+      <UniqueIdentifier>{631e3917-8a27-4bd9-bb3e-c5f321abc5e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. NetSwing">
+      <UniqueIdentifier>{55a8ad17-8ab2-49eb-9f1e-a2847a4c5778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\03. AimWalk">
+      <UniqueIdentifier>{0f99d984-c76d-4a32-8422-5fa215ea4d92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\09. Insect">
+      <UniqueIdentifier>{729048ac-fc47-4407-b3bf-ec60335158f5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -375,9 +375,6 @@
     <ClInclude Include="..\Public\Player.h">
       <Filter>02. GameObjects\00. Player</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Item_Fruit.h">
-      <Filter>02. GameObjects\06. Item\Drop\Fruit</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\PlayerState_PickUp.h">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\03. PickUp</Filter>
     </ClInclude>
@@ -394,13 +391,13 @@
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\00. ToolBase</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_ShakeTree.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\05. TreeShake</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\02. TreeShake</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_ChopTree.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. Chop_Tree</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\01. Chop_Tree</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Net.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\Net</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\04. Net</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Hand.h">
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\01. Hand</Filter>
@@ -412,7 +409,7 @@
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\03. Scoop</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Dig.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\06. ScoopAction</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\03. ScoopAction</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\FieldHole.h">
       <Filter>02. GameObjects\02. Field\Hole</Filter>
@@ -422,9 +419,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_ActionHub.h">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\00. ActionHub</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Item_Stone.h">
-      <Filter>02. GameObjects\06. Item\Drop\Stone</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_OpenInven.h">
       <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\02. OpneInven</Filter>
@@ -458,6 +452,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\UI_Text.h">
       <Filter>02. GameObjects\08. UI\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_NetSwing.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. NetSwing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_AimWalk.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\03. AimWalk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Insect_Object.h">
+      <Filter>02. GameObjects\09. Insect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -589,9 +592,6 @@
     <ClCompile Include="..\Private\Plant_Tree.cpp">
       <Filter>02. GameObjects\02. Field\03. Plant\Plant_Tree</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Item_Fruit.cpp">
-      <Filter>02. GameObjects\06. Item\Drop\Fruit</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\PlayerState_PickUp.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\03. PickUp</Filter>
     </ClCompile>
@@ -608,13 +608,13 @@
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\00. ToolBase</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_ShakeTree.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\05. TreeShake</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\02. TreeShake</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_ChopTree.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. Chop_Tree</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\01. Chop_Tree</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Net.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\Net</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\04. Net</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Hand.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\01. Hand</Filter>
@@ -626,7 +626,7 @@
       <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\03. Scoop</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Dig.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\06. ScoopAction</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\03. ScoopAction</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\FieldHole.cpp">
       <Filter>02. GameObjects\02. Field\Hole</Filter>
@@ -636,9 +636,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_ActionHub.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\00. ActionHub</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Item_Stone.cpp">
-      <Filter>02. GameObjects\06. Item\Drop\Stone</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_OpenInven.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\02. OpneInven</Filter>
@@ -672,6 +669,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_Text.cpp">
       <Filter>02. GameObjects\08. UI\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_NetSwing.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. NetSwing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_AimWalk.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\03. AimWalk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Insect_Object.cpp">
+      <Filter>02. GameObjects\09. Insect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

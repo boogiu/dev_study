@@ -9,6 +9,7 @@ CPlayerState_OpenInven::CPlayerState_OpenInven()
 
 HRESULT CPlayerState_OpenInven::OnEnter()
 {
+	m_pPlayer->Get_SituationPack().isOpenningBag = true;
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Release_AnimationBlend();
 	m_pPlayer->Adjust_To_WorldFoward();
@@ -25,9 +26,9 @@ void CPlayerState_OpenInven::OnUpdate(_float dt)
 
 HRESULT CPlayerState_OpenInven::OnExit()
 {
+	m_pPlayer->Close_Inventory();
 	m_pPlayer->Get_ControlPack().MsgBag = false;
 	m_pPlayer->Camera_Zoom_Out();
-	m_pPlayer->Close_Inventory();
 	return S_OK;
 }
 
@@ -44,7 +45,7 @@ void CPlayerState_OpenInven::Render_State()
 
 _uint CPlayerState_OpenInven::Get_InputMask() const
 {
-	return 0;
+	return static_cast<_uint>(InputMask::BAG);
 }
 
 CPlayerState_OpenInven* CPlayerState_OpenInven::Create()

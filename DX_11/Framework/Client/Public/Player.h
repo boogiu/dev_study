@@ -28,6 +28,7 @@ public:
     struct ItemPacket {
         TOOL_DATA_DESC  CurItem = {};
         TOOL_DATA_DESC  DstItem = {};
+        //ITEM_DATA_DESC   DstItem = {};
     };
 
     struct ControlPacket {
@@ -39,6 +40,10 @@ public:
         void Reset() {
             MsgMove = MsgAdd = MsgAction = MsgPickup = MsgBag = false;
         }
+    };
+    struct SituationPacket {
+        _bool isOpenningBag = false; //방향키
+        _bool isTalking = false; //도구 사용키 스페이스
     };
 
 private:
@@ -68,6 +73,7 @@ public:
     TileInfoPacket& Get_TileInfoPacket() { return m_TileInfoPack; }
     ItemPacket& Get_ItemPacket() { return m_ItemPack; }
     ControlPacket& Get_ControlPack() { return m_ControlPack; }
+    SituationPacket& Get_SituationPack() { return m_SituationPack; }
 
     _bool Can_Walk(_float2& moveAxis);
     TILE_INDEX Get_FowardIndex();
@@ -83,6 +89,7 @@ public:
     void Change_Item(TOOL_DATA_DESC desc);
     void Set_CurItemData(TOOL_DATA_DESC desc);
     HRESULT Add_ITEM(ITEM_DATA_DESC item);
+    HRESULT Set_InvenEvent(ITEM_DATA_DESC item, _int Slot, wstring SelectedEvent);
 
 public:
     void ActiveCollider_Tool(_bool active, string Event = {});
@@ -96,13 +103,20 @@ private:
     void Set_TargetCamera();
 
 private:
+    void Mark_TileFlag();
+
+private:
     class CPlayerStateMachine* m_pStateMachine= { nullptr };
  
     _float m_fRange = {8};
+
     MovementPacket m_MovementPack = {};
     TileInfoPacket m_TileInfoPack = {};
     ItemPacket m_ItemPack = {};
     ControlPacket m_ControlPack = {};
+    SituationPacket m_SituationPack = {};
+
+    _float4 m_vPrevPos = {  };
 
     class CTarget_Camera* m_pCamera = { nullptr };
     class CPlayer_Inventory* m_pInventory = { nullptr };

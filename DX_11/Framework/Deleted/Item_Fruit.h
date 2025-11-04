@@ -27,10 +27,6 @@ public:
     void Dangle_Fruit(const string& boneName, _float3 offset);
 
 private:
-    void Update_ByState(_float dt);
-
-private:
-    _bool IsDangled = { false };
     _float3 m_Offset = {};
 
 public:

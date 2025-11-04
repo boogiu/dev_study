@@ -107,20 +107,9 @@ void CField_Stone::OnCollisionEnter(COLLISION_CONTEXT context)
 			XMStoreFloat4(&m_vMoveVector, MoveVector);
 
 			if (ItemSpawnCoolTime > 1.f) {
-				auto ItemSpawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
-
 				_float4 pos = Get_Position();
-				
-				CItem_Object::DROP_ITEM_DESC* pStone = new CItem_Object::DROP_ITEM_DESC;
-				pStone->itemDesc = ItemSpawner->Get_ItemData("UnitIconStone");
-
-				CGameObject* pObject =
-					Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ItemStone" })
-					.Position({ pos.x,pos.y + 5,pos.z + 2 })
-					.Add_ObjDesc(pStone)
-					.Build("Stone");
-
-				CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { "GamePlay_Level","Item_Layer" });
+				auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
+				CItem_Object* pFruit = spawner->SpawnItem("UnitIconStone", { pos.x,pos.y,pos.z });
 				ItemSpawnCoolTime = 0;
 				m_isJustHitted = true;
 			}

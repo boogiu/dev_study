@@ -1,9 +1,11 @@
 #include "Client_Defines.h"
 #include "Sprite2D.h"
 #include "SelectPanel.h"
+#include "GameInstance.h"
 #include "ObjectContainer.h"
 #include "UI_Text.h"
 #include "TextSlot.h"
+#include "UI_Cursor.h"
 
 CSelectPanel::CSelectPanel()
 {
@@ -32,6 +34,20 @@ HRESULT CSelectPanel::Initialize(INIT_DESC* pArg)
 	Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_SelectPanel.png");
 	Get_Component<CSprite2D>()->Set_CompActive(false);
 
+
+
+	m_pSelectHighlight = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TexturePanel" })
+		.Add_To_Level("GamePlay_Level")
+		.Scale({ 0,0 })
+		.Position({ -20,0 })
+		.Build("SeletcHighlight");
+
+	m_pSelectHighlight->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_SelectedTag.png");
+	m_pSelectHighlight->Get_Component<CSprite2D>()->Set_CompActive(false);
+	m_pSelectHighlight->Get_Component<CSprite2D>()->Link_Shader(G_GlobalLevelKey, "VTX_UI.hlsl");
+	Get_Component<CObjectContainer>()->Add_Child(m_pSelectHighlight, false);
+
+
 	m_pTexts.resize(4, nullptr);
 	for (size_t i = 0; i < 4; i++)
 	{
@@ -44,8 +60,21 @@ HRESULT CSelectPanel::Initialize(INIT_DESC* pArg)
 		m_pTexts[i]->Get_Component<CTextSlot>()->Set_Color(_float4(0.447, 0.365, 0.259, 1.0));
 		m_pTexts[i]->Get_Component<CTextSlot>()->Set_Font("Sindy");
 		m_pTexts[i]->Get_Component<CTextSlot>()->Set_Size(0.7);
+		m_pTexts[i]->Set_Anchor(ANCHOR::Left);
+
 	}
 
+	CUI_Object* pCursor = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Cursor" })
+		.Add_To_Level("GamePlay_Level")
+		.Scale({ 50,50 })
+		.Position({ 0,0 })
+		.Build("Cursor");
+
+	m_pCursor = dynamic_cast<CUI_Cursor*>(pCursor);
+	m_pCursor->Get_Component<CSprite2D>()->ChangeSprite(1);
+
+
+	Get_Component<CObjectContainer>()->Add_Child(pCursor, false);
 	return S_OK;
 }
 
@@ -53,14 +82,46 @@ void CSelectPanel::Priority_Update(_float dt)
 {
 	if (!m_bActive) return;
 
-		Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
+	if(m_SelectCount >1){
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_DOWN)) {
+			m_NowIndex++;
+	
+		}
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_UP)) {
+			m_NowIndex--;
+		}
+		if (m_NowIndex > m_SelectCount - 1)
+			m_NowIndex = m_SelectCount - 1;
+		if (m_NowIndex <0)
+				m_NowIndex = 0;
+	}
+	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
+		m_SelectedIndex = m_NowIndex;
+	}
+	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
 void CSelectPanel::Update(_float dt)
 {
 	if (!m_bActive) return;
 
-		Get_Component<CObjectContainer>()->UpdateChild(dt);
+	for (size_t i = 0; i < m_SelectCount; i++)
+	{
+		m_pTexts[i]->Set_Size(_float2{ m_pTexts[i]->Text_Length(),50 });
+
+		m_pTexts[i]->Align_To(ANCHOR::Center,
+			{	(-m_fSizeX*0.5f) + 20.f,
+				(i - (m_SelectCount - 1) * 0.5f) * 25.f});
+	}
+	m_pSelectHighlight->Size_To({ m_pTexts[m_NowIndex]->Text_Length(),10 }, dt * 6);
+
+	m_pSelectHighlight->Align_To(ANCHOR::Left,
+		{ (-m_fSizeX * 0.5f) + 20.f,
+		m_pTexts[m_NowIndex]->Local_Center().y + 5});
+
+	m_pCursor->Set_Pivot({ -m_fSizeX * 0.5f , m_pTexts[m_NowIndex]->Local_Center().y }, { 0,0 }, {1,0});
+
+	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
 void CSelectPanel::Late_Update(_float dt)
@@ -81,8 +142,11 @@ void CSelectPanel::Active()
 void CSelectPanel::DeActive()
 {
 	m_NowIndex = 0;
+	m_SelectCount = 0;
+	m_SelectedIndex = -1;
 	Set_Size(_float2{ 0,0 });
 	Get_Component<CSprite2D>()->Set_CompActive(false);
+	m_pSelectHighlight->Set_Size(_float2{ 0,0 });
 	m_bActive = false;
 }
 
@@ -94,23 +158,23 @@ void CSelectPanel::Set_Selecte(vector<wstring> select)
 	if (m_bActive)
 		return;
 
-	_uint count = select.size();
+	m_SelectCount = select.size();
 
 	for (size_t i = 0; i < m_pTexts.size(); i++)
 	{
-		if (i >= count)
-			return;
+		if (i >= m_SelectCount) {
+			m_pTexts[i]->Get_Component<CTextSlot>()->Set_Text(L"");
+			m_pTexts[i]->Set_Active(false);
+			continue;
+		}
 		m_pTexts[i]->Get_Component<CTextSlot>()->Set_Text(select[i]);
 		m_pTexts[i]->Set_Active(true);
 		m_pTexts[i]->Set_Anchor(ANCHOR::Left|ANCHOR::Center);
-		/*사이즈 변경 된 이후에*/
-		m_pTexts[i]->Set_CenterPos({
-		m_fWorldX - m_fSizeX * 0.5f + 20.f,
-		(i - count) * 25.f
-			});
 	}
-}
 
+	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);
+	m_pSelectHighlight->Get_Component<CSprite2D>()->Set_CompActive(true);
+}
 
 CSelectPanel* CSelectPanel::Create()
 {

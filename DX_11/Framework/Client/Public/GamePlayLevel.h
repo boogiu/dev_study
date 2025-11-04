@@ -17,6 +17,7 @@ private:
 
 public:
 	virtual HRESULT Initialize() override;
+	virtual HRESULT Awake() override;
 	virtual void Update() override;
 	virtual HRESULT Render()override;
 	HRESULT Render(ID3D11DeviceContext* pContext)override;

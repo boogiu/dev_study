@@ -60,6 +60,7 @@ void CTransform::Translate(_fvector momentVector)
 }
 
 
+/*누적 회전*/
 void CTransform::Rotation(_fvector eulerVector)//로테이션으로 누적해서 돌리기
 {
 	_fvector addQuaternion = XMQuaternionRotationRollPitchYawFromVector(eulerVector);
@@ -71,6 +72,7 @@ void CTransform::Rotation(_fvector eulerVector)//로테이션으로 누적해서 돌리기
 
 }
 
+/*누적 회전*/
 void CTransform::Rotation(_fvector vAxis, _float fRadian) //라디안으로 축회전하기
 {
 	_fvector addQuaternion = XMQuaternionRotationAxis(vAxis, fRadian);
@@ -186,6 +188,7 @@ _vector CTransform::Get_WorldPos()
 		return Get_Pos();
 }
 
+/*노말라이즈 되어서 반환*/
 _vector CTransform::Dir(STATE eState)
 {
 	if (Check_Dirty())

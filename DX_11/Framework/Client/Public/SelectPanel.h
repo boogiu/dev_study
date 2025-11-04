@@ -21,11 +21,13 @@ public:
     void DeActive();
     void Set_Selecte(vector<wstring> select);
     _int Check_Select() { return m_SelectedIndex; };
-
 private:
     _bool m_bActive = { false };
+    _uint m_SelectCount = {};
     _uint m_NowIndex = {};
     _int m_SelectedIndex = {-1};
+    class CUI_Cursor* m_pCursor = { nullptr };
+    class CUI_Object* m_pSelectHighlight = { nullptr };
     vector<class CUI_Text*>m_pTexts;
 
 public:

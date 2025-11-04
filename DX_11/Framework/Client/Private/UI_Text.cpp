@@ -48,6 +48,11 @@ void CUI_Text::Render_GUI()
 {
 }
 
+_float CUI_Text::Text_Length()
+{
+	return Get_Component<CTextSlot>()->Get_TextSize();
+}
+
 CUI_Text* CUI_Text::Create()
 {
 	CUI_Text* instance = new CUI_Text();

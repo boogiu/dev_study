@@ -32,7 +32,8 @@ HRESULT CAnimator3D::Initialize(COMPONENT_DESC* pArg)
 
 void CAnimator3D::LinkAnimate_Model(const string& LevelKey, const string& ModelKey)
 {
-	Safe_Release(m_pData);
+	if(m_pData)
+		Safe_Release(m_pData);
 	m_pData = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_ModelData(LevelKey, ModelKey);
 	Safe_AddRef(m_pData);
 	_float4x4 IdentityMatrix;
