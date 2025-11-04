@@ -161,6 +161,7 @@ _uint CPipeLine::Write_SkinningBuffer(const vector<_float4x4>& bones)
 	const _uint SkinningCount = static_cast<_uint>(bones.size());
 
 	if (m_SkinningOffset + SkinningCount > g_iMaxNumBones) {
+		MSG_BOX("To Many Skinning");
 		return UINT_MAX; // ÃÊ°ú
 	}
 

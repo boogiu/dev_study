@@ -232,7 +232,7 @@ void CTransform::Render_GUI()
 	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Position");
 	ImGui::InputFloat3("##Position", reinterpret_cast<float*>(&m_vPosition), "%.1f", ImGuiInputTextFlags_ReadOnly);
 	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Rotation");
-	ImGui::InputFloat4("##Rotation", reinterpret_cast<float*>(&m_qRotation), "%.1f", ImGuiInputTextFlags_ReadOnly);
+	ImGui::InputFloat4("##Rotation", reinterpret_cast<float*>(&m_qRotation), "%.4f", ImGuiInputTextFlags_ReadOnly);
 	ImGui::TextColored(ImVec4(1.f, 1.f, 1.f, 1.f), "Scale");
 	ImGui::InputFloat3("##Scale", reinterpret_cast<float*>(&m_vScale), "%.1f", ImGuiInputTextFlags_ReadOnly);
 	ImGui::EndChild();
@@ -280,7 +280,7 @@ void CTransform::Override_Rotation(_fvector vAxis, _float fRadian)
 
 void CTransform::Reset_Rotation()
 {
-	m_qRotation = { 0.f,0.f,0.f,0.f };
+	m_qRotation = { 0.f,0.f,0.f,1.f };
 	MarkDirty();
 }
 

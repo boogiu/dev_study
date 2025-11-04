@@ -73,8 +73,7 @@ void CToolItem::AdjustByItem(itemType type)
 {
 	m_pTransform->Reset_Rotation();
 	m_pTransform->Set_Pos({0,0,0});
-	m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
-
+	m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(0));
 }
 
 void CToolItem::Set_Item(TOOL_DATA_DESC data)

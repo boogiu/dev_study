@@ -56,7 +56,7 @@ void CInsect_Object::Late_Update(_float dt)
 {
 	m_fLifeTime += dt;
 
-	//MoveFly(dt);
+	MoveFly(dt);
 }
 
 void CInsect_Object::Render_GUI()

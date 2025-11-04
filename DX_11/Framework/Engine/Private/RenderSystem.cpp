@@ -36,7 +36,8 @@ HRESULT CRenderSystem::Initialize()
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Diffuse")))
 		return E_FAIL;
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Normal")))
-		return E_FAIL;
+		return E_FAIL;	
+
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_LightAcc", "Target_Shade")))
 		return E_FAIL;
 
