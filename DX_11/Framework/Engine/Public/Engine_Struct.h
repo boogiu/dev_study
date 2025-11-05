@@ -356,6 +356,22 @@ namespace Engine
 		_float4 OutLineColor = {};
 	}TEXT_INFO;
 
+
+	typedef struct MaterialAnimationClip {
+		_bool isLoop;
+		_float fDuration;
+		_float TickperSecond;
+		vector<_uint> AnimationKeyFrame;
+	}MATERIAL_CLIP;
+
+	typedef struct MaterialAnimationKeyFrame {
+		MATERIAL_CLIP Cilp;
+		_float fCurrentTime = {};
+
+		void Reset() { fCurrentTime = 0.f; }
+	}MAT_KEYFRAME;
+
+
 #pragma pack(pop)
 
 }

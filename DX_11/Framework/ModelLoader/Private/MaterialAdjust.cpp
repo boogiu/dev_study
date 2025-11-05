@@ -1,0 +1,242 @@
+#include "Loader_Defines.h"
+#include "MaterialAdjust.h"
+#include "MaterialData.h"
+#include "Helper_Func.h"
+
+CMaterialAdjust::CMaterialAdjust()
+{
+}
+
+CMaterialAdjust::CMaterialAdjust(const CMaterialAdjust& rhs)
+	:CGameObject(rhs)
+{
+}
+
+HRESULT CMaterialAdjust::Initialize_Prototype()
+{
+	__super::Initialize_Prototype();
+	return S_OK;
+}
+
+HRESULT CMaterialAdjust::Initialize(INIT_DESC* pArg)
+{
+	__super::Initialize(pArg);
+	return S_OK;
+}
+
+void CMaterialAdjust::Priority_Update(_float dt)
+{
+}
+
+void CMaterialAdjust::Update(_float dt)
+{
+}
+
+void CMaterialAdjust::Late_Update(_float dt)
+{
+}
+
+void CMaterialAdjust::Render_GUI()
+{
+	if (ImGui::Button("OpenTab"))
+		isTabOpen = !isTabOpen;
+	if (ImGui::Button("Add_File"))
+	{
+		vector<string> names = Helper::OpenMultiFiles();
+		for (size_t i = 0; i < names.size(); i++)
+		{
+			m_Files.push_back(Load_Materials(names[i]));
+		}
+	}
+
+	if (isTabOpen) {
+		Render_AdjustTab();
+	}
+}
+
+void CMaterialAdjust::Render_AdjustTab()
+{
+	ImGui::SetNextWindowSize(ImVec2(600, 600), ImGuiCond_FirstUseEver);
+	ImGui::Begin("Adjust_Material", &isTabOpen, ImGuiWindowFlags_NoCollapse);
+		Render_FileHierarchy();
+	ImGui::End();
+}
+
+void CMaterialAdjust::Render_FileHierarchy()
+{
+
+	for (size_t f = 0; f < m_Files.size(); ++f)
+	{
+		MaterialFile& file = m_Files[f];
+		// 파일 트리 노드
+		string fileLabel = string(file.header.materialFileKey) + " (Materials: " + std::to_string(file.materials.size()) + ")";
+		if (ImGui::TreeNode(fileLabel.c_str()))
+		{
+			// Material 단위
+			for (size_t m = 0; m < file.materials.size(); ++m)
+			{
+				MaterialInfo& mat = file.materials[m];
+				string subSet = "subSet : " + string(mat.header.materialDataKey) + "##" + std::to_string(m);
+
+				if (ImGui::TreeNode(subSet.c_str()))
+				{
+					ImGui::Text("Texture Type Count: %u", mat.header.TextureTypeCount);
+
+					// TextureType 단위
+					for (size_t t = 0; t < mat.textureTypes.size(); ++t)
+					{
+						TextureFile& texFile = mat.textureTypes[t];
+						
+						string typeLabel = ConvertToConstant(static_cast<TEXTURE_TYPE>(texFile.header.typeID)) +"##" + std::to_string(t);
+
+						if (ImGui::TreeNode(typeLabel.c_str()))
+						{
+							ImGui::Text("Texture Count: %u", texFile.header.TextureCount);
+
+							// TextureInfo 단위
+							for (size_t i = 0; i < texFile.textures.size(); ++i)
+							{
+								TextureInfo& info = texFile.textures[i];
+								string texLabel = std::string(info.header.TextureKey) +"##" + std::to_string(i);
+
+								if (ImGui::Selectable(texLabel.c_str()))
+								{
+									m_SelectedFile = f;
+									m_SelectedMaterial = m;
+									m_SelectedType = t;
+									m_SelectedTexture = i;
+								}
+							}
+
+							ImGui::TreePop();
+						}
+					}
+
+					ImGui::TreePop();
+				}
+			}
+
+			ImGui::TreePop();
+		}
+	}
+
+}
+
+MaterialFile CMaterialAdjust::Load_Materials(string path)
+{
+
+	ifstream ifs;
+	ifs.open(path);
+	
+	if (!ifs.is_open()) {
+		MSG_BOX("Wrong File path.  :Load_MaterialFromFile ");
+		return MaterialFile{};
+	}
+
+	MaterialFile file = {  };
+	ifs.read(reinterpret_cast<char*>(&file.header), sizeof(MATERIAL_FILE_HEADER));
+
+	string filePath = path;
+	string fileDirectory = filesystem::path(filePath).parent_path().string() + "/";
+
+	for (size_t i = 0; i < file.header.MaterialDataCount; i++)
+	{
+		MaterialInfo info = {};
+		ifs.read(reinterpret_cast<char*>(&info.header), sizeof(MATERIAL_INFO_HEADER));
+
+		for (size_t i = 0; i < info.header.TextureTypeCount; i++)
+		{
+			TextureFile Texfile = {};
+			ifs.read(reinterpret_cast<char*>(&Texfile.header), sizeof(TEXTURE_FILE_HEADER));
+			for (size_t i = 0; i < Texfile.header.TextureCount; i++)
+			{
+				TextureInfo Texinfo = {};
+				ifs.read(reinterpret_cast<char*>(&Texinfo.header), sizeof(TEXTURE_INFO_HEADER));
+				Texfile.textures.push_back(Texinfo);
+			}
+			info.textureTypes.push_back(Texfile);
+		}
+
+		file.materials.push_back(info);
+	}
+
+	return file;
+}
+
+CMaterialAdjust* CMaterialAdjust::Create()
+{
+	CMaterialAdjust* instance = new CMaterialAdjust();
+	if (FAILED(instance->Initialize_Prototype()))
+	{
+		MSG_BOX("Object Create Failed : CMaterialAdjust");
+		Safe_Release(instance);
+	}
+
+	return instance;
+}
+
+CGameObject* CMaterialAdjust::Clone(INIT_DESC* pArg)
+{
+	CMaterialAdjust* instance = new CMaterialAdjust(*this);
+
+	if (FAILED(instance->Initialize(pArg)))
+	{
+		MSG_BOX("Object Clone Failed : CMaterialAdjust");
+		Safe_Release(instance);
+	}
+
+	return instance;
+}
+
+void CMaterialAdjust::Free()
+{
+	__super::Free();
+
+}
+
+
+string CMaterialAdjust::ConvertToConstant(TEXTURE_TYPE eType)
+{
+	switch (eType)
+	{
+	case Engine::TEXTURE_TYPE::NONE:
+		return "";
+	case Engine::TEXTURE_TYPE::ALBEDO:
+		return "DiffuseTexture";
+	case Engine::TEXTURE_TYPE::NORMAL:
+		return "NormalTexture";
+	case Engine::TEXTURE_TYPE::OPACITY:
+		return "OpacityTexture";
+	case Engine::TEXTURE_TYPE::EMMISION:
+		return "EmmisionTexture";
+	case Engine::TEXTURE_TYPE::ALBEDO_GRAY:
+		return "AlbedoGrayTexture";
+	case Engine::TEXTURE_TYPE::NORMAL_ORY:
+		return "NormalOryTexture";
+	case Engine::TEXTURE_TYPE::ALBEDO_ORY:
+		return "AlbedoOryTexture";
+	case Engine::TEXTURE_TYPE::EMMISION_ORY:
+		return "EmmisionOryTexture";
+	case Engine::TEXTURE_TYPE::INDEXMAP:
+		return "IndexMap";
+	case Engine::TEXTURE_TYPE::SCALEX:
+		return "ScaleX";
+	case Engine::TEXTURE_TYPE::SCALEY:
+		return "ScaleY";
+	case Engine::TEXTURE_TYPE::SCALEXY:
+		return "ScaleXY";
+	case Engine::TEXTURE_TYPE::GRADATION:
+		return "GradationTexture";
+	case Engine::TEXTURE_TYPE::GRADATION_EDGE:
+		return "GradationEdgeTexture";
+	case Engine::TEXTURE_TYPE::MIX:
+		return "MixtureTexture";
+	case Engine::TEXTURE_TYPE::SPECULAR:
+		return "SpecularTexture";
+	case Engine::TEXTURE_TYPE::END:
+		return "";
+	default:
+		break;
+	}
+	return string();
+}

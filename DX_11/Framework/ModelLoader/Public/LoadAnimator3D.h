@@ -28,6 +28,7 @@ private:
     vector<string> LoadPathes;
     string ParentPath = {};
     _int nowIndex = {-1};
+
 public:
     static CLoadAnimator3D* Create();
     virtual CComponent* Clone() override;

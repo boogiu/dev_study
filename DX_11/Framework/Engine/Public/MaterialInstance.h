@@ -28,10 +28,11 @@ public:
 
 	HRESULT Override_Pass(const string& passConstant) { override_Pass = passConstant; return S_OK; };
 	HRESULT Reset_Pass();
-
-
 	HRESULT Override_Constant(const MaterialConstants& materialConstant);
 	HRESULT Reset_Constant();
+
+public:
+	vector<_uint>& Get_TextureIndex() { return m_TextureIndexs; }
 
 public:
 	virtual void Render_GUI();

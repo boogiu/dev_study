@@ -169,6 +169,7 @@
     <ClInclude Include="..\Public\LoadMaterial.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\LoadStaticModel.h" />
+    <ClInclude Include="..\Public\MaterialAdjust.h" />
     <ClInclude Include="..\Public\ModelLevel.h" />
     <ClInclude Include="..\Public\ModelObject.h" />
     <ClInclude Include="..\Public\OptionUI.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="..\Private\LoadMaterial.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\LoadStaticModel.cpp" />
+    <ClCompile Include="..\Private\MaterialAdjust.cpp" />
     <ClCompile Include="..\Private\ModelLevel.cpp" />
     <ClCompile Include="..\Private\ModelObject.cpp" />
     <ClCompile Include="..\Private\OptionUI.cpp" />

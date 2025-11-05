@@ -73,6 +73,9 @@
     <Filter Include="03. LoaderComponent\Animator">
       <UniqueIdentifier>{12515238-28c5-4cc5-98de-021711326841}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. ModelObject\MaterialAdjust">
+      <UniqueIdentifier>{90515acc-79e0-41e1-9599-40a3581858be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -177,6 +180,9 @@
     <ClInclude Include="..\Public\OptionUI.h">
       <Filter>02. ModelObject\OptionUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MaterialAdjust.h">
+      <Filter>02. ModelObject\MaterialAdjust</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="ModelLoader.ico">
@@ -270,6 +276,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\OptionUI.cpp">
       <Filter>02. ModelObject\OptionUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MaterialAdjust.cpp">
+      <Filter>02. ModelObject\MaterialAdjust</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

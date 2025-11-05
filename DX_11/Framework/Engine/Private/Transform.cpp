@@ -318,7 +318,7 @@ void CTransform::Update_Transform()
 
 _bool CTransform::Check_Dirty()
 {
-	if (m_pParentTransform)
+ 	if (m_pParentTransform)
 	{
 		if (m_ParentVersionCounter != m_pParentTransform->m_VersionCounter) {
 			m_ParentVersionCounter = m_pParentTransform->m_VersionCounter;

@@ -10,6 +10,7 @@
 #include "Free_Camera.h"
 #include "PartsObject.h"
 #include "OptionUI.h"
+#include "MaterialAdjust.h"
 
 #include "Camera.h"
 
@@ -28,6 +29,7 @@ HRESULT CModelLevel::Initialize()
 	pProtoMgr->Add_ProtoType(m_LevelKey, "Proto_GameObject_Camera", CFree_Camera::Create());
 	pProtoMgr->Add_ProtoType(m_LevelKey, "Proto_GameObject_Part", CPartsObject::Create());
 	pProtoMgr->Add_ProtoType(m_LevelKey, "Proto_GameObject_OptionUI", COptionUI::Create());
+	pProtoMgr->Add_ProtoType(m_LevelKey, "Proto_GameObject_MaterialAdjust", CMaterialAdjust::Create());
 	
 	CGameObject* BaseModel = Builder::Create_Object({ m_LevelKey ,"Proto_GameObject_Model" })
 		.Build("Model");
@@ -38,11 +40,13 @@ HRESULT CModelLevel::Initialize()
 		.Build("Main_Camera");
 
 	CGameObject* Option = Builder::Create_Object({ m_LevelKey ,"Proto_GameObject_OptionUI" }).Build("Option");
+	CGameObject* Adjust = Builder::Create_Object({ m_LevelKey ,"Proto_GameObject_MaterialAdjust" }).Build("Adjust");
 
 
 	pObjMgr->Add_Object(BaseModel, { m_LevelKey,"Model_Layer" });
 	pObjMgr->Add_Object(Camera, { m_LevelKey,"Model_Layer" });
 	pObjMgr->Add_Object(Option, { m_LevelKey,"Optional_Layer" });
+	pObjMgr->Add_Object(Adjust, { m_LevelKey,"Adjust_layer" });
 	m_pGameInstance->Get_CameraMgr()->Set_MainCam(Camera->Get_Component<CCamera>());
 
 	return S_OK;

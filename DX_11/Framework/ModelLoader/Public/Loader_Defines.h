@@ -25,3 +25,26 @@ using namespace Loader;
 
 #pragma pop_macro("new")
 using namespace Assimp;
+
+struct TextureInfo
+{
+    TEXTURE_INFO_HEADER header;
+};
+
+struct TextureFile
+{
+    TEXTURE_FILE_HEADER header;
+    vector<TextureInfo> textures;
+};
+
+struct MaterialInfo
+{
+    MATERIAL_INFO_HEADER header;
+    vector<TextureFile> textureTypes;
+};
+
+struct MaterialFile
+{
+    MATERIAL_FILE_HEADER header;
+    vector<MaterialInfo> materials;
+};
