@@ -29,7 +29,8 @@
 #include "AABB_Collider.h"
 
 #include "Item_Object.h"
-
+#include "Insect_Object.h"
+#include "UI_Responcer.h"
 CPlayer::CPlayer()
 {
 }
@@ -105,14 +106,14 @@ void CPlayer::Priority_Update(_float dt)
 	m_vPrevPos = Get_Position();
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 	Update_Input(dt);
-	Update_TileInfo(dt);
 }
 
 void CPlayer::Update(_float dt)
 {
 	Update_Movement(dt);
-	m_pStateMachine->Update(dt);
 	Mark_TileFlag(); /*대충 로직 끝난 후에 타일 플래그 정비*/
+	Update_TileInfo(dt);
+	m_pStateMachine->Update(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
@@ -177,10 +178,6 @@ void CPlayer::Update_Input(_float dt)
 
 		if (moveAxis.x != 0 || moveAxis.y != 0)
 			control.MsgMove = true;
-		else {
-			OutputDebugStringA("NoMove!");
-			control.MsgMove = false;
-		}
 
 		XMStoreFloat2(&m_MovementPack.vInputAxis, XMVector2Normalize(XMLoadFloat2(&moveAxis)));
 	}
@@ -292,7 +289,7 @@ void CPlayer::Adjust_To_Foward()
 			XMVectorGetZ(vTargetDir)   // z 성분
 		) -
 		atan2(
-		
+
 			XMVectorGetX(vLook),
 			XMVectorGetZ(vLook)
 		);
@@ -310,20 +307,21 @@ void CPlayer::Adjust_To_WorldFoward()
 
 void CPlayer::OnCollisionEnter(COLLISION_CONTEXT context)
 {
-	if (context.Owner->Has_Tag("Item")) {
-		if (context.EventTag == "Picked")
-		{
-			m_pInventory->Add_ItemToInventory(dynamic_cast<CItem_Object*>(context.Owner)->Get_ItemData());
-		}
+	if (context.EventTag == "PickedByHand")
+	{
+		m_pInventory->Add_ItemToInventory(dynamic_cast<CItem_Object*>(context.Owner)->Get_ItemData());
 	}
+ 	m_pStateMachine->OnCollisionEnter(context);
 }
 
 void CPlayer::OnCollisionStay(COLLISION_CONTEXT context)
 {
+	m_pStateMachine->OnCollisionStay(context);
 }
 
 void CPlayer::OnCollisionExit(COLLISION_CONTEXT context)
 {
+	m_pStateMachine->OnCollisionExit(context);
 }
 
 void CPlayer::Camera_Zoom_In()
@@ -384,14 +382,25 @@ HRESULT CPlayer::Set_InvenEvent(ITEM_DATA_DESC item, _int Slot, wstring Selected
 	}
 
 	else if (SelectedEvent == L"1개 먹기") {
-		m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TransTool_State");
+		m_InfoPack.m_pObjectOnLeftHand =  Spawner->SpawnItem(item.FileName);
+		m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION,"Action_Eat_State");
 	}
 	else if (SelectedEvent == L"들기") {
 		m_ControlPack.MsgBag = false;
 		Change_Item(item);
 	}
-
+	else if (SelectedEvent == L"장착 해제하기") {
+		m_ControlPack.MsgBag = false;
+		Change_Item(ITEM_DATA_DESC{});
+	}
 	return S_OK;
+}
+
+void CPlayer::Open_EventMsg(EventMsgDesc* evtMsg)
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	auto UI_Responder = nowLevel->Get_LevelObject<CUI_Responcer>();
+	UI_Responder->Active_UI("EvtMsg", evtMsg);
 }
 
 
@@ -534,6 +543,16 @@ void CPlayer::Add_AnimationClips()
 
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Pickup.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Pickup_Get.anim", "Player", false);
+
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_Get.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_GetKeep.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_PullOut.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_Putaway.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_PutawayKeep.anim", "Player", false);
+	
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_Eat.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Menu_Eat.anim", "Player", false);
+
 }
 
 void CPlayer::Add_PartObjects()
@@ -560,11 +579,10 @@ void CPlayer::Add_PartObjects()
 	pBottomDesc->pPlayer = this;
 	pBottomDesc->ClothType = "PlayerBottomsPantsNormal";
 
-	CGameObject* pRightHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
+	m_InfoPack.m_pRightHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
 		.Add_ObjDesc(pRHandDesc)
 		.Build("Right_Hand");
-
-	CGameObject* pLeftHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
+	m_InfoPack.m_pLeftHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
 		.Add_ObjDesc(pLHandDesc)
 		.Build("Left_Hand");
 
@@ -584,8 +602,8 @@ void CPlayer::Add_PartObjects()
 		.Add_ObjDesc(pBottomDesc)
 		.Build("Bottom");
 
-	Get_Component<CObjectContainer>()->Add_Child(pRightHand, false);
-	Get_Component<CObjectContainer>()->Add_Child(pLeftHand, false);
+	Get_Component<CObjectContainer>()->Add_Child(m_InfoPack.m_pRightHand, false);
+	Get_Component<CObjectContainer>()->Add_Child(m_InfoPack.m_pLeftHand, false);
 	Get_Component<CObjectContainer>()->Add_Child(pHair, false);
 	Get_Component<CObjectContainer>()->Add_Child(pHairCap, false);
 	Get_Component<CObjectContainer>()->Add_Child(pTop, true);
@@ -627,8 +645,8 @@ void CPlayer::Mark_TileFlag()
 		return;
 	}
 
-	tileSys->Remove_TileFlagByIndex(prevIndex,static_cast<_uint>(TILE_FLAG::ONPLAYER));
-	tileSys->Add_TileFlagByIndex(m_TileInfoPack.nowIndex,static_cast<_uint>(TILE_FLAG::ONPLAYER));
+	tileSys->Remove_TileFlagByIndex(prevIndex, static_cast<_uint>(m_TileInfoPack.markFlag));
+	tileSys->Add_TileFlagByIndex(m_TileInfoPack.nowIndex, static_cast<_uint>(m_TileInfoPack.markFlag));
 }
 
 CPlayer* CPlayer::Create()

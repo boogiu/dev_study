@@ -13,7 +13,7 @@
 #include "ItemSpawner.h"
 #include "ITileService.h"
 #include "Item_Object.h"
-
+#include "Helper_Func.h"
 CField_Stone::CField_Stone()
 {
 }
@@ -108,8 +108,22 @@ void CField_Stone::OnCollisionEnter(COLLISION_CONTEXT context)
 
 			if (ItemSpawnCoolTime > 1.f) {
 				_float4 pos = Get_Position();
+				_int rnd = Helper::Get_Random_Int(0, 2);
 				auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
-				CItem_Object* pFruit = spawner->SpawnItem("UnitIconStone", { pos.x,pos.y,pos.z });
+				switch (rnd)
+				{
+				case 0 :
+					 spawner->SpawnItem("UnitIconStone", { pos.x,pos.y,pos.z });
+					break;
+				case 1:
+					spawner->SpawnItem("UnitIconClay", { pos.x,pos.y,pos.z });
+					break;
+				case 2:
+					spawner->SpawnItem("UnitIconIron", { pos.x,pos.y,pos.z });
+					break;
+				default:
+					break;
+				}
 				ItemSpawnCoolTime = 0;
 				m_isJustHitted = true;
 			}

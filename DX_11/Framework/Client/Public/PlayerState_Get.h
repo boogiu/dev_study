@@ -1,0 +1,29 @@
+#pragma once
+#include "PlayerState.h"
+NS_BEGIN(Client)
+class CPlayerState_Get :
+    public CPlayerState
+{
+    enum Phase{Priority, Idle, Keep,PutIn, End};
+private:
+    CPlayerState_Get();
+    virtual ~CPlayerState_Get() DEFAULT;
+
+public:
+    virtual HRESULT OnEnter();
+    virtual void OnUpdate(_float dt);
+    virtual HRESULT OnExit();
+    virtual CState* HandleTransition();
+    virtual _uint Get_InputMask() const override;
+
+public:
+    virtual void Render_State();
+
+private:
+    Phase m_ePhase = { Priority };
+    _bool m_bMsgComplete = { false };
+public:
+    static CPlayerState_Get* Create();
+    virtual void Free();
+};
+NS_END

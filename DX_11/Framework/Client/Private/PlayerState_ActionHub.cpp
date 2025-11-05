@@ -45,12 +45,15 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 			nextState = nullptr;
 		else
 			nextState = m_pLayer->Get_State("Action_TreeShake_State");
+		m_pPlayer->Adjust_To_Foward();
 		break;
 	case itemType::Axe:
 		nextState = m_pLayer->Get_State("Action_TreeChop_State");
+		m_pPlayer->Adjust_To_Foward();
 		break;
 	case itemType::Scoop:
 		nextState = m_pLayer->Get_State("Action_Dig_State");
+		m_pPlayer->Adjust_To_Foward();
 		break;
 	case itemType::Net:
 		nextState = m_pLayer->Get_State("Action_NetSwing_State");
@@ -59,8 +62,7 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 		break;
 	}
 
-	if (nextState != nullptr)
-		m_pPlayer->Adjust_To_Foward();
+	//if (nextState != nullptr)
 	return nextState;
 }
 

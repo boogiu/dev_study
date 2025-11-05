@@ -137,7 +137,7 @@ _float2 CTextSlot::Get_Anchor(ANCHOR anchot)
 _float CTextSlot::Get_TextSize()
 {
 	if (m_pFont)
-		return XMVectorGetX(m_pFont->TextSize(m_Info.Text));
+		return XMVectorGetX(m_pFont->TextSize(m_Info.Text)); 
 	else 
 		return 0.f;
 }

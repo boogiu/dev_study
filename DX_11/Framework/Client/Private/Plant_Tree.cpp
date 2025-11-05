@@ -21,6 +21,7 @@
 
 #include "Item_Object.h"
 #include "Builder.h"
+#include "Helper_Func.h"
 
 CPlant_Tree::CPlant_Tree()
 {
@@ -66,6 +67,7 @@ void CPlant_Tree::Priority_Update(_float dt)
 
 void CPlant_Tree::Update(_float dt)
 {
+	if (m_eState == STUMP)return;
 	m_fLifeTime += dt;
 	Make_Fruits();
 	Get_Component<CAnimator3D>()->Update_Animation(dt);
@@ -212,7 +214,10 @@ void CPlant_Tree::PlayAnim_Cut()
 
 	if (Get_Component<CAnimator3D>()->isCurrentAnimEnd()) {
 		Get_Component<CModel>()->Link_Model("GamePlay_Level", m_ModelName + "Stump.model");
-		m_eState = IDLE;
+		auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
+		spawner->ThrowItem("UnitIconPltWood", m_pTransform->Get_Pos(), m_pTransform->Dir(STATE::LOOK));
+		spawner->ThrowItem("UnitIconPltWood", m_pTransform->Get_Pos(), m_pTransform->Dir(STATE::RIGHT));
+		m_eState = STUMP;
 		m_InstanceTag = "Stump";
 	}
 
@@ -224,7 +229,14 @@ void CPlant_Tree::PlayAnim_Hit()
 	if (FAILED(hr)) {
 		hr = Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "ShakeS.anim", true);
 	}
-	Drop_Items();
+	if (m_HasFruit) {
+		Drop_Items();
+	}
+	else {
+		_int rnd = Helper::Get_Random_Int(0, 5);
+		if(rnd >4)
+			Drop_Items();
+	}
 }
 
 void CPlant_Tree::PlayAnim_Shake()
@@ -273,14 +285,6 @@ void CPlant_Tree::Make_Fruits()
 		for (size_t i = 0; i < 3; i++)
 		{
 			if (m_pFruits[i] != nullptr) continue;
-			//CItem_Object::DROP_ITEM_DESC* pDesc = new CItem_Object::DROP_ITEM_DESC;
-			//pDesc->itemDesc = spawner->Get_ItemData("UnitIconPltFruitApple");
-			//CGameObject* pObject =
-			//	Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_DropItem" })
-			//	.Add_ObjDesc(pDesc)
-			//	.Build("Fruit" + to_string(i));
-			//
-			//CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { "GamePlay_Level" ,"Field_Layer" });
 			auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
 			CItem_Object* pFruit = spawner->SpawnItem("UnitIconPltFruitApple");
 			if (pFruit) {
@@ -352,19 +356,27 @@ void CPlant_Tree::Adjust_Material()
 
 void CPlant_Tree::Drop_Items()
 {
-	if (!m_HasFruit) return;
 	if (m_iGrownLevel <= 3) return;
-	for (size_t i = 0; i < 3; i++)
-	{
-		m_pFruits[i]->Get_Component<CModel>()->Set_CompActive(false);
 
-		_float4 pos = m_pFruits[i]->Get_Position();
+	if (m_HasFruit) {
+		for (size_t i = 0; i < 3; i++)
+		{
+			m_pFruits[i]->Get_Component<CModel>()->Set_CompActive(false);
 
-		auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
-		CItem_Object* pFruit = spawner->SpawnItem("UnitIconPltFruitApple",{ pos.x,pos.y,pos.z});
+			_float4 pos = m_pFruits[i]->Get_Position();
+
+			auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
+			spawner->ThrowItem("UnitIconPltFruitApple", XMLoadFloat4(&pos), {0,-1,0,0});
+
+		}
+		m_fLifeTime = 0;
+		m_HasFruit = false;
 	}
-	m_fLifeTime = 0;
-	m_HasFruit = false;
+	else {
+		auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
+		spawner->ThrowItem("UnitIconPltBranch", m_pTransform->Get_Pos(), m_pTransform->Dir(STATE::LOOK));
+		m_fLifeTime = 0;
+	}
 }
 
 void CPlant_Tree::Regenerate_Items()

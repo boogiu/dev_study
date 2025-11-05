@@ -28,6 +28,8 @@
 
 #include "PlayerState_OpenInven.h"
 #include "PlayerState_TransTool.h"
+#include "PlayerState_Get.h"
+#include "PlayerState_Eat.h"
 
 CPlayerStateMachine::CPlayerStateMachine(CPlayer* pPlayer)
 	:m_pOwner(pPlayer)
@@ -43,8 +45,12 @@ HRESULT CPlayerStateMachine::Initialize()
 
 	auto Trans_Tool = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_TransTool>("Action_TransTool_State");
 	auto Open_Inven = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_OpenInven>("Action_OpenInven_State");
+	auto Get = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Get>("Action_Get_State");
+	auto Eat = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Eat>("Action_Eat_State");
 	Trans_Tool->Set_Owner(m_pOwner);
 	Open_Inven->Set_Owner(m_pOwner);
+	Get->Set_Owner(m_pOwner);
+	Eat->Set_Owner(m_pOwner);
 
 	auto toolLayer = CLayerState::Create();
 	toolLayer->Set_Machine(this);

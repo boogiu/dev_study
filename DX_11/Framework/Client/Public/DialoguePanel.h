@@ -1,14 +1,13 @@
 #pragma once
 #include "UI_Object.h"
-#include <TextSlot.h>
 NS_BEGIN(Client)
-class CUI_Text :
+class CDialoguePanel :
     public CUI_Object
 {
 private:
-    CUI_Text();
-    CUI_Text(const CUI_Text& rhs);
-    virtual ~CUI_Text() override;
+    CDialoguePanel();
+    CDialoguePanel(const CDialoguePanel& rhs);
+    virtual ~CDialoguePanel() override;
 
 public:
     HRESULT Initialize_Prototype() override;
@@ -17,19 +16,12 @@ public:
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
     virtual void Render_GUI() override;
-public:
-    void Set_Active(_bool active) { m_bActive = active; }
-    void Set_Anchor(ANCHOR eAnchor) { m_eAnchor = eAnchor; }
-    void Set_Scale(_float size);
-    _float Text_Length();
-
 
 private:
     _bool m_bActive = { false };
-    ANCHOR m_eAnchor = { ANCHOR::Center};
-
+    vector<class CUI_Text*>m_pTexts;
 public:
-    static CUI_Text* Create();
+    static CDialoguePanel* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;
     void Free() override;
 };

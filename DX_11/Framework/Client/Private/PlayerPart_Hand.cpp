@@ -19,7 +19,7 @@ CPlayerPart_Hand::CPlayerPart_Hand()
 }
 
 CPlayerPart_Hand::CPlayerPart_Hand(const CPlayerPart_Hand& rhs)
-:CGameObject(rhs)
+	:CGameObject(rhs)
 {
 }
 
@@ -49,8 +49,11 @@ HRESULT CPlayerPart_Hand::Initialize(INIT_DESC* pArg)
 	m_OwnerBone = pDesc->BoneName;
 	m_pOwner = pDesc->pOwner;
 
+	CToolItem::CHRACTER_TOOL_DESC* pToolDesc = new CToolItem::CHRACTER_TOOL_DESC;
+	pToolDesc->pOwner = this;
 	/*나중에 툴 용 함수 만들기*/
 	CGameObject* pTool = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerTool" })
+		.Add_ObjDesc(pToolDesc)
 		.Build("Tool");
 
 	m_pToolItem = dynamic_cast<CToolItem*>(pTool);
@@ -78,22 +81,38 @@ void CPlayerPart_Hand::Late_Update(_float dt)
 
 void CPlayerPart_Hand::Render_GUI()
 {
-	
+
 }
 
 void CPlayerPart_Hand::OnCollisionEnter(COLLISION_CONTEXT context)
 {
-	
-	m_pOwner->OnCollisionEnter(context);
+	COLLISION_CONTEXT ownerContext = context;
+	if (context.Owner->Has_Tag("Item")) {
+		if (context.EventTag.find("ByHand") == string::npos)
+		{
+			ownerContext.Owner = context.Owner;
+			ownerContext.EventTag = "PickedByHand";
+		}
+	}
+	m_pOwner->OnCollisionEnter(ownerContext);
+
 }
 
 void CPlayerPart_Hand::OnCollisionStay(COLLISION_CONTEXT context)
 {
+	if (context.EventTag.find("ByHand") == string::npos)
+	{
+		context.EventTag += "ByHand";
+	}
 	m_pOwner->OnCollisionStay(context);
 }
 
 void CPlayerPart_Hand::OnCollisionExit(COLLISION_CONTEXT context)
 {
+	if (context.EventTag.find("ByHand") == string::npos)
+	{
+		context.EventTag += "ByHand";
+	}
 	m_pOwner->OnCollisionExit(context);
 }
 

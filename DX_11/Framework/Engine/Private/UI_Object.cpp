@@ -101,7 +101,7 @@ void CUI_Object::Set_Size(_fvector size)
     m_fSizeY = vSize.y;
 }
 
-void CUI_Object::Size_To(_fvector size, _float Speed)
+_bool CUI_Object::Size_To(_fvector size, _float Speed)
 {
     _float2 vSize = { m_fSizeX,m_fSizeY };
 
@@ -110,6 +110,7 @@ void CUI_Object::Size_To(_fvector size, _float Speed)
 
     if (XMVectorGetX(length) < 0.2f) {
         nextSize = size;
+        return true;
     }
     else {
         nextSize = XMVectorLerp(XMLoadFloat2(&vSize), size, Speed);

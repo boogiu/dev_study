@@ -15,6 +15,11 @@ public:
 	virtual void Update(_float dt);
 	virtual void Request_ChangeState(const string& NextState);
 
+public:
+	virtual void OnCollisionEnter(COLLISION_CONTEXT context);
+	virtual void OnCollisionStay(COLLISION_CONTEXT context);
+	virtual void OnCollisionExit(COLLISION_CONTEXT context);
+
 public: 
 	virtual void Render_State();
 public:

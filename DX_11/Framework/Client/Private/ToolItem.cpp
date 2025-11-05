@@ -34,16 +34,9 @@ HRESULT CToolItem::Initialize_Prototype()
 HRESULT CToolItem::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
-	/*CPlayer::PLAYER_PARTS_DESC* pDesc = static_cast<CPlayer::PLAYER_PARTS_DESC*>(pArg);
-	Get_Component<CBoneFollower>()->Link_Bone(
-		pDesc->pPlayer->Get_Component<CAnimator3D>(),
-		"Armature_Hand_L"
-	);
-
-	Get_Component<CBoneFollower>()->Set_Offset(
-		XMMatrixRotationX(XMConvertToRadians(180))
-	);*/
+	
 	m_InstanceTag = "None";
+	m_pOwner = static_cast<CHRACTER_TOOL_DESC*>(pArg)->pOwner;
 	Get_Component<COBB_Collider>()->Make_MinMaxCollider({ {-2,-2,-2},{2,2,2} });
 	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
 	return S_OK;
@@ -66,7 +59,6 @@ void CToolItem::Render_GUI()
 	Get_Component<COBB_Collider>()->Render_GUI();
 	Get_Component<CMaterial>()->Render_GUI();
 	
-	//ImGui::InputFloat3()
 }
 
 void CToolItem::AdjustByItem(itemType type)
@@ -113,6 +105,30 @@ void CToolItem::Set_Item(TOOL_DATA_DESC data)
 	Get_Component<CModel>()->Link_Model("GamePlay_Level", data.modelName);
 	Get_Component<CMaterial>()->Link_Material("GamePlay_Level", data.materialName);
 	Get_Component<CCollider>()->Make_MinMaxCollider(Get_Component<CModel>()->Get_LocalBoundingBox());
+}
+
+void CToolItem::OnCollisionEnter(COLLISION_CONTEXT context)
+{
+	if (m_pOwner) {
+		context.EventTag += "_Tool";
+		m_pOwner->OnCollisionEnter(context);
+	}
+}
+
+void CToolItem::OnCollisionStay(COLLISION_CONTEXT context)
+{
+	if (m_pOwner) {
+		context.EventTag += "_Tool";
+		m_pOwner->OnCollisionStay(context);
+	}
+}
+
+void CToolItem::OnCollisionExit(COLLISION_CONTEXT context)
+{
+	if (m_pOwner) {
+		context.EventTag += "_Tool";
+		m_pOwner->OnCollisionExit(context);
+	}
 }
 
 CToolItem* CToolItem::Create()

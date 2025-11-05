@@ -332,12 +332,11 @@ void CPlayer_Inventory::Select_Item(_float dt)
 	}
 	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(false);
 	m_pSlots[nowIndex]->isHovered();
-	m_pSelectPanel->Size_To({ 208,111 }, dt * 8);
 	m_pSelectPanel->Get_Component<CSprite2D>()->Set_CompActive(true);
 
 	ITEM_DATA_DESC Data = dynamic_cast<CUI_InvenSlot*>(m_pSlots[nowIndex])->Get_Data();
 	auto vector = Switch_ItemSelect(Data.TypeTag, m_pSlots[nowIndex]->Get_Count());
-	m_pSelectPanel->Set_Selecte(vector);
+	m_pSelectPanel->Set_Selecte(vector,dt);
 	m_pSelectPanel->Active();
 	_int selectedAction = m_pSelectPanel->Check_Select();
 
@@ -375,6 +374,8 @@ vector<wstring> CPlayer_Inventory::Switch_ItemSelect(itemType type, _uint count)
 	case itemType::Scoop:
 	case itemType::Net:
 		SelectScript = { L"들기" , L"배치하기", L"근처에 두기" };
+		if (m_pPlayer->Get_ItemPacket().CurItem.TypeTag == type)
+			SelectScript[0] = L"장착 해제하기";
 		break;
 	default:
 		break;

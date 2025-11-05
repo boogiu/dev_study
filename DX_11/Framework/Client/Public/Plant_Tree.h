@@ -11,7 +11,8 @@ class CPlant_Tree :
         HITTED,
         CUTTED,
         ENCOUNTERED,
-        DIGGED
+        DIGGED,
+        STUMP
     };
 
 private:

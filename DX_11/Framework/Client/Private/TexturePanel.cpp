@@ -1,6 +1,6 @@
 #include "Client_Defines.h"
 #include "TexturePanel.h"
-
+#include "Sprite2D.h"
 CTexturePanel::CTexturePanel()
 {
 }
@@ -22,7 +22,7 @@ HRESULT CTexturePanel::Initialize_Prototype()
 
 HRESULT CTexturePanel::Initialize(INIT_DESC* pArg)
 {
-
+	Get_Component<CSprite2D>()->Link_Shader(G_GlobalLevelKey, "VTX_UI.hlsl");
 	__super::Initialize(pArg);
 	return S_OK;
 }

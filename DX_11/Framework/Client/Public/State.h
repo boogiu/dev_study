@@ -16,9 +16,13 @@ public:
     virtual HRESULT OnExit() { return S_OK; }
     virtual CState* HandleTransition() { return nullptr; }
 
-    virtual void Set_Owner(class CGameObject* pOwner) {};
+public:
+    virtual void OnCollisionEnter(COLLISION_CONTEXT context);
+    virtual void OnCollisionStay(COLLISION_CONTEXT context);
+    virtual void OnCollisionExit(COLLISION_CONTEXT context);
 
 public:
+    virtual void Set_Owner(class CGameObject* pOwner) {};
     const string& GetName() const { return m_StateName; }
     void SetName(const string& name) { m_StateName = name; }
     void SetLayer(class CLayerState* layer) { m_pLayer = layer; }

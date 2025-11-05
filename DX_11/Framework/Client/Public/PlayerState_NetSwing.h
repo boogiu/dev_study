@@ -19,6 +19,12 @@ public:
     virtual _uint Get_InputMask() const override;
 
 public:
+    virtual void OnCollisionEnter(COLLISION_CONTEXT context) override;
+    virtual void OnCollisionStay(COLLISION_CONTEXT context) override;
+
+private:
+    _bool isCathced = {};
+public:
     static CPlayerState_NetSwing* Create();
     virtual void Free();
 };

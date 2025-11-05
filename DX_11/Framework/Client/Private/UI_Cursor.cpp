@@ -28,6 +28,7 @@ HRESULT CUI_Cursor::Initialize(INIT_DESC* pArg)
 	Get_Component<CSprite2D>()->Add_Texture(G_GlobalLevelKey, "UI_Point_Select.png");
 	Get_Component<CSprite2D>()->Add_Texture(G_GlobalLevelKey, "UI_Point_right.png");
 	Get_Component<CSprite2D>()->Add_Texture(G_GlobalLevelKey, "UI_Point_Grab.png");
+	Get_Component<CSprite2D>()->Add_Texture(G_GlobalLevelKey, "UI_DialCursor.png");
 	Get_Component<CSprite2D>()->Set_CompActive(false);
 
 	return S_OK;

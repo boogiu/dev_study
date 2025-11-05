@@ -9,7 +9,6 @@ CPlayerState_OpenInven::CPlayerState_OpenInven()
 
 HRESULT CPlayerState_OpenInven::OnEnter()
 {
-	m_pPlayer->Get_SituationPack().isOpenningBag = true;
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Release_AnimationBlend();
 	m_pPlayer->Adjust_To_WorldFoward();
@@ -45,7 +44,7 @@ void CPlayerState_OpenInven::Render_State()
 
 _uint CPlayerState_OpenInven::Get_InputMask() const
 {
-	return static_cast<_uint>(InputMask::BAG);
+	return (1 << static_cast<_uint>(InputMask::BAG));
 }
 
 CPlayerState_OpenInven* CPlayerState_OpenInven::Create()

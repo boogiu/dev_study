@@ -12,11 +12,15 @@ private:
 public:
 	HRESULT Initialize_Prototype() override;
 	HRESULT Initialize(COMPONENT_DESC* pArg) override;
+
 public:
 	_float4x4 Get_ViewMatrix();
 	_matrix Get_ProjMatrix();
+	void Lerp_FOV(_float dst, _float dt);
+
 public:
 	void Render_GUI();
+
 private:
 	class CTransform* m_pTransform = { nullptr };
 	_float m_fFov = {};

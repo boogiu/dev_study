@@ -15,6 +15,7 @@ HRESULT CPlayerState_AimWalk::OnEnter()
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	HRESULT hr = Animator->Change_Animation("ToolNet_AimWalk_F.anim", false, 0.05);
 
+	m_pPlayer->Get_TileInfoPacket().markFlag = TILE_FLAG::ONCHARACTER;
 	return hr;
 }
 
@@ -37,6 +38,7 @@ void CPlayerState_AimWalk::OnUpdate(_float dt)
 
 HRESULT CPlayerState_AimWalk::OnExit()
 {
+	m_pPlayer->Get_TileInfoPacket().markFlag = TILE_FLAG::ONPLAYER;
 	return S_OK;
 }
 

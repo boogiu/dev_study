@@ -4,11 +4,13 @@
 #include "GameObject.h"
 CCollider::CCollider()
 {
+	m_CollisionContext.Owner = m_pOwner;
 }
 
 CCollider::CCollider(const CCollider& rhs)
 	:CComponent(rhs)
 {
+	m_CollisionContext.Owner = m_pOwner;
 }
 
 HRESULT CCollider::Initialize_Prototype()

@@ -196,18 +196,6 @@
     <Filter Include="02. GameObjects\08. UI">
       <UniqueIdentifier>{348eb223-35c0-4eb7-9bd9-5fe66fbf4c37}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\08. UI\SelectPanel">
-      <UniqueIdentifier>{6e6020a5-bee8-4af4-aae6-83880ef220c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\08. UI\TexturePanel">
-      <UniqueIdentifier>{c1324510-86f8-4feb-b6ca-db36ddba02fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\08. UI\Cursor">
-      <UniqueIdentifier>{73446fac-99cf-4397-891a-079b6f0260dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\08. UI\Text">
-      <UniqueIdentifier>{6eb06499-1daa-49b1-a07c-f0ed86e66a30}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolPose\04. Net">
       <UniqueIdentifier>{7792f16a-b9ea-45b9-8a91-7e9d29f0cde3}</UniqueIdentifier>
     </Filter>
@@ -228,6 +216,39 @@
     </Filter>
     <Filter Include="02. GameObjects\09. Insect">
       <UniqueIdentifier>{729048ac-fc47-4407-b3bf-ec60335158f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\04. Generic">
+      <UniqueIdentifier>{b7063e4a-43f1-43b2-958d-3dd65a108d87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\04. Generic\Get">
+      <UniqueIdentifier>{ef1d0921-60e2-4c44-9dbe-02456b3f835c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\04. Generic\Eat">
+      <UniqueIdentifier>{f71c1710-fc68-42c7-86f2-f109fe8d13d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\UI_Responcer">
+      <UniqueIdentifier>{a76218b8-4363-41d1-adf4-24bd17db03e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Base">
+      <UniqueIdentifier>{fe37012b-9df8-4557-827c-772e5939cbf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Base\Cursor">
+      <UniqueIdentifier>{73446fac-99cf-4397-891a-079b6f0260dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Base\DialoguePanel">
+      <UniqueIdentifier>{5d546774-282a-43d6-94a1-0b6b01b477b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Base\SelectPanel">
+      <UniqueIdentifier>{6e6020a5-bee8-4af4-aae6-83880ef220c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Base\Text">
+      <UniqueIdentifier>{6eb06499-1daa-49b1-a07c-f0ed86e66a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Base\TexturePanel">
+      <UniqueIdentifier>{c1324510-86f8-4feb-b6ca-db36ddba02fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\EventMessage">
+      <UniqueIdentifier>{15986ea5-9249-4a65-9f1f-caf6d021bb55}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -430,7 +451,7 @@
       <Filter>02. GameObjects\00. Player\Inventory\InvenSlot</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_Cursor.h">
-      <Filter>02. GameObjects\08. UI\Cursor</Filter>
+      <Filter>02. GameObjects\08. UI\Base\Cursor</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ItemSpawner.h">
       <Filter>02. GameObjects\07. LevelObject\ItemSpawner</Filter>
@@ -445,13 +466,13 @@
       <Filter>02. GameObjects\00. Player\Inventory\InvenSlot\ItemText</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SelectPanel.h">
-      <Filter>02. GameObjects\08. UI\SelectPanel</Filter>
+      <Filter>02. GameObjects\08. UI\Base\SelectPanel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TexturePanel.h">
-      <Filter>02. GameObjects\08. UI\TexturePanel</Filter>
+      <Filter>02. GameObjects\08. UI\Base\TexturePanel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_Text.h">
-      <Filter>02. GameObjects\08. UI\Text</Filter>
+      <Filter>02. GameObjects\08. UI\Base\Text</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_NetSwing.h">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. NetSwing</Filter>
@@ -461,6 +482,21 @@
     </ClInclude>
     <ClInclude Include="..\Public\Insect_Object.h">
       <Filter>02. GameObjects\09. Insect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Get.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\04. Generic\Get</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Eat.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\04. Generic\Eat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Responcer.h">
+      <Filter>02. GameObjects\07. LevelObject\UI_Responcer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DialoguePanel.h">
+      <Filter>02. GameObjects\08. UI\Base\DialoguePanel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_EventMsg.h">
+      <Filter>02. GameObjects\08. UI\EventMessage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -647,7 +683,7 @@
       <Filter>02. GameObjects\00. Player\Inventory\InvenSlot</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_Cursor.cpp">
-      <Filter>02. GameObjects\08. UI\Cursor</Filter>
+      <Filter>02. GameObjects\08. UI\Base\Cursor</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ItemSpawner.cpp">
       <Filter>02. GameObjects\07. LevelObject\ItemSpawner</Filter>
@@ -662,13 +698,13 @@
       <Filter>02. GameObjects\00. Player\Inventory\InvenSlot\ItemText</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SelectPanel.cpp">
-      <Filter>02. GameObjects\08. UI\SelectPanel</Filter>
+      <Filter>02. GameObjects\08. UI\Base\SelectPanel</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\TexturePanel.cpp">
-      <Filter>02. GameObjects\08. UI\TexturePanel</Filter>
+      <Filter>02. GameObjects\08. UI\Base\TexturePanel</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_Text.cpp">
-      <Filter>02. GameObjects\08. UI\Text</Filter>
+      <Filter>02. GameObjects\08. UI\Base\Text</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_NetSwing.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. NetSwing</Filter>
@@ -678,6 +714,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\Insect_Object.cpp">
       <Filter>02. GameObjects\09. Insect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Get.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\04. Generic\Get</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Eat.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\04. Generic\Eat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Responcer.cpp">
+      <Filter>02. GameObjects\07. LevelObject\UI_Responcer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DialoguePanel.cpp">
+      <Filter>02. GameObjects\08. UI\Base\DialoguePanel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_EventMsg.cpp">
+      <Filter>02. GameObjects\08. UI\EventMessage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

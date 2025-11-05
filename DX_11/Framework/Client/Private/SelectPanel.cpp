@@ -34,8 +34,6 @@ HRESULT CSelectPanel::Initialize(INIT_DESC* pArg)
 	Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_SelectPanel.png");
 	Get_Component<CSprite2D>()->Set_CompActive(false);
 
-
-
 	m_pSelectHighlight = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TexturePanel" })
 		.Add_To_Level("GamePlay_Level")
 		.Scale({ 0,0 })
@@ -110,7 +108,7 @@ void CSelectPanel::Update(_float dt)
 		m_pTexts[i]->Set_Size(_float2{ m_pTexts[i]->Text_Length(),50 });
 
 		m_pTexts[i]->Align_To(ANCHOR::Center,
-			{	(-m_fSizeX*0.5f) + 20.f,
+			{	(-m_fSizeX*0.5f) + 25.f,
 				(i - (m_SelectCount - 1) * 0.5f) * 25.f});
 	}
 	m_pSelectHighlight->Size_To({ m_pTexts[m_NowIndex]->Text_Length(),10 }, dt * 6);
@@ -120,6 +118,9 @@ void CSelectPanel::Update(_float dt)
 		m_pTexts[m_NowIndex]->Local_Center().y + 5});
 
 	m_pCursor->Set_Pivot({ -m_fSizeX * 0.5f , m_pTexts[m_NowIndex]->Local_Center().y }, { 0,0 }, {1,0});
+
+	Size_To({ MaxWidth * 1.5f, 40.f * m_SelectCount < 80 ? 80 : 40.f * m_SelectCount
+		}, 8 * dt);
 
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
@@ -148,9 +149,10 @@ void CSelectPanel::DeActive()
 	Get_Component<CSprite2D>()->Set_CompActive(false);
 	m_pSelectHighlight->Set_Size(_float2{ 0,0 });
 	m_bActive = false;
+	MaxWidth = 0.f;
 }
 
-void CSelectPanel::Set_Selecte(vector<wstring> select)
+void CSelectPanel::Set_Selecte(vector<wstring> select,_float dt)
 {
 	if (select.empty())
 		return;
@@ -159,7 +161,6 @@ void CSelectPanel::Set_Selecte(vector<wstring> select)
 		return;
 
 	m_SelectCount = select.size();
-
 	for (size_t i = 0; i < m_pTexts.size(); i++)
 	{
 		if (i >= m_SelectCount) {
@@ -170,7 +171,11 @@ void CSelectPanel::Set_Selecte(vector<wstring> select)
 		m_pTexts[i]->Get_Component<CTextSlot>()->Set_Text(select[i]);
 		m_pTexts[i]->Set_Active(true);
 		m_pTexts[i]->Set_Anchor(ANCHOR::Left|ANCHOR::Center);
+
+		if (m_pTexts[i]->Text_Length() > MaxWidth)
+			MaxWidth = m_pTexts[i]->Text_Length();
 	}
+
 
 	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);
 	m_pSelectHighlight->Get_Component<CSprite2D>()->Set_CompActive(true);

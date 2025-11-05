@@ -19,7 +19,7 @@ public:
 public:
     void Active();
     void DeActive();
-    void Set_Selecte(vector<wstring> select);
+    void Set_Selecte(vector<wstring> select,_float dt);
     _int Check_Select() { return m_SelectedIndex; };
 private:
     _bool m_bActive = { false };
@@ -29,7 +29,7 @@ private:
     class CUI_Cursor* m_pCursor = { nullptr };
     class CUI_Object* m_pSelectHighlight = { nullptr };
     vector<class CUI_Text*>m_pTexts;
-
+    _float MaxWidth = {};
 public:
     static CSelectPanel* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

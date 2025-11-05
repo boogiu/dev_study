@@ -20,6 +20,9 @@ HRESULT CAIMaterial::Initialize(const aiMaterial* pAIMaterial, const string& fil
 		string fileName = entry.path().stem().string(); // 확장자 제외
 		string ext = entry.path().extension().string();
 
+		string parentFolder = filesystem::path(fileDirectory).parent_path().string();
+		string ParentName = filesystem::path(parentFolder).filename().string();
+
 		if (ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".bmp" && ext != ".dds")
 			continue;
 
@@ -82,9 +85,10 @@ HRESULT CAIMaterial::Initialize(const aiMaterial* pAIMaterial, const string& fil
 		else
 			continue; // 일치하는 접미어가 없으면 스킵
 
-		CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(fileName, filePath);
-		Link_Texture(G_GlobalLevelKey, fileName, textureType);
+		CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(to_string(m_MaterialDataID)+fileName, filePath);
+		Link_Texture(G_GlobalLevelKey, to_string(m_MaterialDataID) + fileName, textureType);
 	}
+
 	m_passConstant = "Opaque";
 
 	for (size_t i = 0; i < MAX_TEXTURE_TYPE_VALUE; i++)

@@ -10,3 +10,10 @@ typedef struct tagItemDataDesc {
 	string modelName = {};
 	string materialName = {};
 }ITEM_DATA_DESC, TOOL_DATA_DESC;
+
+struct EventMsgDesc {
+	_float2 OpenSize = {};
+	_float OpenSpeed = {};
+	vector<wstring> textSequence;
+	function<void()> OnClose;
+};

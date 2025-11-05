@@ -103,6 +103,8 @@ void CTarget_Camera::Zoom_In(_float dt)
 	m_pTransform->LookAt({ LookPos.x, m_fCurrentLookY,	LookPos.z + 10 });
 
 	m_pTransform->Set_Pos(DstPos);
+
+	Get_Component<CCamera>()->Lerp_FOV(40, dt*1.5);
 }
 
 void CTarget_Camera::Zoom_Out(_float dt)
@@ -132,6 +134,7 @@ void CTarget_Camera::Zoom_Out(_float dt)
 	}
 
 	m_pTransform->Set_Pos(DstPos);
+	Get_Component<CCamera>()->Lerp_FOV(60, dt);
 
 }
 

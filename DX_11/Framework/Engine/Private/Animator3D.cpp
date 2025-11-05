@@ -341,6 +341,15 @@ _float4x4 CAnimator3D::Get_BoneMatrix(_uint Index)
 	}
 }
 
+_float4x4* CAnimator3D::Get_BoneMatrixPtr(const string& boneName)
+{
+	_int Index = m_pData->Find_BoneIndexByName(boneName);
+	if (Index == -1)  return nullptr;
+	else {
+		return &m_FinalMatices[Index];
+	}
+}
+
 void CAnimator3D::Animation_Run(_float dt)
 {
 	if (m_iCurrentClipIndex == -1)  return;

@@ -16,6 +16,11 @@ public:
     virtual void Request_ChangeState(STATE_LAYER eLayer, const string& NextState) PURE;
 
 public:
+    virtual void OnCollisionEnter(COLLISION_CONTEXT context);
+    virtual void OnCollisionStay(COLLISION_CONTEXT context);
+    virtual void OnCollisionExit(COLLISION_CONTEXT context);
+
+public:
     class CLayerState* Get_State(STATE_LAYER eLayer) { return m_LayerStates[eLayer]; }
 protected:
     map<STATE_LAYER, class CLayerState*> m_LayerStates;

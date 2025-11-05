@@ -6,8 +6,8 @@ class CToolItem :
 {
 public:
     typedef struct tagPlayerToolDesc : GAMEOBJECT_DESC {
-        CGameObject* pPlayer = { nullptr };
-    }PLAYER_TOOL_DESC;
+        CGameObject* pOwner = { nullptr };
+    }CHRACTER_TOOL_DESC;
 
 private:
     CToolItem();
@@ -22,10 +22,19 @@ public:
     void Late_Update(_float dt) override;
     virtual void Render_GUI();
 
+public:
+    void OnCollisionEnter(COLLISION_CONTEXT context) override;
+    void OnCollisionStay(COLLISION_CONTEXT context) override;
+    void OnCollisionExit(COLLISION_CONTEXT context) override;
+
 private:
     void AdjustByItem(itemType type);
 public:
     void Set_Item(TOOL_DATA_DESC data);
+
+private:
+    CGameObject* m_pOwner = { nullptr };
+
 public:
     static CToolItem* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

@@ -106,7 +106,7 @@ void CItem_Object::Set_Throw(_fvector StartPos, _fvector throwDir)
 	
 	m_pTransform->Set_Pos(pos);
 	/*여기서 더해주니까 방향 벡터는 보정 없음*/
-	XMStoreFloat4(&m_DstPosition, StartPos + XMVector4Normalize(throwDir) * 5);
+	XMStoreFloat4(&m_DstPosition, StartPos + XMVector4Normalize(throwDir) * 8);
 	m_eState = THROW;
 }
 
@@ -167,7 +167,7 @@ void CItem_Object::Throw_Item(_float dt)
 	/*포물선 느낌으로*/
 	_float4 movePos;
 	XMStoreFloat4(&movePos, MovedPos);
-	movePos.y += 3 * sinf(XMConvertToRadians(45)) - m_fBoundingTime * 3.2f;
+	movePos.y += 3 * sinf(XMConvertToRadians(45)) - m_fBoundingTime * 9.8f;
 
 	if (movePos.y <= m_MarginY) {
 		movePos.y = m_MarginY;
@@ -179,7 +179,9 @@ void CItem_Object::Throw_Item(_float dt)
 		m_fBoundingTime = 0;
 		m_eState = DROP;
 		m_pTransform->Set_Y(m_MarginY);
- 	}
+		auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+		m_SyncedIndex = TileSystem->Get_IndexByPosition(Get_Position());
+	}
 }
 
 void CItem_Object::Find_Ground()
@@ -202,7 +204,8 @@ void CItem_Object::Find_Ground()
 		else {	//현재 인덱스를 아직 찾지 못한 상태
 			/*위치를 찾자 -> 빠운드로 현재 인덱스의 중심 위치 검색*/
 			m_eState = BOUND;
-			m_DstPosition = TileSystem->Get_PositionByIndex(m_SyncedIndex, ANCHOR::Center);
+			TILE_INDEX NowIndex = TileSystem->Get_IndexByPosition(Get_Position());
+			m_DstPosition = TileSystem->Get_PositionByIndex(NowIndex, ANCHOR::Center);
 			return;
 		}
 

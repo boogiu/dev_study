@@ -20,6 +20,7 @@ public:
 
 public :
     void Set_Pivot(_float2 Pivot, _float2 Offset = { 25,25 },_float2 Movevec = {1,1});
+    void Set_Speed(_float speed) { m_fFloatingSpeed = speed; };
 private:
     _float2 m_vPivot = {};
     _float m_fFloatingTime = {  };

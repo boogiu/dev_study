@@ -23,6 +23,7 @@ public:
         TILE_INFO Range_FowardInfo = {};
         _uint neighboValidFlag = {};
         vector<TILE_INFO> infos;
+        TILE_FLAG markFlag = TILE_FLAG::ONPLAYER;
     };
 
     struct ItemPacket {
@@ -41,10 +42,13 @@ public:
             MsgMove = MsgAdd = MsgAction = MsgPickup = MsgBag = false;
         }
     };
-    struct SituationPacket {
-        _bool isOpenningBag = false; //방향키
-        _bool isTalking = false; //도구 사용키 스페이스
+    struct StateInfoHubPacket {
+          CGameObject* m_pObjectOnLeftHand = { nullptr };
+          CGameObject* m_pLeftHand = { nullptr };
+          CGameObject* m_pRightHand = { nullptr };
     };
+
+
 
 private:
     CPlayer();
@@ -59,7 +63,7 @@ public:
     void Late_Update(_float dt) override;
     virtual void Render_GUI();
 
-public:
+public:        
     void Update_Input(_float dt);
     void Update_Movement(_float dt);
     void Update_TileInfo(_float dt);
@@ -67,13 +71,15 @@ public:
     void Adjust_To_WorldFoward();
     void Camera_Zoom_In();
     void Camera_Zoom_Out();
+    void Open_DialoguePanel();
+    void Close_DialoguePanel();
 
 public:
     MovementPacket& Get_MovementPacket() { return m_MovementPack; }
     TileInfoPacket& Get_TileInfoPacket() { return m_TileInfoPack; }
     ItemPacket& Get_ItemPacket() { return m_ItemPack; }
     ControlPacket& Get_ControlPack() { return m_ControlPack; }
-    SituationPacket& Get_SituationPack() { return m_SituationPack; }
+    StateInfoHubPacket& Get_InfoPack() { return m_InfoPack; }
 
     _bool Can_Walk(_float2& moveAxis);
     TILE_INDEX Get_FowardIndex();
@@ -92,10 +98,13 @@ public:
     HRESULT Set_InvenEvent(ITEM_DATA_DESC item, _int Slot, wstring SelectedEvent);
 
 public:
+    void Open_EventMsg(EventMsgDesc* evtMsg);
+
+public:
     void ActiveCollider_Tool(_bool active, string Event = {});
     void ActiveCollider_LeftHand(_bool active, string Event = {});
     void ActiveCollider_RightHand(_bool active, string Event = {});
-
+    
 private:
     void Add_AnimationClips();
     void Add_PartObjects();
@@ -104,6 +113,7 @@ private:
 
 private:
     void Mark_TileFlag();
+
 
 private:
     class CPlayerStateMachine* m_pStateMachine= { nullptr };
@@ -114,7 +124,7 @@ private:
     TileInfoPacket m_TileInfoPack = {};
     ItemPacket m_ItemPack = {};
     ControlPacket m_ControlPack = {};
-    SituationPacket m_SituationPack = {};
+    StateInfoHubPacket m_InfoPack = {};
 
     _float4 m_vPrevPos = {  };
 
@@ -126,3 +136,6 @@ public:
     void Free() override;
 };
 NS_END
+
+
+/*눈 4번 , 머리 27번 ,입 3번 */

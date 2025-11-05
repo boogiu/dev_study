@@ -65,6 +65,24 @@ _uint CLayerState::Get_CurrentMask()
 		return 0xfffffff;
 }
 
+void CLayerState::OnCollisionEnter(COLLISION_CONTEXT context)
+{
+	if (m_pCurrent)
+		m_pCurrent->OnCollisionEnter(context);
+}
+
+void CLayerState::OnCollisionStay(COLLISION_CONTEXT context)
+{
+	if (m_pCurrent)
+		m_pCurrent->OnCollisionStay(context);
+}
+
+void CLayerState::OnCollisionExit(COLLISION_CONTEXT context)
+{
+	if (m_pCurrent)
+		m_pCurrent->OnCollisionExit(context);
+}
+
 void CLayerState::Render_State()
 {
 	ImGui::SeparatorText(m_pCurrent->GetName().c_str());

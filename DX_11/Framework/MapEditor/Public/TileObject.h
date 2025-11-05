@@ -140,7 +140,7 @@ public:
     virtual void Free();
 
 
-    static unordered_map<string, vector<string>>TileMapTable;
+    //static unordered_map<string, vector<string>>TileMapTable;
 };
 
 NS_END

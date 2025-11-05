@@ -1,6 +1,7 @@
 #include "Client_Defines.h"
 #include "UI_Text.h"
 #include "TextSlot.h"
+#include "Sprite2D.h"`
 CUI_Text::CUI_Text()
 {
 }
@@ -23,7 +24,13 @@ HRESULT CUI_Text::Initialize_Prototype()
 HRESULT CUI_Text::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
+
 	Add_Component<CTextSlot>();
+	Get_Component<CSprite2D>()->Link_Shader(G_GlobalLevelKey, "VTX_UI.hlsl");
+	Get_Component<CTextSlot>()->Set_Color(_float4(0.447, 0.365, 0.259, 1.0));
+	Get_Component<CTextSlot>()->Set_Font("Sindy");
+	Get_Component<CTextSlot>()->Set_Size(0.7);
+	Set_Anchor(ANCHOR::Left);
 
 	return S_OK;
 }
@@ -46,6 +53,12 @@ void CUI_Text::Late_Update(_float dt)
 
 void CUI_Text::Render_GUI()
 {
+}
+
+void CUI_Text::Set_Scale(_float size)
+{
+	Get_Component<CTextSlot>()->Set_Size( size);
+
 }
 
 _float CUI_Text::Text_Length()

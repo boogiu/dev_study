@@ -56,6 +56,7 @@ public:
 public:
     _float4x4 Get_BoneMatrix(const string& boneName);
     _float4x4 Get_BoneMatrix(_uint Index);
+    _float4x4* Get_BoneMatrixPtr(const string& boneName);
 
 protected:
     void Animation_Run(_float dt);

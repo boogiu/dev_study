@@ -18,7 +18,10 @@ public:
 	virtual void Priority_Update(_float dt)override;
 	virtual void Update(_float dt)override;
 	virtual void Late_Update(_float dt)override;
-
+public:
+	/*활성 비활성에 대한 로직을 스스로*/
+	virtual void UI_Active(void* pArg = nullptr) {};
+	virtual void UI_DeActive(void* pArg = nullptr) {};
 public :
 	_uint Get_Priority() { return m_iPriority; };
 	void Set_Priority(_uint priority) { m_iPriority = priority; }
@@ -26,7 +29,7 @@ public :
 	void Set_Size(_float2 size) { m_fSizeX = size.x; m_fSizeY = size.y; }
 	void Set_Size(_fvector size);
 
-	void Size_To(_fvector size, _float Speed);
+	_bool Size_To(_fvector size, _float Speed);
 
 	_float2 Get_CenterPos() { return{ m_fLocalX ,m_fLocalY }; }
 
