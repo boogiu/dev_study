@@ -7,6 +7,10 @@
 
 #include "GameInstance.h"
 
+#include "Level.h"
+#include "InsectSpawner.h"
+#include "Insect_Object.h"
+
 CPlayerState_Get::CPlayerState_Get()
 {
 }
@@ -39,6 +43,7 @@ void CPlayerState_Get::OnUpdate(_float dt)
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	auto InfoPack = m_pPlayer->Get_InfoPack();
+
 	if (CGameObject* pObject = InfoPack.m_pObjectOnLeftHand) {
 		if (m_ePhase == Idle)
 			pObject->Get_Component<CModel>()->Set_CompActive(true);
@@ -65,16 +70,8 @@ void CPlayerState_Get::OnUpdate(_float dt)
 
 	case Client::CPlayerState_Get::Keep:
 		if (!m_bMsgComplete) {
-			EventMsgDesc desc = {};
-			desc.OpenSize = { 600,150 };
-			desc.OpenSpeed = 8.f;
-			desc.textSequence = { L"응? 이건...", L"고추 잠자리를 잡았다!\n저녁 노을 같은 붉은 색!" };
-			desc.OnClose = [&]() {
-				auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-				Animator->Change_Animation("Generic_Putaway.anim", true);
-				m_pPlayer->Camera_Zoom_Out();
-				m_ePhase = PutIn;
-				};
+			EventMsgDesc desc = Make_Sequence(m_pPlayer->Get_InfoPack().m_pObjectOnLeftHand);
+
 			m_pPlayer->Open_EventMsg(&desc);
 			m_bMsgComplete = true;
 		}
@@ -83,6 +80,7 @@ void CPlayerState_Get::OnUpdate(_float dt)
 	case Client::CPlayerState_Get::PutIn: {
 
 		if (Animator->isCurrentAnimEnd()) {
+			Add_Inventory(m_pPlayer->Get_InfoPack().m_pObjectOnLeftHand);
 			m_ePhase = End;
 		}
 	}
@@ -122,6 +120,43 @@ _uint CPlayerState_Get::Get_InputMask() const
 
 void CPlayerState_Get::Render_State()
 {
+}
+
+EventMsgDesc CPlayerState_Get::Make_Sequence(CGameObject* pObject)
+{
+	EventMsgDesc desc = {};
+	desc.OpenSize = { 600,150 };
+	desc.OpenSpeed = 8.f;
+
+	if (pObject->Has_Tag("Item")) {
+
+	}
+	else if (pObject->Has_Tag("Insect")) {
+		auto spawner = m_pPlayer->Get_NowLevel()->Get_LevelObject<CInsectSpawner>();
+		INSECT_DATA_DESC data = spawner->Get_Data(pObject->Get_InstanceName());
+		wstring CapturedMsg = data.InsectName + L"를 잡았다!";
+		desc.textSequence = { L"응? 이건...", CapturedMsg + L"\n" + data.Comment };
+	}
+
+	desc.OnClose = [&]() {
+		auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+		Animator->Change_Animation("Generic_Putaway.anim", true);
+		m_pPlayer->Camera_Zoom_Out();
+		m_ePhase = PutIn;
+		};
+
+	return desc;
+}
+
+void CPlayerState_Get::Add_Inventory(CGameObject* pObject)
+{
+	if (pObject->Has_Tag("Item")) {
+
+	}
+	else if (pObject->Has_Tag("Insect")) {
+		m_pPlayer->Add_ITEM(dynamic_cast<CInsect_Object*>(pObject)->Get_ItemData());
+	}
+
 }
 
 CPlayerState_Get* CPlayerState_Get::Create()

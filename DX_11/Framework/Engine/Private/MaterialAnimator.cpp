@@ -60,8 +60,10 @@ HRESULT CMaterialAnimator::Change_Animation(const string& subsetKey, const strin
 {
 	auto iterSub = m_NowAnimations.find(subsetKey);
 
-	if (m_NowAnimations.find(subsetKey) == m_NowAnimations.end())
+	if (m_NowAnimations.find(subsetKey) == m_NowAnimations.end()) {
 		m_NowAnimations[subsetKey] = keyframeKey;
+		iterSub = m_NowAnimations.find(subsetKey);
+	}
 
 	auto iterKey = m_ClipNames.find(keyframeKey);
 	if (iterKey == m_ClipNames.end())
@@ -106,8 +108,10 @@ void CMaterialAnimator::Update_KeyFrame(const string& subsetKey, MAT_KEYFRAME& K
 	_uint FrameCount = KeyFrame.Cilp.AnimationKeyFrame.size();
 	/*그중 도달 지점*/
 	_uint nowIndex = static_cast<_uint>(KeyFrame.fCurrentTime);
-	if (nowIndex >= FrameCount)
-		nowIndex = FrameCount - 1;
+	if (nowIndex >= FrameCount) {
+		KeyFrame.fCurrentTime = 0;
+		nowIndex = 0;
+	}
 
 	auto matInstance = m_pMasterMaterial->Find_MaterialByName(subsetKey);
 

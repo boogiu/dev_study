@@ -261,8 +261,9 @@ CAnimationClip* CResourceMgr::Load_AnimClip(const string& levelTag,  const strin
 			return iter->second;
 	}
 
-	CAnimationClip* pData = CAnimationClip::Create(MakePath(AnimClipKey), AnimClipKey, Subject);
-	map.emplace(AnimClipKey + "_" + Subject, pData);
+	CAnimationClip* pData = CAnimationClip::Create(MakePath(AnimClipKey + "_" + Subject), AnimClipKey, Subject);
+	if(pData)
+		map.emplace(AnimClipKey + "_" + Subject, pData);
 
 	return pData;
 }

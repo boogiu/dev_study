@@ -216,11 +216,6 @@ void CGameObject::Set_Layer(CLayer* pLayer)
 	m_pLayer = pLayer;
 }
 
-void CGameObject::Set_Level(CLevel* pLevel)
-{
-	m_pLevel = pLevel;
-}
-
 const vector<CGameObject*> CGameObject::Get_Children()
 {
 	vector<CGameObject*> empty;

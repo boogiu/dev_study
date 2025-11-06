@@ -370,6 +370,9 @@ vector<wstring> CPlayer_Inventory::Switch_ItemSelect(itemType type, _uint count)
 			SelectScript.push_back(L"1개 꺼내기");
 		break;
 
+	case itemType::Insect:
+		SelectScript = { L"근처에 두기", L"풀어주기"};
+		break;
 	case itemType::Axe:
 	case itemType::Scoop:
 	case itemType::Net:

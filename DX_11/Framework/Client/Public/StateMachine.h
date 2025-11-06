@@ -1,7 +1,5 @@
 #pragma once
 #include "Base.h"
-#include "Player.h"
-
 NS_BEGIN(Client)
 
 class CStateMachine abstract:

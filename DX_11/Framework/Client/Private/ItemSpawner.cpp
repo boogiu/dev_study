@@ -6,6 +6,7 @@
 #include "Builder.h"
 #include "Item_Object.h"
 #include "Level.h"
+#include "InsectSpawner.h"
 
 CItemSpawner::CItemSpawner()
 {
@@ -111,14 +112,9 @@ HRESULT CItemSpawner::Read_ItemData(wstring filePath)
 			continue;
 		}
 	}
-	for (auto& pair : m_ItemDataTable)
-	{
-		ITEM_DATA_DESC desc = pair.second;
-
-	}
-
 	return S_OK;
 }
+
 
 ITEM_DATA_DESC CItemSpawner::Get_ItemData(string ItemTag)
 {
@@ -176,6 +172,25 @@ CItem_Object* CItemSpawner::ThrowItem(string ItemTag, _fvector pos, _cvector Mov
 		Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_DropItem" })
 		.Add_ObjDesc(pDesc)
 		.Build(ItemTag);
+
+	if (pObject) {
+		CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { m_pOwner->Get_Key(),"Item_Layer" });
+		CItem_Object* item = dynamic_cast<CItem_Object*>(pObject);
+		item->Set_Throw(pos, MoveDir);
+		return item;
+	}
+	return nullptr;
+}
+
+CItem_Object* CItemSpawner::ThrowItem(ITEM_DATA_DESC data, _fvector pos, _cvector MoveDir)
+{
+	CItem_Object::DROP_ITEM_DESC* pDesc = new CItem_Object::DROP_ITEM_DESC;
+	pDesc->itemDesc = data;
+
+	CGameObject* pObject =
+		Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_DropItem" })
+		.Add_ObjDesc(pDesc)
+		.Build(data.FileName);
 
 	if (pObject) {
 		CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pObject, { m_pOwner->Get_Key(),"Item_Layer" });

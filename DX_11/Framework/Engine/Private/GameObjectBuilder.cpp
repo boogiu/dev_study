@@ -69,9 +69,10 @@ CGameObject* CGameObjectBuilder::Build(const string& instanceKey, _uint* id)
 	}
 	/*즉 -> 클론 후에 레이어에서 삽입하고 있는 중임*/
 	
-	if (instance && id)
+	if (instance && id) {
 		*id = instance->Get_ObjectID();
-
+	}
+	instance->Awake();
 	return instance;
 }
 

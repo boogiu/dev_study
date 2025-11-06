@@ -29,10 +29,12 @@ private:
 
 public:
     MaterialFile Load_Materials(string path);
+    HRESULT Save_Materials();
 
 protected:
     _bool isTabOpen = { false };
-    vector<MaterialFile> m_Files;
+    MaterialFile m_Files;
+    string OriginPath = {};
     _int m_SelectedFile = -1;
     _int m_SelectedMaterial = -1;
     _int m_SelectedType = -1;

@@ -66,9 +66,11 @@ CUI_Object* CUIObjcetBuilder::Build(const string& instanceKey, _uint* id)
 	if(m_bPivoted)
 		instance->Align_To(m_eAnchor, m_vPivot);
 
-	if (instance && id)
+	if (instance && id) {
 		*id = instance->Get_ObjectID();
+	}
 
+	instance->Awake();
 	return instance;
 }
 

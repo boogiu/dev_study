@@ -37,14 +37,14 @@ HRESULT CUI_EventMsg::Initialize(INIT_DESC* pArg)
 		.Build("Text");
 
 	Get_Component<CObjectContainer>()->Add_Child(pUI, false);
-	
+
 	m_pTexts = dynamic_cast<CUI_Text*>(pUI);
 	m_pTexts->Set_Anchor(ANCHOR::Center);
 	m_pTexts->Set_Scale(1.f);
 	CUI_Object* pCursor = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Cursor" })
 		.Add_To_Level("GamePlay_Level")
 		.Scale({ 35,20 })
-		.Position({ 0, 70})
+		.Position({ 0, 70 })
 		.Build("Dialcursor");
 
 	m_pCursor = dynamic_cast<CUI_Cursor*>(pCursor);
@@ -69,8 +69,9 @@ void CUI_EventMsg::Priority_Update(_float dt)
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
 			SequenceClear();
 			m_iSequence++;
-			if (m_iSequence >= m_iSequenceSize)
+			if (m_iSequence >= m_iSequenceSize) {
 				UI_DeActive(nullptr);
+			}
 		}
 	}
 
@@ -87,27 +88,27 @@ void CUI_EventMsg::Update(_float dt)
 
 		if (m_fTypeTime > m_fPauseTime) {
 
-		wstring Fulltext = sequence[m_iSequence];
-		wstring visibleText;
-		if (m_iPauseSubset < static_cast<_int>(Fulltext.size()))
-		{
-			m_iPauseSubset++;
-			if (Fulltext.substr(m_iPauseSubset, 1) == L".")
+			wstring Fulltext = sequence[m_iSequence];
+			wstring visibleText;
+			if (m_iPauseSubset < static_cast<_int>(Fulltext.size()))
 			{
-				m_fPauseTime = .25f;
-				m_fTypeTime = 0.f;
+				m_iPauseSubset++;
+				if (Fulltext.substr(m_iPauseSubset, 1) == L".")
+				{
+					m_fPauseTime = .25f;
+					m_fTypeTime = 0.f;
+				}
+				else
+					m_fPauseTime = .15f;
 			}
-			else
-				m_fPauseTime = .15f;
-		}
 
-		visibleText = Fulltext.substr(0, m_iPauseSubset);
+			visibleText = Fulltext.substr(0, m_iPauseSubset);
 
-		m_pTexts->Get_Component<CTextSlot>()->Set_Text(visibleText);
+			m_pTexts->Get_Component<CTextSlot>()->Set_Text(visibleText);
 
-		/*해당 시퀀스 글자 출력 완료*/
-		if (visibleText.size() == sequence[m_iSequence].size())
-			m_bSequenceComplete = true;
+			/*해당 시퀀스 글자 출력 완료*/
+			if (visibleText.size() == sequence[m_iSequence].size())
+				m_bSequenceComplete = true;
 		}
 	}
 
@@ -145,17 +146,19 @@ void CUI_EventMsg::UI_Active(void* pArg)
 
 void CUI_EventMsg::UI_DeActive(void* pArg)
 {
+	m_bActive = false;
 	m_onClose();
 	SequenceClear();
 	m_vOpenSize = { 0,0 };
 	m_fSizeX = 0;
 	m_fSizeY = 0;
 	m_iSequenceSize = 0;
+	m_iSequence = 0;
 	vector<wstring> dummy;
 	sequence.swap(dummy);
 	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(false);
-	m_bActive = false;
 	m_onClose = nullptr;
+	m_pTexts->Set_Active(false);
 }
 
 void CUI_EventMsg::SequenceClear()

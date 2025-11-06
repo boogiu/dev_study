@@ -30,6 +30,7 @@
 #include "PlayerState_TransTool.h"
 #include "PlayerState_Get.h"
 #include "PlayerState_Eat.h"
+#include "NpcState_Machine.h"
 
 CPlayerStateMachine::CPlayerStateMachine(CPlayer* pPlayer)
 	:m_pOwner(pPlayer)
@@ -130,10 +131,12 @@ void CPlayerStateMachine::Render_State(CPlayer* pPlayer)
 	
 }
 
+
 _uint CPlayerStateMachine::Get_CurrentMask(STATE_LAYER eLayer)
 {
 	return m_LayerStates[eLayer]->Get_CurrentMask();
 }
+
 
 CPlayerStateMachine* CPlayerStateMachine::Create(CPlayer* pPlayer)
 {

@@ -42,13 +42,19 @@ void CMaterialAdjust::Render_GUI()
 		isTabOpen = !isTabOpen;
 	if (ImGui::Button("Add_File"))
 	{
-		vector<string> names = Helper::OpenMultiFiles();
-		for (size_t i = 0; i < names.size(); i++)
-		{
-			m_Files.push_back(Load_Materials(names[i]));
+		OriginPath = Helper::OpenFile_Dialogue();
+		if (filesystem::path(OriginPath).extension() != ".mat") {
+			OriginPath = {};
+			return;
 		}
-	}
 
+		m_Files = Load_Materials(OriginPath);
+	}
+	if (ImGui::Button("Clear"))
+	{
+		OriginPath = {};
+		m_Files = {};
+	}
 	if (isTabOpen) {
 		Render_AdjustTab();
 	}
@@ -58,66 +64,65 @@ void CMaterialAdjust::Render_AdjustTab()
 {
 	ImGui::SetNextWindowSize(ImVec2(600, 600), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Adjust_Material", &isTabOpen, ImGuiWindowFlags_NoCollapse);
-		Render_FileHierarchy();
+	Render_FileHierarchy();
+	if (ImGui::Button("Save_File"))
+	{
+		Save_Materials();
+	}
 	ImGui::End();
 }
 
 void CMaterialAdjust::Render_FileHierarchy()
 {
 
-	for (size_t f = 0; f < m_Files.size(); ++f)
+	MaterialFile& file = m_Files;
+	string fileLabel = string(file.header.materialFileKey) + " (Materials: " + std::to_string(file.materials.size()) + ")";
+	if (ImGui::TreeNode(fileLabel.c_str()))
 	{
-		MaterialFile& file = m_Files[f];
-		// 파일 트리 노드
-		string fileLabel = string(file.header.materialFileKey) + " (Materials: " + std::to_string(file.materials.size()) + ")";
-		if (ImGui::TreeNode(fileLabel.c_str()))
+		// Material 단위
+		for (size_t m = 0; m < file.materials.size(); ++m)
 		{
-			// Material 단위
-			for (size_t m = 0; m < file.materials.size(); ++m)
+			MaterialInfo& mat = file.materials[m];
+			string subSet = "subSet : " + string(mat.header.materialDataKey) + "##" + std::to_string(m);
+			if (ImGui::TreeNode(subSet.c_str()))
 			{
-				MaterialInfo& mat = file.materials[m];
-				string subSet = "subSet : " + string(mat.header.materialDataKey) + "##" + std::to_string(m);
+				ImGui::InputText("Shader Key", mat.header.ShaderKey, IM_ARRAYSIZE(mat.header.ShaderKey));
+				ImGui::InputText("Shader Pass", mat.header.passConstant, IM_ARRAYSIZE(mat.header.passConstant));
 
-				if (ImGui::TreeNode(subSet.c_str()))
+				// TextureType 단위
+				for (size_t t = 0; t < mat.textureTypes.size(); ++t)
 				{
-					ImGui::Text("Texture Type Count: %u", mat.header.TextureTypeCount);
+					TextureFile& texFile = mat.textureTypes[t];
 
-					// TextureType 단위
-					for (size_t t = 0; t < mat.textureTypes.size(); ++t)
+					string typeLabel = ConvertToConstant(static_cast<TEXTURE_TYPE>(texFile.header.typeID)) + "##" + std::to_string(t);
+
+					if (ImGui::TreeNode(typeLabel.c_str()))
 					{
-						TextureFile& texFile = mat.textureTypes[t];
-						
-						string typeLabel = ConvertToConstant(static_cast<TEXTURE_TYPE>(texFile.header.typeID)) +"##" + std::to_string(t);
+						ImGui::Text("Texture Count: %u", texFile.header.TextureCount);
 
-						if (ImGui::TreeNode(typeLabel.c_str()))
+						// TextureInfo 단위
+						for (size_t i = 0; i < texFile.textures.size(); ++i)
 						{
-							ImGui::Text("Texture Count: %u", texFile.header.TextureCount);
+							TextureInfo& info = texFile.textures[i];
+							string texLabel = std::string(info.header.TextureKey) + "##" + std::to_string(i);
 
-							// TextureInfo 단위
-							for (size_t i = 0; i < texFile.textures.size(); ++i)
+							if (ImGui::Selectable(texLabel.c_str()))
 							{
-								TextureInfo& info = texFile.textures[i];
-								string texLabel = std::string(info.header.TextureKey) +"##" + std::to_string(i);
-
-								if (ImGui::Selectable(texLabel.c_str()))
-								{
-									m_SelectedFile = f;
-									m_SelectedMaterial = m;
-									m_SelectedType = t;
-									m_SelectedTexture = i;
-								}
+								m_SelectedMaterial = m;
+								m_SelectedType = t;
+								m_SelectedTexture = i;
 							}
-
-							ImGui::TreePop();
 						}
+
+						ImGui::TreePop();
 					}
-
-					ImGui::TreePop();
 				}
-			}
 
-			ImGui::TreePop();
+				ImGui::TreePop();
+			}
 		}
+
+		ImGui::TreePop();
 	}
 
 }
@@ -127,7 +132,7 @@ MaterialFile CMaterialAdjust::Load_Materials(string path)
 
 	ifstream ifs;
 	ifs.open(path);
-	
+
 	if (!ifs.is_open()) {
 		MSG_BOX("Wrong File path.  :Load_MaterialFromFile ");
 		return MaterialFile{};
@@ -162,6 +167,44 @@ MaterialFile CMaterialAdjust::Load_Materials(string path)
 
 	return file;
 }
+
+HRESULT CMaterialAdjust::Save_Materials()
+{
+	ofstream ofs(OriginPath, ios::binary);
+	if (!ofs.is_open()) {
+		MSG_BOX("Failed to open material file for writing.");
+		return E_FAIL;
+	}
+
+	MATERIAL_FILE_HEADER fileHeader = m_Files.header;
+	ofs.write(reinterpret_cast<const char*>(&fileHeader), sizeof(fileHeader));
+
+	for (size_t i = 0; i < m_Files.materials.size(); i++)
+	{
+		MaterialInfo matInfo = m_Files.materials[i];
+		MATERIAL_INFO_HEADER matHeader = matInfo.header;
+		ofs.write(reinterpret_cast<const char*>(&matHeader), sizeof(MATERIAL_INFO_HEADER));
+
+		for (size_t j = 0; j < matInfo.textureTypes.size(); j++)
+		{
+			TextureFile texFile = matInfo.textureTypes[j];
+			TEXTURE_FILE_HEADER texHeader = texFile.header;
+			ofs.write(reinterpret_cast<const char*>(&texHeader), sizeof(TEXTURE_FILE_HEADER));
+
+			for (size_t k = 0;  k < texFile.textures.size();  k++)
+			{
+				TextureInfo texInfo = texFile.textures[k];
+				TEXTURE_INFO_HEADER svInfo = texInfo.header;
+				ofs.write(reinterpret_cast<const char*>(&svInfo), sizeof(TEXTURE_INFO_HEADER));
+			}
+		}
+	}
+	ofs.close();
+
+	m_Files = {};
+	return S_OK;
+}
+
 
 CMaterialAdjust* CMaterialAdjust::Create()
 {

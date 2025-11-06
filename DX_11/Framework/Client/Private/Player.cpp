@@ -5,14 +5,20 @@
 #include "IInputService.h"
 #include "ITileService.h"
 #include "ICameraService.h"
+#include "IResourceService.h"
 #include "ILevelService.h"
+
 #include "Level.h"
 #include "ItemSpawner.h"
+#include "Insect_Object.h"
+#include "UI_Responcer.h"
 
 #include "SkeletalModel.h"
 #include "Material.h"
 #include "MaterialInstance.h"
 #include "MaterialData.h"
+#include "MaterialAnimator.h"
+#include "Texture.h"
 
 #include "Animator3D.h"
 #include "ObjectContainer.h"
@@ -29,8 +35,8 @@
 #include "AABB_Collider.h"
 
 #include "Item_Object.h"
-#include "Insect_Object.h"
-#include "UI_Responcer.h"
+#include "InsectSpawner.h"
+
 CPlayer::CPlayer()
 {
 }
@@ -51,6 +57,7 @@ HRESULT CPlayer::Initialize_Prototype()
 	Add_Component<CAnimator3D>();
 	Add_Component<CObjectContainer>();
 	Add_Component<CAABB_Collider>();
+	Add_Component<CMaterialAnimator>();
 
 	m_InstanceTag = "Player";
 	return hr;
@@ -59,16 +66,18 @@ HRESULT CPlayer::Initialize_Prototype()
 HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
-
 	Add_AnimationClips();
 	Add_PartObjects();
 	Set_TargetCamera();
 	Add_Inventory();
+
 	m_pStateMachine = CPlayerStateMachine::Create(this);
 	Get_Component<CSkeletalModel>()->SetDrawable(5, false);
 	Get_Component<CSkeletalModel>()->SetDrawable(8, false);
 	Get_Component<CSkeletalModel>()->SetDrawable(10, false);
+	Get_Component<CMaterialAnimator>()->LinkAnimate_Material(Get_Component<CMaterial>());
 
+	Add_MaterialAnim();
 
 	CMaterialInstance* SkinInstance = Get_Component<CMaterial>()->Find_MaterialByName("mSkin");
 	SkinInstance->Override_Pass("SkinShader");
@@ -98,6 +107,7 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	Add_ITEM(AxeData);
 	Add_ITEM(NetData);
 	Add_ITEM(ScoopData);
+
 	return S_OK;
 }
 
@@ -113,6 +123,7 @@ void CPlayer::Update(_float dt)
 	Update_Movement(dt);
 	Mark_TileFlag(); /*대충 로직 끝난 후에 타일 플래그 정비*/
 	Update_TileInfo(dt);
+	Get_Component<CMaterialAnimator>()->Update_Animation(dt);
 	m_pStateMachine->Update(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
@@ -371,10 +382,11 @@ HRESULT CPlayer::Set_InvenEvent(ITEM_DATA_DESC item, _int Slot, wstring Selected
 {
 	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 	auto Spawner = nowLevel->Get_LevelObject<CItemSpawner>();
+	auto Insect = nowLevel->Get_LevelObject<CInsectSpawner>();
 	if (SelectedEvent == L"근처에 두기")
 	{
 		m_pInventory->PullOut_Item(Slot);
-		Spawner->ThrowItem(item.FileName, m_pTransform->Get_Pos(), m_pTransform->Dir(STATE::LOOK));
+		Spawner->ThrowItem(item, m_pTransform->Get_Pos(), m_pTransform->Dir(STATE::LOOK));
 	}
 
 	else if (SelectedEvent == L"1개 꺼내기") {
@@ -392,6 +404,10 @@ HRESULT CPlayer::Set_InvenEvent(ITEM_DATA_DESC item, _int Slot, wstring Selected
 	else if (SelectedEvent == L"장착 해제하기") {
 		m_ControlPack.MsgBag = false;
 		Change_Item(ITEM_DATA_DESC{});
+	}
+	else if (SelectedEvent == L"풀어주기") {
+		m_pInventory->PullOut_Item(Slot);
+		Insect->SpawnInsect(item.Additionaldata, Get_Position());
 	}
 	return S_OK;
 }
@@ -493,6 +509,11 @@ void CPlayer::ActiveCollider_RightHand(_bool active, string Event)
 	pHandPart->Active_ColliderHand(active, Event);
 }
 
+CLevel* CPlayer::Get_NowLevel()
+{
+	return CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel();
+}
+
 void CPlayer::Add_AnimationClips()
 {
 	Get_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", "PlayerBody.model");
@@ -555,6 +576,17 @@ void CPlayer::Add_AnimationClips()
 
 }
 
+void CPlayer::Add_MaterialAnim()
+{
+	MATERIAL_CLIP clip = {};
+	clip.AnimationKeyFrame = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2 };
+	clip.fDuration = 50.f;
+	clip.TickperSecond = 15.f;
+	clip.isLoop = true;
+	Get_Component<CMaterialAnimator>()->RegisterKeyFrame("mEye", "IDLE", clip);
+	Get_Component<CMaterialAnimator>()->Change_Animation("mEye", "IDLE");
+}
+
 void CPlayer::Add_PartObjects()
 {
 	CPlayerPart_Hand::CHARACTER_PARTS_DESC* pRHandDesc = new CPlayerPart_Hand::CHARACTER_PARTS_DESC;
@@ -598,9 +630,12 @@ void CPlayer::Add_PartObjects()
 		.Add_ObjDesc(pTopDesc)
 		.Build("Top");
 
+	Adjust_Cloth_Material(pTop, "Work_mTops", "mTops");
 	CGameObject* pBottom = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ClothParts" })
 		.Add_ObjDesc(pBottomDesc)
 		.Build("Bottom");
+	Adjust_Cloth_Material(pBottom, "Sweat_mBottoms", "mBottoms");
+
 
 	Get_Component<CObjectContainer>()->Add_Child(m_InfoPack.m_pRightHand, false);
 	Get_Component<CObjectContainer>()->Add_Child(m_InfoPack.m_pLeftHand, false);
@@ -634,6 +669,33 @@ void CPlayer::Set_TargetCamera()
 	Safe_AddRef(m_pCamera);
 	Get_Component<CObjectContainer>()->Add_Child(pCamera, false);
 	CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pCamera->Get_Component<CCamera>());
+}
+
+void CPlayer::Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey)
+{
+	auto instance = pObject->Get_Component<CMaterial>()->Find_MaterialByName(subsetKey);
+	if (!instance) return;
+
+	CTexture* pDiffuse = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey+"_Alb.dds");
+	CTexture* pMixture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey+"_Mix.dds");
+	CTexture* pNormal = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey+"_Nrm.dds");
+	CTexture* pOpcity = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey+"_OP.dds");
+
+	SHADER_PARAM param = {};
+	param.iSize = 0;
+	param.typeName = "Texture2D";
+
+	param.pData = pDiffuse->Get_SRV();
+	instance->Set_Param("DiffuseTexture", param);
+
+	param.pData = pMixture->Get_SRV();
+	instance->Set_Param("MixtureTexture", param);
+
+	param.pData = pNormal->Get_SRV();
+	instance->Set_Param("NormalTexture", param);
+
+	param.pData = pOpcity->Get_SRV();
+	instance->Set_Param("OpacityTexture", param);
 }
 
 void CPlayer::Mark_TileFlag()

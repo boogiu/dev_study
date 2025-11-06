@@ -9,6 +9,7 @@
 #include "Builder.h"
 
 #include "Player.h"
+#include "NpcRco.h"
 
 #include "Target_Camera.h"
 #include "Free_Camera.h"
@@ -39,6 +40,7 @@
 #include "Insect_Object.h"
 
 #include "ItemSpawner.h"
+#include "InsectSpawner.h"
 #include "UI_Responcer.h"
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
@@ -56,6 +58,7 @@ HRESULT CGamePlayLevel::Initialize()
 {
 	
 	Add_LevelObject<CItemSpawner>()->Read_ItemData(L"../../Resources/Data/ItemData.json");
+	Add_LevelObject<CInsectSpawner>()->Link_ItemSpawner(Get_LevelObject<CItemSpawner>());
 
 	CGameInstance::GetInstance()->Get_FontSystem()->Add_Font("Sindy", TEXT("../../Resources/Font/Sindy.spritefont"));
 	Add_LevelObject<CUI_Responcer>();
@@ -70,7 +73,9 @@ HRESULT CGamePlayLevel::Awake()
 {
 
 	CGameObject* pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 550,0,550 }).Build("Player");
-	CGameObject* pInsect = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Insect_Object" }).Position({ 550,3,550 }).Build("Insect");
+	CGameObject* pRco = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_NpcRco" }).Position({ 560,0,650 }).Build("Player");
+	Get_LevelObject<CInsectSpawner>()->Read_InsectData(L"../../Resources/Data/InsectData.json");
+	Get_LevelObject<CInsectSpawner>()->Set_Target(pPlayer);
 
 	CGameObject* pFreeCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_FreeCamera" })
 		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
@@ -78,9 +83,10 @@ HRESULT CGamePlayLevel::Awake()
 		.Build("Free_Cam");
 
 	m_pObjectManager->Add_Object(pPlayer, { "GamePlay_Level", "Player_Layer" });
-	m_pObjectManager->Add_Object(pInsect, { "GamePlay_Level", "Insect_Layer" });
+	m_pObjectManager->Add_Object(pRco, { "GamePlay_Level", "NonPlayer_Layer" });
 	m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CUI_Responcer>(), { "GamePlay_Level", "UI_Layer" });
+	m_pObjectManager->Add_Object(Get_LevelObject<CInsectSpawner>(), { "GamePlay_Level", "Spawner_Layer" });
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
 
 	return S_OK;
@@ -88,11 +94,6 @@ HRESULT CGamePlayLevel::Awake()
 
 void CGamePlayLevel::Update()
 {
-	TEXT_INFO data = {
-		L"¾ßÀÎ¸¶",{0,0},{0.1,1,1,0.1},"Sindy",1.f,0.f,{0.f,0.f}
-	};
-
-	CGameInstance::GetInstance()->Get_FontSystem()->Push_Text(data);
 }
 
 HRESULT CGamePlayLevel::Render()
@@ -128,10 +129,15 @@ void CGamePlayLevel::PreLoad_Level()
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Player");
 
 	/*Player Anim Path*/
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Movement");
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Interaction");
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Base");
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Transfer");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Movement","Player");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Interaction", "Player");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Base", "Player");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Transfer", "Player");
+
+	/*NonPlayer Model Path*/
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/NonPlayer/Racoon");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/NonPlayer/Racoon");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/Animations", "NPC");
 
 	/*Tiles  Path*/
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldRoad");
@@ -148,16 +154,19 @@ void CGamePlayLevel::PreLoad_Level()
 	/*FieldUnit Path*/
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldUnit");
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/FieldUnit");
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/FieldUnitAnim");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/FieldUnitAnim/PltTreeOakAnim","OakTree");
 
 	/*Insect  Path*/
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Insect");
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Insect");
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Insect");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Insect/ButterFly","InsectAgehacho");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Insect/DragonFly","InsectAkiakane");
 
 	/*Texture Path*/
 	ClientHelper::Add_TexturePathFromDirectory("../../Resources/UI");
 	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Models/MenuLayout");
+	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Models/Player/Top/YShirsL/Work");
+	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Models/Player/Bottom/Normal/Sweat");
 
 	/*Object_Prototype*/
 	auto pProtoMgr = CGameInstance::GetInstance()->Get_PrototypeMgr();
@@ -195,6 +204,7 @@ void CGamePlayLevel::PreLoad_Level()
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_EventMsg", CUI_EventMsg::Create());
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Insect_Object", CInsect_Object::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcRco", CNpcRco::Create());
 }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)

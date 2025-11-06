@@ -100,7 +100,6 @@ HRESULT CAutoTile::Link_Data(const string& folderName)
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassRiverXlu")) {
 		instance->Override_Pass("Edge");
 	}
-
 	if (SUCCEEDED(hr)) {
 		ModelName = folderName + ".model";
 		MaterialName = folderName + ".mat";

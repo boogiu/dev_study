@@ -51,7 +51,7 @@ HRESULT CSelectPanel::Initialize(INIT_DESC* pArg)
 	{
 		CUI_Object* pUI = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_BaseText" })
 			.Add_To_Level("GamePlay_Level")
-			.Scale({200,50})
+			.Scale({ 200,50 })
 			.Build("Text");
 		Get_Component<CObjectContainer>()->Add_Child(pUI, false);
 		m_pTexts[i] = dynamic_cast<CUI_Text*>(pUI);
@@ -59,7 +59,7 @@ HRESULT CSelectPanel::Initialize(INIT_DESC* pArg)
 		m_pTexts[i]->Get_Component<CTextSlot>()->Set_Font("Sindy");
 		m_pTexts[i]->Get_Component<CTextSlot>()->Set_Size(0.7);
 		m_pTexts[i]->Set_Anchor(ANCHOR::Left);
-
+		m_pTexts[i]->Set_Active(false);
 	}
 
 	CUI_Object* pCursor = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Cursor" })
@@ -80,18 +80,18 @@ void CSelectPanel::Priority_Update(_float dt)
 {
 	if (!m_bActive) return;
 
-	if(m_SelectCount >1){
+	if (m_SelectCount > 1) {
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_DOWN)) {
 			m_NowIndex++;
-	
+
 		}
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_UP)) {
 			m_NowIndex--;
 		}
 		if (m_NowIndex > m_SelectCount - 1)
 			m_NowIndex = m_SelectCount - 1;
-		if (m_NowIndex <0)
-				m_NowIndex = 0;
+		if (m_NowIndex < 0)
+			m_NowIndex = 0;
 	}
 	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
 		m_SelectedIndex = m_NowIndex;
@@ -102,25 +102,30 @@ void CSelectPanel::Priority_Update(_float dt)
 void CSelectPanel::Update(_float dt)
 {
 	if (!m_bActive) return;
+	_bool Sizecomp = Size_To({ MaxWidth * 1.5f, 40.f * m_SelectCount < 80 ? 80 : 40.f * m_SelectCount
+		}, 10 * dt);
+	if (Sizecomp) {
+		m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);
+		m_pSelectHighlight->Get_Component<CSprite2D>()->Set_CompActive(true);
 
-	for (size_t i = 0; i < m_SelectCount; i++)
-	{
-		m_pTexts[i]->Set_Size(_float2{ m_pTexts[i]->Text_Length(),50 });
+		for (size_t i = 0; i < m_SelectCount; i++)
+		{
+			m_pTexts[i]->Set_Active(true);
+			m_pTexts[i]->Set_Size(_float2{ m_pTexts[i]->Text_Length(),50 });
 
-		m_pTexts[i]->Align_To(ANCHOR::Center,
-			{	(-m_fSizeX*0.5f) + 25.f,
-				(i - (m_SelectCount - 1) * 0.5f) * 25.f});
+			m_pTexts[i]->Align_To(ANCHOR::Center,
+				{ (-m_fSizeX * 0.5f) + 25.f,
+					(i - (m_SelectCount - 1) * 0.5f) * 25.f });
+		}
+		m_pSelectHighlight->Size_To({ m_pTexts[m_NowIndex]->Text_Length(),10 }, dt * 6);
+
+		m_pSelectHighlight->Align_To(ANCHOR::Left,
+			{ (-m_fSizeX * 0.5f) + 20.f,
+			m_pTexts[m_NowIndex]->Local_Center().y + 5 });
+
+		m_pCursor->Set_Pivot({ -m_fSizeX * 0.5f , m_pTexts[m_NowIndex]->Local_Center().y }, { 0,0 }, { 1,0 });
+
 	}
-	m_pSelectHighlight->Size_To({ m_pTexts[m_NowIndex]->Text_Length(),10 }, dt * 6);
-
-	m_pSelectHighlight->Align_To(ANCHOR::Left,
-		{ (-m_fSizeX * 0.5f) + 20.f,
-		m_pTexts[m_NowIndex]->Local_Center().y + 5});
-
-	m_pCursor->Set_Pivot({ -m_fSizeX * 0.5f , m_pTexts[m_NowIndex]->Local_Center().y }, { 0,0 }, {1,0});
-
-	Size_To({ MaxWidth * 1.5f, 40.f * m_SelectCount < 80 ? 80 : 40.f * m_SelectCount
-		}, 8 * dt);
 
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
@@ -128,7 +133,7 @@ void CSelectPanel::Update(_float dt)
 void CSelectPanel::Late_Update(_float dt)
 {
 	if (!m_bActive) return;
-		Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
+	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
 }
 
 void CSelectPanel::Render_GUI()
@@ -152,7 +157,7 @@ void CSelectPanel::DeActive()
 	MaxWidth = 0.f;
 }
 
-void CSelectPanel::Set_Selecte(vector<wstring> select,_float dt)
+void CSelectPanel::Set_Selecte(vector<wstring> select, _float dt)
 {
 	if (select.empty())
 		return;
@@ -163,22 +168,18 @@ void CSelectPanel::Set_Selecte(vector<wstring> select,_float dt)
 	m_SelectCount = select.size();
 	for (size_t i = 0; i < m_pTexts.size(); i++)
 	{
+		m_pTexts[i]->Set_Active(false);
 		if (i >= m_SelectCount) {
 			m_pTexts[i]->Get_Component<CTextSlot>()->Set_Text(L"");
-			m_pTexts[i]->Set_Active(false);
 			continue;
 		}
 		m_pTexts[i]->Get_Component<CTextSlot>()->Set_Text(select[i]);
-		m_pTexts[i]->Set_Active(true);
-		m_pTexts[i]->Set_Anchor(ANCHOR::Left|ANCHOR::Center);
+		m_pTexts[i]->Set_Anchor(ANCHOR::Left | ANCHOR::Center);
 
 		if (m_pTexts[i]->Text_Length() > MaxWidth)
 			MaxWidth = m_pTexts[i]->Text_Length();
 	}
 
-
-	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);
-	m_pSelectHighlight->Get_Component<CSprite2D>()->Set_CompActive(true);
 }
 
 CSelectPanel* CSelectPanel::Create()

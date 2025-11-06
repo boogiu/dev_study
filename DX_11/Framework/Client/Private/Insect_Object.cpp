@@ -30,19 +30,24 @@ HRESULT CInsect_Object::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
 
-	HRESULT hr = Add_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", "InsectAkiakane.model");
-	hr = Add_Component<CMaterial>()->Link_Material("GamePlay_Level", "InsectAkiakane.mat");
+	InsectSpawnDesc* pDesc = static_cast<InsectSpawnDesc*>(pArg);
 
-	Add_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", "InsectAkiakane.model");
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Fly.anim", "Akiakane", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Capture.anim", "Akiakane", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "FlyWait.anim", "Akiakane", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Get.anim", "Akiakane", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Wait.anim", "Akiakane", true);
+	HRESULT hr = Add_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", pDesc->insectDataDesc.modelName);
+	hr = Add_Component<CMaterial>()->Link_Material("GamePlay_Level", pDesc->insectDataDesc.materialName);
+	Add_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", pDesc->insectDataDesc.modelName);
+
+	m_ItemDesc = pDesc->itemDataDesc;
+	m_InstanceTag = "Insect";
+	m_InstanceName = pDesc->insectDataDesc.InsectFileName;
+
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Fly.anim", m_InstanceName, true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Capture.anim", m_InstanceName, true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "FlyWait.anim", m_InstanceName, true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Get.anim", m_InstanceName, false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Wait.anim", m_InstanceName, true);
 	Get_Component<CAnimator3D>()->Change_Animation("Fly.anim");
 
 	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-3,-5,-3},{3,5,3 } });
-	m_InstanceTag = "Insect";
 	m_fDetectRange = 30.f;
 	return S_OK;
 }

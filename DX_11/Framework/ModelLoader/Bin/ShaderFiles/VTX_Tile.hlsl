@@ -188,19 +188,6 @@ PS_OUT PS_EDGE(PS_IN In)
 PS_OUT PS_TILE_INSTANCE(PS_INSTATNCE_IN In)
 {
     PS_OUT Out;
-    //if (In.iMtlType.y == 0.f)
-    //{
-    //    discard;
-    //    Out.vColor = float4(0.5f, 0.f, 0.f, 0.2f);
-    //    return Out;
-    //}
-    //
-    //if (In.iMtlType.y <0.f)
-    //{
-    //    discard;
-    //    Out.vColor = float4(0.f, 0.5f, 0.f, 0.2f);
-    //    return Out;
-    //}
     if (In.iMtlType.x == 0.f)
     {
         discard;

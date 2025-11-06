@@ -41,6 +41,8 @@ HRESULT CField_Stone::Initialize(INIT_DESC* pArg)
 
 void CField_Stone::Priority_Update(_float dt)
 {
+	if (m_HitCount > 3)
+		m_eState = READY_TO_DESTROY;
 }
 
 void CField_Stone::Update(_float dt)
@@ -48,6 +50,12 @@ void CField_Stone::Update(_float dt)
 	ItemSpawnCoolTime += dt;
 	if (m_eState == HITTED)
 		HittedMove(dt);
+	else if (m_eState == READY_TO_DESTROY) {
+		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
+		auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+		tileSystem->Remove_TileFlagByIndex(m_SyncedIndex, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_STONE));
+		m_eState = END;
+	}
 }
 
 void CField_Stone::Late_Update(_float dt)
@@ -108,7 +116,7 @@ void CField_Stone::OnCollisionEnter(COLLISION_CONTEXT context)
 
 			if (ItemSpawnCoolTime > 1.f) {
 				_float4 pos = Get_Position();
-				_int rnd = Helper::Get_Random_Int(0, 2);
+				_int rnd = Helper::Get_Random_Int(0, 4);
 				auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
 				switch (rnd)
 				{
@@ -116,9 +124,15 @@ void CField_Stone::OnCollisionEnter(COLLISION_CONTEXT context)
 					 spawner->SpawnItem("UnitIconStone", { pos.x,pos.y,pos.z });
 					break;
 				case 1:
-					spawner->SpawnItem("UnitIconClay", { pos.x,pos.y,pos.z });
+					spawner->SpawnItem("UnitIconStone", { pos.x,pos.y,pos.z });
 					break;
 				case 2:
+					spawner->SpawnItem("UnitIconStone", { pos.x,pos.y,pos.z });
+					break;
+				case 3:
+					spawner->SpawnItem("UnitIconClay", { pos.x,pos.y,pos.z });
+					break;
+				case 4:
 					spawner->SpawnItem("UnitIconIron", { pos.x,pos.y,pos.z });
 					break;
 				default:
@@ -126,6 +140,7 @@ void CField_Stone::OnCollisionEnter(COLLISION_CONTEXT context)
 				}
 				ItemSpawnCoolTime = 0;
 				m_isJustHitted = true;
+				m_HitCount++;
 			}
 			}
 		}

@@ -22,6 +22,7 @@ public:
     class CItem_Object* SpawnItem(string ItemTag , _float3 pos);
     class CItem_Object* SpawnItem(string ItemTag );
     class CItem_Object* ThrowItem(string ItemTag, _fvector pos, _cvector MoveDir);
+    class CItem_Object* ThrowItem(ITEM_DATA_DESC data, _fvector pos, _cvector MoveDir);
 
 private:
     unordered_map<string, ITEM_DATA_DESC> m_ItemDataTable;

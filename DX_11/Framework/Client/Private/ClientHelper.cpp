@@ -40,7 +40,7 @@ HRESULT ClientHelper::Add_MaterialPathFromDirectory(string directoryPath)
 	return S_OK;
 }
 
-HRESULT ClientHelper::Add_AnimPathFromDirectory(string directoryPath)
+HRESULT ClientHelper::Add_AnimPathFromDirectory(string directoryPath, string Subject)
 {
 	auto pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
 
@@ -51,8 +51,8 @@ HRESULT ClientHelper::Add_AnimPathFromDirectory(string directoryPath)
 		string ext = entry.path().extension().string();
 
 		if (ext == ".anim") {
-			string fileName = entry.path().filename().string();
-			CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(fileName, entry.path().string());
+			string fileName = entry.path().filename().string();;
+			CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(fileName+"_"+ Subject, entry.path().string());
 		}
 	}
 

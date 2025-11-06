@@ -250,6 +250,51 @@
     <Filter Include="02. GameObjects\08. UI\EventMessage">
       <UniqueIdentifier>{15986ea5-9249-4a65-9f1f-caf6d021bb55}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\InsectSpawner">
+      <UniqueIdentifier>{c2d61637-17be-48e0-bb3d-bdb998bcfee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer">
+      <UniqueIdentifier>{59d687fc-6124-4dfd-bfcd-19ac2fbef1a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcRco">
+      <UniqueIdentifier>{0e0afc67-ba05-476f-8ad1-c9f0ca3282c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState">
+      <UniqueIdentifier>{2a093713-cdcb-4f17-bc00-6c6ad1ca555c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\NpcStateMachine">
+      <UniqueIdentifier>{28fbb843-5e3a-4eb1-a739-ac0464363bf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\Npc_Super">
+      <UniqueIdentifier>{9e93d20e-1148-497e-a72c-5c2160415a7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Utility\CharacterState\HubState">
+      <UniqueIdentifier>{5ffd4a4f-115e-4a14-a0b7-4d146a09d7e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\NpcState_Super">
+      <UniqueIdentifier>{a81cd5de-4990-4597-927e-5b908010c5d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\Npc_HubState">
+      <UniqueIdentifier>{647621ce-0376-488b-b6a0-2139236aa7da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\00. IDLE">
+      <UniqueIdentifier>{f10ced43-1303-4973-b2f7-04696a121fae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle">
+      <UniqueIdentifier>{5ab35c06-581e-4efe-acd4-fd64846c68bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\01. MOVE">
+      <UniqueIdentifier>{0769b89f-4479-46a3-a2d6-be798acc9042}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move">
+      <UniqueIdentifier>{63e307c2-dbb7-4111-a3b9-c00d5d27d12d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\LookAround">
+      <UniqueIdentifier>{01c6d923-0d29-4cd2-b20f-d9a661b11f00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\Wait">
+      <UniqueIdentifier>{14b833b3-a171-4bbd-90bb-6818e0833185}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -498,6 +543,39 @@
     <ClInclude Include="..\Public\UI_EventMsg.h">
       <Filter>02. GameObjects\08. UI\EventMessage</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\InsectSpawner.h">
+      <Filter>02. GameObjects\07. LevelObject\InsectSpawner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcRco.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcRco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcState_Machine.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\NpcStateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcState.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\NpcState_Super</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NonPlayer.h">
+      <Filter>02. GameObjects\10. NonPlayer\Npc_Super</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcStateHub_Idle.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcState_Move.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HubState.h">
+      <Filter>03. Utility\CharacterState\HubState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Npc_HubState.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\Npc_HubState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcState_Idle_LookAround.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\LookAround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcState_Idle_Wait.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\Wait</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -729,6 +807,39 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_EventMsg.cpp">
       <Filter>02. GameObjects\08. UI\EventMessage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InsectSpawner.cpp">
+      <Filter>02. GameObjects\07. LevelObject\InsectSpawner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\NpcRco.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcRco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcState_Machine.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\NpcStateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcState.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\NpcState_Super</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NonPlayer.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\Npc_Super</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcStateHub_Idle.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcState_Move.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HubState.cpp">
+      <Filter>03. Utility\CharacterState\HubState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Npc_HubState.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\Npc_HubState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcState_Idle_LookAround.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\LookAround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcState_Idle_Wait.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\Wait</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

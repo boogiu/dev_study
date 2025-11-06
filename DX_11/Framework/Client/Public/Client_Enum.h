@@ -63,7 +63,15 @@ TILE_FLAG::FLAG_TILE | TILE_FLAG::FLAG_SWIMMABLE;
 const TILE_FLAG CANT_ITEM =   TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_SWIMMABLE |
 TILE_FLAG::FLAG_STONE | TILE_FLAG::FLAG_ONITEM;
 
-enum class itemType { None, Fruit, Ore, Plant, Axe,  Net, Scoop,};
+enum class itemType { 
+    None, 
+    Fruit, 
+    Ore, 
+    Plant, 
+    Insect,
+    Axe,  
+    Net, 
+    Scoop,};
 
 enum class STATE_LAYER
 {

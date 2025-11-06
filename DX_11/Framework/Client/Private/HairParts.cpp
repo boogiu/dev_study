@@ -22,8 +22,8 @@ CHairParts::~CHairParts()
 
 HRESULT CHairParts::Initialize_Prototype()
 {
-	HRESULT hr = Add_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", "PlayerHair13.model");
-	hr = Add_Component<CMaterial>()->Link_Material("GamePlay_Level", "PlayerHair13.mat");
+	HRESULT hr = Add_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", "PlayerHair27.model");
+	hr = Add_Component<CMaterial>()->Link_Material("GamePlay_Level", "PlayerHair27.mat");
 	Add_Component<CBoneFollower>();
 
 	return hr;

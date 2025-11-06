@@ -26,6 +26,7 @@ public:
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(INIT_DESC* pArg = nullptr);
+	virtual void Awake() {};
 	virtual void Pre_EngineUpdate(_float dt);
 	virtual void Post_EngineUpdate(_float dt);
 	virtual void Priority_Update(_float dt) PURE;
@@ -49,8 +50,6 @@ public:
 public:
 	void Set_Layer(class CLayer* pLayer);
 	class CLayer* Get_Layer() { return m_pLayer; };
-	void Set_Level(class CLevel* pLevel);
-	class CLevel* Get_Level() { return m_pLevel; };
 public:
 	const string& Get_InstanceName() { return m_InstanceName; }
 	const _uint Get_ObjectID() { return m_ObjectID; }
@@ -69,7 +68,6 @@ protected:
 	CTransform* m_pTransform = { nullptr };
 
 	class CLayer* m_pLayer = { nullptr };
-	class CLevel* m_pLevel = {};
 
 	string m_InstanceName = {};
 	string m_InstanceTag = {};

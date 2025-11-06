@@ -20,6 +20,10 @@ public:
     virtual void Render_State();
 
 private:
+    EventMsgDesc Make_Sequence(CGameObject* pObject);
+    void Add_Inventory(CGameObject* pObject);
+
+private:
     Phase m_ePhase = { Priority };
     _bool m_bMsgComplete = { false };
 public:

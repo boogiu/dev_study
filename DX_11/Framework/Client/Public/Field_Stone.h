@@ -8,7 +8,8 @@ class CField_Stone :
     {
         HITTED,
         IDLE,
-        READY_TO_DESTROY
+        READY_TO_DESTROY,
+        END,
     };
 
 private:
@@ -41,6 +42,8 @@ private:
     _float4 m_vMoveVector = {};
     _float4 m_vHittedPos = {};
     _bool m_isJustHitted = { false };
+
+    _uint m_HitCount = { 0 };
 public:
     static CField_Stone* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

@@ -70,7 +70,7 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    Out.vBackBuffer = vDiffuse * vShade;
+    Out.vBackBuffer = vDiffuse * vShade ;
     
     return Out;
 }

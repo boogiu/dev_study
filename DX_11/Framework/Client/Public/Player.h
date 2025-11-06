@@ -104,13 +104,16 @@ public:
     void ActiveCollider_Tool(_bool active, string Event = {});
     void ActiveCollider_LeftHand(_bool active, string Event = {});
     void ActiveCollider_RightHand(_bool active, string Event = {});
+ public:
+    class CLevel* Get_NowLevel();
     
 private:
     void Add_AnimationClips();
+    void Add_MaterialAnim();
     void Add_PartObjects();
     void Add_Inventory();
     void Set_TargetCamera();
-
+    void Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey);
 private:
     void Mark_TileFlag();
 
