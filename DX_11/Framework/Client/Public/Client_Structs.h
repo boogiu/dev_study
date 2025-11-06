@@ -29,3 +29,10 @@ typedef struct tagInsectDataDesc{
 	string IconName= {};
 	wstring Comment = {};
 } INSECT_DATA_DESC;
+
+
+typedef struct EventPayLoad {
+	string EventTag = {};
+	any Payload;
+	CGameObject* pCaster = {};
+}EVENT;

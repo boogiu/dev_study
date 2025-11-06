@@ -47,6 +47,7 @@ void CNpcRco::Priority_Update(_float dt)
 
 void CNpcRco::Update(_float dt)
 {
+	m_pTransform->Translate(XMLoadFloat4(&m_fMovevector));
 	m_pMachine->Update(dt);
 }
 

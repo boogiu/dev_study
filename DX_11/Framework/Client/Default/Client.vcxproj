@@ -175,7 +175,8 @@
     <ClInclude Include="..\Public\Client_Structs.h" />
     <ClInclude Include="..\Public\ClothParts.h" />
     <ClInclude Include="..\Public\DialoguePanel.h" />
-    <ClInclude Include="..\Public\EventListner.h" />
+    <ClInclude Include="..\Public\EventSystem.h" />
+    <ClInclude Include="..\Public\Event_Structs.h" />
     <ClInclude Include="..\Public\FieldHole.h" />
     <ClInclude Include="..\Public\FieldObject.h" />
     <ClInclude Include="..\Public\Field_Out.h" />
@@ -265,7 +266,7 @@
     <ClCompile Include="..\Private\ClientHelper.cpp" />
     <ClCompile Include="..\Private\ClothParts.cpp" />
     <ClCompile Include="..\Private\DialoguePanel.cpp" />
-    <ClCompile Include="..\Private\EventListner.cpp" />
+    <ClCompile Include="..\Private\EventSystem.cpp" />
     <ClCompile Include="..\Private\FieldHole.cpp" />
     <ClCompile Include="..\Private\FieldObject.cpp" />
     <ClCompile Include="..\Private\Field_Out.cpp" />

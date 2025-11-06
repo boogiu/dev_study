@@ -18,7 +18,7 @@ using namespace Client;
 #include "Engine_Defines.h"
 #include "Client_Enum.h"
 #include "Client_Structs.h"
-
+#include "Event_Structs.h"
 
 constexpr Engine::TILE_INDEX NEIGHBOR_OFFSET[9] = {
 	{-1, +1}, // LEFT_TOP

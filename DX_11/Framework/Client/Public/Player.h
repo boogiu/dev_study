@@ -63,16 +63,18 @@ public:
     void Late_Update(_float dt) override;
     virtual void Render_GUI();
 
-public:        
+private:        
     void Update_Input(_float dt);
     void Update_Movement(_float dt);
     void Update_TileInfo(_float dt);
+    void Mark_TileFlag();
+    void BroadCast_Event();
+
+public:
     void Adjust_To_Foward();
     void Adjust_To_WorldFoward();
     void Camera_Zoom_In();
     void Camera_Zoom_Out();
-    void Open_DialoguePanel();
-    void Close_DialoguePanel();
 
 public:
     MovementPacket& Get_MovementPacket() { return m_MovementPack; }
@@ -114,8 +116,6 @@ private:
     void Add_Inventory();
     void Set_TargetCamera();
     void Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey);
-private:
-    void Mark_TileFlag();
 
 
 private:
@@ -133,6 +133,7 @@ private:
 
     class CTarget_Camera* m_pCamera = { nullptr };
     class CPlayer_Inventory* m_pInventory = { nullptr };
+
 public:
     static CPlayer* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

@@ -36,6 +36,7 @@
 
 #include "Item_Object.h"
 #include "InsectSpawner.h"
+#include "EventSystem.h"
 
 CPlayer::CPlayer()
 {
@@ -123,6 +124,7 @@ void CPlayer::Update(_float dt)
 	Update_Movement(dt);
 	Mark_TileFlag(); /*대충 로직 끝난 후에 타일 플래그 정비*/
 	Update_TileInfo(dt);
+	BroadCast_Event();
 	Get_Component<CMaterialAnimator>()->Update_Animation(dt);
 	m_pStateMachine->Update(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
@@ -136,30 +138,7 @@ void CPlayer::Late_Update(_float dt)
 void CPlayer::Render_GUI()
 {
 	__super::Render_GUI();
-	ImGui::Begin("Item Control");
-	auto ItemSpawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
-	if (ImGui::Button("None")) {
-		TOOL_DATA_DESC Data = {};
-		Change_Item(Data);
-	}
 
-	if (ImGui::Button("Axe")) {
-		TOOL_DATA_DESC Data = ItemSpawner->Get_ItemData("ToolAxeFirst");
-		Change_Item(Data);
-	}
-
-	if (ImGui::Button("Net")) {
-		TOOL_DATA_DESC Data = ItemSpawner->Get_ItemData("ToolNetFirst");
-		Change_Item(Data);
-	}
-
-	if (ImGui::Button("Scoop")) {
-		TOOL_DATA_DESC Data = ItemSpawner->Get_ItemData("ToolScoopFirst");
-		Change_Item(Data);
-	}
-	ImGui::End();
-
-	m_pInventory->Render_GUI();
 }
 
 void CPlayer::Update_Input(_float dt)
@@ -709,6 +688,17 @@ void CPlayer::Mark_TileFlag()
 
 	tileSys->Remove_TileFlagByIndex(prevIndex, static_cast<_uint>(m_TileInfoPack.markFlag));
 	tileSys->Add_TileFlagByIndex(m_TileInfoPack.nowIndex, static_cast<_uint>(m_TileInfoPack.markFlag));
+}
+
+void CPlayer::BroadCast_Event()
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	if (!nowLevel)
+		return;
+	auto EventSys = nowLevel->Get_LevelObject<CEventSystem>();
+	PLAYER_POS event{ Get_Position() };
+
+	EventSys->OnBroadCast(event);
 }
 
 CPlayer* CPlayer::Create()

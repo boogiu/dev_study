@@ -42,6 +42,7 @@
 #include "ItemSpawner.h"
 #include "InsectSpawner.h"
 #include "UI_Responcer.h"
+#include "EventSystem.h"
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 	:CLevel{ LevelKey },
@@ -62,6 +63,7 @@ HRESULT CGamePlayLevel::Initialize()
 
 	CGameInstance::GetInstance()->Get_FontSystem()->Add_Font("Sindy", TEXT("../../Resources/Font/Sindy.spritefont"));
 	Add_LevelObject<CUI_Responcer>();
+	Add_LevelObject<CEventSystem>();
 
 	CMapLoader::Load_ModelData();
 	CMapLoader::Load_MapData("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });

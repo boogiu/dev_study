@@ -501,7 +501,7 @@
     <ClInclude Include="..\Public\ItemSpawner.h">
       <Filter>02. GameObjects\07. LevelObject\ItemSpawner</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\EventListner.h">
+    <ClInclude Include="..\Public\EventSystem.h">
       <Filter>02. GameObjects\07. LevelObject\EventListner</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_ItemIcon.h">
@@ -575,6 +575,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\NpcState_Idle_Wait.h">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\Wait</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Event_Structs.h">
+      <Filter>99. Defines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -766,7 +769,7 @@
     <ClCompile Include="..\Private\ItemSpawner.cpp">
       <Filter>02. GameObjects\07. LevelObject\ItemSpawner</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\EventListner.cpp">
+    <ClCompile Include="..\Private\EventSystem.cpp">
       <Filter>02. GameObjects\07. LevelObject\EventListner</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_ItemIcon.cpp">
