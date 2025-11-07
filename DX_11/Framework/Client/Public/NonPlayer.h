@@ -5,8 +5,26 @@ NS_BEGIN(Client)
 class CNonPlayer :
     public CGameObject
 {
-    struct NPC_EventMsg {
-       
+    struct PlayerTracePacket {
+        _bool Player_Near = { false };
+        _float4 Player_Pos = { };
+        _float4 vLook_Player = { };
+        _float    Player_distance = { };
+    }; //나중에 플레이어 트레이스 패킷으로 바꾸고 이벤트 분기는 따로 빼기
+
+    struct NPC_MovementPacket {
+        _float fCurrentDegree = {};
+        _float fTargetDegree = {};
+        _float fCharacterHeight = {};
+        _float  fMoveSpeed = { 10.f };
+        _float2 vMoveAxis = {};
+        _float4 vDstPosition = {};
+    };
+
+    struct NPC_TileInfoPacket {
+        TILE_INDEX NowIndex = {};
+        vector<TILE_INFO> infos;
+        _uint neighboValidFlag = {};
     };
 protected:
     CNonPlayer();
@@ -19,18 +37,33 @@ public:
     virtual void Awake() override;
 
 public:
-    void Render_GUI() override;
+    void Priority_Update(_float dt) override;
+    void Update(_float dt) override;
+    void Late_Update(_float dt) override;
+    virtual void Render_GUI() override;
 
 protected:
     void Add_BaseAnimClip();
     void Add_Parts();
     void Add_EventListen();
 
+
+public:
+    _bool Can_Walk(_float2& moveAxis);
+    NPC_MovementPacket& Get_MovementPack() { return m_MovementPack; }
+    PlayerTracePacket& Get_TracePack() { return m_TracePack; }
+    
+protected:
+    void Update_Movement(_float dt);
+    void Update_TileInfo(_float dt);
+
 protected:
     class CNpcState_Machine* m_pMachine = { nullptr };
-    NPC_EventMsg m_EventMsg = {};
-    _float m_fDistance = {};
-    _float4 m_fMovevector = {};
+    PlayerTracePacket m_TracePack = {};
+    NPC_MovementPacket m_MovementPack = {};
+    NPC_TileInfoPacket m_TileInfoPack = {};
+
+    _float m_fDuration = {};
 public:
     virtual void Free()override;
 };

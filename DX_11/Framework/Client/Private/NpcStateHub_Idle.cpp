@@ -26,16 +26,24 @@ HRESULT CNpcStateHub_Idle::OnEnter()
 
 void CNpcStateHub_Idle::OnUpdate(_float dt)
 {
+	m_fIdleTime += dt;
 	m_pCurrentState->OnUpdate(dt);
+	DecideSubState(dt);
 }
 
 HRESULT CNpcStateHub_Idle::OnExit()
 {
-	return S_OK;
+	m_fIdleTime = 0.f;
+	return  m_pCurrentState->OnExit();
 }
 
 CState* CNpcStateHub_Idle::HandleTransition()
 {
+
+	if (m_fIdleTime > 10.f) {
+		return m_pLayer->Get_State("State_Hub_Move");
+	}
+
 	return nullptr;
 }
 

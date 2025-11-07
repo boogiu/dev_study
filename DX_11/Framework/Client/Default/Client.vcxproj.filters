@@ -295,6 +295,12 @@
     <Filter Include="02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\Wait">
       <UniqueIdentifier>{14b833b3-a171-4bbd-90bb-6818e0833185}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\Walk">
+      <UniqueIdentifier>{0c3df354-aaa7-4f79-9caf-3e0a5ea3800a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\WalkToPlayer">
+      <UniqueIdentifier>{b99ca3c4-2114-4e99-9644-f082244998eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -561,7 +567,7 @@
     <ClInclude Include="..\Public\NpcStateHub_Idle.h">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NpcState_Move.h">
+    <ClInclude Include="..\Public\NpcStateHub_Move.h">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\HubState.h">
@@ -578,6 +584,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Event_Structs.h">
       <Filter>99. Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcState_Move_Walk.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcState_Move_Trace.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\WalkToPlayer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -829,7 +841,7 @@
     <ClCompile Include="..\Private\NpcStateHub_Idle.cpp">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\NpcState_Move.cpp">
+    <ClCompile Include="..\Private\NpcStateHub_Move.cpp">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\HubState.cpp">
@@ -843,6 +855,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\NpcState_Idle_Wait.cpp">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\Wait</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcState_Move_Walk.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcState_Move_Trace.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\WalkToPlayer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

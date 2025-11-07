@@ -22,7 +22,7 @@ public:
     void Set_Anchor(ANCHOR eAnchor) { m_eAnchor = eAnchor; }
     void Set_Scale(_float size);
     _float Text_Length();
-
+    void Clear_Text();
 
 private:
     _bool m_bActive = { false };

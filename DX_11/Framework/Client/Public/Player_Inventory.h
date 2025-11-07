@@ -48,7 +48,8 @@ private:
 
 private:
     InvenState m_eState = {Closed};
-    vector<class CUI_InvenSlot*> m_pSlots;
+       _int nowIndex = {};
+       vector<class CUI_InvenSlot*> m_pSlots;
     class CUI_Cursor* m_pCursor = { nullptr };
     class CSelectPanel* m_pSelectPanel = { nullptr };
 
@@ -59,7 +60,7 @@ private:
     _float2 m_vPointPos = { 1280 / 2.4,290 };
     _float2 m_vClosePos = { 1280 / 2,300 };
 
-    _int nowIndex = {};
+ 
     _int prevIndex = {-1};
 public:
     static CPlayer_Inventory* Create();

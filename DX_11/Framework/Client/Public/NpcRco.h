@@ -15,8 +15,10 @@ public:
     void Priority_Update(_float dt) override;
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
-    //virtual void Render_GUI();
+    virtual void Render_GUI() override;
 
+public:
+    void Find_Path();
 public:
     static CNpcRco* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

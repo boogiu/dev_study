@@ -210,6 +210,7 @@ namespace Engine
 	typedef struct tagTileIndex {
 		_int IndexX = { -1 };
 		_int IndexZ = { -1 };
+
 	}TILE_INDEX;
 
 	inline  _bool operator == (const tagTileIndex& a, const tagTileIndex& b)

@@ -66,6 +66,11 @@ _float CUI_Text::Text_Length()
 	return Get_Component<CTextSlot>()->Get_TextSize();
 }
 
+void CUI_Text::Clear_Text()
+{
+	Get_Component<CTextSlot>()->Set_Text(L"");
+}
+
 CUI_Text* CUI_Text::Create()
 {
 	CUI_Text* instance = new CUI_Text();

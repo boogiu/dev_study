@@ -1,13 +1,12 @@
 #pragma once
 #include "Npc_HubState.h"
-
 NS_BEGIN(Client)
-class CNpcStateHub_Idle :
+class CNpcStateHub_Move :
     public CNpc_HubState
 {
 private:
-    CNpcStateHub_Idle();
-    virtual ~CNpcStateHub_Idle() DEFAULT;
+    CNpcStateHub_Move();
+    virtual ~CNpcStateHub_Move() DEFAULT;
 
 public:
     HRESULT Initialize();
@@ -17,15 +16,14 @@ public:
     virtual HRESULT OnExit();
     virtual CState* HandleTransition();
 
-public:
-    void Render_State() override;
-public:
     void DecideSubState(_float dt) override;
 
-private:
-    _float m_fIdleTime = {} ;
 public:
-    static CNpcStateHub_Idle* Create();
+    void Render_State() override;
+private:
+    _float m_fMoveTime = {};
+public:
+    static CNpcStateHub_Move* Create();
     virtual void Free();
 };
 

@@ -159,6 +159,7 @@ void CUI_EventMsg::UI_DeActive(void* pArg)
 	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(false);
 	m_onClose = nullptr;
 	m_pTexts->Set_Active(false);
+	m_pTexts->Clear_Text();
 }
 
 void CUI_EventMsg::SequenceClear()

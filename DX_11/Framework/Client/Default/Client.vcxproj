@@ -204,7 +204,9 @@
     <ClInclude Include="..\Public\NpcState_Idle_LookAround.h" />
     <ClInclude Include="..\Public\NpcState_Idle_Wait.h" />
     <ClInclude Include="..\Public\NpcState_Machine.h" />
-    <ClInclude Include="..\Public\NpcState_Move.h" />
+    <ClInclude Include="..\Public\NpcStateHub_Move.h" />
+    <ClInclude Include="..\Public\NpcState_Move_Walk.h" />
+    <ClInclude Include="..\Public\NpcState_Move_Trace.h" />
     <ClInclude Include="..\Public\Npc_HubState.h" />
     <ClInclude Include="..\Public\Plant_Tree.h" />
     <ClInclude Include="..\Public\Player.h" />
@@ -293,7 +295,9 @@
     <ClCompile Include="..\Private\NpcState_Idle_LookAround.cpp" />
     <ClCompile Include="..\Private\NpcState_Idle_Wait.cpp" />
     <ClCompile Include="..\Private\NpcState_Machine.cpp" />
-    <ClCompile Include="..\Private\NpcState_Move.cpp" />
+    <ClCompile Include="..\Private\NpcStateHub_Move.cpp" />
+    <ClCompile Include="..\Private\NpcState_Move_Walk.cpp" />
+    <ClCompile Include="..\Private\NpcState_Move_Trace.cpp" />
     <ClCompile Include="..\Private\Npc_HubState.cpp" />
     <ClCompile Include="..\Private\Plant_Tree.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />

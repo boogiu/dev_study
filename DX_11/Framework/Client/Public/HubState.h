@@ -11,7 +11,10 @@ protected:
 public:
     virtual void DecideSubState(_float dt) PURE;
     void Execute(CState* rootState) { m_pCurrentState = rootState; }
-
+    void Change_State(const string name);
+    
+protected:
+    CState* Get_State(const string state);
 public:
     virtual void Free() override;
 

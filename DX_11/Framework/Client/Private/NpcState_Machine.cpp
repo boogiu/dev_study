@@ -8,6 +8,7 @@
 #include "Animator3D.h"
 
 #include "NpcStateHub_Idle.h"
+#include "NpcStateHub_Move.h"
 
 CNpcState_Machine::CNpcState_Machine(CNonPlayer* pNpc)
 	:m_pOwner(pNpc)
@@ -21,7 +22,9 @@ HRESULT CNpcState_Machine::Initialize()
 	m_LayerStates.emplace(STATE_LAYER::ACTION, actionLayer);
 	
 	auto Idle = actionLayer->Add_State<CNpcStateHub_Idle>("State_Hub_Idle");
+	auto Move = actionLayer->Add_State<CNpcStateHub_Move>("State_Hub_Move");
 	Idle->Set_Owner(m_pOwner);
+	Move->Set_Owner(m_pOwner);
 	actionLayer->Excute(Idle);
 
 	return S_OK;

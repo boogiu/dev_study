@@ -47,12 +47,27 @@ void CNpcRco::Priority_Update(_float dt)
 
 void CNpcRco::Update(_float dt)
 {
-	m_pTransform->Translate(XMLoadFloat4(&m_fMovevector));
+	Update_Movement(dt);
+	Update_TileInfo(dt);
+
 	m_pMachine->Update(dt);
 }
 
 void CNpcRco::Late_Update(_float dt)
 {
+}
+
+void CNpcRco::Render_GUI()
+{
+	//if(ImGui::Button("Move"))
+		//m_pMachine->Request_ChangeState()
+	__super::Render_GUI();
+}
+
+void CNpcRco::Find_Path()
+{
+
+
 }
 
 CNpcRco* CNpcRco::Create()

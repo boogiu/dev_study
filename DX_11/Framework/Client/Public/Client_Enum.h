@@ -30,6 +30,10 @@ inline TILE_FLAG operator & (TILE_FLAG a, TILE_FLAG b) {
 inline TILE_FLAG operator & (TILE_FLAG a, unsigned int b) {
     return static_cast<TILE_FLAG>(static_cast<unsigned int>(a) & (b));
 }
+
+inline TILE_FLAG operator & (unsigned int b, TILE_FLAG a) {
+    return static_cast<TILE_FLAG>(static_cast<unsigned int>(a) & (b));
+}
 inline TILE_FLAG operator | (TILE_FLAG a, unsigned int b) {
     return static_cast<TILE_FLAG>(static_cast<unsigned int>(a) |(b));
 }
