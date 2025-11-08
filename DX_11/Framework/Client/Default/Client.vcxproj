@@ -236,6 +236,7 @@
     <ClInclude Include="..\Public\SelectPanel.h" />
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
+    <ClInclude Include="..\Public\SunCam.h" />
     <ClInclude Include="..\Public\Target_Camera.h" />
     <ClInclude Include="..\Public\TexturePanel.h" />
     <ClInclude Include="..\PUblic\ToolItem.h" />
@@ -327,6 +328,7 @@
     <ClCompile Include="..\Private\SelectPanel.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
+    <ClCompile Include="..\Private\SunCam.cpp" />
     <ClCompile Include="..\Private\Target_Camera.cpp" />
     <ClCompile Include="..\Private\TexturePanel.cpp" />
     <ClCompile Include="..\Private\ToolItem.cpp" />

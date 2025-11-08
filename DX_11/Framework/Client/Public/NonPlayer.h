@@ -52,6 +52,7 @@ public:
     _bool Can_Walk(_float2& moveAxis);
     NPC_MovementPacket& Get_MovementPack() { return m_MovementPack; }
     PlayerTracePacket& Get_TracePack() { return m_TracePack; }
+    NPC_TileInfoPacket& Get_TilePack() { return m_TileInfoPack; }
     
 protected:
     void Update_Movement(_float dt);

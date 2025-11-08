@@ -125,7 +125,7 @@ void OpaquePass::Execute(ID3D11DeviceContext* pContext)
 void OpaquePass::Submit(OPAQUE_PACKET packet)
 {
 	if (packet.pModel == nullptr || packet.pMaterial == nullptr) return;
-	m_Packets.push_back(packet);
+		m_Packets.push_back(packet);
 }
 
 #pragma endregion
@@ -147,8 +147,6 @@ void InstancePass::Execute(ID3D11DeviceContext* pContext)
 		if (packet.pMaterial->Get_Shader(packet.MaterialIndex) != pCurShader) {
 			pCurShader = packet.pMaterial->Get_Shader(packet.MaterialIndex);
 			pCurShader->SetConstantBuffer("FrameBuffer", pPipeLine->Get_FrameBuffer());
-			pCurShader->SetConstantBuffer("LightBuffer", pPipeLine->Get_LightBuffer());
-			pCurShader->SetConstantBuffer("LightBuffer", pPipeLine->Get_LightBuffer());
 		}
 
 		ID3D11InputLayout* pLayout;
@@ -167,7 +165,6 @@ void InstancePass::Execute(ID3D11DeviceContext* pContext)
 		packet.pModel->Bind_Buffer(pContext, packet.DrawIndex);
 		packet.pModel->Draw(pContext, packet.DrawIndex);
 	}
-
 	m_Packets.clear();
 }
 
@@ -266,5 +263,140 @@ void DebugPass::Submit(DEBUG_PACKET packet)
 {
 	if (packet.pModel == nullptr || packet.pDebug == nullptr) return;
 	m_Packets.push_back(packet);
+}
+#pragma endregion
+
+#pragma region SHADOW_PASS
+void ShadowPass::Execute(ID3D11DeviceContext* pContext)
+{
+	Execute_Opaque(pContext);
+	Execute_Instance(pContext);
+}
+
+void ShadowPass::Submit(OPAQUE_PACKET packet)
+{
+	if (packet.pModel == nullptr) return;
+	m_Packets.push_back(packet);
+}
+
+void ShadowPass::SubmitInstance(INSTANCE_PACKET packet)
+{
+	if (packet.pModel == nullptr || packet.pMaterial == nullptr) return;
+		m_InstancePackets.push_back(packet);
+}
+
+void ShadowPass::Execute_Opaque(ID3D11DeviceContext* pContext)
+{
+	/*이건 전역적으로 셰이더에 값 넣어주는 역할*/
+	CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
+	pCurShader = { nullptr };
+
+	/*같은 셰이더, 같은 머티리얼, 같은 모델끼리 정렬 */
+	sort(m_Packets.begin(), m_Packets.end(),
+		[](const OPAQUE_PACKET& a, const OPAQUE_PACKET& b) {
+			return a.GetKey() < b.GetKey();
+		});
+
+	/*패킷이 비어 있으면 리턴*/
+	if (m_Packets.empty())
+		return;
+
+	/*상수 버퍼 및 SRV 세팅*/
+	pPipeLine->Begin_ObjectBuffer(pContext);
+	pPipeLine->Begin_SkinningBuffer(pContext);
+
+	for (auto& packet : m_Packets)
+	{
+		//여기서 인덱스 추가 저장해줌
+		_uint TransformIndex = pPipeLine->Write_ObjectData(*packet.pWorldMatrix);
+		_uint SkinningOffset = 0;
+		if (packet.bSkinning) {
+			if (holds_alternative<CAnimator3D*>(packet.pPayLoad))
+				SkinningOffset = pPipeLine->Write_SkinningBuffer(get<CAnimator3D*>(packet.pPayLoad)->Get_BoneMatrices());
+			else if (holds_alternative<CSkeletonFollower*>(packet.pPayLoad))
+				SkinningOffset = pPipeLine->Write_SkinningBuffer(get<CSkeletonFollower*>(packet.pPayLoad)->Get_BoneMatrices());
+			else
+				SkinningOffset = pPipeLine->Write_SkinningBuffer(dynamic_cast<CSkeletalModel*>(packet.pModel)->Get_BoneMatrices());
+		}
+
+		packet.TransformIndex = TransformIndex;
+		packet.SkinningOffset = SkinningOffset;
+	}
+
+	pPipeLine->End_ObjectBuffer(pContext);
+	pPipeLine->End_SkinningBuffer(pContext);
+
+	/*드로우콜 시작*/
+	for (auto& packet : m_Packets)
+	{
+		if (packet.pMaterial->Get_Shader(packet.MaterialIndex) != pCurShader) {
+			CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
+			pCurShader = packet.pMaterial->Get_Shader(packet.MaterialIndex);
+			pCurShader->SetConstantBuffer("ObjectBufferArray", pPipeLine->Get_ObjectArrayBuffer());
+			pCurShader->SetConstantBuffer("ShadowBuffer", pPipeLine->Get_ShadowBuffer());
+
+			SHADER_PARAM SkinningMatricedParam = {};
+			SkinningMatricedParam.iSize = sizeof(_float4x4) * g_iMaxNumBones;
+			SkinningMatricedParam.typeName = "StructuredBuffer";
+			SkinningMatricedParam.pData = pPipeLine->Get_SkinningResource();
+			pCurShader->Bind_Value("g_BoneMatrices", SkinningMatricedParam);
+
+			ID3D11InputLayout* pLayout;
+			m_pRenderSystem->Get_InputLayout(packet.pModel, pCurShader, packet.DrawIndex, "Shadow", &pLayout);
+			pContext->IASetInputLayout(pLayout);
+		}
+
+		SHADER_PARAM WorldMatParam{ &packet.TransformIndex, "uint",sizeof(UINT) };
+		pCurShader->Bind_Value("TransformIndex", WorldMatParam);
+		if (packet.bSkinning) {
+			SHADER_PARAM SkinningBoneParam{ &packet.SkinningOffset , "uint",sizeof(UINT) };
+			pCurShader->Bind_Value("SkinningOffset", SkinningBoneParam);
+		}
+
+		//packet.pMaterial->Apply_Material(pContext, packet.MaterialIndex);
+		pCurShader->Apply("Shadow", pContext);
+		packet.pModel->Draw(pContext, packet.DrawIndex);
+	}
+
+	m_Packets.clear();
+	pContext->OMSetDepthStencilState(nullptr, 0);
+	pContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+	pContext->IASetInputLayout(nullptr);
+}
+
+void ShadowPass::Execute_Instance(ID3D11DeviceContext* pContext)
+{
+	CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
+	pCurShader = { nullptr };
+
+	/*패킷이 비어 있으면 리턴*/
+	if (m_InstancePackets.empty())
+		return;
+
+	/*드로우콜 시작*/
+	for (auto& packet : m_InstancePackets)
+	{
+		if (packet.pMaterial->Get_Shader(packet.MaterialIndex) != pCurShader) {
+			pCurShader = packet.pMaterial->Get_Shader(packet.MaterialIndex);
+			pCurShader->SetConstantBuffer("ShadowBuffer", pPipeLine->Get_ShadowBuffer());
+		}
+
+		ID3D11InputLayout* pLayout;
+		m_pRenderSystem->Get_InputLayout(packet.pModel, pCurShader, packet.DrawIndex,
+		"InstanceShadow", &pLayout);
+
+		SHADER_PARAM param = {};
+		param.iSize = sizeof(_float4x4);
+		param.typeName = "float4x4";
+		param.pData = packet.pWorldMatrix;
+
+		pCurShader->Bind_Value("g_WorldMatrix", param);
+		pContext->IASetInputLayout(pLayout);
+
+		pCurShader->Apply("InstanceShadow", pContext);
+		packet.pModel->Bind_Buffer(pContext, packet.DrawIndex);
+		packet.pModel->Draw(pContext, packet.DrawIndex);
+	}
+	m_InstancePackets.clear();
 }
 #pragma endregion

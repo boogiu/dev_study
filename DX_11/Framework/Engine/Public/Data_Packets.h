@@ -14,6 +14,15 @@ namespace Engine {
 		}
 	}RENDERKEY;
 
+	typedef struct tagShadowRenderKey {
+		_uint ShaderID = {};
+
+		bool operator<(const tagShadowRenderKey& rhs) {
+			if (ShaderID != rhs.ShaderID) return ShaderID < rhs.ShaderID;
+			return false;
+		}
+	}SHADOWKEY;
+
 	typedef struct DrawBasePacket {
 		_float4x4* pWorldMatrix;
 		_uint TransformIndex = {};
@@ -22,10 +31,6 @@ namespace Engine {
 	typedef struct DrawPriorityPacket {
 		
 	}PRIORITY_PACKET;
-
-	typedef struct DrawShadowPacket {
-
-	}SHADOW_PACKET;
 
 	/*불투명 패킷*/
 	typedef struct DrawOpaquePacket : BASE_PACKET {

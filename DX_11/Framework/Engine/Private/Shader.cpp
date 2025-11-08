@@ -70,29 +70,44 @@ void CShader::Apply(const string& m_passConstant, ID3D11DeviceContext* pContext)
 
 HRESULT CShader::Bind_Value(const string& ConstantName, const SHADER_PARAM& parameter)
 {
-	auto iter = m_Variables.find(ConstantName);
-	if (iter == m_Variables.end())
-		return E_FAIL;
+	if (parameter.typeName == "cbuffer") {
+		auto iter = m_CBuffers.find(ConstantName);
 
-	if(iter->second.typeName != parameter.typeName)
-		return E_FAIL;
+		if (iter == m_CBuffers.end())
+			return E_FAIL;
+	
+		HRESULT hr = iter->second.pHandle->SetRawValue(parameter.pData, 0, parameter.iSize);
 
-	if (iter->second.typeName == "float4x4")
-		return Bind_Matrix(ConstantName, static_cast<const _float4x4*>(parameter.pData));
-	else if (iter->second.typeName == "Texture2D")
-		return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
-	else if (iter->second.typeName == "Texture2DArray")
-		return Bind_ShaderResourceArray(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
-	else if (iter->second.typeName == "StructuredBuffer")
-		return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
-
-	HRESULT hr = iter->second.pHandle->SetRawValue(parameter.pData, 0, parameter.iSize);
-
-	if (FAILED(hr)) {
-		return E_FAIL;
+		if (FAILED(hr)) {
+			return E_FAIL;
+		}
+		return hr;
 	}
+	else {
+		auto iter = m_Variables.find(ConstantName);
 
-	return hr;
+		if (iter == m_Variables.end())
+			return E_FAIL;
+
+		if (iter->second.typeName != parameter.typeName)
+			return E_FAIL;
+
+		if (iter->second.typeName == "float4x4")
+			return Bind_Matrix(ConstantName, static_cast<const _float4x4*>(parameter.pData));
+		else if (iter->second.typeName == "Texture2D")
+			return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
+		else if (iter->second.typeName == "Texture2DArray")
+			return Bind_ShaderResourceArray(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
+		else if (iter->second.typeName == "StructuredBuffer")
+			return Bind_ShaderResource(ConstantName, static_cast<ID3D11ShaderResourceView*>(parameter.pData));
+
+		HRESULT hr = iter->second.pHandle->SetRawValue(parameter.pData, 0, parameter.iSize);
+		if (FAILED(hr)) {
+			return E_FAIL;
+		}
+		return hr;
+
+	}
 }
 
 HRESULT CShader::SetConstantBuffer(const string& ConstantName, ID3D11Buffer* pData)

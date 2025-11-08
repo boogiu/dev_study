@@ -21,6 +21,29 @@ public:
 	virtual void Free();
 };
 
+#pragma region SHADOW_PASS
+class ShadowPass final : public RenderPass {
+private:
+	ShadowPass(class CRenderSystem* pRenderSystem) :RenderPass{ pRenderSystem } {};
+	virtual ~ShadowPass() DEFAULT;
+public:
+	void Execute(ID3D11DeviceContext* pContext) override;
+	void Submit(OPAQUE_PACKET packet);
+	void SubmitInstance(INSTANCE_PACKET packet);
+
+private:
+	void Execute_Opaque(ID3D11DeviceContext* pContext) ;
+	void Execute_Instance(ID3D11DeviceContext* pContext) ;
+
+private:
+	vector<OPAQUE_PACKET> m_Packets;
+	vector<INSTANCE_PACKET> m_InstancePackets;
+public:
+	static ShadowPass* Create(class CRenderSystem* pRenderSystem) { return new ShadowPass(pRenderSystem); }
+	virtual void Free() override { __super::Free(); m_Packets.clear(); };
+};
+#pragma endregion
+
 #pragma region OPAQUE_PASS
 class OpaquePass final : public RenderPass {
 private:
@@ -50,6 +73,7 @@ public:
 	void Submit(INSTANCE_PACKET packet);
 private:
 	vector<INSTANCE_PACKET> m_Packets;
+
 public:
 	static InstancePass* Create(class CRenderSystem* pRenderSystem) { return new InstancePass(pRenderSystem); }
 	virtual void Free() override { __super::Free(); m_Packets.clear(); };

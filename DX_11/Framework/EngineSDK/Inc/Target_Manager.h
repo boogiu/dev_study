@@ -14,6 +14,8 @@ public:
 	HRESULT Add_RenderTarget(const string& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vClearColor);
 	HRESULT Add_MRT(const string& strMRTTag, const string& strTargetTag);
 	HRESULT Begin_MRT(const string& strMRTTag);
+	HRESULT Begin_MRT(const string& strMRTTag, ID3D11DepthStencilView* pDSV);
+	HRESULT End_MRT(ID3D11DepthStencilView* pDSV);
 	HRESULT End_MRT();
 	HRESULT Get_TargetParam(const string& strTargetTag, SHADER_PARAM& param);
 #ifdef _USING_GUI

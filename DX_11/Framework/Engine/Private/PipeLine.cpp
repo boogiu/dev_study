@@ -2,6 +2,10 @@
 #include "GameInstance.h"
 #include "ICameraService.h"
 #include "IResourceService.h"
+#include "ILightService.h"
+#include "RenderSystem.h"
+#include "Light.h"
+#include	"VIBuffer.h"
 #include "Shader.h"
 #include "Model.h"
 #include "Texture.h"
@@ -10,26 +14,26 @@ CPipeLine::CPipeLine()
 {
 }
 
-HRESULT CPipeLine::Initialize(ID3D11Device* pDevice)
+HRESULT CPipeLine::Initialize(ID3D11Device* pDevice, class CRenderSystem* pSystem)
 {
-
+	/*---------------------------------------------------------------------------------------------------- - */
 	/*상수 버퍼*/
 	D3D11_BUFFER_DESC desc = {};
 	desc.ByteWidth = sizeof(FrameBuffer);
 	desc.Usage = D3D11_USAGE_DYNAMIC;
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
 	pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceFrameBuffer);
 
-	desc.ByteWidth = sizeof(LightBuffer);
-	pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceLightBuffer);
+	desc.ByteWidth = sizeof(ShadowBuffer);
+	pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceShadowBuffer);
 
 	/*프레임 시작 시 한번에 모든 트랜스폼 바인딩*/
 	desc.ByteWidth = sizeof(ObjectBufferArray);  
 	pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceObjectBuffer);
 
-	/*구조체 버퍼 - > 이건 셰이더 리소스 뷰도 같이 만들어버림*/
+	/*---------------------------------------------------------------------------------------------------- - */
+	/*스키닝 본 버퍼 - > 이건 셰이더 리소스 뷰도 같이 만들어버림*/
 	vector<_float4x4> BoneMatrices;
 	BoneMatrices.resize(g_iMaxNumBones);
 
@@ -50,6 +54,7 @@ HRESULT CPipeLine::Initialize(ID3D11Device* pDevice)
 
 	pDevice->CreateShaderResourceView(m_pDeviceSkinningBuffer, &SkinningResourceDesc, &m_pSkinningResource);
 
+	m_pSystem = pSystem;
 	return S_OK;
 }
 
@@ -68,9 +73,12 @@ HRESULT CPipeLine::Update_FrameBuffer(ID3D11DeviceContext* pContext)
 	_float4x4 OrthoProject;
 	XMStoreFloat4x4(&OrthoProject, XMMatrixOrthographicLH(clientSize.x, clientSize.y, 0.f, 1.f));
 	frameBuffer.matOrthograph = OrthoProject;
+	frameBuffer.matViewInverse = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_InversedViewMatrix();
+	frameBuffer.matProjectionInverse = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_InversedProjMatrix();
 	frameBuffer.vCamPosition = CGameInstance::GetInstance()->Get_CameraMgr()->Get_CameraPos();
-
+	frameBuffer.zFar = CGameInstance::GetInstance()->Get_CameraMgr()->Get_Far();
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
 	HRESULT hr = pContext->Map(
 		m_pDeviceFrameBuffer,
 		0,
@@ -87,19 +95,19 @@ HRESULT CPipeLine::Update_FrameBuffer(ID3D11DeviceContext* pContext)
 	return S_OK;
 }
 
-/*빛 연산 단위의 버퍼*/
-HRESULT CPipeLine::Update_LightBuffer(ID3D11DeviceContext* pContext)
+HRESULT CPipeLine::Update_ShadowBuffer(ID3D11DeviceContext* pContext)
 {
-	LightBuffer lightBuffer{};
+	ShadowBuffer shadowBuffer{};
 
-	lightBuffer.vLightDir = { 0,-1,0,0 };
-	lightBuffer.vLightDiffuse = { 1.f, 1.f, 1.f, 1.f };
-	lightBuffer.vLightAmbient = { 0.8f,0.8f,0.8f,1 };
-	lightBuffer.vLightSpecular = { 1.f, 1.f, 1.f, 1.f };
+	shadowBuffer.matShadowProjection = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_ShadowProjMatrix();
+	shadowBuffer.matShadowView = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_ShadowViewMatrix();
+	shadowBuffer.vShadowPosition = CGameInstance::GetInstance()->Get_CameraMgr()->Get_ShadowCameraPos();
+	shadowBuffer.zShadowFar = CGameInstance::GetInstance()->Get_CameraMgr()->Get_ShadowFar();
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
 	HRESULT hr = pContext->Map(
-		m_pDeviceLightBuffer,
+		m_pDeviceShadowBuffer,
 		0,
 		D3D11_MAP_WRITE_DISCARD,
 		0,
@@ -108,9 +116,8 @@ HRESULT CPipeLine::Update_LightBuffer(ID3D11DeviceContext* pContext)
 	if (FAILED(hr))
 		return hr;
 
-	memcpy(mappedResource.pData, &lightBuffer, sizeof(LightBuffer));
-
-	pContext->Unmap(m_pDeviceLightBuffer, 0);
+	memcpy(mappedResource.pData, &shadowBuffer, sizeof(ShadowBuffer));
+	pContext->Unmap(m_pDeviceShadowBuffer, 0);
 
 	return S_OK;
 }
@@ -228,14 +235,77 @@ HRESULT CPipeLine::Add_Palette(const string& ConstantName, CTexture* pTexture)
 	return S_OK;
 }
 
+HRESULT CPipeLine::Bind_Light(CShader* pShader, class CVIBuffer* pBuffer, ID3D11DeviceContext* pContext)
+{
+	
+	auto& vector = CGameInstance::GetInstance()->Get_LightMgr()->Get_VisibleLight();
+	if (vector.empty()) return E_FAIL;
 
-CPipeLine* CPipeLine::Create(ID3D11Device* pDevice)
+	for (size_t i = 0; i < vector.size(); i++)
+	{
+		if (vector[i] == nullptr)
+			continue;
+		LIGHT_DESC desc = *vector[i]->Get_Desc(); // 값 복사
+	
+		SHADER_PARAM LightParam;
+		LightParam.iSize = sizeof(_float4);
+		LightParam.typeName = "float4";
+		LightParam.pData = &desc.vLightDiffuse;
+		pShader->Bind_Value("g_vLightDiffuse",LightParam);
+
+		LightParam.pData = &desc.vLightAmbient;
+		pShader->Bind_Value("g_vLightAmbient",LightParam);
+
+		LightParam.pData = &desc.vLightDirection;
+		pShader->Bind_Value("g_vLightDir", LightParam);
+
+		LightParam.pData = &desc.vLightPosition;
+		pShader->Bind_Value("g_vLightPos", LightParam);
+
+		LightParam.pData = &desc.vLightSpecular;
+		pShader->Bind_Value("g_vLightSpecular", LightParam);
+
+		LightParam.iSize = sizeof(_float);
+		LightParam.typeName = "float";
+		LightParam.pData = &desc.fLightRange;
+		pShader->Bind_Value("g_fLightRange", LightParam);
+
+		ID3D11InputLayout* pLayout;
+	
+		switch (vector[i]->Get_Type())
+		{
+		case Engine::LIGHT_TYPE::DIRECTIONAL:
+			m_pSystem->Get_BufferInputLayout(pBuffer, pShader, "Directional", &pLayout);
+			pContext->IASetInputLayout(pLayout);
+			pShader->Apply("Directional", pContext);
+			pBuffer->Bind_Buffer(pContext);
+			pBuffer->Render(pContext);
+			break;
+		case Engine::LIGHT_TYPE::POINT:
+			m_pSystem->Get_BufferInputLayout(pBuffer, pShader, "Point", &pLayout);
+			pContext->IASetInputLayout(pLayout);
+			pShader->Apply("Point", pContext);
+			pBuffer->Bind_Buffer(pContext);
+			pBuffer->Render(pContext);
+			break;
+		case Engine::LIGHT_TYPE::SPOTLIGHT:
+			break;
+		default:
+			break;
+		}
+	}
+	
+	return S_OK;
+}
+
+CPipeLine* CPipeLine::Create(ID3D11Device* pDevice, class CRenderSystem* pSystem)
 {
 	CPipeLine* instance = new CPipeLine();
-	if (FAILED(instance->Initialize(pDevice)))
+	if (FAILED(instance->Initialize(pDevice, pSystem)))
 	{
 		Safe_Release(instance);
 	}
+
 	return instance;
 }
 
@@ -244,10 +314,9 @@ void CPipeLine::Free()
 	__super::Free();
 	Safe_Release(m_pDeviceFrameBuffer);
 	Safe_Release(m_pDeviceObjectBuffer);
-	Safe_Release(m_pDeviceLightBuffer);
 	Safe_Release(m_pDeviceSkinningBuffer);
 	Safe_Release(m_pSkinningResource);
-
+	Safe_Release(m_pDeviceShadowBuffer);
 	for (auto& pair : m_Palette) {
 		Safe_Release(pair.second);
 	}

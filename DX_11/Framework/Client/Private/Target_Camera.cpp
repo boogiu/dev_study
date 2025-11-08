@@ -1,6 +1,7 @@
 #include "Client_Defines.h"
 #include "Target_Camera.h"
 #include "Camera.h"
+#include "Light.h"
 
 CTarget_Camera::CTarget_Camera()
 {
@@ -15,6 +16,7 @@ HRESULT CTarget_Camera::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
 	Add_Component<CCamera>();
+	Add_Component<CLight>();
 	return S_OK;
 }
 
@@ -28,13 +30,21 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 	
 	m_pTransform->Set_Pos({ TagetPos.x, 50,	TagetPos.z+ 50 });
 	m_pTransform->LookAt({ TagetPos.x, 0,	TagetPos.z + 10 });
-	m_vOffset = { 0,50,50,0 };
+	m_vOffset = pDesc->vOffset;
 
 	m_vZoomInOffset = { 0,15,50,0 };
 	m_fCurrentLookY = 0;
-	//m_vOffset = m_pTarget->Get_Position();
 
 
+	LIGHT_DESC desc = {};
+	desc.vLightPosition = { 0,20,0,0 };
+	desc.fLightRange = 150.0f;
+	desc.vLightDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	desc.vLightDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	desc.vLightAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
+	desc.vLightSpecular = _float4(0.f, 1.f, 0.f, 1.f);
+
+	Get_Component<CLight>()->Set_Desc(desc, LIGHT_TYPE::POINT);
 	return S_OK;
 }
 

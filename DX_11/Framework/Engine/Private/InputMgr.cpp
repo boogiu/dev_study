@@ -49,7 +49,7 @@ void CInputMgr::Update()
 			Key_ID.state = KEY_STATE::AWAY;
 
 		else if(!Key_ID.CurrDown && !Key_ID.PrevDown)
-			Key_ID.state = KEY_STATE::NONE;
+			Key_ID.state = KEY_STATE::NONE_KEY;
 
 		Key_ID.PrevDown = Key_ID.CurrDown;
 	}
@@ -65,7 +65,7 @@ void CInputMgr::Update()
 			Mouse_ID.state = KEY_STATE::AWAY;
 
 		else if (!Mouse_ID.CurrDown && !Mouse_ID.PrevDown)
-			Mouse_ID.state = KEY_STATE::NONE;
+			Mouse_ID.state = KEY_STATE::NONE_KEY;
 
 		Mouse_ID.PrevDown = Mouse_ID.CurrDown;
 	}

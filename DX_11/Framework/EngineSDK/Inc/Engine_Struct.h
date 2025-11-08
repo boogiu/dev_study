@@ -13,7 +13,7 @@ namespace Engine
 	typedef struct tagKeyDesc {
 		_bool PrevDown = false;
 		_bool CurrDown = false;
-		KEY_STATE state = KEY_STATE::NONE;
+		KEY_STATE state = KEY_STATE::NONE_KEY;
 	}KEY_DESC;
 
 	typedef struct  tagMouseDesc
@@ -31,13 +31,13 @@ namespace Engine
 
 	/* Light Desc struct*/
 	typedef struct tagLightDesc {
-		LIGHT_TYPE			eType = {};
-		_float4		vDiffuse = {};
-		_float4		vAmbient = {};
-		_float4		vSpecular = {};
-
-		_float4		vDirection = {};
-		_float			fRange = {};
+		_float4		vLightPosition = {};
+		_float4		vLightDirection = {};
+		_float4		vLightDiffuse = {};
+		_float4		vLightAmbient = {};
+		_float4		vLightSpecular = {};
+		_float			fLightRange = {};
+		_float3		lightPadding = {};
 	}LIGHT_DESC;
 
 	/*File Info Desc*/
@@ -211,12 +211,26 @@ namespace Engine
 		_int IndexX = { -1 };
 		_int IndexZ = { -1 };
 
+		tagTileIndex Add(const tagTileIndex& a) {
+			return { (a.IndexX + IndexX) , (a.IndexZ + IndexZ) };
+		}
 	}TILE_INDEX;
 
 	inline  _bool operator == (const tagTileIndex& a, const tagTileIndex& b)
 	{
 		return (a.IndexX == b.IndexX) && (a.IndexZ == b.IndexZ);
 	}
+	inline TILE_INDEX AxisToStep(_float x, _float z) {
+		int sx = (x > 0.5f) ? 1 : (x < -0.5f ? -1 : 0);
+		int sz = (z > 0.5f) ? 1 : (z < -0.5f ? -1 : 0);
+		return { sx, sz };
+	}
+
+	typedef struct tagTileIndexHashBy64 {
+		size_t operator()(const tagTileIndex& index)const noexcept {
+			return(static_cast<size_t>(index.IndexX) << 32 | static_cast<size_t>(index.IndexZ));
+		}
+	}TILE_INDEX_HASH, TILE_INDEX_HASH_FUNCTOR;
 
 	typedef struct tagTileSystemInfo {
 		/*¸î°³¾¿?*/

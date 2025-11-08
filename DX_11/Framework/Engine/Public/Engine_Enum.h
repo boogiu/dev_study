@@ -3,8 +3,7 @@
 
 namespace Engine
 {
-
-	enum class KEY_STATE { NONE, TAP, HOLD, AWAY };
+	enum class KEY_STATE { NONE_KEY, TAP, HOLD, AWAY };
 
 	enum class MOUSE_BTN { LB, RB, MB };
 
@@ -14,13 +13,16 @@ namespace Engine
 
 	enum class STATE { RIGHT, UP, LOOK, POSITION, END };
 
-	enum class BUFFER_TYPE {
-		BASIC_RECT, BASIC_CUBE, BASIC_SPHERE, BASIC_PLANE, TERRAIN, MESH
-	};
+	enum class BUFFER_TYPE {BASIC_RECT, BASIC_CUBE, BASIC_SPHERE, BASIC_PLANE, TERRAIN, MESH};
+	
 	enum class MESH_TYPE { ANIM, NONANIM };
-	enum class RENDER_TYPE { PRIORITY, SHADOW_CAST, DEFAULT,NONLIGHT,  };
-	enum class COLLIDER_TYPE { AABB, OBB, SPHERE };
+	
+	enum class LIGHT_TYPE { DIRECTIONAL, POINT, SPOTLIGHT };
 
+	enum class RENDER_PASS_TYPE { PRIORITY, RENDER_OPAQUE, NONLIGHT_OPAQUE };
+
+	enum class COLLIDER_TYPE { AABB, OBB, SPHERE };
+	
 	enum class SOUND_GROUP { BGM, SFX, UI, TALK, END };
 
 	enum class RENDER_PASS { RENDER_PRIORITY, RENDER_OPAQUE, RENDER_TRANSPARENT, RENDER_UI, RG_END };
@@ -83,7 +85,7 @@ namespace Engine
 		case NEIGHBOR_INDEX::DOWNRIGHT:return 8;
 		default: return 4;
 		}
-	}
+	};
 	inline NEIGHBOR_INDEX Get_Negihbor(unsigned int index) {
 		switch (index)
 		{
@@ -98,7 +100,8 @@ namespace Engine
 		case 8:return Engine::NEIGHBOR_INDEX::DOWNRIGHT;
 		default:return Engine::NEIGHBOR_INDEX::END;
 		}
-	}inline NEIGHBOR_INDEX Rotate45_CCW(NEIGHBOR_INDEX dir, unsigned int count)
+	};
+	inline NEIGHBOR_INDEX Rotate45_CCW(NEIGHBOR_INDEX dir, unsigned int count)
 	{
 		if (dir == NEIGHBOR_INDEX::CENTER)
 			return dir;
@@ -141,10 +144,9 @@ namespace Engine
 		}
 
 		return curDir;
-	}
+	};
 
 
-	enum class LIGHT_TYPE { DIRECTIONAL, POINT, SPOTLIGHT };
 
 	enum class TEXTURE_TYPE {
 		NONE = 0,

@@ -32,6 +32,7 @@ HRESULT CItem_Object::Initialize_Prototype()
 HRESULT CItem_Object::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
+	Get_Component<CModel>()->ShadowCast(true);
 
 	DROP_ITEM_DESC* pDesc = dynamic_cast<DROP_ITEM_DESC*>(pArg);
 	//pDesc->itemDesc.

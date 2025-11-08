@@ -46,6 +46,7 @@ HRESULT CInsect_Object::Initialize(INIT_DESC* pArg)
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Get.anim", m_InstanceName, false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Wait.anim", m_InstanceName, true);
 	Get_Component<CAnimator3D>()->Change_Animation("Fly.anim");
+	Get_Component<CModel>()->ShadowCast(true);
 
 	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-3,-5,-3},{3,5,3 } });
 	m_fDetectRange = 30.f;

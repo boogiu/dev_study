@@ -8,6 +8,7 @@ class CTarget_Camera :
 public:
     typedef struct tagTargetCamDesc : GAMEOBJECT_DESC {
         CGameObject* pTarget = { nullptr };
+        _float4 vOffset = {};
     }TARGET_CAM_DESC;
 
 private:

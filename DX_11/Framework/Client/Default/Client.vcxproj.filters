@@ -301,6 +301,9 @@
     <Filter Include="02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\WalkToPlayer">
       <UniqueIdentifier>{b99ca3c4-2114-4e99-9644-f082244998eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\01. Camera\SunCam">
+      <UniqueIdentifier>{281eb752-5d74-4ce9-9c4f-2388e36e6516}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -591,6 +594,9 @@
     <ClInclude Include="..\Public\NpcState_Move_Trace.h">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\WalkToPlayer</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SunCam.h">
+      <Filter>02. GameObjects\01. Camera\SunCam</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -861,6 +867,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\NpcState_Move_Trace.cpp">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\WalkToPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SunCam.cpp">
+      <Filter>02. GameObjects\01. Camera\SunCam</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

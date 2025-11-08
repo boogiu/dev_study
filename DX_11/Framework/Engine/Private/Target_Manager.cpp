@@ -86,6 +86,52 @@ HRESULT CTarget_Manager::End_MRT()
 	return S_OK;
 }
 
+HRESULT CTarget_Manager::Begin_MRT(const string& strMRTTag, ID3D11DepthStencilView* pDSV)
+{
+	/* strMRTTag로 추가되어있었던 렌더타겟들(list<CRenderTarget*>)을 동시에 장치에 바인딩한다. */
+	vector<CRenderTarget*>& pMRTList = Find_MRT(strMRTTag);
+
+	if (pMRTList.empty()) {
+		MSG_BOX("There is No Render Target  : CTarget_Manager");
+		return E_FAIL;
+	}
+
+	if (pMRTList.size() > 8) {
+		MSG_BOX("MRT Size Was Over 8  : CTarget_Manager");
+		return E_FAIL;
+	}
+	m_pContext->OMGetRenderTargets(1, &m_pBackBufferRTV, &m_pDSV);
+
+	_uint		iNumRenderTargets = {};
+
+	ID3D11RenderTargetView* pRenderTargets[8] = {};
+
+
+	for (auto& pRenderTarget : pMRTList)
+	{
+		pRenderTarget->Clear();
+		pRenderTargets[iNumRenderTargets++] = pRenderTarget->Get_RTV();
+	}
+
+	ID3D11DepthStencilView* depthView = (pDSV) ? pDSV : m_pDSV;
+	if(pDSV)
+		m_pContext->ClearDepthStencilView(depthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+	m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets, depthView);
+	
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::End_MRT(ID3D11DepthStencilView* pDSV)
+{
+	ID3D11RenderTargetView* pRTV = m_pBackBufferRTV;
+	m_pContext->OMSetRenderTargets(1, &pRTV, pDSV ? pDSV : m_pDSV);
+
+	Safe_Release(m_pBackBufferRTV);
+	Safe_Release(m_pDSV);
+	return S_OK;
+}
+
+
 HRESULT CTarget_Manager::Get_TargetParam(const string& strTargetTag, SHADER_PARAM& param)
 {
 	CRenderTarget* pRenderTarget = Find_RenderTarget(strTargetTag);
@@ -131,7 +177,7 @@ void CTarget_Manager::Render_GUI()
 					if (pSRV)
 					{
 						ImGui::Image((ImTextureID)pSRV,
-							ImVec2(width / 5, height / 5));
+							ImVec2(width/5,height/5));
 					}
 					ImGui::TreePop();
 				}

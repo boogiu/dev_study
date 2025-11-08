@@ -25,6 +25,13 @@ HRESULT CFieldObject::Initialize(INIT_DESC* pArg)
 	return S_OK;
 }
 
+void CFieldObject::Awake()
+{
+	if (CModel* pModel = Get_Component<CModel>()) {
+		pModel->ShadowCast(true);
+	}
+}
+
 void CFieldObject::Priority_Update(_float dt)
 {
 }

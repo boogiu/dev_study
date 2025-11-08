@@ -15,7 +15,15 @@ public:
     virtual CState* HandleTransition() override;
 
 private:
-    //+
+    void OrdinaryMove(_float dt);
+    void Request_ShortPath(TILE_INDEX start, TILE_INDEX blocked);
+    void Request_Path();
+
+private:
+    vector<TILE_INDEX> m_PathIndex;
+    _uint m_nowIndex = {};
+    _float m_fRefresh = {1.f};
+    _float m_fElapsedTime = {};
 public:
     static CNpcState_Move_Trace* Create();
     virtual void Free() override;

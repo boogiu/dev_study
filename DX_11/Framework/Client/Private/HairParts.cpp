@@ -39,6 +39,7 @@ HRESULT CHairParts::Initialize(INIT_DESC* pArg)
 	);
 	_matrix matPos = XMMatrixTranslation(0, 9, -0.5f);
 	_matrix matRot = XMMatrixRotationY(XMConvertToRadians(180));
+	Get_Component<CSkeletalModel>()->ShadowCast(true);
 
 	Get_Component<CBoneFollower>()->Set_Offset(
 		matPos*matRot

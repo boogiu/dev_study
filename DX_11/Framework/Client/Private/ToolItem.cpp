@@ -38,6 +38,7 @@ HRESULT CToolItem::Initialize(INIT_DESC* pArg)
 	m_InstanceTag = "None";
 	m_pOwner = static_cast<CHRACTER_TOOL_DESC*>(pArg)->pOwner;
 	Get_Component<COBB_Collider>()->Make_MinMaxCollider({ {-2,-2,-2},{2,2,2} });
+	Get_Component<CSkeletalModel>()->ShadowCast(true);
 	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
 	return S_OK;
 }

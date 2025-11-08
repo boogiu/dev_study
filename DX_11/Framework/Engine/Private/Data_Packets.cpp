@@ -1,6 +1,7 @@
 #include "Data_Packets.h"
 #include "Material.h"
 #include "MaterialData.h"
+
 RENDERKEY Engine::DrawOpaquePacket::GetKey() const
 {
 		return {

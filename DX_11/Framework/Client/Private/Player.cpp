@@ -76,6 +76,7 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	Get_Component<CSkeletalModel>()->SetDrawable(5, false);
 	Get_Component<CSkeletalModel>()->SetDrawable(8, false);
 	Get_Component<CSkeletalModel>()->SetDrawable(10, false);
+	Get_Component<CSkeletalModel>()->ShadowCast(true);
 	Get_Component<CMaterialAnimator>()->LinkAnimate_Material(Get_Component<CMaterial>());
 
 	Add_MaterialAnim();
@@ -639,6 +640,7 @@ void CPlayer::Set_TargetCamera()
 {
 	CTarget_Camera::TARGET_CAM_DESC* pCamDesc = new CTarget_Camera::TARGET_CAM_DESC;
 	pCamDesc->pTarget = this;
+	pCamDesc->vOffset = { 0,50,50,0 };
 
 	CGameObject* pCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_TargetCamera" })
 		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
@@ -648,6 +650,18 @@ void CPlayer::Set_TargetCamera()
 	Safe_AddRef(m_pCamera);
 	Get_Component<CObjectContainer>()->Add_Child(pCamera, false);
 	CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pCamera->Get_Component<CCamera>());
+
+	CTarget_Camera::TARGET_CAM_DESC* psCamDesc = new CTarget_Camera::TARGET_CAM_DESC;
+	psCamDesc->pTarget = this;
+	psCamDesc->vOffset = { 0,150,150,0 };
+
+	CGameObject* psunCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_TargetCamera" })
+		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
+		.Add_ObjDesc(psCamDesc)
+		.Build("Target_Cam");
+	Get_Component<CObjectContainer>()->Add_Child(psunCamera, false);
+
+	CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(psunCamera->Get_Component<CCamera>());
 }
 
 void CPlayer::Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey)

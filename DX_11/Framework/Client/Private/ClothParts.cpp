@@ -36,6 +36,7 @@ HRESULT CClothParts::Initialize(INIT_DESC* pArg)
 
 	Get_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", pDesc->ClothType + ".model");
 	Get_Component<CMaterial>()->Link_Material("GamePlay_Level", pDesc->ClothType + ".mat");
+	Get_Component<CSkeletalModel>()->ShadowCast(true);
 
 	Get_Component<CSkeletonFollower>()->Link_MyModel(Get_Component<CSkeletalModel>());
 	Get_Component<CSkeletonFollower>()->Link_MasterModel(pDesc->pPlayer->Get_Component<CSkeletalModel>());

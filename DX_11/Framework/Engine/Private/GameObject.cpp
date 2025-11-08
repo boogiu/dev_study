@@ -21,7 +21,7 @@ CGameObject::CGameObject()
 }
 
 CGameObject::CGameObject(const CGameObject& rhs)
-	:m_ObjectID(s_NextID++),m_InstanceTag(rhs.m_InstanceTag)
+	:m_ObjectID(s_NextID++), m_InstanceTag(rhs.m_InstanceTag)
 {
 	/*트랜스폼은 가장 먼저.*/
 	type_index transform = type_index(typeid(CTransform));
@@ -149,12 +149,12 @@ void CGameObject::Post_EngineUpdate(_float dt)
 			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Debug(debugPacket);
 		}
 	}
-	
+
 #endif // _DEBUG
 
 	for (auto& child : Get_Children()) {
-		if(child)
-		child->Post_EngineUpdate(dt);
+		if (child)
+			child->Post_EngineUpdate(dt);
 	}
 }
 
@@ -186,19 +186,19 @@ void CGameObject::RenderHierarchy(CGameObject*& SelectedObject, bool isSelected)
 
 	const vector<CGameObject*>& Children = Get_Children();
 
-	ImGuiTreeNodeFlags flags = 
-		ImGuiTreeNodeFlags_Framed|
+	ImGuiTreeNodeFlags flags =
+		ImGuiTreeNodeFlags_Framed |
 		ImGuiTreeNodeFlags_OpenOnArrow |
 		//ImGuiTreeNodeFlags_SpanFullWidth |
 		(isSelected ? ImGuiTreeNodeFlags_Selected : 0) |
 		(Children.empty() ? (ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen) : 0);
 
-	string TreeNodeName = m_InstanceName + " (" + to_string(Children.empty()? 0 : Children.size()) + ")";
+	string TreeNodeName = m_InstanceName + " (" + to_string(Children.empty() ? 0 : Children.size()) + ")";
 	bool opened = ImGui::TreeNodeEx(TreeNodeName.c_str(), flags);
 
 	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 		SelectedObject = this;
-	if (opened && !Children.empty()) {  
+	if (opened && !Children.empty()) {
 		for (auto& childObject : Children) {
 			if (!childObject) continue;
 			bool childSelected = (SelectedObject == childObject);
@@ -252,31 +252,35 @@ HRESULT CGameObject::Make_OpaquePacket()
 
 	packet.pModel = Get_Component<CModel>();
 	if (!packet.pModel || !packet.pModel->isReadyToDraw()) return E_FAIL;
-	if (!packet.pModel->Get_CompActive()) return E_FAIL;
-	packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel) ? true : false;
+	if (packet.pModel->Get_RenderType() == RENDER_PASS_TYPE::RENDER_OPAQUE) {
+		if (!packet.pModel->Get_CompActive()) return E_FAIL;
+		packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel) ? true : false;
 
-	if (auto Animator = Get_Component<CAnimator3D>()) {
-		packet.pPayLoad = Animator;
-	}
-	else if (auto Follower = Get_Component<CSkeletonFollower>()) {
-		packet.pPayLoad = Follower;
-	}
-	else {
-		packet.pPayLoad = monostate{};
-	}
+		if (auto Animator = Get_Component<CAnimator3D>()) {
+			packet.pPayLoad = Animator;
+		}
+		else if (auto Follower = Get_Component<CSkeletonFollower>()) {
+			packet.pPayLoad = Follower;
+		}
+		else {
+			packet.pPayLoad = monostate{};
+		}
 
-	if (packet.pModel == nullptr) {
-		return E_FAIL ;
-	}
+		if (packet.pModel == nullptr) {
+			return E_FAIL;
+		}
 
-	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
-	{
-		if (!packet.pModel->isDrawable(i)) continue;
-		packet.DrawIndex = i;
-		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
-		CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
+		for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
+		{
+			if (!packet.pModel->isDrawable(i)) continue;
+			packet.DrawIndex = i;
+			packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
+			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
+			if (packet.pModel->doShadowCast()) {
+				CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Shadow(packet);
+			}
+		}
 	}
-
 	return S_OK;
 }
 
@@ -286,7 +290,7 @@ HRESULT CGameObject::Make_InstancePacket()
 	packet.pModel = Get_Component<CInstanceModel>();
 	packet.pMaterial = Get_Component<CMaterial>();
 
-	if (!packet.pModel ||!packet.pModel->Get_CompActive()) return E_FAIL;
+	if (!packet.pModel || !packet.pModel->Get_CompActive()) return E_FAIL;
 	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
 	{
 		if (!packet.pModel->isDrawable(i)) continue;
@@ -294,10 +298,14 @@ HRESULT CGameObject::Make_InstancePacket()
 		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
 		packet.pWorldMatrix = m_pTransform->Get_WorldMatrix_Ptr();
 		CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Instance(packet);
+		if (packet.pModel->doShadowCast()) {
+			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Shadow(packet);
+		}
 	}
 
 	return S_OK;
 }
+
 
 void CGameObject::Free()
 {

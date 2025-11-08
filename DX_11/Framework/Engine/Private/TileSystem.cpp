@@ -18,7 +18,7 @@ HRESULT CTileSystem::Initialize(const TILESYSTEM_INFO& tileInfo)
 	m_TileInfos.resize(m_tTileInfo.iTileCountX * m_tTileInfo.iTileCountZ, { 0,{
 		m_tTileInfo.vWorldMin.y,m_tTileInfo.vWorldMin.y,m_tTileInfo.vWorldMin.y,m_tTileInfo.vWorldMin.y
 		},nullptr });
-	
+
 	return S_OK;
 }
 
@@ -28,7 +28,7 @@ void CTileSystem::Update(_float dt)
 
 		for (auto Index : m_DirtyTile) {
 			auto info = m_TileInfos[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX];
-			m_InstanceTiles[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX].fCornerHeight = { 
+			m_InstanceTiles[Index.IndexX + Index.IndexZ * m_tTileInfo.iTileCountX].fCornerHeight = {
 				info.fCornerHeight[0],
 				info.fCornerHeight[1],
 				info.fCornerHeight[2],
@@ -88,15 +88,15 @@ HRESULT CTileSystem::Execute_InstanceModel(const string& levelKey, const string&
 	{
 		for (size_t j = 0; j < m_tTileInfo.iTileCountX; j++)
 		{
-			const _uint Index = i * m_tTileInfo.iTileCountX + j;  
+			const _uint Index = i * m_tTileInfo.iTileCountX + j;
 
 			m_InstanceTiles[Index].vLook = { 0,0,1,0 };
 			m_InstanceTiles[Index].vUp = { 0,1,0,0 };
 			m_InstanceTiles[Index].vRight = { 1,0,0,0 };
 			m_InstanceTiles[Index].vTranslation = {
-				m_tTileInfo.vWorldMin.x + j* sizex + sizex*0.5f,
+				m_tTileInfo.vWorldMin.x + j * sizex + sizex * 0.5f,
 				m_tTileInfo.vWorldMin.y,
-				m_tTileInfo.vWorldMin.z+ i* sizez + sizez * 0.5f,
+				m_tTileInfo.vWorldMin.z + i * sizez + sizez * 0.5f,
 				1.f
 			};
 			m_InstanceTiles[Index].fCornerHeight = {
@@ -219,7 +219,7 @@ _float4 CTileSystem::Get_PositionByIndex(TILE_INDEX tileIndex, ANCHOR anchor)
 	return _float4{ result.x, result.y, result.z, 1.f };
 }
 
-TILE_INDEX CTileSystem::Register_Tile(CTileBlock* block, TILE_INDEX index,_bool CanFail)
+TILE_INDEX CTileSystem::Register_Tile(CTileBlock* block, TILE_INDEX index, _bool CanFail)
 {
 	if (!Check_ValidIndex(index))
 		return TILE_INDEX();
@@ -239,7 +239,7 @@ TILE_INDEX CTileSystem::Register_Tile(CTileBlock* block, TILE_INDEX index,_bool 
 		else if (CanFail) {
 			return TILE_INDEX();
 		}
-		
+
 		if (desireIndex.IndexZ >= static_cast<_int>(m_tTileInfo.iTileCountZ))
 		{
 			return TILE_INDEX{};
@@ -321,18 +321,18 @@ vector<TILE_INDEX> CTileSystem::Get_IndeciesByArea(_float4 vMin, _float4 vMax)
 
 	if (!Check_ValidIndex(MinIndex) || !Check_ValidIndex(MinIndex)) { return indices; }
 
-		for (int z = MinIndex.IndexZ; z <= MaxIndex.IndexZ-1; ++z)
+	for (int z = MinIndex.IndexZ; z <= MaxIndex.IndexZ - 1; ++z)
+	{
+		for (int x = MinIndex.IndexX; x <= MaxIndex.IndexX - 1; ++x)
 		{
-			for (int x = MinIndex.IndexX; x <= MaxIndex.IndexX-1; ++x)
-			{
-				TILE_INDEX idx;
-				idx.IndexX = x;
-				idx.IndexZ = z;
-				if (!Check_ValidIndex(idx)) continue;
+			TILE_INDEX idx;
+			idx.IndexX = x;
+			idx.IndexZ = z;
+			if (!Check_ValidIndex(idx)) continue;
 
-				indices.push_back(idx);
-			}
+			indices.push_back(idx);
 		}
+	}
 	return indices;
 }
 
@@ -405,13 +405,100 @@ INSTANCE_TILE CTileSystem::Get_InstanceInfoByIndex(TILE_INDEX index)
 
 void CTileSystem::Change_CornerHeight(TILE_INDEX index, _float leftTop, _float rightTop, _float rightBottom, _float leftBottom)
 {
-	auto& TileInfo =  m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
-	TileInfo.fCornerHeight[0]= leftTop;
-	TileInfo.fCornerHeight[1]	= rightTop;
-	TileInfo.fCornerHeight[2]	= rightBottom;
-	TileInfo.fCornerHeight[3]	= leftBottom;
+	auto& TileInfo = m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
+	TileInfo.fCornerHeight[0] = leftTop;
+	TileInfo.fCornerHeight[1] = rightTop;
+	TileInfo.fCornerHeight[2] = rightBottom;
+	TileInfo.fCornerHeight[3] = leftBottom;
 
 	m_DirtyTile.push_back(index);
+}
+
+static const TILE_INDEX CrossDir[] = { {+1,0},{-1,0},{0,+1},{0,-1} };
+/*맨해튼*/
+vector<TILE_INDEX> CTileSystem::Request_Path_To(TILE_INDEX start, TILE_INDEX goal, _uint avoidMask)
+{
+	vector<TILE_INDEX> empty;
+	if (start == goal)
+		return { start };
+
+	auto isNotToAvoid =
+		[&](const TILE_INDEX& idx) -> _bool {
+		_uint flag = Get_TileFlagByIndex(idx);
+		if ((flag & avoidMask) != 0)
+			return false;
+		else
+			return true;
+		};
+
+
+	unordered_map<TILE_INDEX, _float, TILE_INDEX_HASH> g_CostContainer; /*시작점에서 현재 도달지점 까지 도달하는 _float 비용*/
+	unordered_map<TILE_INDEX, _float, TILE_INDEX_HASH> f_CostContainer;/*시작점에서 목표까지 도달하는 _float 비용*/
+	// f[index] = g[index] + Heuristic(index, goal) => 이게 내가 구하고자 하는 것. 가장 작은애가 최단 거리임
+
+	/*타일 -> 타일 부모*/
+	unordered_map<TILE_INDEX, TILE_INDEX, TILE_INDEX_HASH> parent;
+	/*이미 확인 된 타일 등*/
+	unordered_set<TILE_INDEX, TILE_INDEX_HASH> closed;
+
+	/*맵 안을 돌아보면서 해당 타일이 존재하는지 검사. 없으면 무한 때려버리기*/
+	using MAP = unordered_map<TILE_INDEX, _float, TILE_INDEX_HASH>;
+	auto getOrInf = [](const auto& MAP, const TILE_INDEX& INDEX) {
+		auto it = MAP.find(INDEX);
+		return (it == MAP.end()) ? numeric_limits<float>::infinity() : it->second;
+		};
+
+	/*큐 구조체*/
+	struct QNode { _float fCost; TILE_INDEX index; };
+	/*비교 펑터 ->우선 순위 큐는 큰값이 먼저다.(내부적으로 비교해서 false가 나오면 앞으로 넣음) 그래서 나는 펑터에서 작을 때 false가 나오게함*/
+	struct Compare { _bool operator()(const QNode& a, const QNode& b) const { return a.fCost > b.fCost; } };
+	priority_queue<QNode, vector<QNode>, Compare> open; /*탐색 후보군들-> 작은 애들부터 할거니까*/
+
+	g_CostContainer[start] = 0.f;
+	f_CostContainer[start] = Manhattan(start, goal);
+
+	/*처음 시작 지점 기록 시작*/
+	open.push({ f_CostContainer[start], start });
+
+	/*탐색 후보군 다 사라지기 전까지*/
+	while (!open.empty()) {
+		/*오픈에서 꺼냄 1회차는 시작지점*/
+		TILE_INDEX current = open.top().index;
+		open.pop();
+
+		if (current == goal) {/*만약 꺼내보니 목표지점이라면 경로 복원함*/
+			return ReconstructPath(parent, current);
+		}
+
+		/*만약 이미 확인 된 친구라면? 즉 클로즈에 들어가 있으면 넘어가고 */
+		if (closed.find(current) != closed.end()) continue;
+		/*아니라면 이제부터라도 넣음*/
+		closed.insert(current);
+
+		// 4방향 이웃 검사함
+		for (const auto& direction : CrossDir) {
+			TILE_INDEX neighbor{ current.IndexX + direction.IndexX, current.IndexZ + direction.IndexZ };
+
+			if (!isNotToAvoid(neighbor)) continue; //만약 이웃이 금지 목록이거나, 아니면 이미 검사한 애면 넘어감
+			if (closed.find(neighbor) != closed.end()) continue;
+			if (!Check_ValidIndex(neighbor))continue;
+
+			/*코스트 계산 시작 -> 이제야 꺼낸애를 확ㅇ니함*/
+			_float tentative = getOrInf(g_CostContainer, current) + 1.0f; // 4방향은 전부 비용 1
+			
+			/*내 이웃 중에 혹시 나 +1 보다 적은 친구가 있니*/
+			if (tentative < getOrInf(g_CostContainer, neighbor)) {
+				parent[neighbor] = current; /*잇으면 내가 니 부모다->즉 너가 되면 내가 너 이전 타일이야~*/
+				g_CostContainer[neighbor] = tentative; /*너는 코스트 기록 되었다.*/
+				f_CostContainer[neighbor] = tentative + Manhattan(neighbor, goal); /*네 총 비용은 이정도 되겠지*/
+
+				open.push({ f_CostContainer[neighbor], neighbor }); /*4개 우선 순위 넣었다?*/
+			}
+		}
+	}
+
+	// 다 꺼냈는데도 없네 : 경로 없음
+	return empty;
 }
 
 HRESULT CTileSystem::Save_TileSystemData(const string& SavePath)
@@ -419,7 +506,7 @@ HRESULT CTileSystem::Save_TileSystemData(const string& SavePath)
 	ofstream ofs(SavePath.c_str(), ios::binary);
 	if (!ofs.is_open())
 		return E_FAIL;
-	
+
 	ofs.write(reinterpret_cast<const char*>(&m_tTileInfo), sizeof(TILESYSTEM_INFO));
 
 	_uint infoCount = m_TileInfos.size();
@@ -443,16 +530,35 @@ HRESULT CTileSystem::Executer_SystemByData(const string& LoadPath)
 	ifs.read(reinterpret_cast<char*>(&m_tTileInfo), sizeof(TILESYSTEM_INFO));
 
 	_uint infoCount = {};
-	ifs.read(reinterpret_cast< char*>(&infoCount), sizeof(_uint));
+	ifs.read(reinterpret_cast<char*>(&infoCount), sizeof(_uint));
 	m_TileInfos.resize(infoCount);
 	m_InstanceTiles.resize(infoCount);
 	for (size_t i = 0; i < infoCount; i++)
 	{
-		ifs.read(reinterpret_cast< char*>(&m_TileInfos[i]), sizeof(TILE_INFO));
+		ifs.read(reinterpret_cast<char*>(&m_TileInfos[i]), sizeof(TILE_INFO));
 		ifs.read(reinterpret_cast<char*>(&m_InstanceTiles[i]), sizeof(INSTANCE_TILE));
 	}
 	ifs.close();
 	return S_OK;
+}
+
+/*경로 복원하기*/
+vector<TILE_INDEX> CTileSystem::ReconstructPath(const unordered_map<TILE_INDEX, TILE_INDEX, TILE_INDEX_HASH>& parent, TILE_INDEX cur)
+{
+	vector<TILE_INDEX> result;
+	result.push_back(cur);
+	auto it = parent.find(cur);
+
+	/*부모에서 최상위 부모로 올라갈 때까지*/
+	while (it != parent.end())
+	{
+		cur = it->second;
+		result.push_back(cur);
+		it = parent.find(cur);
+	}
+
+	reverse(result.begin(), result.end());
+	return result;
 }
 
 
@@ -469,7 +575,7 @@ _bool CTileSystem::Get_TileInfoByIndex(TILE_INDEX index, TILE_INFO& info)
 	if (!Check_ValidIndex(index))
 		return false;
 
-	info= m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
+	info = m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
 
 	return true;
 }

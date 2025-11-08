@@ -14,6 +14,8 @@ private:
 public: 
 	virtual HRESULT Render() override;
 	virtual void Submit_Opaque(const OPAQUE_PACKET& packet) override { m_pOpaquePass->Submit(packet); };
+	virtual void Submit_Shadow(const OPAQUE_PACKET& packet) override { m_pShadowPass->Submit(packet); };
+	virtual void Submit_Shadow(const INSTANCE_PACKET& packet) override { m_pShadowPass->SubmitInstance(packet); };
 	virtual void Submit_Instance(const INSTANCE_PACKET& packet) override { m_pInstancePass->Submit(packet); };
 	virtual void Submit_UI(const UI_PACKET& packet) override {m_pUIPass->Submit(packet);};
 	virtual void Submit_Debug(const DEBUG_PACKET& packet) override { m_pDebugPass->Submit(packet); };
@@ -34,6 +36,10 @@ public:
 	class CPipeLine* Get_Pipeline() { return m_pPipeLine; }
 
 private:
+	HRESULT ReadyShadow();
+	void Render_Shadow();
+	HRESULT Change_Viewport(_uint iWidth, _uint iHeight);
+
 private:
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = {nullptr};
@@ -50,9 +56,13 @@ private:
 
 	/*Pass*/
 	OpaquePass* m_pOpaquePass = { nullptr};
+	ShadowPass* m_pShadowPass = { nullptr};
 	InstancePass* m_pInstancePass = { nullptr};
 	UIPass* m_pUIPass = { nullptr };
 	DebugPass* m_pDebugPass = { nullptr };
+
+	/*Shadow Depth*/
+	ID3D11DepthStencilView* m_pShadowDepth = { nullptr };
 
 public:
 	static CRenderSystem* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

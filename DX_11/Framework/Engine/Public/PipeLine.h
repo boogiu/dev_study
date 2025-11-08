@@ -4,20 +4,25 @@ NS_BEGIN(Engine)
 class CPipeLine :
     public CBase
 {
-    struct FrameBuffer
+    struct alignas(16)  FrameBuffer
     {
         _float4x4 matView;
         _float4x4 matProjection;
+        _float4x4 matViewInverse;
+        _float4x4 matProjectionInverse;
         _float4x4 matOrthograph;
-        _float4     vCamPosition;
+        _float4 vCamPosition;
+        _float zFar;
+        _float3 padding; // ← 반드시 추가 (총 16바이트 맞추기)
     };
 
-    struct LightBuffer
+    struct alignas(16)  ShadowBuffer
     {
-        _float4 vLightDir;
-        _float4 vLightDiffuse;
-        _float4 vLightAmbient;
-        _float4 vLightSpecular;
+        _float4x4 matShadowView;
+        _float4x4 matShadowProjection;
+        _float4 vShadowPosition;
+        _float zShadowFar;
+        _float3 ShadowPadding;
     };
 
     struct ObjectBuffer
@@ -48,9 +53,9 @@ private:
    virtual ~CPipeLine() DEFAULT;
 
 public:
-    HRESULT Initialize(ID3D11Device* pDevice);
+    HRESULT Initialize(ID3D11Device* pDevice, class CRenderSystem* pSystem);
     HRESULT Update_FrameBuffer(ID3D11DeviceContext* pContext);
-    HRESULT Update_LightBuffer(ID3D11DeviceContext* pContext);
+    HRESULT Update_ShadowBuffer(ID3D11DeviceContext* pContext);
 
     _uint Write_ObjectData(const _float4x4& worldMatrix);
     HRESULT Begin_ObjectBuffer(ID3D11DeviceContext* pContext);
@@ -65,14 +70,16 @@ public:
 
 public:
     ID3D11Buffer* Get_FrameBuffer() { return m_pDeviceFrameBuffer; };
-    ID3D11Buffer* Get_LightBuffer() { return m_pDeviceLightBuffer; };
+    ID3D11Buffer* Get_ShadowBuffer() { return m_pDeviceShadowBuffer; };
 
     ID3D11Buffer* Get_ObjectArrayBuffer() { return m_pDeviceObjectBuffer; };
     ID3D11ShaderResourceView* Get_SkinningResource() { return m_pSkinningResource; };
+   
+    HRESULT Bind_Light(class CShader* pShader, class CVIBuffer* pBuffer, ID3D11DeviceContext* pContext);
 
 private:
     ID3D11Buffer* m_pDeviceFrameBuffer = {nullptr};
-    ID3D11Buffer* m_pDeviceLightBuffer = {nullptr};
+    ID3D11Buffer* m_pDeviceShadowBuffer = {nullptr};
     
     _int m_ObjectBufferCount = {};
     ObjectBufferArray* m_pObjectBufferArray = { nullptr };
@@ -87,9 +94,10 @@ private:
 
     /*팔레트 등록*/
     unordered_map<string, class CTexture*> m_Palette;
+    class CRenderSystem* m_pSystem = { nullptr };
 
 public:
-    static CPipeLine* Create(ID3D11Device* pDevice);
+    static CPipeLine* Create(ID3D11Device* pDevice, class CRenderSystem* pSystem);
     virtual void Free() override;
 };
 NS_END

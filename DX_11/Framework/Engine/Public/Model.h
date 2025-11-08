@@ -28,6 +28,18 @@ public:
 	virtual MINMAX_BOX Get_LocalBoundingBox()	PURE;
 	virtual vector<MINMAX_BOX> Get_MeshBoundingBox()	PURE;
 	virtual MINMAX_BOX Get_WorldBoundingBox()	PURE;
+
+public:
+	void Set_RenderType(RENDER_PASS_TYPE eType) { m_eType = eType; };
+	void ShadowCast(_bool cast) { isShadowCast = cast; }
+	
+	RENDER_PASS_TYPE Get_RenderType() { return m_eType ; };
+	_bool doShadowCast() { return isShadowCast; };
+
+private:
+	_bool isShadowCast = { false };
+	RENDER_PASS_TYPE m_eType = { RENDER_PASS_TYPE::RENDER_OPAQUE };
+
 public:
 	virtual void Free() override;
 };

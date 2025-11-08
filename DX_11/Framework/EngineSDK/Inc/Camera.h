@@ -15,7 +15,9 @@ public:
 
 public:
 	_float4x4 Get_ViewMatrix();
+	_matrix Get_PureViewMatrix();
 	_matrix Get_ProjMatrix();
+	_float Get_Far() { return m_fFar; };
 	void Lerp_FOV(_float dst, _float dt);
 
 public:

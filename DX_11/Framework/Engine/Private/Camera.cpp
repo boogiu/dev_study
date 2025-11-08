@@ -34,7 +34,19 @@ HRESULT CCamera::Initialize(COMPONENT_DESC* pArg)
 
 _float4x4 CCamera::Get_ViewMatrix()
 {
+
 	return m_pTransform->Get_InverseWorldMatrix();
+}
+
+_matrix CCamera::Get_PureViewMatrix()
+{
+	_float3     vUpDir = { 0.f, 1.f, 0.f };
+
+	//	return XMMatrixLookAtLH(
+	//		XMVectorSetW(m_pTransform->Get_WorldPos(), 1.f),
+	//		XMVectorSetW(m_pTransform->Get_WorldPos()+m_pTransform->Dir(STATE::LOOK), 1.f),
+	//		XMLoadFloat3(&vUpDir));
+	return XMLoadFloat4x4(m_pTransform->Get_InverseWorldMatrix_Ptr());
 }
 
 _matrix CCamera::Get_ProjMatrix()

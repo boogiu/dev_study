@@ -2,6 +2,7 @@
 #define __SHADER_DEFINE_HLSL__
 
 #pragma pack_matrix(row_major)
+#pragma pack_constant_buffers
 
 #include "Shader_State.hlsl"
 
@@ -9,16 +10,23 @@ cbuffer FrameBuffer : register(b0)
 {
     matrix matView;
     matrix matProjection;
+    matrix matViewInverse;
+    matrix matProjectionInverse;
     matrix matOrthograph;
-    vector vCamPosition;
+    float4 vCamPosition;
+    float zFar;
+    float3 framePadding;
 };
 
 cbuffer LightBuffer : register(b1)
 {
-    vector vLightDir;
+    vector vLightPosition;
+    vector vLightDirection;
     vector vLightDiffuse;
     vector vLightAmbient;
     vector vLightSpecular;
+    float   fLightRange;
+    float3 lightPadding;
 };
 
 cbuffer TransformPerDraw : register(b2)
@@ -38,8 +46,8 @@ cbuffer SkinningPerDraw : register(b4)
 
 cbuffer MaterialBuffer : register(b6)
 {
-    float4 vMtrlDiffuse;
-    float4 vMtrlAmbient;
+    float4 vMtrlDiffuse =1.f;
+    float4 vMtrlAmbient = 1.f;
     float4 vMtrlSpecular;
     float fSpecularPow;
 };
@@ -51,6 +59,16 @@ cbuffer TileSystemInfo : register(b7)
     float2 WorldSize;
     float repeatCount = 100.0f;
     float2 PalettePixel = { 0.5f, 0.54f };
+};
+
+
+cbuffer ShadowBuffer : register(b8)
+{
+    matrix matShadowView;
+    matrix matShadowProjection;
+    float4 vShadowPosition;
+    float zShadowFar;
+    float3 ShadowPadding;
 };
 
 struct BoneMatrix
@@ -99,11 +117,12 @@ Texture2D g_MaskTexture : register(t19);
 StructuredBuffer<BoneMatrix> g_BoneMatrices : register(t0);
 StructuredBuffer<TileIndex> g_TileIndecies : register(t20);
 
+
 // 式式式式式式式式式式式式式  Instancing 式式式式式式式式式式式式式
 
-Texture2DArray g_TileAlbedo : register(t21);
-Texture2DArray g_TilePalette : register(t22);
+Texture2DArray g_TileAlbedo : register(t25);
+Texture2DArray g_TilePalette : register(t26);
 
 // 式式式式式式式式式式式式式  Sprite 式式式式式式式式式式式式式
-Texture2D SpriteTexture : register(t23);
+Texture2D SpriteTexture : register(t27);
 #endif // __SHADER_DEFINE_HLSL__

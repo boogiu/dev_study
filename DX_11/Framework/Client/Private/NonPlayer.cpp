@@ -54,6 +54,7 @@ void CNonPlayer::Awake()
 	Add_BaseAnimClip();
 	Add_Parts();
 	Add_EventListen();
+	Get_Component<CModel>()->ShadowCast(true);
 	//m_MovementPack.vMoveAxis = { 1.f,0.f };
 }
 

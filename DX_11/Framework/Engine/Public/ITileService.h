@@ -30,5 +30,7 @@ public:
 	virtual _uint Get_TileFlagByIndex(TILE_INDEX index) PURE;
 	virtual _bool Check_TileFlagByPosition(_float4 WorldPos, _uint flag) PURE;
 	virtual void Change_CornerHeight(TILE_INDEX index, _float leftTop, _float rightTop, _float rightBottom, _float leftBottom) PURE;
+	virtual vector<TILE_INDEX> Request_Path_To(TILE_INDEX src, TILE_INDEX dst, _uint avoidFlag) PURE;
+
 };
 NS_END
