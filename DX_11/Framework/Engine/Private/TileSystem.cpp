@@ -415,6 +415,8 @@ void CTileSystem::Change_CornerHeight(TILE_INDEX index, _float leftTop, _float r
 }
 
 static const TILE_INDEX CrossDir[] = { {+1,0},{-1,0},{0,+1},{0,-1} };
+static const TILE_INDEX SquareDir[] ={{ +1,  0 }, { -1,  0 }, {  0, +1 }, {  0, -1 },{ +1, +1 }, { -1, +1 }, { +1, -1 }, { -1, -1 }};
+
 /*맨해튼*/
 vector<TILE_INDEX> CTileSystem::Request_Path_To(TILE_INDEX start, TILE_INDEX goal, _uint avoidMask)
 {
@@ -430,7 +432,6 @@ vector<TILE_INDEX> CTileSystem::Request_Path_To(TILE_INDEX start, TILE_INDEX goa
 		else
 			return true;
 		};
-
 
 	unordered_map<TILE_INDEX, _float, TILE_INDEX_HASH> g_CostContainer; /*시작점에서 현재 도달지점 까지 도달하는 _float 비용*/
 	unordered_map<TILE_INDEX, _float, TILE_INDEX_HASH> f_CostContainer;/*시작점에서 목표까지 도달하는 _float 비용*/
@@ -455,7 +456,7 @@ vector<TILE_INDEX> CTileSystem::Request_Path_To(TILE_INDEX start, TILE_INDEX goa
 	priority_queue<QNode, vector<QNode>, Compare> open; /*탐색 후보군들-> 작은 애들부터 할거니까*/
 
 	g_CostContainer[start] = 0.f;
-	f_CostContainer[start] = Manhattan(start, goal);
+	f_CostContainer[start] = Diagonal(start, goal);
 
 	/*처음 시작 지점 기록 시작*/
 	open.push({ f_CostContainer[start], start });
@@ -473,24 +474,33 @@ vector<TILE_INDEX> CTileSystem::Request_Path_To(TILE_INDEX start, TILE_INDEX goa
 		/*만약 이미 확인 된 친구라면? 즉 클로즈에 들어가 있으면 넘어가고 */
 		if (closed.find(current) != closed.end()) continue;
 		/*아니라면 이제부터라도 넣음*/
+	
 		closed.insert(current);
-
-		// 4방향 이웃 검사함
-		for (const auto& direction : CrossDir) {
+		// 8방향 이웃 검사함
+		for (const auto& direction : SquareDir) {
 			TILE_INDEX neighbor{ current.IndexX + direction.IndexX, current.IndexZ + direction.IndexZ };
 
 			if (!isNotToAvoid(neighbor)) continue; //만약 이웃이 금지 목록이거나, 아니면 이미 검사한 애면 넘어감
 			if (closed.find(neighbor) != closed.end()) continue;
+			if (direction.IndexX != 0 && direction.IndexZ != 0)
+			{
+				TILE_INDEX adj1{ current.IndexX + direction.IndexX, current.IndexZ };
+				TILE_INDEX adj2{ current.IndexX, current.IndexZ + direction.IndexZ };
+				if (!isNotToAvoid(adj1) || !isNotToAvoid(adj2))
+					continue;
+			}
 			if (!Check_ValidIndex(neighbor))continue;
 
 			/*코스트 계산 시작 -> 이제야 꺼낸애를 확ㅇ니함*/
-			_float tentative = getOrInf(g_CostContainer, current) + 1.0f; // 4방향은 전부 비용 1
-			
+			// /*맵하튼 용 _float tentative = getOrInf(g_CostContainer, current) + 1.0f; // 4방향은 전부 비용 1
+			_float cost = (direction.IndexX == 0 || direction.IndexZ == 0) ? 1.f : 1.41421356f;
+			_float tentative = getOrInf(g_CostContainer, current) + cost;
+
 			/*내 이웃 중에 혹시 나 +1 보다 적은 친구가 있니*/
 			if (tentative < getOrInf(g_CostContainer, neighbor)) {
 				parent[neighbor] = current; /*잇으면 내가 니 부모다->즉 너가 되면 내가 너 이전 타일이야~*/
 				g_CostContainer[neighbor] = tentative; /*너는 코스트 기록 되었다.*/
-				f_CostContainer[neighbor] = tentative + Manhattan(neighbor, goal); /*네 총 비용은 이정도 되겠지*/
+				f_CostContainer[neighbor] = tentative + Diagonal(neighbor, goal); /*네 총 비용은 이정도 되겠지*/
 
 				open.push({ f_CostContainer[neighbor], neighbor }); /*4개 우선 순위 넣었다?*/
 			}
@@ -596,6 +606,16 @@ TILE_INFO CTileSystem::Find_Info(TILE_INDEX index)
 		return TILE_INFO();
 
 	return m_TileInfos[index.IndexX + index.IndexZ * m_tTileInfo.iTileCountX];
+}
+
+_float CTileSystem::Diagonal(const TILE_INDEX& a, const TILE_INDEX& b)
+{
+	
+	_float dx = fabsf(float(a.IndexX - b.IndexX));
+	_float dz = fabsf(float(a.IndexZ - b.IndexZ));
+	_float D = 1.f;
+	_float D2 = 1.41421356f;
+	return D * (dx + dz) + (D2 - 2.f * D) * min(dx, dz);
 }
 
 CTileSystem* CTileSystem::Create(const TILESYSTEM_INFO& tileInfo)

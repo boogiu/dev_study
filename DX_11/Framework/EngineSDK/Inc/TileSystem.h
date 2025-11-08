@@ -58,6 +58,7 @@ private:
     _bool Check_ValidIndex(TILE_INDEX index);
     TILE_INFO Find_Info(TILE_INDEX index);
     _float Manhattan(const TILE_INDEX& a, const TILE_INDEX& b) { return static_cast<_float>(fabs(a.IndexX - b.IndexX) + fabs(a.IndexZ - b.IndexZ));}
+    _float Diagonal(const TILE_INDEX& a, const TILE_INDEX& b);
     //타일 해슁을 키값으로 하겠다고 펑터 보내주는 것임.
     vector<TILE_INDEX> ReconstructPath(const unordered_map<TILE_INDEX, TILE_INDEX, TILE_INDEX_HASH>& parent, TILE_INDEX cur);
 
