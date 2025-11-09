@@ -27,6 +27,8 @@ HRESULT CNpcStateHub_Idle::OnEnter()
 void CNpcStateHub_Idle::OnUpdate(_float dt)
 {
 	m_fIdleTime += dt;
+	m_pCharacter->LookToPlayer(dt);
+
 	m_pCurrentState->OnUpdate(dt);
 	DecideSubState(dt);
 }
@@ -39,23 +41,28 @@ HRESULT CNpcStateHub_Idle::OnExit()
 
 CState* CNpcStateHub_Idle::HandleTransition()
 {
-
+	
 	if (m_fIdleTime > 10.f) {
 		return m_pLayer->Get_State("State_Hub_Move");
 	}
-
 	return nullptr;
 }
 
 void CNpcStateHub_Idle::Render_State()
 {
-	ImGui::Button("Player_Near");
 
 }
 
 void CNpcStateHub_Idle::DecideSubState(_float dt)
 {
-
+	auto& trace = m_pCharacter->Get_TracePack();
+	if (trace.Player_distance < 20)
+	{
+		Change_State("Idle_LookAround");
+	}
+	else {
+		Change_State("Idle_Wait");
+	}
 }
 
 CNpcStateHub_Idle* CNpcStateHub_Idle::Create()

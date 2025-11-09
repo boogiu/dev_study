@@ -19,6 +19,12 @@
 #include "EventSystem.h"
 #include "Helper_Func.h"
 
+#include"ILevelService.h"
+#include "Level.h"
+#include "EventSystem.h"
+#include "UI_Responcer.h"
+#include "Player.h"
+
 CNonPlayer::CNonPlayer()
 {
 }
@@ -56,6 +62,9 @@ void CNonPlayer::Awake()
 	Add_EventListen();
 	Get_Component<CModel>()->ShadowCast(true);
 	//m_MovementPack.vMoveAxis = { 1.f,0.f };
+
+	m_EventPack.eventSystem = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
+
 }
 
 void CNonPlayer::Priority_Update(_float dt)
@@ -99,59 +108,6 @@ void CNonPlayer::Update_Movement(_float dt)
 	m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(m_MovementPack.fCurrentDegree));
 }
 
-_bool CNonPlayer::Can_Walk(_float2& moveAxis)
-{
-	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-	_float4 myPos = Get_Position();
-
-	// 앞으로
-	_float4 nextPos = myPos;
-	nextPos.x += moveAxis.x;
-	nextPos.z += moveAxis.y;
-
-	TILE_INDEX forward = tileSystem->Get_IndexByPosition(nextPos);
-	_uint flag = tileSystem->Get_TileFlagByIndex(forward);
-
-	if ((flag & CANT_WALK) == 0)
-		return true; // 앞길 열려 있음
-
-	//좌, 우, 뒤 검사
-
-	_float3 look = { moveAxis.x, 0.f, moveAxis.y };
-	_float3 up = { 0.f, 1.f, 0.f };
-
-	// 오른쪽, 왼쪽, 뒤 방향 벡터 구하기
-	_vector vRight = XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&up), XMLoadFloat3(&look)));
-	_vector vLeft = -vRight;
-	_vector vBack = -XMLoadFloat3(&look);
-
-	_float3 right, left, back;
-	XMStoreFloat3(&right, vRight);
-	XMStoreFloat3(&left, vLeft);
-	XMStoreFloat3(&back, vBack);
-
-	vector<_float3> cross = { right ,left , back };
-
-	for (auto& dir : cross)
-	{
-		_float4 testPos = myPos;
-		testPos.x += dir.x;
-		testPos.z += dir.z;
-
-		TILE_INDEX idx = tileSystem->Get_IndexByPosition(testPos);
-		_uint flag = tileSystem->Get_TileFlagByIndex(idx);
-		if ((flag & CANT_WALK) == 0)
-		{
-			moveAxis = { dir.x, dir.z }; // 이 방향으로 회전
-			return true;
-		}
-	}
-
-	moveAxis = { 0.f, 0.f };
-	return false;
-}
-
-
 void CNonPlayer::Update_TileInfo(_float dt){
 	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
 	m_TileInfoPack.NowIndex = TileSys->Get_IndexByPosition(Get_Position());
@@ -183,6 +139,8 @@ void CNonPlayer::Render_GUI()
 	__super::Render_GUI();
 	ImGui::Begin("Npc_State");
 	ImGui::Text("MoveAxis : %.2f ,  %.2f", m_MovementPack.vMoveAxis.x, m_MovementPack.vMoveAxis.y);
+
+	ImGui::Checkbox("Has Agenda", &m_EventPack.HasAgenda);
 	m_pMachine->Render_State(this);
 	ImGui::End();
 }
@@ -199,6 +157,16 @@ void CNonPlayer::Add_BaseAnimClip()
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Feel_AngryWalk.anim",  "NPC", true);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Hit.anim",  "NPC", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Hit_Behind.anim",  "NPC", false);
+	
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_Rhythm03.anim",  "NPC", true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_WatchCStd.anim",  "NPC", true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_WatchL2Std.anim",  "NPC", true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_WatchL3Std.anim",  "NPC", true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_Yoga01.anim",  "NPC", true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Greeting_Bow.anim", "NPC", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Act_Jogging.anim", "NPC", true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "MaRe_Clapping.anim", "NPC", true);
+
 
 	Get_Component<CAnimator3D>()->Change_Animation("Base_Wait.anim", false);
 }
@@ -227,7 +195,8 @@ void CNonPlayer::Add_EventListen()
 			[this](const PLAYER_POS& pos) {
 				PLAYER_POS Playerpos = pos;
 				_float fDistance = XMVectorGetX(XMVector4Length(m_pTransform->Get_Pos() - XMLoadFloat4(&Playerpos.playerPos)));
-				if (fabs(fDistance) <55.f)
+				m_TracePack.pPlayer = pos.pPlayer;
+				if (fabs(fDistance) <11.f)
 					m_TracePack.Player_Near = true;
 				else
 					m_TracePack.Player_Near = false;
@@ -238,6 +207,54 @@ void CNonPlayer::Add_EventListen()
 					XMVector4Normalize(XMLoadFloat4(&Playerpos.playerPos) - m_pTransform->Get_Pos()));
 			});
 	};
+}
+
+void CNonPlayer::LookToPlayer(_float dt)
+{
+	auto& trace = m_TracePack;
+	auto Animator = Get_Component<CAnimator3D>();
+
+	auto Lerp = [&](_float a, _float b,_float t) ->_float{
+			return a + (b - a) * t;
+		};
+
+	if (trace.Player_distance < 50)
+	{
+		_vector playerLook = XMLoadFloat4(&trace.Player_Pos) - m_pTransform->Get_Pos();
+		_vector MyLook = m_pTransform->Dir(STATE::LOOK);
+		playerLook = XMVector3Normalize(playerLook);
+		MyLook = XMVector3Normalize(MyLook);
+
+		_float dot = XMVectorGetX(XMVector3Dot(MyLook, playerLook));
+
+		if(dot >0.3f){
+		_float target_Radian = 
+			atan2(XMVectorGetX(playerLook), XMVectorGetZ(playerLook)) -
+			atan2(XMVectorGetX(MyLook), XMVectorGetZ(MyLook));
+		if (target_Radian > XM_PI)
+			target_Radian -= XM_2PI;
+		else if (target_Radian < -XM_PI)
+			target_Radian += XM_2PI;
+			trace.traceBone_Radian = Lerp(trace.traceBone_Radian, target_Radian,dt*5);
+			Animator->Control_Bone("Armature_Neck", XMMatrixRotationX(trace.traceBone_Radian));
+		}
+		else {
+			trace.traceBone_Radian = Lerp(trace.traceBone_Radian, 0, dt);
+			Animator->Control_Bone("Armature_Neck", XMMatrixRotationX(trace.traceBone_Radian));
+		}
+		
+	}
+	else {
+		trace.traceBone_Radian = Lerp(trace.traceBone_Radian, 0, dt);
+		Animator->Control_Bone("Armature_Neck", XMMatrixRotationX(trace.traceBone_Radian));
+	}
+}
+
+void CNonPlayer::Open_Dialogue(const string tag, void* pArg)
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	auto UI_Responder = nowLevel->Get_LevelObject<CUI_Responcer>();
+	UI_Responder->Active_UI(tag, pArg);
 }
 
 void CNonPlayer::Free()

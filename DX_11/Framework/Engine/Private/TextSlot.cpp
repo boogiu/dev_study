@@ -53,6 +53,11 @@ void CTextSlot::Set_Position(_float2 Pos)
 	m_Info.TextPos = Pos;
 }
 
+void CTextSlot::Set_Rotate(_float Rotate)
+{
+	m_Info.Rotation = Rotate;
+}
+
 void CTextSlot::Set_OutLine(_float Thickness, _float4 OutlineColor)
 {
 	m_Info.OutLined = true;

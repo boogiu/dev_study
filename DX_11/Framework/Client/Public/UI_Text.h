@@ -23,6 +23,9 @@ public:
     void Set_Scale(_float size);
     _float Text_Length();
     void Clear_Text();
+    void Set_Text(const wstring& text);
+    void Rotate(_float radian);
+    void Set_Color(_float4 color);
 
 private:
     _bool m_bActive = { false };

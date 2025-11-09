@@ -127,3 +127,18 @@ static  constexpr unsigned int FlagForAction = InputMask::ACTION | InputMask::PI
 static  constexpr unsigned int OnlyAction = 0xffffffff;
 static  constexpr unsigned int OnlyTrans = 0xffffffff;
 static  constexpr unsigned int OnlyInteraction = 0xffffffff;
+
+
+enum class AgendaType {
+    None,
+    SmallTalk,
+    UpsetAbout,
+};
+
+
+enum class NpcState {
+    Idle,
+    Angry,
+    Depressed,
+    Happy
+};

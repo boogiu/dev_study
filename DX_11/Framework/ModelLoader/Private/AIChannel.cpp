@@ -80,7 +80,7 @@ void CAIChannel::Save_Channel(ofstream& ofs)
 	strcpy_s(channelHeader.BoneName, sizeof(channelHeader.BoneName), m_boneName.c_str());
 
 	ofs.write(reinterpret_cast<const char*>(&channelHeader), sizeof(channelHeader));
-	
+	m_RemoveMdlTrans = true;
 	if (m_isRoot) {
 		for (auto& keyFrame : m_KeyFrames) {
 

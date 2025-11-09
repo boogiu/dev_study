@@ -42,10 +42,13 @@ public:
             MsgMove = MsgAdd = MsgAction = MsgPickup = MsgBag = false;
         }
     };
+
     struct StateInfoHubPacket {
           CGameObject* m_pObjectOnLeftHand = { nullptr };
           CGameObject* m_pLeftHand = { nullptr };
           CGameObject* m_pRightHand = { nullptr };
+          CGameObject* m_pTalker= { nullptr };
+
     };
 
 
@@ -58,6 +61,7 @@ private:
 public:
     HRESULT Initialize_Prototype() override;
     HRESULT Initialize(INIT_DESC* pArg) override;
+    void Awake() override;
     void Priority_Update(_float dt) override;
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
@@ -71,10 +75,11 @@ private:
     void BroadCast_Event();
 
 public:
+    void Adjust_To(_fvector pos);
     void Adjust_To_Foward();
     void Adjust_To_WorldFoward();
-    void Camera_Zoom_In();
-    void Camera_Zoom_Out();
+    void Camera_Zoom_In(CGameObject* subject = {nullptr});
+    void Camera_Zoom_Out(CGameObject* subject = { nullptr });
 
 public:
     MovementPacket& Get_MovementPacket() { return m_MovementPack; }

@@ -15,6 +15,8 @@ class CNpcState_Move_Walk :
         virtual CState* HandleTransition() override;
 
 private:
+    void Rand_Direction();
+private:
     _float m_fWalkDuration = {  };
     public:
         static CNpcState_Move_Walk* Create();

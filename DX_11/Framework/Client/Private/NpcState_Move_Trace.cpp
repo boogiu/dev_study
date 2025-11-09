@@ -22,28 +22,41 @@ void CNpcState_Move_Trace::OnUpdate(_float dt)
 {
     auto* myTransform = m_pCharacter->Get_Component<CTransform>();
     auto& MovePack = m_pCharacter->Get_MovementPack();
+    auto& trace = m_pCharacter->Get_TracePack();
     auto  tileSys = CGameInstance::GetInstance()->Get_TileSystem();
+    m_pCharacter->LookToPlayer(dt);
+
+    if (trace.Player_Near)
+        return;
 
     m_fElapsedTime += dt;
+
+    //1초 간경으로 경로 요청
     if (m_fElapsedTime > m_fRefresh) {
          Request_Path();
     }
     
-    if (m_nowIndex >= m_PathIndex.size()-1)
-        return;
+    TILE_INDEX nextIdx = m_PathIndex[m_nowIndex];
+     _float4    nextPos = tileSys->Get_PositionByIndex(nextIdx, ANCHOR::Center);
+     _vector curPos = myTransform->Get_Pos();
+     _vector target = XMLoadFloat4(&nextPos);
+     _vector dir = XMVector3Normalize(target - curPos);
+     _float  dist = XMVectorGetX(XMVector3Length(target - curPos));
 
-    const TILE_INDEX nextIdx = m_PathIndex[m_nowIndex + 1];
-    const _float4    nextPos = tileSys->Get_PositionByIndex(nextIdx, ANCHOR::Center);
-    const _vector curPos = myTransform->Get_Pos();
-    const _vector target = XMLoadFloat4(&nextPos);
-    const _vector dir = XMVector3Normalize(target - curPos);
-    const _float  dist = XMVectorGetX(XMVector3Length(target - curPos));
-
-    if (dist < 0.05f) {
+     //다음 타일에 도착하면 다음 인덱스로
+    if (dist < MovePack.fMoveSpeed * dt * 1.1f) {
         ++m_nowIndex;
-        return;
+        if (m_nowIndex >= m_PathIndex.size())
+        {
+            m_nowIndex -= 1;
+            MovePack.vMoveAxis = { 0.f, 0.f };
+            return;
+        }
     }
-
+    _float4 moveDirection = {};
+    XMStoreFloat4(&moveDirection, dir);
+    MovePack.vMoveAxis = { moveDirection.x,moveDirection .z};
+    XMVectorSetY(dir, MovePack.fCharacterHeight);
     myTransform->Translate(dir * dt* MovePack.fMoveSpeed);
 }
 

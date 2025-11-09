@@ -304,6 +304,21 @@
     <Filter Include="02. GameObjects\01. Camera\SunCam">
       <UniqueIdentifier>{281eb752-5d74-4ce9-9c4f-2388e36e6516}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\02. INTERACT">
+      <UniqueIdentifier>{5401dd0d-3e1e-45e3-bd4c-fca5b73c5703}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\SmallTalk">
+      <UniqueIdentifier>{0b5f15c0-cca5-41bc-83a4-23b68d03a0cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\03. ForcedState\03. Talking">
+      <UniqueIdentifier>{32e0e221-6837-41dc-8a9d-9d6e43875bd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\TalkingMessage">
+      <UniqueIdentifier>{ed56af8f-e81f-4ccb-b942-54f530db81a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Base\NameTag">
+      <UniqueIdentifier>{18e5fe40-9cec-478e-b326-8a1e1e62ce71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -597,6 +612,21 @@
     <ClInclude Include="..\Public\SunCam.h">
       <Filter>02. GameObjects\01. Camera\SunCam</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NpcStateHub_Iteract.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcState_Interact_SmallTalk.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\SmallTalk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Talking.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\03. Talking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_TalkingMsg.h">
+      <Filter>02. GameObjects\08. UI\TalkingMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_NameTag.h">
+      <Filter>02. GameObjects\08. UI\Base\NameTag</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -870,6 +900,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\SunCam.cpp">
       <Filter>02. GameObjects\01. Camera\SunCam</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcStateHub_Iteract.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcState_Interact_SmallTalk.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\SmallTalk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Talking.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\03. Talking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_TalkingMsg.cpp">
+      <Filter>02. GameObjects\08. UI\TalkingMessage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_NameTag.cpp">
+      <Filter>02. GameObjects\08. UI\Base\NameTag</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

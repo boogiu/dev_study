@@ -201,8 +201,10 @@
     <ClInclude Include="..\Public\NpcRco.h" />
     <ClInclude Include="..\Public\NpcState.h" />
     <ClInclude Include="..\Public\NpcStateHub_Idle.h" />
+    <ClInclude Include="..\Public\NpcStateHub_Iteract.h" />
     <ClInclude Include="..\Public\NpcState_Idle_LookAround.h" />
     <ClInclude Include="..\Public\NpcState_Idle_Wait.h" />
+    <ClInclude Include="..\Public\NpcState_Interact_SmallTalk.h" />
     <ClInclude Include="..\Public\NpcState_Machine.h" />
     <ClInclude Include="..\Public\NpcStateHub_Move.h" />
     <ClInclude Include="..\Public\NpcState_Move_Walk.h" />
@@ -225,6 +227,7 @@
     <ClInclude Include="..\Public\PlayerState_Dig.h" />
     <ClInclude Include="..\Public\PlayerState_NetSwing.h" />
     <ClInclude Include="..\Public\PlayerState_OpenInven.h" />
+    <ClInclude Include="..\Public\PlayerState_Talking.h" />
     <ClInclude Include="..\Public\PlayerState_ToolBase.h" />
     <ClInclude Include="..\Public\PlayerState_PickUp.h" />
     <ClInclude Include="..\Public\PlayerState_Run.h" />
@@ -245,7 +248,9 @@
     <ClInclude Include="..\Public\UI_InvenSlot.h" />
     <ClInclude Include="..\Public\UI_ItemIcon.h" />
     <ClInclude Include="..\Public\UI_ItemText.h" />
+    <ClInclude Include="..\Public\UI_NameTag.h" />
     <ClInclude Include="..\Public\UI_Responcer.h" />
+    <ClInclude Include="..\Public\UI_TalkingMsg.h" />
     <ClInclude Include="..\Public\UI_Text.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
@@ -293,8 +298,10 @@
     <ClCompile Include="..\Private\NonPlayer.cpp" />
     <ClCompile Include="..\Private\NpcState.cpp" />
     <ClCompile Include="..\Private\NpcStateHub_Idle.cpp" />
+    <ClCompile Include="..\Private\NpcStateHub_Iteract.cpp" />
     <ClCompile Include="..\Private\NpcState_Idle_LookAround.cpp" />
     <ClCompile Include="..\Private\NpcState_Idle_Wait.cpp" />
+    <ClCompile Include="..\Private\NpcState_Interact_SmallTalk.cpp" />
     <ClCompile Include="..\Private\NpcState_Machine.cpp" />
     <ClCompile Include="..\Private\NpcStateHub_Move.cpp" />
     <ClCompile Include="..\Private\NpcState_Move_Walk.cpp" />
@@ -317,6 +324,7 @@
     <ClCompile Include="..\Private\PlayerState_Dig.cpp" />
     <ClCompile Include="..\Private\PlayerState_NetSwing.cpp" />
     <ClCompile Include="..\Private\PlayerState_OpenInven.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Talking.cpp" />
     <ClCompile Include="..\Private\PlayerState_ToolBase.cpp" />
     <ClCompile Include="..\Private\PlayerState_PickUp.cpp" />
     <ClCompile Include="..\Private\PlayerState_Run.cpp" />
@@ -337,7 +345,9 @@
     <ClCompile Include="..\Private\UI_InvenSlot.cpp" />
     <ClCompile Include="..\Private\UI_ItemText.cpp" />
     <ClCompile Include="..\Private\UI_ItemIcon.cpp" />
+    <ClCompile Include="..\Private\UI_NameTag.cpp" />
     <ClCompile Include="..\Private\UI_Responcer.cpp" />
+    <ClCompile Include="..\Private\UI_TalkingMsg.cpp" />
     <ClCompile Include="..\Private\UI_Text.cpp" />
     <ClCompile Include="..\Public\NpcRco.cpp" />
     <ClCompile Include="Client.cpp" />

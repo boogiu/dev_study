@@ -113,6 +113,21 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	return S_OK;
 }
 
+void CPlayer::Awake()
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	if (!nowLevel)
+		return;
+	auto EventSys = nowLevel->Get_LevelObject<CEventSystem>();
+
+	EventSys->Add_Listner<TALKING_EVENT>([&](const TALKING_EVENT& evt) {
+		if (evt.Listner != "Player") return;
+
+			m_InfoPack.m_pTalker = evt.speaker;
+			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Interact_Talking_State");
+		});
+}
+
 void CPlayer::Priority_Update(_float dt)
 {
 	m_vPrevPos = Get_Position();
@@ -253,6 +268,38 @@ void CPlayer::Update_TileInfo(_float dt)
 	}
 }
 
+void CPlayer::Adjust_To(_fvector pos)
+{
+	// 현재 룩 벡터
+	_vector vLook = m_pTransform->Dir(STATE::LOOK);
+	vLook = XMVector3Normalize(vLook);
+
+	// 현재 위치
+	_float4 vNowPos = Get_Position();
+
+	_vector vTargetDir = pos - XMLoadFloat4(&vNowPos);
+	vTargetDir = XMVector3Normalize(vTargetDir);
+	vLook = XMVectorSetY(vLook, 0.f);
+	vTargetDir = XMVectorSetY(vTargetDir, 0.f);
+
+	// 방향 각도 계산 (Y축 기준 평면 상)
+	_float angle =
+		atan2(
+			XMVectorGetX(vTargetDir),  // x 성분
+			XMVectorGetZ(vTargetDir)   // z 성분
+		) -
+		atan2(
+
+			XMVectorGetX(vLook),
+			XMVectorGetZ(vLook)
+		);
+
+	if (angle > XM_PI) angle -= XM_2PI;
+	if (angle < -XM_PI) angle += XM_2PI;
+
+	m_MovementPack.fTargetDegree = m_MovementPack.fCurrentDegree + XMConvertToDegrees(angle);
+}
+
 void CPlayer::Adjust_To_Foward()
 {
 	// 현재 룩 벡터
@@ -315,11 +362,16 @@ void CPlayer::OnCollisionExit(COLLISION_CONTEXT context)
 	m_pStateMachine->OnCollisionExit(context);
 }
 
-void CPlayer::Camera_Zoom_In()
+void CPlayer::Camera_Zoom_In(CGameObject* subject)
 {
-	m_pCamera->Execute_ZoomIn();
+	if(!subject)
+		m_pCamera->Execute_ZoomIn();
+	else {
+		m_pCamera->Execute_Talking(subject);
+
+	}
 }
-void CPlayer::Camera_Zoom_Out()
+void CPlayer::Camera_Zoom_Out(CGameObject* subject)
 {
 	m_pCamera->Release_ZoomIn();
 }
@@ -710,7 +762,7 @@ void CPlayer::BroadCast_Event()
 	if (!nowLevel)
 		return;
 	auto EventSys = nowLevel->Get_LevelObject<CEventSystem>();
-	PLAYER_POS event{ Get_Position() };
+	PLAYER_POS event{ Get_Position(),this };
 
 	EventSys->OnBroadCast(event);
 }

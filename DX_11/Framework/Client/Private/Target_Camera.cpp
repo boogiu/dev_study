@@ -61,6 +61,12 @@ void CTarget_Camera::Priority_Update(_float dt)
 	case Client::CTarget_Camera::ZOOM_OUT:
 		Zoom_Out(dt);
 		break;
+	case Client::CTarget_Camera::TALKING:
+		Zoom_Talking(dt);
+		break;
+	case Client::CTarget_Camera::TALK_OUT:
+		Zoom_TalkingOut(dt);
+		break;
 	default:
 		break;
 	}
@@ -83,7 +89,20 @@ void CTarget_Camera::Execute_ZoomIn()
 
 void CTarget_Camera::Release_ZoomIn()
 {
+	m_pSubject = nullptr;
 	m_eState = ZOOM_OUT;
+}
+
+void CTarget_Camera::Execute_Talking(CGameObject* subject)
+{
+	m_pSubject = subject;
+	m_eState = TALKING;
+}
+
+void CTarget_Camera::Release_Talking(CGameObject* subject)
+{
+	m_pSubject = subject;
+	m_eState = TALK_OUT;
 }
 
 void CTarget_Camera::Zoom_In(_float dt)
@@ -119,12 +138,13 @@ void CTarget_Camera::Zoom_In(_float dt)
 
 void CTarget_Camera::Zoom_Out(_float dt)
 {
-	_vector target_Pos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
-	_vector Offset = XMLoadFloat4(&m_vOffset);
-	_vector cam_Pos = m_pTransform->Get_Pos(); //Now Pso
+	auto targetTransform = m_pTarget->Get_Component<CTransform>();
+	_vector target_Pos = targetTransform->Get_Pos();
+	_vector Origin_Pos = XMLoadFloat4(&m_vBasePos);
+	_vector cam_Pos = m_pTransform->Get_Pos();
 
-	//Move Lerp
-	_vector MoveDir = XMVectorLerp(cam_Pos, target_Pos + Offset, dt * 5);
+	// 위치 보간
+	_vector MoveDir = XMVectorLerp(cam_Pos, Origin_Pos, dt * 5.f);
 
 	_float3 DstPos;
 	XMStoreFloat3(&DstPos, MoveDir);
@@ -132,20 +152,59 @@ void CTarget_Camera::Zoom_Out(_float dt)
 	_float3 LookPos;
 	XMStoreFloat3(&LookPos, target_Pos);
 
-	if (m_fCurrentLookY > 0)
+	// LookY를 0으로 천천히 복귀
+	if (XMVectorGetX(XMVector3Length(Origin_Pos - MoveDir)) < 0.1f)
 	{
-		m_fCurrentLookY -= dt * 25;
-		m_pTransform->LookAt({ LookPos.x, m_fCurrentLookY,	LookPos.z + 10 });
-	}
-	if (m_fCurrentLookY < 0)
-	{
-		m_fCurrentLookY = 0;
+		m_pTransform->Set_Pos(m_vBasePos);
+		m_fCurrentLookY = 0.f;
 		m_eState = FOLLOW;
+		Get_Component<CCamera>()->Lerp_FOV(60.f, dt * 5);
+		return;
 	}
+
+	m_pTransform->LookAt(XMLoadFloat4(&m_vBaseLookPos));
 
 	m_pTransform->Set_Pos(DstPos);
-	Get_Component<CCamera>()->Lerp_FOV(60, dt);
 
+	// FOV 복귀
+	Get_Component<CCamera>()->Lerp_FOV(60.f, dt*5);
+}
+
+
+void CTarget_Camera::Zoom_Talking(_float dt)
+{
+	/*나와 타겟의 사이를 벡터로 연결 (카메라가 나를 보는 ㄴ상황)*/
+	/*화자 , 청자의 벡터가 모두 필요함.*/
+	_vector ConnectVector = (
+		m_pTarget->Get_Component<CTransform>()->Get_Pos() +
+		m_pSubject->Get_Component<CTransform>()->Get_Pos()
+		)*0.5f;
+
+	_vector playerLookSubject = { m_pSubject->Get_Component<CTransform>()->Get_Pos() - m_pTarget->Get_Component<CTransform>()->Get_Pos() };
+	
+	_float Zdistance = m_pTarget->Get_Position().z - m_pSubject->Get_Position().z;
+	_vector right = XMVector3Cross({ 0,1,0 }, playerLookSubject);
+
+	if (Zdistance < 0)
+		right *= -1;
+
+	_vector target_Pos = ConnectVector + (right + playerLookSubject*0.5f)*4.f;
+	target_Pos=XMVectorSetY(target_Pos, 25);
+
+	_vector cam_Pos = m_pTransform->Get_Pos(); //Now Pso
+	//Move Lerp
+	_vector MoveDir = XMVectorLerp(cam_Pos, target_Pos, dt * 3);
+
+	_float3 DstPos;
+	XMStoreFloat3(&DstPos, MoveDir);
+
+	m_pTransform->LookAt(ConnectVector);
+	m_pTransform->Set_Pos(DstPos);
+	Get_Component<CCamera>()->Lerp_FOV(55, dt * 1.5);
+}
+
+void CTarget_Camera::Zoom_TalkingOut(_float dt)
+{
 }
 
 void CTarget_Camera::Follow_Target(_float dt)
@@ -161,6 +220,8 @@ void CTarget_Camera::Follow_Target(_float dt)
 	XMStoreFloat3(&DstPos, MoveDir);
 
 	m_pTransform->Set_Pos(DstPos);
+	XMStoreFloat4(&m_vBasePos, target_Pos + Offset);
+	XMStoreFloat4(&m_vBaseLookPos, XMVectorSet(XMVectorGetX(target_Pos), 0.f, XMVectorGetZ(target_Pos) + 10.f, 0.f));
 }
 
 void CTarget_Camera::Render_GUI()

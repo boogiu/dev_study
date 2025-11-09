@@ -9,7 +9,7 @@
 
 #include "NpcStateHub_Idle.h"
 #include "NpcStateHub_Move.h"
-
+#include "NpcStateHub_Iteract.h"
 CNpcState_Machine::CNpcState_Machine(CNonPlayer* pNpc)
 	:m_pOwner(pNpc)
 {
@@ -23,8 +23,11 @@ HRESULT CNpcState_Machine::Initialize()
 	
 	auto Idle = actionLayer->Add_State<CNpcStateHub_Idle>("State_Hub_Idle");
 	auto Move = actionLayer->Add_State<CNpcStateHub_Move>("State_Hub_Move");
+	auto Interact = actionLayer->Add_State<CNpcStateHub_Iteract>("State_Hub_Interact");
+
 	Idle->Set_Owner(m_pOwner);
 	Move->Set_Owner(m_pOwner);
+	Interact->Set_Owner(m_pOwner);
 	actionLayer->Excute(Idle);
 
 	return S_OK;

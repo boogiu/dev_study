@@ -71,6 +71,21 @@ void CUI_Text::Clear_Text()
 	Get_Component<CTextSlot>()->Set_Text(L"");
 }
 
+void CUI_Text::Set_Text(const wstring& text)
+{
+	Get_Component<CTextSlot>()->Set_Text(text);
+}
+
+void CUI_Text::Rotate(_float radian)
+{
+	Get_Component<CTextSlot>()->Set_Rotate(radian);
+}
+
+void CUI_Text::Set_Color(_float4 color)
+{
+	Get_Component<CTextSlot>()->Set_Color(color);
+}
+
 CUI_Text* CUI_Text::Create()
 {
 	CUI_Text* instance = new CUI_Text();

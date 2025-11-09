@@ -40,8 +40,17 @@ HRESULT CNpcStateHub_Move::OnExit()
 
 CState* CNpcStateHub_Move::HandleTransition()
 {
-	if (m_fMoveTime > 36.f) {
+	auto tracePack = m_pCharacter->Get_TracePack();
+	auto eventPack = m_pCharacter->Get_EventPack();
+
+	if (m_fMoveTime > 50.f) {
 		return m_pLayer->Get_State("State_Hub_Idle");
+	}
+	if (tracePack.Player_Near) {
+		if(eventPack.HasAgenda) /*용건이 있으면 상호작용으로. */
+			return m_pLayer->Get_State("State_Hub_Interact");
+		else
+			return m_pLayer->Get_State("State_Hub_Idle");
 	}
 	return nullptr;
 }
@@ -53,8 +62,9 @@ void CNpcStateHub_Move::Render_State()
 void CNpcStateHub_Move::DecideSubState(_float dt)
 {
 	auto tracePack = m_pCharacter->Get_TracePack();
+	auto eventPack = m_pCharacter->Get_EventPack();
 
-	if (tracePack.Player_Near)
+	if (eventPack.HasAgenda)
 	{
 		Change_State("Move_Trace");
 	}

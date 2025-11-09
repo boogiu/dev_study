@@ -23,6 +23,7 @@ public:
     void Set_Color(_float4 color);
     void Set_Size(_float scale);
     void Set_Position(_float2 Pos);
+    void Set_Rotate(_float Rotate);
     void Set_Text(wstring Text) { m_Info.Text = Text; };
     void Set_OutLine(_float Thickness, _float4 OutlineColor);
     void ReSet_OutLine() { m_Info.OutLined = false; };

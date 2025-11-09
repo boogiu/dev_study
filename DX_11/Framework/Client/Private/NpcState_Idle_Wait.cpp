@@ -9,7 +9,6 @@ CNpcState_Idle_Wait::CNpcState_Idle_Wait()
 
 HRESULT CNpcState_Idle_Wait::OnEnter()
 {
-
 	auto Animator = m_pCharacter->Get_Component<CAnimator3D>();
 	Animator->Change_Animation("Base_Wait.anim", false);
 	return S_OK;
