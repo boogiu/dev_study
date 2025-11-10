@@ -36,10 +36,7 @@ void CNpcState_Move_Walk::OnUpdate(_float dt)
        Rand_Direction();
    }
 
- 
-   _uint Flag = static_cast<_uint>(CANT_WALK);
-
-   while (true)
+ while (true)
    {
        _float4 nowPos = m_pCharacter->Get_Position();
        nowPos.x += pack.fMoveSpeed * pack.vMoveAxis.x * dt;

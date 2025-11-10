@@ -78,9 +78,11 @@ void CItem_Object::OnCollisionEnter(COLLISION_CONTEXT context)
 {
 	if (context.Owner->Has_Tag("Player_Hand")) {
 		if (context.EventTag == "Pick_Up") {
-			m_eState = PICKED;
-			m_pOwnerMatrix = context.Owner->Get_WorldMatrix();
-			Get_Component<CCollider>()->Set_ContextEvent("Picked");
+			if(!m_pOwnerMatrix){
+				m_eState = PICKED;
+				m_pOwnerMatrix = context.Owner->Get_WorldMatrix();
+				Get_Component<CCollider>()->Set_ContextEvent("Picked");
+			}
 		}
 	}
 }
@@ -109,6 +111,12 @@ void CItem_Object::Set_Throw(_fvector StartPos, _fvector throwDir)
 	/*여기서 더해주니까 방향 벡터는 보정 없음*/
 	XMStoreFloat4(&m_DstPosition, StartPos + XMVector4Normalize(throwDir) * 8);
 	m_eState = THROW;
+}
+
+void CItem_Object::Attach_Hand(_float4x4* pOwnerMatrix)
+{
+	m_eState = PICKED;
+	m_pOwnerMatrix = pOwnerMatrix;
 }
 
 void CItem_Object::Update_ByState(_float dt)
@@ -305,7 +313,10 @@ void CItem_Object::FollowHand(_float dt)
 	_float3 pos = {};
 	XMStoreFloat3(&pos, trans);
 	m_pTransform->Set_Pos(pos);
-	m_pTransform->AddScale({ -dt * 1.5f,-dt * 1.5f,-dt * 1.5f });
+	_vector scaleRatio = m_pTransform->Get_Scale() - _vector{0.5f,0.5f,0.5f};
+
+	if(XMVectorGetX(XMVector3Length(scaleRatio)) > 0.05)
+		m_pTransform->AddScale({ -dt * 1.5f,-dt * 1.5f,-dt * 1.5f });
 }
 
 void CItem_Object::Remove_Item()

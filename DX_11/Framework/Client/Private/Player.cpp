@@ -33,6 +33,7 @@
 #include "PlayerPart_Hand.h"
 #include "Player_Inventory.h"
 #include "AABB_Collider.h"
+#include "OBB_Collider.h"
 
 #include "Item_Object.h"
 #include "InsectSpawner.h"
@@ -57,7 +58,7 @@ HRESULT CPlayer::Initialize_Prototype()
 	hr = Add_Component<CMaterial>()->Link_Material("GamePlay_Level", "PlayerBody.mat");
 	Add_Component<CAnimator3D>();
 	Add_Component<CObjectContainer>();
-	Add_Component<CAABB_Collider>();
+	Add_Component<COBB_Collider>();
 	Add_Component<CMaterialAnimator>();
 
 	m_InstanceTag = "Player";
@@ -97,8 +98,8 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 		instance->Get_MaterialData()->Link_Shader("GamePlay_Level", "PlayerShader.hlsl");
 	}
 
-	Get_Component<CAABB_Collider>()->Make_MinMaxCollider(
-		{ { -2,0,-2 }, {2,5,2} }
+	Get_Component<CCollider>()->Make_MinMaxCollider(
+		{ { -5,0,-3 }, {5,5,8} }
 	);
 
 	/*Debug*/
@@ -122,10 +123,12 @@ void CPlayer::Awake()
 
 	EventSys->Add_Listner<TALKING_EVENT>([&](const TALKING_EVENT& evt) {
 		if (evt.Listner != "Player") return;
-
-			m_InfoPack.m_pTalker = evt.speaker;
+		if (evt.pSpeaker == this) return;
+	
+			m_InfoPack.m_pTalker = evt.pSpeaker;
 			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Interact_Talking_State");
 		});
+
 }
 
 void CPlayer::Priority_Update(_float dt)
@@ -349,11 +352,19 @@ void CPlayer::OnCollisionEnter(COLLISION_CONTEXT context)
 	{
 		m_pInventory->Add_ItemToInventory(dynamic_cast<CItem_Object*>(context.Owner)->Get_ItemData());
 	}
+	
  	m_pStateMachine->OnCollisionEnter(context);
 }
 
 void CPlayer::OnCollisionStay(COLLISION_CONTEXT context)
 {
+	if (context.Owner->Has_Tag("NPC")) {
+		m_InfoPack.m_pEncounterNpc = context.Owner; 
+	}
+	else {
+		m_InfoPack.m_pEncounterNpc = nullptr;
+	}
+
 	m_pStateMachine->OnCollisionStay(context);
 }
 
@@ -368,7 +379,6 @@ void CPlayer::Camera_Zoom_In(CGameObject* subject)
 		m_pCamera->Execute_ZoomIn();
 	else {
 		m_pCamera->Execute_Talking(subject);
-
 	}
 }
 void CPlayer::Camera_Zoom_Out(CGameObject* subject)
@@ -449,6 +459,14 @@ void CPlayer::Open_EventMsg(EventMsgDesc* evtMsg)
 	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 	auto UI_Responder = nowLevel->Get_LevelObject<CUI_Responcer>();
 	UI_Responder->Active_UI("EvtMsg", evtMsg);
+}
+
+void CPlayer::BroadCast_Talk(TALKING_EVENT evt)
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	auto evtSys = nowLevel->Get_LevelObject<CEventSystem>();
+
+	evtSys->OnBroadCast(evt);
 }
 
 

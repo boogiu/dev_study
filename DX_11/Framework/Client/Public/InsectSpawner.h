@@ -36,6 +36,7 @@ private:
 	_float m_fElapsedTime = { 0.f };
 	unordered_map<string, INSECT_DATA_DESC> m_InsectDataTable;
 	unordered_map<_uint, string> m_NameTable;
+
 public:
 	static CInsectSpawner* Create();
 	CGameObject* Clone(INIT_DESC* pArg) override;

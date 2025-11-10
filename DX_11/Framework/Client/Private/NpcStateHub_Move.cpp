@@ -46,12 +46,11 @@ CState* CNpcStateHub_Move::HandleTransition()
 	if (m_fMoveTime > 50.f) {
 		return m_pLayer->Get_State("State_Hub_Idle");
 	}
-	if (tracePack.Player_Near) {
-		if(eventPack.HasAgenda) /*용건이 있으면 상호작용으로. */
-			return m_pLayer->Get_State("State_Hub_Interact");
-		else
-			return m_pLayer->Get_State("State_Hub_Idle");
+
+	if (eventPack.HasAgenda&&tracePack.Player_Near) {
+		return m_pLayer->Get_State("State_Hub_Interact");
 	}
+
 	return nullptr;
 }
 

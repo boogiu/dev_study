@@ -1,12 +1,12 @@
 #pragma once
 #include "Npc_HubState.h"
 NS_BEGIN(Client)
-class CNpcStateHub_Iteract :
+class CNpcStateHub_Interact :
     public CNpc_HubState
 {
 private:
-    CNpcStateHub_Iteract();
-    virtual ~CNpcStateHub_Iteract() DEFAULT;
+    CNpcStateHub_Interact();
+    virtual ~CNpcStateHub_Interact() DEFAULT;
 
 public:
     HRESULT Initialize();
@@ -20,9 +20,9 @@ public:
 
 public:
     void Render_State() override;
-
+  
 public:
-    static CNpcStateHub_Iteract* Create();
+    static CNpcStateHub_Interact* Create();
     virtual void Free();
 };
 

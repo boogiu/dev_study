@@ -15,21 +15,22 @@ HRESULT CUI_Responcer::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
 
-	CUI_Object* pEventMsg= Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_EventMsg" })
+	CUI_Object* pEventMsg = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_EventMsg" })
 		.Add_To_Level("GamePlay_Level")
 		.Position({ 600,620.f })
-		.Build("EvtMsg");	
-	
-	CUI_Object* pTalkingMsg= Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TalkingMsg" })
+		.Build("EvtMsg");
+
+	CUI_Object* pTalkingMsg = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TalkingMsg" })
 		.Add_To_Level("GamePlay_Level")
 		.Position({ 600,620.f })
 		.Build("EvtMsg");
 
 	CGameInstance::GetInstance()->Get_UIMgr()->Add_UIObject(pEventMsg, "GamePlay_Level");
 	m_UIContainer.emplace("EvtMsg", pEventMsg);
-	
+
 	CGameInstance::GetInstance()->Get_UIMgr()->Add_UIObject(pTalkingMsg, "GamePlay_Level");
 	m_UIContainer.emplace("TalkingMsg", pTalkingMsg);
+
 	return S_OK;
 }
 

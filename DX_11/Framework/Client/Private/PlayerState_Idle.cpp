@@ -38,7 +38,7 @@ CState* CPlayerState_Idle::HandleTransition()
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	CPlayer::ControlPacket control = m_pPlayer->Get_ControlPack();
 	
-	CState* nextState = nullptr;
+ 	CState* nextState = nullptr;
 
 	if (control.MsgBag)
 	{

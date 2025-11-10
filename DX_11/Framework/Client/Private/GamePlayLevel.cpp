@@ -9,6 +9,7 @@
 #include "Builder.h"
 
 #include "Player.h"
+#include "NonPlayer.h"
 #include "NpcRco.h"
 
 #include "Target_Camera.h"
@@ -46,6 +47,7 @@
 #include "InsectSpawner.h"
 #include "UI_Responcer.h"
 #include "EventSystem.h"
+#include "NpcSpawner.h"
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 	:CLevel{ LevelKey },
@@ -63,9 +65,10 @@ HRESULT CGamePlayLevel::Initialize()
 	
 	Add_LevelObject<CItemSpawner>()->Read_ItemData(L"../../Resources/Data/ItemData.json");
 	Add_LevelObject<CInsectSpawner>()->Link_ItemSpawner(Get_LevelObject<CItemSpawner>());
+	Add_LevelObject<CNpcSpawner>()->Read_CharacterData("../../Resources/Data/NpcData.json");
+	Add_LevelObject<CNpcSpawner>()->Read_CharacterSequece("../../Resources/Data/SequenceData.json");
 
 	CGameInstance::GetInstance()->Get_FontSystem()->Add_Font("Sindy", TEXT("../../Resources/Font/Sindy.spritefont"));
-	Add_LevelObject<CUI_Responcer>();
 	Add_LevelObject<CEventSystem>();
 
 	CMapLoader::Load_ModelData();
@@ -76,9 +79,9 @@ HRESULT CGamePlayLevel::Initialize()
 
 HRESULT CGamePlayLevel::Awake()
 {
-
 	CGameObject* pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 550,0,550 }).Build("Player");
-	CGameObject* pRco = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_NpcRco" }).Position({ 560,0,650 }).Build("nPlayer");
+	Add_LevelObject<CUI_Responcer>();
+
 	Get_LevelObject<CInsectSpawner>()->Read_InsectData(L"../../Resources/Data/InsectData.json");
 	Get_LevelObject<CInsectSpawner>()->Set_Target(pPlayer);
 
@@ -98,12 +101,13 @@ HRESULT CGamePlayLevel::Awake()
 		.Position({ 750,150,750 })
 		.Build("Sun");
 
+	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"³Ê±¼", { 550,0,550 });
+
 	m_pObjectManager->Add_Object(pPlayer, { "GamePlay_Level", "Player_Layer" });
-	m_pObjectManager->Add_Object(pRco, { "GamePlay_Level", "NonPlayer_Layer" });
 	m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 	m_pObjectManager->Add_Object(pSunCamera, { "GamePlay_Level", "Camera_Layer" });
-	m_pObjectManager->Add_Object(Get_LevelObject<CUI_Responcer>(), { "GamePlay_Level", "UI_Layer" });
-	m_pObjectManager->Add_Object(Get_LevelObject<CInsectSpawner>(), { "GamePlay_Level", "Spawner_Layer" });
+	m_pObjectManager->Add_Object(Get_LevelObject<CInsectSpawner>(), { "GamePlay_Level", "Level_Layer" });
+
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(pSunCamera->Get_Component<CCamera>());
 
@@ -226,6 +230,7 @@ void CGamePlayLevel::PreLoad_Level()
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Insect_Object", CInsect_Object::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcRco", CNpcRco::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcNrm", CNonPlayer::Create());
 }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)

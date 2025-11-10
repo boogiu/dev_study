@@ -44,11 +44,11 @@ public:
     };
 
     struct StateInfoHubPacket {
-          CGameObject* m_pObjectOnLeftHand = { nullptr };
-          CGameObject* m_pLeftHand = { nullptr };
-          CGameObject* m_pRightHand = { nullptr };
-          CGameObject* m_pTalker= { nullptr };
-
+          CGameObject* m_pObjectOnLeftHand = { nullptr };//¿Þ¼Õ¿¡ Áå°Å
+          CGameObject* m_pLeftHand = { nullptr }; //¿Þ¼Õ Á¤º¸
+          CGameObject* m_pRightHand = { nullptr };//¿À¸¥¼Õ Á¤º¸
+          CGameObject* m_pTalker= { nullptr }; //Áö±Ý ¸»ÇÏ°í ÀÖ´Â ³ð
+          CGameObject* m_pEncounterNpc= { nullptr }; //ºÎµúÈù ³ð
     };
 
 
@@ -106,7 +106,7 @@ public:
 
 public:
     void Open_EventMsg(EventMsgDesc* evtMsg);
-
+    void BroadCast_Talk(TALKING_EVENT evt);
 public:
     void ActiveCollider_Tool(_bool active, string Event = {});
     void ActiveCollider_LeftHand(_bool active, string Event = {});

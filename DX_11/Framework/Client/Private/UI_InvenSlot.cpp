@@ -54,7 +54,7 @@ HRESULT CUI_InvenSlot::Initialize(INIT_DESC* pArg)
 
 	CUI_Object* pCount = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_BaseText" })
 		.Add_To_Level("GamePlay_Level")
-		.Position({15,15})
+		.Position({5,15})
 		.Scale({ 12,12 })
 		.Build("Text");
 

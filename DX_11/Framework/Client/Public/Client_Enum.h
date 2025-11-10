@@ -132,7 +132,8 @@ static  constexpr unsigned int OnlyInteraction = 0xffffffff;
 enum class AgendaType {
     None,
     SmallTalk,
-    UpsetAbout,
+    ReQuest,
+    Reward,
 };
 
 

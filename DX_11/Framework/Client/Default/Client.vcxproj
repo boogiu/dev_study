@@ -199,9 +199,10 @@
     <ClInclude Include="..\Public\MapLoader.h" />
     <ClInclude Include="..\Public\NonPlayer.h" />
     <ClInclude Include="..\Public\NpcRco.h" />
+    <ClInclude Include="..\Public\NpcSpawner.h" />
     <ClInclude Include="..\Public\NpcState.h" />
     <ClInclude Include="..\Public\NpcStateHub_Idle.h" />
-    <ClInclude Include="..\Public\NpcStateHub_Iteract.h" />
+    <ClInclude Include="..\Public\NpcStateHub_Interact.h" />
     <ClInclude Include="..\Public\NpcState_Idle_LookAround.h" />
     <ClInclude Include="..\Public\NpcState_Idle_Wait.h" />
     <ClInclude Include="..\Public\NpcState_Interact_SmallTalk.h" />
@@ -209,6 +210,7 @@
     <ClInclude Include="..\Public\NpcStateHub_Move.h" />
     <ClInclude Include="..\Public\NpcState_Move_Walk.h" />
     <ClInclude Include="..\Public\NpcState_Move_Trace.h" />
+    <ClInclude Include="..\Public\NpcState_Interact_TransItem.h" />
     <ClInclude Include="..\Public\Npc_HubState.h" />
     <ClInclude Include="..\Public\Plant_Tree.h" />
     <ClInclude Include="..\Public\Player.h" />
@@ -223,6 +225,7 @@
     <ClInclude Include="..\Public\PlayerState_Get.h" />
     <ClInclude Include="..\Public\PlayerState_Hand.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
+    <ClInclude Include="..\Public\PlayerState_Interact.h" />
     <ClInclude Include="..\Public\PlayerState_Net.h" />
     <ClInclude Include="..\Public\PlayerState_Dig.h" />
     <ClInclude Include="..\Public\PlayerState_NetSwing.h" />
@@ -296,9 +299,10 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapLoader.cpp" />
     <ClCompile Include="..\Private\NonPlayer.cpp" />
+    <ClCompile Include="..\Private\NpcSpawner.cpp" />
     <ClCompile Include="..\Private\NpcState.cpp" />
     <ClCompile Include="..\Private\NpcStateHub_Idle.cpp" />
-    <ClCompile Include="..\Private\NpcStateHub_Iteract.cpp" />
+    <ClCompile Include="..\Private\NpcStateHub_Interact.cpp" />
     <ClCompile Include="..\Private\NpcState_Idle_LookAround.cpp" />
     <ClCompile Include="..\Private\NpcState_Idle_Wait.cpp" />
     <ClCompile Include="..\Private\NpcState_Interact_SmallTalk.cpp" />
@@ -306,6 +310,7 @@
     <ClCompile Include="..\Private\NpcStateHub_Move.cpp" />
     <ClCompile Include="..\Private\NpcState_Move_Walk.cpp" />
     <ClCompile Include="..\Private\NpcState_Move_Trace.cpp" />
+    <ClCompile Include="..\Private\NpcState_Interact_TransItem.cpp" />
     <ClCompile Include="..\Private\Npc_HubState.cpp" />
     <ClCompile Include="..\Private\Plant_Tree.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
@@ -320,6 +325,7 @@
     <ClCompile Include="..\Private\PlayerState_Get.cpp" />
     <ClCompile Include="..\Private\PlayerState_Hand.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Interact.cpp" />
     <ClCompile Include="..\Private\PlayerState_Net.cpp" />
     <ClCompile Include="..\Private\PlayerState_Dig.cpp" />
     <ClCompile Include="..\Private\PlayerState_NetSwing.cpp" />

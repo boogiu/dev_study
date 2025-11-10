@@ -102,8 +102,11 @@ void CSelectPanel::Priority_Update(_float dt)
 void CSelectPanel::Update(_float dt)
 {
 	if (!m_bActive) return;
-	_bool Sizecomp = Size_To({ MaxWidth * 1.5f, 40.f * m_SelectCount < 80 ? 80 : 40.f * m_SelectCount
-		}, 10 * dt);
+	_bool Sizecomp = 
+		Size_To({ 
+		MaxWidth * 1.5f, 
+			40.f * m_SelectCount < 140 ? 140 : 40.f * m_SelectCount}, 10 * dt);
+
 	if (Sizecomp) {
 		m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);
 		m_pSelectHighlight->Get_Component<CSprite2D>()->Set_CompActive(true);
@@ -115,7 +118,7 @@ void CSelectPanel::Update(_float dt)
 
 			m_pTexts[i]->Align_To(ANCHOR::Center,
 				{ (-m_fSizeX * 0.5f) + 25.f,
-					(i - (m_SelectCount - 1) * 0.5f) * 25.f });
+					(i - (m_SelectCount - 1) * 0.5f) * 30.f });
 		}
 		m_pSelectHighlight->Size_To({ m_pTexts[m_NowIndex]->Text_Length(),10 }, dt * 6);
 
@@ -157,6 +160,7 @@ void CSelectPanel::DeActive()
 	MaxWidth = 0.f;
 }
 
+/*델타 타임 현재는 사용 안함*/
 void CSelectPanel::Set_Selecte(vector<wstring> select, _float dt)
 {
 	if (select.empty())

@@ -262,20 +262,11 @@
     <Filter Include="02. GameObjects\10. NonPlayer\NpcState">
       <UniqueIdentifier>{2a093713-cdcb-4f17-bc00-6c6ad1ca555c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\NpcStateMachine">
-      <UniqueIdentifier>{28fbb843-5e3a-4eb1-a739-ac0464363bf4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\10. NonPlayer\Npc_Super">
       <UniqueIdentifier>{9e93d20e-1148-497e-a72c-5c2160415a7d}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. Utility\CharacterState\HubState">
       <UniqueIdentifier>{5ffd4a4f-115e-4a14-a0b7-4d146a09d7e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\NpcState_Super">
-      <UniqueIdentifier>{a81cd5de-4990-4597-927e-5b908010c5d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\Npc_HubState">
-      <UniqueIdentifier>{647621ce-0376-488b-b6a0-2139236aa7da}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\10. NonPlayer\NpcState\00. IDLE">
       <UniqueIdentifier>{f10ced43-1303-4973-b2f7-04696a121fae}</UniqueIdentifier>
@@ -318,6 +309,24 @@
     </Filter>
     <Filter Include="02. GameObjects\08. UI\Base\NameTag">
       <UniqueIdentifier>{18e5fe40-9cec-478e-b326-8a1e1e62ce71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\NPCSpawner">
+      <UniqueIdentifier>{5fdbaafa-b918-446e-bda1-e2e674f8f172}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\05. Interact">
+      <UniqueIdentifier>{03bb9067-d5eb-4466-b377-1803c7dbd6d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\TransferItem">
+      <UniqueIdentifier>{e4fff6e9-51dd-49ab-87a1-b089ca3b3e92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\NpcStateMachine">
+      <UniqueIdentifier>{28fbb843-5e3a-4eb1-a739-ac0464363bf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\NpcState_Super">
+      <UniqueIdentifier>{a81cd5de-4990-4597-927e-5b908010c5d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\NpcState_Super\Npc_HubState">
+      <UniqueIdentifier>{647621ce-0376-488b-b6a0-2139236aa7da}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -592,7 +601,7 @@
       <Filter>03. Utility\CharacterState\HubState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Npc_HubState.h">
-      <Filter>02. GameObjects\10. NonPlayer\NpcState\Npc_HubState</Filter>
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\NpcState_Super\Npc_HubState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NpcState_Idle_LookAround.h">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\LookAround</Filter>
@@ -612,7 +621,7 @@
     <ClInclude Include="..\Public\SunCam.h">
       <Filter>02. GameObjects\01. Camera\SunCam</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\NpcStateHub_Iteract.h">
+    <ClInclude Include="..\Public\NpcStateHub_Interact.h">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NpcState_Interact_SmallTalk.h">
@@ -626,6 +635,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\UI_NameTag.h">
       <Filter>02. GameObjects\08. UI\Base\NameTag</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcSpawner.h">
+      <Filter>02. GameObjects\07. LevelObject\NPCSpawner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Interact.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\05. Interact</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcState_Interact_TransItem.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\TransferItem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -884,7 +902,7 @@
       <Filter>03. Utility\CharacterState\HubState</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Npc_HubState.cpp">
-      <Filter>02. GameObjects\10. NonPlayer\NpcState\Npc_HubState</Filter>
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\NpcState_Super\Npc_HubState</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\NpcState_Idle_LookAround.cpp">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\00. IDLE\Idle\LookAround</Filter>
@@ -901,7 +919,7 @@
     <ClCompile Include="..\Private\SunCam.cpp">
       <Filter>02. GameObjects\01. Camera\SunCam</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\NpcStateHub_Iteract.cpp">
+    <ClCompile Include="..\Private\NpcStateHub_Interact.cpp">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\NpcState_Interact_SmallTalk.cpp">
@@ -915,6 +933,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_NameTag.cpp">
       <Filter>02. GameObjects\08. UI\Base\NameTag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcSpawner.cpp">
+      <Filter>02. GameObjects\07. LevelObject\NPCSpawner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Interact.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\05. Interact</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcState_Interact_TransItem.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\TransferItem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

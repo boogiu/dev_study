@@ -32,6 +32,7 @@ public:
 
 public:
     virtual void Set_Throw(_fvector StartPos, _fvector throwDir);
+    virtual void Attach_Hand(_float4x4* pOwnerMatrix);
 
 public:
     void OnCollisionEnter(COLLISION_CONTEXT context) override;
@@ -40,6 +41,7 @@ public:
 
 public:
     void Dangle_Item(const string& boneName, _float3 offset);
+
 protected:
    virtual void Throw_Item(_float dt);
    virtual void Find_Ground();

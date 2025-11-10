@@ -16,6 +16,7 @@ public:
 
 private:
    CState* Check_ItemType();
+   //virtual void OnCollisionStay(COLLISION_CONTEXT context) override;
 
 private:
     _uint Forward_Flag = {};

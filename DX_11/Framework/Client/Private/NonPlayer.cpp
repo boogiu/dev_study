@@ -5,8 +5,6 @@
 #include "Animator3D.h"
 #include "ObjectContainer.h"
 
-#include "SkeletalModel.h"
-#include "Material.h"
 #include "MaterialInstance.h"
 #include "MaterialData.h"
 #include "MaterialAnimator.h"
@@ -16,14 +14,15 @@
 
 #include "GameInstance.h"
 #include "Level.h"
-#include "EventSystem.h"
 #include "Helper_Func.h"
 
-#include"ILevelService.h"
-#include "Level.h"
 #include "EventSystem.h"
+#include "NpcSpawner.h"
+#include "ItemSpawner.h"
 #include "UI_Responcer.h"
 #include "Player.h"
+#include "ClientHelper.h"
+#include "AABB_Collider.h"
 
 CNonPlayer::CNonPlayer()
 {
@@ -42,6 +41,7 @@ HRESULT CNonPlayer::Initialize_Prototype()
 	Add_Component<CAnimator3D>();
 	Add_Component<CObjectContainer>();
 	Add_Component<CMaterialAnimator>();
+	Add_Component<CAABB_Collider>();
 
 	return S_OK;
 }
@@ -50,35 +50,48 @@ HRESULT CNonPlayer::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
 
+	NPC_SPAWN_DATA* pDesc = static_cast<NPC_SPAWN_DATA*>(pArg);
+	m_CharacterDesc = pDesc->characterDesc;
+
 	m_pMachine = CNpcState_Machine::Create(this);
+
 	m_InstanceTag = "NPC";
 	return S_OK;
 }
 
 void CNonPlayer::Awake()
 {
-	Add_BaseAnimClip();
+	Make_Model(m_CharacterDesc);
+
+	ClientHelper::Add_AllClipsByFile("../../Resources/Data/CharacterAnim.json", "GamePlay_Level", "NPC", Get_Component<CAnimator3D>());
+	
+	Get_Component<CAnimator3D>()->Change_Animation("Base_Wait.anim",false);
+	
+	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-5,0,-5}, {5,5,5} });
+
 	Add_Parts();
+	
 	Add_EventListen();
-	Get_Component<CModel>()->ShadowCast(true);
-	//m_MovementPack.vMoveAxis = { 1.f,0.f };
 
 	m_EventPack.eventSystem = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
-
 }
 
 void CNonPlayer::Priority_Update(_float dt)
 {
+	m_EventPack.m_InteractCoolDown += dt;
+	prevPos = Get_Position();
 }
 
 void CNonPlayer::Update(_float dt)
 {
 	Update_Movement(dt);
 	Update_TileInfo(dt);
+	m_pMachine->Update(dt);
 }
 
 void CNonPlayer::Late_Update(_float dt)
 {
+
 }
 
 void CNonPlayer::Update_Movement(_float dt)
@@ -109,6 +122,7 @@ void CNonPlayer::Update_Movement(_float dt)
 }
 
 void CNonPlayer::Update_TileInfo(_float dt){
+
 	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
 	m_TileInfoPack.NowIndex = TileSys->Get_IndexByPosition(Get_Position());
 	TileSys->Get_NeighborInfoByIndex(m_TileInfoPack.NowIndex, m_TileInfoPack.infos);
@@ -132,6 +146,12 @@ void CNonPlayer::Update_TileInfo(_float dt){
 			m_TileInfoPack.neighboValidFlag |= static_cast<_uint>(Rotate45_CCW(neighbor, RotCount));
 		}
 	}
+
+	TILE_INDEX prevIndex = TileSys->Get_IndexByPosition(prevPos);
+	TILE_INDEX currIndex =TileSys->Get_IndexByPosition(Get_Position());
+
+	TileSys->Add_TileFlagByIndex(currIndex, static_cast<_uint>(TILE_FLAG::ONCHARACTER));
+	TileSys->Remove_TileFlagByIndex(prevIndex, static_cast<_uint>(TILE_FLAG::ONCHARACTER));
 }
 
 void CNonPlayer::Render_GUI()
@@ -145,30 +165,14 @@ void CNonPlayer::Render_GUI()
 	ImGui::End();
 }
 
-void CNonPlayer::Add_BaseAnimClip()
+HRESULT CNonPlayer::Make_Model(NPC_DATA_DESC desc)
 {
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_Wait.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Move_Walk_F.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_Head_Base.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_PlaneRun.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Act_SmellStart.anim",  "NPC", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Act_SmellKeep.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Feel_AngryWait.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Feel_AngryWalk.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Hit.anim",  "NPC", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Hit_Behind.anim",  "NPC", false);
-	
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_Rhythm03.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_WatchCStd.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_WatchL2Std.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_WatchL3Std.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Act_Yoga01.anim",  "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Greeting_Bow.anim", "NPC", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Npc_Act_Jogging.anim", "NPC", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "MaRe_Clapping.anim", "NPC", true);
+	HRESULT hr = Get_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", desc.ModelName);
+	hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", desc.MaterialName);
+	Get_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", desc.ModelName);
+	Get_Component<CModel>()->ShadowCast(true);
 
-
-	Get_Component<CAnimator3D>()->Change_Animation("Base_Wait.anim", false);
+	return hr;
 }
 
 void CNonPlayer::Add_Parts()
@@ -206,6 +210,12 @@ void CNonPlayer::Add_EventListen()
 				XMStoreFloat4(&m_TracePack.vLook_Player, 
 					XMVector4Normalize(XMLoadFloat4(&Playerpos.playerPos) - m_pTransform->Get_Pos()));
 			});
+
+		EventSys->Add_Listner<TALKING_EVENT>([&](const TALKING_EVENT& evt) {
+			if (evt.pListner != this) return;
+			if (m_EventPack.m_InteractCoolDown <0.5f) return;
+				m_EventPack.HasAgenda = true; 
+		});
 	};
 }
 
@@ -250,12 +260,99 @@ void CNonPlayer::LookToPlayer(_float dt)
 	}
 }
 
+void CNonPlayer::LookTo(_fvector pos)
+{
+	_vector vLook = m_pTransform->Dir(STATE::LOOK);
+	vLook = XMVector3Normalize(vLook);
+
+	// 현재 위치
+	_float4 vNowPos = Get_Position();
+
+	_vector vTargetDir = pos - XMLoadFloat4(&vNowPos);
+	vTargetDir = XMVector3Normalize(vTargetDir);
+	vLook = XMVectorSetY(vLook, 0.f);
+	vTargetDir = XMVectorSetY(vTargetDir, 0.f);
+
+	// 방향 각도 계산 (Y축 기준 평면 상)
+	_float angle =
+		atan2(
+			XMVectorGetX(vTargetDir),  // x 성분
+			XMVectorGetZ(vTargetDir)   // z 성분
+		) -
+		atan2(
+
+			XMVectorGetX(vLook),
+			XMVectorGetZ(vLook)
+		);
+
+	if (angle > XM_PI) angle -= XM_2PI;
+	if (angle < -XM_PI) angle += XM_2PI;
+
+	m_MovementPack.fTargetDegree = m_MovementPack.fCurrentDegree + XMConvertToDegrees(angle);
+}
+
 void CNonPlayer::Open_Dialogue(const string tag, void* pArg)
 {
 	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 	auto UI_Responder = nowLevel->Get_LevelObject<CUI_Responcer>();
 	UI_Responder->Active_UI(tag, pArg);
 }
+
+class CItem_Object* CNonPlayer::Spawn_Item(const string tag)
+{
+	auto itemSpawner = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
+	return itemSpawner->SpawnItem(tag);
+}
+
+void CNonPlayer::Set_Animation(const string tag)
+{
+	Get_Component<CAnimator3D>()->Change_Animation(tag);
+}
+
+void CNonPlayer::Set_Emotion(const string tag)
+{
+}
+
+void CNonPlayer::Set_Voice(const string tag)
+{
+}
+
+void CNonPlayer::Do_PostAction(POST_ACTION_DATA_DESC data)
+{
+	if (data.Type == "IndexReady") {
+		m_EventPack.Ready_SequenceID =data.Param2;
+	}
+	if (data.Type == "TransferItem") {
+		m_EventPack.AgendaType = data.Type;
+		m_ReservedPack.reservedAction = data;
+	}
+}
+
+CNonPlayer* CNonPlayer::Create()
+{
+	CNonPlayer* instance = new CNonPlayer();
+	if (FAILED(instance->Initialize_Prototype()))
+	{
+		MSG_BOX("Object Create Failed : CNonPlayer");
+		Safe_Release(instance);
+	}
+
+	return instance;
+}
+
+CGameObject* CNonPlayer::Clone(INIT_DESC* pArg)
+{
+	CNonPlayer* instance = new CNonPlayer(*this);
+
+	if (FAILED(instance->Initialize(pArg)))
+	{
+		MSG_BOX("Object Clone Failed : CNonPlayer");
+		Safe_Release(instance);
+	}
+
+	return instance;
+}
+
 
 void CNonPlayer::Free()
 {

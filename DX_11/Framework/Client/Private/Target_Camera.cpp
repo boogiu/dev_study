@@ -27,8 +27,8 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 	TARGET_CAM_DESC* pDesc = static_cast<TARGET_CAM_DESC*>(pArg);
 	m_pTarget = pDesc->pTarget;
 	_float4 TagetPos = m_pTarget->Get_Position();
-	
-	m_pTransform->Set_Pos({ TagetPos.x, 50,	TagetPos.z+ 50 });
+
+	m_pTransform->Set_Pos({ TagetPos.x, 50,	TagetPos.z + 50 });
 	m_pTransform->LookAt({ TagetPos.x, 0,	TagetPos.z + 10 });
 	m_vOffset = pDesc->vOffset;
 
@@ -123,7 +123,7 @@ void CTarget_Camera::Zoom_In(_float dt)
 
 	if (m_fCurrentLookY < 15)
 	{
-		m_fCurrentLookY += dt*25;
+		m_fCurrentLookY += dt * 25;
 	}
 	if (m_fCurrentLookY > 15)
 	{
@@ -133,7 +133,7 @@ void CTarget_Camera::Zoom_In(_float dt)
 
 	m_pTransform->Set_Pos(DstPos);
 
-	Get_Component<CCamera>()->Lerp_FOV(40, dt*1.5);
+	Get_Component<CCamera>()->Lerp_FOV(40, dt * 1.5);
 }
 
 void CTarget_Camera::Zoom_Out(_float dt)
@@ -167,7 +167,7 @@ void CTarget_Camera::Zoom_Out(_float dt)
 	m_pTransform->Set_Pos(DstPos);
 
 	// FOV º¹±Í
-	Get_Component<CCamera>()->Lerp_FOV(60.f, dt*5);
+	Get_Component<CCamera>()->Lerp_FOV(60.f, dt * 5);
 }
 
 
@@ -178,18 +178,21 @@ void CTarget_Camera::Zoom_Talking(_float dt)
 	_vector ConnectVector = (
 		m_pTarget->Get_Component<CTransform>()->Get_Pos() +
 		m_pSubject->Get_Component<CTransform>()->Get_Pos()
-		)*0.5f;
+		) * 0.5f;
 
-	_vector playerLookSubject = { m_pSubject->Get_Component<CTransform>()->Get_Pos() - m_pTarget->Get_Component<CTransform>()->Get_Pos() };
-	
+	_vector playerLookSubject = {
+		 m_pTarget->Get_Component<CTransform>()->Get_Pos() - m_pSubject->Get_Component<CTransform>()->Get_Pos()};
+
 	_float Zdistance = m_pTarget->Get_Position().z - m_pSubject->Get_Position().z;
 	_vector right = XMVector3Cross({ 0,1,0 }, playerLookSubject);
 
-	if (Zdistance < 0)
-		right *= -1;
+	if (Zdistance < 0.0001f)
+	{
+		playerLookSubject = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+	}
 
-	_vector target_Pos = ConnectVector + (right + playerLookSubject*0.5f)*4.f;
-	target_Pos=XMVectorSetY(target_Pos, 25);
+	_vector target_Pos = ConnectVector + (right + playerLookSubject * 0.5f) * 4.f;
+	target_Pos = XMVectorSetY(target_Pos, 25);
 
 	_vector cam_Pos = m_pTransform->Get_Pos(); //Now Pso
 	//Move Lerp
@@ -214,7 +217,7 @@ void CTarget_Camera::Follow_Target(_float dt)
 	_vector cam_Pos = m_pTransform->Get_Pos(); //Now Pso
 
 	//Move Lerp
-	_vector MoveDir=XMVectorLerp(cam_Pos, target_Pos+ Offset,dt*10);
+	_vector MoveDir = XMVectorLerp(cam_Pos, target_Pos + Offset, dt * 10);
 
 	_float3 DstPos;
 	XMStoreFloat3(&DstPos, MoveDir);

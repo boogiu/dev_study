@@ -25,6 +25,7 @@
 #include "PlayerState_Dig.h"
 #include "PlayerState_ChopTree.h"
 #include "PlayerState_NetSwing.h"
+#include "PlayerState_Interact.h"
 
 #include "PlayerState_OpenInven.h"
 #include "PlayerState_TransTool.h"
@@ -48,6 +49,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	auto Open_Inven = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_OpenInven>("Action_OpenInven_State");
 	auto Get = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Get>("Action_Get_State");
 	auto Eat = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Eat>("Action_Eat_State");
+	auto Interact = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Interact>("Action_Interact_State");
 
 	auto Talking = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Talking>("Interact_Talking_State");
 	Trans_Tool->Set_Owner(m_pOwner);
@@ -55,7 +57,8 @@ HRESULT CPlayerStateMachine::Initialize()
 	Get->Set_Owner(m_pOwner);
 	Eat->Set_Owner(m_pOwner);
 	Talking->Set_Owner(m_pOwner);
-
+	Interact->Set_Owner(m_pOwner);
+	
 	auto toolLayer = CLayerState::Create();
 	toolLayer->Set_Machine(this);
 	m_LayerStates.emplace(STATE_LAYER::TOOL, toolLayer);

@@ -63,7 +63,7 @@ HRESULT CInsectSpawner::Read_InsectData(wstring filePath)
 {
 	ifstream ifs(filePath);
 	if (!ifs.is_open()) {
-		MessageBoxW(nullptr, L"ItemData 파일을 찾을 수 없습니다.", L"Error", MB_OK);
+		MessageBoxW(nullptr, L"InsectData 파일을 찾을 수 없습니다.", L"Error", MB_OK);
 		return E_FAIL;
 	}
 

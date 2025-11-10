@@ -4,9 +4,15 @@
 
 namespace ClientHelper
 {
+	namespace Engine {
+		class CAnimator3D;
+	}
 	HRESULT Add_ModelPathFromDirectory(string directoryPath);
 	HRESULT Add_MaterialPathFromDirectory(string directoryPath);
 	HRESULT Add_AnimPathFromDirectory(string directoryPath, string Subject);
 	HRESULT Add_TexturePathFromDirectory(string directoryPath);
+
+
+	HRESULT Add_AllClipsByFile(string filePath, string Level, string Subject, CAnimator3D* pAnimator);
 };
 

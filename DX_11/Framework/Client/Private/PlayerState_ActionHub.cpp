@@ -35,28 +35,30 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 {
 	CPlayer::ItemPacket tPacket = m_pPlayer->Get_ItemPacket();
 	auto TilePack = m_pPlayer->Get_TileInfoPacket();
+	auto infoPack = m_pPlayer->Get_InfoPack();
 
 	CState* nextState = nullptr;
 
 	switch (tPacket.CurItem.TypeTag)
 	{
 	case itemType::None:
-		if (Forward_Flag && TILE_FLAG::ONCHARACTER)
-			nextState = nullptr;
+		if (infoPack.m_pEncounterNpc != nullptr) {
+			nextState = m_pLayer->Get_State("Action_Interact_State"); 
+		}
 		else
 			nextState = m_pLayer->Get_State("Action_TreeShake_State");
-		m_pPlayer->Adjust_To_Foward();
+			m_pPlayer->Adjust_To_Foward();
 		break;
 	case itemType::Axe:
-		nextState = m_pLayer->Get_State("Action_TreeChop_State");
-		m_pPlayer->Adjust_To_Foward();
+			nextState = m_pLayer->Get_State("Action_TreeChop_State");
+			m_pPlayer->Adjust_To_Foward();
 		break;
 	case itemType::Scoop:
-		nextState = m_pLayer->Get_State("Action_Dig_State");
-		m_pPlayer->Adjust_To_Foward();
+			nextState = m_pLayer->Get_State("Action_Dig_State");
+			m_pPlayer->Adjust_To_Foward();
 		break;
 	case itemType::Net:
-		nextState = m_pLayer->Get_State("Action_NetSwing_State");
+			nextState = m_pLayer->Get_State("Action_NetSwing_State");
 		break;
 	default:
 		break;

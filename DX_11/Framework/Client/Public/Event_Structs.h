@@ -1,5 +1,5 @@
 #pragma once
-namespace Client { class CPlayer; }
+namespace Client { class CPlayer; class CNonPlayer;}
 
 struct EventMsgDesc {
 	_float2 OpenSize = {};
@@ -14,15 +14,29 @@ typedef struct tagEventPlayerPos {
 } PLAYER_POS;
 
 typedef struct tagEventTalking {
-	class CGameObject* speaker = { nullptr };
+	class CGameObject* pSpeaker = { nullptr };
+	class CGameObject* pListner = { nullptr };
 	string Listner = {};
 }TALKING_EVENT;
 
 typedef struct tagEventTalkingMsg  {
 	_float2 OpenSize = {};
 	_float OpenSpeed = {};
-	wstring Speaker = {};
-	vector<wstring> textSequence;
-	vector<function<void()>> SequenceActing;
-	function<void()> OnClose;
+
+	_int SpeakerID = {};
+	_int startSequence = {};
+	CNonPlayer* Speaker = { nullptr };
+	function<void(_bool)> OnClose;
 }TalkingMsgDesc;
+
+///	typedef struct tagSequenceControlMsg  {
+///		_float2 OpenSize = {};
+///		_float OpenSpeed = {};
+///	
+///		wstring Speaker = {};
+///	
+///		vector<wstring> textSequence;
+///		vector<function<void()>> SequenceActing;
+///		vector<_float>	SequenceTime;
+///		function<void()> OnClose;
+///	}SequenceMsgDesc;
