@@ -322,7 +322,7 @@ void CNonPlayer::Do_PostAction(POST_ACTION_DATA_DESC data)
 	if (data.Type == "IndexReady") {
 		m_EventPack.Ready_SequenceID =data.Param2;
 	}
-	if (data.Type == "TransferItem") {
+	else if (data.Type == "TransferItem") {
 		m_EventPack.AgendaType = data.Type;
 		m_ReservedPack.reservedAction = data;
 	}

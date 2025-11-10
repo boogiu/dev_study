@@ -144,7 +144,7 @@ HRESULT CUI_InvenSlot::Add_Data(ITEM_DATA_DESC desc)
 		m_itemData.itemCount = 1;
 		m_pIcon->Get_Component<CSprite2D>()->Set_CompActive(true);
 		m_pIcon->Set_CenterPos({ 0,0 });
-		m_pIcon->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", desc.IconName);
+		m_pIcon->Get_Component<CSprite2D>()->Change_Texture(0,"GamePlay_Level", desc.IconName);
 	}
 	else {
 		m_itemData.itemCount += 1;

@@ -53,6 +53,7 @@ typedef struct tagPostActionDataDesc
 	string Type;				// 행동 이름
 	string Param1;			 // 인자 1
 	_int         Param2 = 0; // 인자 2
+	_bool         Continue = false; // 인자 2
 	_int         NextSequenceID = -1;
 }POST_ACTION_DATA_DESC;
 

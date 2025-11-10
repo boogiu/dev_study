@@ -191,7 +191,7 @@ void CTarget_Camera::Zoom_Talking(_float dt)
 		playerLookSubject = XMVectorSet(0.f, 0.f, 1.f, 0.f);
 	}
 
-	_vector target_Pos = ConnectVector + (right + playerLookSubject * 0.5f) * 4.f;
+	_vector target_Pos = ConnectVector + (right*0.9f + playerLookSubject * 0.8f) * 4.f;
 	target_Pos = XMVectorSetY(target_Pos, 25);
 
 	_vector cam_Pos = m_pTransform->Get_Pos(); //Now Pso
@@ -203,7 +203,7 @@ void CTarget_Camera::Zoom_Talking(_float dt)
 
 	m_pTransform->LookAt(ConnectVector);
 	m_pTransform->Set_Pos(DstPos);
-	Get_Component<CCamera>()->Lerp_FOV(55, dt * 1.5);
+	Get_Component<CCamera>()->Lerp_FOV(45, dt * 1.5);
 }
 
 void CTarget_Camera::Zoom_TalkingOut(_float dt)

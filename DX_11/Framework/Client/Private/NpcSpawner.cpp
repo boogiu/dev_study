@@ -186,9 +186,27 @@ HRESULT CNpcSpawner::Read_CharacterSequece(const string& filePath)
                 auto& act = item["PostAction"];
                 data.postAction.Type = act.value("Type", "");
                 data.postAction.Param1 = act.value("Param1", "");
-                data.postAction.Param2 = act.value("Param2", 0);
+                if (act.contains("Param2")) {
+                    try {
+                        if (act["Param2"].is_number_integer())
+                            data.postAction.Param2 = act["Param2"].get<int>();
+                        else if (act["Param2"].is_string())
+                            data.postAction.Param2 = std::stoi(act["Param2"].get<std::string>());
+                        else
+                            data.postAction.Param2 = 0;
+                    }
+                    catch (...) {
+                        data.postAction.Param2 = 0;
+                    }
+                }
+                else {
+                    data.postAction.Param2 = 0;
+                }
+
+                data.postAction.Continue = act.value("Continue", false);
                 data.postAction.NextSequenceID = act.value("NextSequenceID", -1);
             }
+
 
             if (item.contains("Choices") && item["Choices"].is_array())
             {

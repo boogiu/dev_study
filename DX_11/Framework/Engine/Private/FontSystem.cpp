@@ -19,6 +19,16 @@ HRESULT CFontSystem::Initialize()
 	return S_OK;
 }
 //MakeSpriteFont "Asia신디나루M" "Sindy.spritefont" /FontSize:20 /CharacterRegion:0xAC00-0xD7A3 /FastPack
+//
+//MakeSpriteFont.exe" "Asia신디나루M" "Sindy.spritefont" ^
+/// FontSize:20 ^
+/// CharacterRegion : 0x0020 - 0x007E ^
+/// CharacterRegion : 0xAC00 - 0xD7A3 ^
+/// CharacterRegion : 0x3000 - 0x303F ^
+/// CharacterRegion : 0x3130 - 0x318F ^
+/// CharacterRegion : 0xFF00 - 0xFFEF ^
+/// CharacterRegion : 0x2026 - 0x2026 ^
+/// FastPack
 
 
 HRESULT CFontSystem::Add_Font(string FontName, const wstring& FontFilePath)

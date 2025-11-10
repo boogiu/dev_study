@@ -438,6 +438,7 @@ HRESULT CPlayer::Set_InvenEvent(ITEM_DATA_DESC item, _int Slot, wstring Selected
 	else if (SelectedEvent == L"1°³ ¸Ô±â") {
 		m_InfoPack.m_pObjectOnLeftHand =  Spawner->SpawnItem(item.FileName);
 		m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION,"Action_Eat_State");
+		m_pInventory->PullOut_Item(Slot);
 	}
 	else if (SelectedEvent == L"µé±â") {
 		m_ControlPack.MsgBag = false;

@@ -15,6 +15,7 @@ public:
 public:
     /*텍스처는 부모 폴더와 함께 ParentName + TextureKey*/
     HRESULT Add_Texture(const string& levelKey, const string& TextureKey);
+    HRESULT Change_Texture(_uint index, const string& levelKey, const string& TextureKey);
     HRESULT Link_Shader(const string& levelKey, const string& shaderKey);
 
 public:

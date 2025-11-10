@@ -110,7 +110,7 @@ void CUI_TalkingMsg::Update(_float dt)
 			//아직 잘라낸 숫자가(타이핑이 된 숫자가) 적은 동안에는 계속 타이핑 진행
 			m_iTypeSubStr++; //타이핑 시간 지났으니 다음 것도 출력
 
-			if (Fulltext.substr(m_iTypeSubStr, 1) == L".")
+			if (Fulltext.substr(m_iTypeSubStr, 1) == L"."|| Fulltext.substr(m_iTypeSubStr, 1) == L",")
 				m_fTypePuaseTime = .25f;
 			else
 				m_fTypePuaseTime = .05f;
@@ -167,6 +167,9 @@ void CUI_TalkingMsg::UI_Active(void* pArg)
 
 	m_SpeakerID = desc->SpeakerID;
 	m_Sequences = m_pNpcSpawner->Get_SequenceData(desc->SpeakerID, desc->startSequence);
+	if (m_Sequences.empty()) {
+		UI_DeActive(nullptr);
+	}
 	m_nowSeqIndex = 0;
 	m_bActive = true;
 	m_SpeakerName = desc->Speaker->Get_NpcData().NpcName;
@@ -198,7 +201,7 @@ void CUI_TalkingMsg::UI_DeActive(void* pArg)
 	m_fTypingTime = 0;
 
 	if (m_onClose)
-		m_onClose(NextSeq.Type.empty());
+		m_onClose(!NextSeq.Continue);
 
 	if (NextSeq.Type.empty() == false)
 		m_pSpeaker->Do_PostAction(NextSeq);

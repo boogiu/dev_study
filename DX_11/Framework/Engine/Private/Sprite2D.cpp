@@ -88,6 +88,25 @@ HRESULT CSprite2D::Add_Texture(const string& levelKey, const string& TextureKey)
 	return S_OK;
 }
 
+HRESULT CSprite2D::Change_Texture(_uint index, const string& levelKey, const string& TextureKey)
+{
+	if (index >= m_pTextures.size()){
+		Add_Texture(levelKey, TextureKey);
+		return S_OK;
+	}
+	else {
+		if (m_pTextures[index])
+			Safe_Release(m_pTextures[index]);
+
+		CTexture* pTexture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture(levelKey, TextureKey);
+
+		if (!pTexture)
+			return E_FAIL;
+		m_pTextures[index] = pTexture;
+		Safe_AddRef(pTexture);
+	}
+}
+
 HRESULT CSprite2D::Link_Shader(const string& levelKey, const string& shaderKey)
 {
 	Safe_Release(m_pShader);
