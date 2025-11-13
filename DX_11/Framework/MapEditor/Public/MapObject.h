@@ -37,6 +37,7 @@ private:
     TILE_INDEX m_SyncedIndex = {};
     _bool OnGrid = { false };
     _uint m_ObjeType = {};
+    string m_ObjectType = {};
     string m_ObjName = {};
 public:
     static CMapObject* Create();

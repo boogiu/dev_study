@@ -87,8 +87,7 @@ void CTileBlock::Update_Position(TILESYSTEM_INFO& systemInfo)
 		anchor.z + tileSizeZ * 0.5f
 		};
 	}
-
-	m_pTransform->Set_Pos(worldPos);
+	m_pTransform->Set_Pos({ worldPos.x, XMVectorGetY(m_pTransform->Get_Pos()),worldPos.z });
 }
 
 _uint CTileBlock::Get_NeigborState()

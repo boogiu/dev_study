@@ -12,31 +12,8 @@ CNpcState_Idle_LookAround::CNpcState_Idle_LookAround()
 HRESULT CNpcState_Idle_LookAround::OnEnter()
 {
 	auto Animator = m_pCharacter->Get_Component<CAnimator3D>();
-	_int rand = Helper::Get_Random_Int(0, 5);
+	Animator->Change_Animation("Base_Wait.anim", false);
 
-	switch (rand)
-	{
-	case 0:
-		Animator->Change_Animation("Base_Wait.anim", false);
-		break;
-	case 1:
-		Animator->Change_Animation("Act_Rhythm03.anim", false);
-		break;
-	case 2:
-		Animator->Change_Animation("Base_Wait.anim", false);
-		break;
-	case 3:
-		Animator->Change_Animation("Base_Wait.anim", false);
-		break;
-	case 4:
-		Animator->Change_Animation("Base_Wait.anim", false);
-		break;
-	case 5:
-		Animator->Change_Animation("Base_Wait.anim", false);
-		break;
-	default:
-		break;
-	}
 	return S_OK;
 }
 

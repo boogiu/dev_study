@@ -5,6 +5,7 @@
 #include "Animator3D.h"
 #include "GameInstance.h"
 #include "Builder.h"
+#include "NonPlayer.h"
 
 CPlayerState_Interact::CPlayerState_Interact()
 {
@@ -18,7 +19,24 @@ HRESULT CPlayerState_Interact::OnEnter()
 
 	m_pPlayer->Get_Component<CCollider>()->Set_ContextEvent("WantToTalk");
 
-	TALKING_EVENT event{ m_pPlayer, m_pPlayer->Get_InfoPack().m_pEncounterNpc , "Player" };
+	CNonPlayer* encounter = m_pPlayer->Get_InfoPack().pEncounterNpc;
+	if (!encounter)
+		return E_FAIL;
+
+	_int Seq = encounter->Get_EventPack().ConsumeSequence();
+	string condition = encounter->Get_EventPack().externalCondition;
+
+	if (Seq == -1) 
+		return E_FAIL;
+
+	OnStartDialogue event{ 
+		m_pPlayer,
+		encounter, 
+		Seq,
+		condition,
+		encounter->Get_NpcData().NpcName
+	};
+
 	m_pPlayer->BroadCast_Talk(event);
 	return S_OK;
 }
@@ -30,7 +48,6 @@ void CPlayerState_Interact::OnUpdate(_float dt)
 
 HRESULT CPlayerState_Interact::OnExit()
 {
-
 	m_pPlayer->Get_Component<CCollider>()->Set_ContextEvent("");
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
@@ -40,7 +57,7 @@ HRESULT CPlayerState_Interact::OnExit()
 
 CState* CPlayerState_Interact::HandleTransition()
 {
-	if (m_pPlayer->Get_InfoPack().m_pTalker == nullptr) {
+	if (m_pPlayer->Get_InfoPack().pTalker == nullptr) {
 		return m_pLayer->Get_State("Movement_Idle_State");
 	}
 }

@@ -38,7 +38,7 @@
 #include "Item_Object.h"
 #include "InsectSpawner.h"
 #include "EventSystem.h"
-
+#include "NonPlayer.h"
 CPlayer::CPlayer()
 {
 }
@@ -99,7 +99,7 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	}
 
 	Get_Component<CCollider>()->Make_MinMaxCollider(
-		{ { -5,0,-3 }, {5,5,8} }
+		{ { -3,0,-5 }, {3,5,6} }
 	);
 
 	/*Debug*/
@@ -121,29 +121,48 @@ void CPlayer::Awake()
 		return;
 	auto EventSys = nowLevel->Get_LevelObject<CEventSystem>();
 
-	EventSys->Add_Listner<TALKING_EVENT>([&](const TALKING_EVENT& evt) {
-		if (evt.Listner != "Player") return;
-		if (evt.pSpeaker == this) return;
-	
-			m_InfoPack.m_pTalker = evt.pSpeaker;
-			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Interact_Talking_State");
-		});
+	//누군가와의 대화를 끝냈다. -> 이전 대화를 걸었을 때 아이디라면 이제 나도 끝내겠다.
+	EventSys->Add_Listner<OnEndDialogue>([&](const OnEndDialogue& evt) {
+		if (m_InfoPack.isTalking && evt.pSpeaker == m_InfoPack.pTalker)
+		{
+			m_InfoPack.isTalking = false;
+			m_InfoPack.pTalker = nullptr;
+			//m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Idle_State");
+		}
+	});
 
+	//누가 내게 말을 걸었다.
+	EventSys->Add_Listner<OnNoticeDialogue>([&](const OnNoticeDialogue& evt) {
+		if (evt.pSubject != this) return;
+		if (m_InfoPack.isTalking) return;
+
+		m_InfoPack.isTalking = true;
+		m_InfoPack.pTalker = evt.pCounter;
+
+		m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Interact_Talking_State");
+	});
+
+	//누가 나에게 아이템을 건네주면 듣겠다.
+	EventSys->Add_Listner<TRANS_ITEM>([&](const TRANS_ITEM& evt) {
+		if (evt.pObject) {
+			m_InfoPack.m_nowTrans = evt;
+			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TransGet_State");
+		}
+		});
 }
 
 void CPlayer::Priority_Update(_float dt)
 {
-	m_vPrevPos = Get_Position();
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
+
 	Update_Input(dt);
 }
 
 void CPlayer::Update(_float dt)
 {
 	Update_Movement(dt);
-	Mark_TileFlag(); /*대충 로직 끝난 후에 타일 플래그 정비*/
 	Update_TileInfo(dt);
-	BroadCast_Event();
+	BroadCast_Position();
 	Get_Component<CMaterialAnimator>()->Update_Animation(dt);
 	m_pStateMachine->Update(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
@@ -165,6 +184,13 @@ void CPlayer::Update_Input(_float dt)
 	auto pInpuDev = CGameInstance::GetInstance()->Get_InputDev();
 	auto& control = m_ControlPack;
 	control.Reset();
+
+	if (m_InfoPack.WorkBenchEncounter && pInpuDev->Key_Tap(VK_SPACE)) {
+		Open_Craft();
+	}
+
+	if (control.MsgForceBlock)
+		return;
 
 	_uint StateActionMask = m_pStateMachine->Get_CurrentMask(STATE_LAYER::ACTION);
 	auto AllowAction = [&](InputMask type) {return (StateActionMask & (1 << static_cast<_uint>(type))) != 0; };
@@ -248,11 +274,11 @@ void CPlayer::Update_TileInfo(_float dt)
 	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
 	auto Info = TileSys->Get_TileSystemInfo();
 
-	m_TileInfoPack.nowIndex = TileSys->Get_IndexByPosition(Get_Position());
 	m_TileInfoPack.Range_FowardInfo = TileSys->Get_InfoByIndex(Get_FowardIndex());
 	m_TileInfoPack.infos.resize(9);
 	vector<TILE_INFO> worldInfo = {};
 	_uint ValidIndex = TileSys->Get_NeighborInfoByIndex(m_TileInfoPack.nowIndex, worldInfo);
+
 	/*현재 y축 회전값을 360으로 나머지 연산*/
 	_float yaw = fmodf(m_MovementPack.fCurrentDegree, 360.f);
 	/*음수면 보정*/
@@ -268,6 +294,15 @@ void CPlayer::Update_TileInfo(_float dt)
 			m_TileInfoPack.infos[Get_Index(Rotate45_CCW(neighbor, RotCount))] = worldInfo[Get_Index(neighbor)];
 			m_TileInfoPack.neighboValidFlag |= static_cast<_uint>(Rotate45_CCW(neighbor, RotCount));
 		}
+	}
+	TILE_INDEX currIndex = TileSys->Get_IndexByPosition(Get_Position());
+
+	if (false == m_TileInfoPack.nowIndex.isSame(currIndex)) {
+		m_vPrevIndex = m_TileInfoPack.nowIndex;
+		m_TileInfoPack.nowIndex = currIndex;
+		TileSys->Add_TileFlagByIndex(m_TileInfoPack.nowIndex, static_cast<_uint>(TILE_FLAG::ONPLAYER));
+		TileSys->Remove_TileFlagByIndex(m_vPrevIndex, static_cast<_uint>(TILE_FLAG::ONPLAYER));
+		
 	}
 }
 
@@ -348,34 +383,46 @@ void CPlayer::Adjust_To_WorldFoward()
 
 void CPlayer::OnCollisionEnter(COLLISION_CONTEXT context)
 {
+	m_InfoPack.pEncounter = context.Owner;
+	m_InfoPack.EncounterTag = context.Owner->Get_Tag();
+
 	if (context.EventTag == "PickedByHand")
-	{
-		m_pInventory->Add_ItemToInventory(dynamic_cast<CItem_Object*>(context.Owner)->Get_ItemData());
+	{m_pInventory->Add_ItemToInventory(dynamic_cast<CItem_Object*>(context.Owner)->Get_ItemData());}
+
+	if (context.Owner->Has_Tag("WorkBench")) {
+		m_InfoPack.WorkBenchEncounter = true;
 	}
-	
- 	m_pStateMachine->OnCollisionEnter(context);
+
+	m_pStateMachine->OnCollisionEnter(context);
 }
 
 void CPlayer::OnCollisionStay(COLLISION_CONTEXT context)
 {
 	if (context.Owner->Has_Tag("NPC")) {
-		m_InfoPack.m_pEncounterNpc = context.Owner; 
+		if (nullptr == m_InfoPack.pEncounterNpc) {
+			if (CNonPlayer* pNpc = dynamic_cast<CNonPlayer*>(context.Owner))
+				m_InfoPack.pEncounterNpc = pNpc;
+		}
 	}
-	else {
-		m_InfoPack.m_pEncounterNpc = nullptr;
-	}
-
 	m_pStateMachine->OnCollisionStay(context);
 }
 
 void CPlayer::OnCollisionExit(COLLISION_CONTEXT context)
 {
 	m_pStateMachine->OnCollisionExit(context);
+
+	if (context.Owner->Has_Tag("NPC")) {
+		m_InfoPack.pEncounterNpc = nullptr;
+	}
+
+	if (context.Owner->Has_Tag("WorkBench")) {
+		m_InfoPack.WorkBenchEncounter = false;
+	}
 }
 
 void CPlayer::Camera_Zoom_In(CGameObject* subject)
 {
-	if(!subject)
+	if (!subject)
 		m_pCamera->Execute_ZoomIn();
 	else {
 		m_pCamera->Execute_Talking(subject);
@@ -436,8 +483,8 @@ HRESULT CPlayer::Set_InvenEvent(ITEM_DATA_DESC item, _int Slot, wstring Selected
 	}
 
 	else if (SelectedEvent == L"1개 먹기") {
-		m_InfoPack.m_pObjectOnLeftHand =  Spawner->SpawnItem(item.FileName);
-		m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION,"Action_Eat_State");
+		m_InfoPack.pObjectOnLeftHand = Spawner->SpawnItem(item.FileName);
+		m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_Eat_State");
 		m_pInventory->PullOut_Item(Slot);
 	}
 	else if (SelectedEvent == L"들기") {
@@ -462,7 +509,7 @@ void CPlayer::Open_EventMsg(EventMsgDesc* evtMsg)
 	UI_Responder->Active_UI("EvtMsg", evtMsg);
 }
 
-void CPlayer::BroadCast_Talk(TALKING_EVENT evt)
+void CPlayer::BroadCast_Talk(OnStartDialogue evt)
 {
 	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 	auto evtSys = nowLevel->Get_LevelObject<CEventSystem>();
@@ -485,7 +532,8 @@ _bool CPlayer::Can_Walk(_float2& moveAxis)
 	TILE_INDEX nextIndex = CGameInstance::GetInstance()->Get_TileSystem()->Get_IndexByPosition(NextPos);
 
 	_uint Flag = tileSystem->Get_TileFlagByIndex(nextIndex);
-	if ((CANT_WALK & Flag) == 0)
+
+	if ((Flag & (CANT_WALK | TILE_FLAG::ONCHARACTER)) == 0)
 		return true;
 
 	/*움직일 수 없음*/
@@ -496,7 +544,7 @@ _bool CPlayer::Can_Walk(_float2& moveAxis)
 	_float4 testX = Get_Position();
 	testX.x += tmpAxis.x;
 	TILE_INDEX testIdxX = tileSystem->Get_IndexByPosition(testX);
-	if (tileSystem->Get_TileFlagByIndex(testIdxX) & static_cast<_uint>(CANT_WALK))
+	if (tileSystem->Get_TileFlagByIndex(testIdxX) & static_cast<_uint>((CANT_WALK | TILE_FLAG::ONCHARACTER)))
 		blockX = true;
 
 	/*Z축 검사*/
@@ -504,7 +552,7 @@ _bool CPlayer::Can_Walk(_float2& moveAxis)
 	testZ.z += tmpAxis.y;
 	TILE_INDEX testIdxZ = tileSystem->Get_IndexByPosition(testZ);
 
-	if (tileSystem->Get_TileFlagByIndex(testIdxZ) & static_cast<_uint>(CANT_WALK))
+	if (tileSystem->Get_TileFlagByIndex(testIdxZ) & static_cast<_uint>((CANT_WALK | TILE_FLAG::ONCHARACTER)))
 		blockZ = true;
 
 	if (blockX)
@@ -523,6 +571,11 @@ _bool CPlayer::Can_Walk(_float2& moveAxis)
 		return true;
 
 	return false;
+}
+
+_bool CPlayer::Can_Talk()
+{
+	return (m_InfoPack.isTalking||m_InfoPack.isCrafting);
 }
 
 TILE_INDEX CPlayer::Get_FowardIndex()
@@ -621,9 +674,13 @@ void CPlayer::Add_AnimationClips()
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_PullOut.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_Putaway.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_PutawayKeep.anim", "Player", false);
-	
+
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_Eat.anim", "Player", false);
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Menu_Eat.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveForward.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveReturn.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveBack.anim", "Player", false);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_Putaway.anim", "Player", false);
 
 }
 
@@ -662,10 +719,10 @@ void CPlayer::Add_PartObjects()
 	pBottomDesc->pPlayer = this;
 	pBottomDesc->ClothType = "PlayerBottomsPantsNormal";
 
-	m_InfoPack.m_pRightHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
+	m_InfoPack.pRightHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
 		.Add_ObjDesc(pRHandDesc)
 		.Build("Right_Hand");
-	m_InfoPack.m_pLeftHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
+	m_InfoPack.pLeftHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
 		.Add_ObjDesc(pLHandDesc)
 		.Build("Left_Hand");
 
@@ -688,8 +745,8 @@ void CPlayer::Add_PartObjects()
 	Adjust_Cloth_Material(pBottom, "Sweat_mBottoms", "mBottoms");
 
 
-	Get_Component<CObjectContainer>()->Add_Child(m_InfoPack.m_pRightHand, false);
-	Get_Component<CObjectContainer>()->Add_Child(m_InfoPack.m_pLeftHand, false);
+	Get_Component<CObjectContainer>()->Add_Child(m_InfoPack.pRightHand, false);
+	Get_Component<CObjectContainer>()->Add_Child(m_InfoPack.pLeftHand, false);
 	Get_Component<CObjectContainer>()->Add_Child(pHair, false);
 	Get_Component<CObjectContainer>()->Add_Child(pHairCap, false);
 	Get_Component<CObjectContainer>()->Add_Child(pTop, true);
@@ -740,10 +797,10 @@ void CPlayer::Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, str
 	auto instance = pObject->Get_Component<CMaterial>()->Find_MaterialByName(subsetKey);
 	if (!instance) return;
 
-	CTexture* pDiffuse = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey+"_Alb.dds");
-	CTexture* pMixture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey+"_Mix.dds");
-	CTexture* pNormal = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey+"_Nrm.dds");
-	CTexture* pOpcity = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey+"_OP.dds");
+	CTexture* pDiffuse = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey + "_Alb.dds");
+	CTexture* pMixture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey + "_Mix.dds");
+	CTexture* pNormal = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey + "_Nrm.dds");
+	CTexture* pOpcity = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey + "_OP.dds");
 
 	SHADER_PARAM param = {};
 	param.iSize = 0;
@@ -762,20 +819,28 @@ void CPlayer::Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, str
 	instance->Set_Param("OpacityTexture", param);
 }
 
-void CPlayer::Mark_TileFlag()
+void CPlayer::Open_Craft()
 {
-	auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
-	TILE_INDEX prevIndex = tileSys->Get_IndexByPosition(m_vPrevPos);
+	m_ControlPack.MsgForceBlock = true;
+	m_InfoPack.isCrafting = true;
 
-	if (m_TileInfoPack.nowIndex == prevIndex) {
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	if (!nowLevel)
 		return;
-	}
 
-	tileSys->Remove_TileFlagByIndex(prevIndex, static_cast<_uint>(m_TileInfoPack.markFlag));
-	tileSys->Add_TileFlagByIndex(m_TileInfoPack.nowIndex, static_cast<_uint>(m_TileInfoPack.markFlag));
+	CRAFT_DATA_DESC craftDesc = {};
+	craftDesc.OnClose = [this](const CRAFT_RESULT& result) {Close_Craft(result); };
+
+	nowLevel->Get_LevelObject<CUI_Responcer>()->Active_UI("Craft_UI",&craftDesc);
 }
 
-void CPlayer::BroadCast_Event()
+void CPlayer::Close_Craft(const CRAFT_RESULT& result)
+{
+	m_ControlPack.MsgForceBlock = false;
+	m_InfoPack.isCrafting = false;
+}
+
+void CPlayer::BroadCast_Position()
 {
 	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 	if (!nowLevel)

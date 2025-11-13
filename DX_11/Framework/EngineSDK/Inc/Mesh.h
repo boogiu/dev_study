@@ -22,10 +22,12 @@ public:
 	_float3 Get_MaxVertexLocal() { return m_vMeshMaxLocal; }
 
 public:
+	void Create_BoneMinMax(class CSkeleton* pSkeleton);
 	virtual void Render_GUI();
 
 protected:
 	vector<_uint> m_indices;						//임시 인덱스 (함수로 따로 빼려고 하다보니 생김)
+	vector<VTXSKINMESH> m_Skined;						//임시 버텍스 (본 기준의 민맥스 따로 만드려다 보니.)
 	_uint m_MaterialIndex = {};					//어떤 머티리얼을 사용하는가??
 
 	_float3 m_vMeshMinLocal = { FLT_MAX ,FLT_MAX ,FLT_MAX };

@@ -122,6 +122,49 @@ HRESULT CPipeLine::Update_ShadowBuffer(ID3D11DeviceContext* pContext)
 	return S_OK;
 }
 
+void CPipeLine::Update_Frustum()
+{
+	_matrix view = XMLoadFloat4x4(CGameInstance::GetInstance()->Get_CameraMgr()->Get_ViewMatrix());
+	_matrix proj = XMLoadFloat4x4(CGameInstance::GetInstance()->Get_CameraMgr()->Get_ProjMatrix());
+
+	BoundingFrustum frustum;
+	BoundingFrustum::CreateFromMatrix(frustum, proj);
+
+	frustum.Transform(m_Frustum, XMMatrixInverse(nullptr, view));
+}
+
+_bool CPipeLine::isVisible(MINMAX_BOX minMax, _fmatrix worldTransform)
+{
+	XMFLOAT3 center{
+		(minMax.vMin.x + minMax.vMax.x) * 0.5f,
+		(minMax.vMin.y + minMax.vMax.y) * 0.5f,
+		(minMax.vMin.z + minMax.vMax.z) * 0.5f
+	};
+
+	XMFLOAT3 extents{
+		(minMax.vMax.x - minMax.vMin.x) * 0.5f,
+		(minMax.vMax.y - minMax.vMin.y) * 0.5f,
+		(minMax.vMax.z - minMax.vMin.z) * 0.5f
+	};
+
+	float radius = sqrtf(extents.x * extents.x +
+		extents.y * extents.y +
+		extents.z * extents.z);
+
+	BoundingSphere localSphere(center, radius);
+
+	BoundingSphere worldSphere;
+	localSphere.Transform(worldSphere, worldTransform);
+
+	float maxExtent = max(extents.x, max(extents.y, extents.z));
+	float scaleFactor = 0.1f; // 여유 비율 (10%)
+	worldSphere.Radius += maxExtent * scaleFactor;
+
+	return m_Frustum.Intersects(worldSphere);
+}
+
+
+
 _uint CPipeLine::Write_ObjectData(const _float4x4& worldMatrix)
 {
 	if (!m_pObjectBufferArray)

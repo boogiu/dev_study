@@ -13,6 +13,7 @@ struct VS_OUT
     float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vProjPos : TEXCOORD1;
+    
 };
 
 
@@ -57,6 +58,7 @@ PS_OUT PS_MAIN(PS_IN In)
         discard;
     
     Out.vDiffuse = vMtrlDiffuse;
+   
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
   return Out;

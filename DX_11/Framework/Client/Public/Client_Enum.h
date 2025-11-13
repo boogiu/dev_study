@@ -14,11 +14,15 @@ enum class TILE_FLAG : unsigned int {
     FLAG_TREE = 1 << 6,
     FLAG_STONE = 1 << 7,
     FLAG_INSECT = 1 << 8,
+    FLAG_STRUCTURE = 1 << 9,
+    FLAG_GRASS = 1 << 10,
+    FLAG_BRIDGE = 1 << 11,
 
     /*ON*/
-    FLAG_ONITEM= 1 << 29,
-    ONPLAYER= 1 << 30,
-    ONCHARACTER = 1 << 31,
+    FLAG_ONFURNITURE = 1 << 27,
+    FLAG_ONITEM= 1 << 28,
+    ONPLAYER= 1 << 29,
+    ONCHARACTER = 1 << 30,
 };
 
 inline TILE_FLAG operator | (TILE_FLAG a, TILE_FLAG b) {
@@ -75,7 +79,10 @@ enum class itemType {
     Insect,
     Axe,  
     Net, 
-    Scoop,};
+    Scoop,
+    Represent,
+    Furniture,
+};
 
 enum class STATE_LAYER
 {
@@ -84,6 +91,7 @@ enum class STATE_LAYER
     EMOTION,
     MAX
 };
+enum class ActionPhase { Start, Proceed, End, None };
 
 
 enum class InputMask : unsigned int {

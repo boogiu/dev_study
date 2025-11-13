@@ -37,6 +37,7 @@ private:
 
 private:
 	vector<OPAQUE_PACKET> m_Packets;
+	vector<OPAQUE_PACKET> m_VisiblePackets;
 	vector<INSTANCE_PACKET> m_InstancePackets;
 public:
 	static ShadowPass* Create(class CRenderSystem* pRenderSystem) { return new ShadowPass(pRenderSystem); }
@@ -55,6 +56,7 @@ public:
 
 private:
 	vector<OPAQUE_PACKET> m_Packets;
+	vector<OPAQUE_PACKET> m_VisiblePackets;
 
 public:
 	static OpaquePass* Create(class CRenderSystem* pRenderSystem) { return new OpaquePass(pRenderSystem); }

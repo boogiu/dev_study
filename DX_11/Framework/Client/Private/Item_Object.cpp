@@ -40,13 +40,13 @@ HRESULT CItem_Object::Initialize(INIT_DESC* pArg)
 	{
 		Get_Component<CStaticModel>()->Link_Model("GamePlay_Level", pDesc->itemDesc.modelName);
 		Get_Component<CMaterial>()->Link_Material("GamePlay_Level", pDesc->itemDesc.materialName);
+
+		if (!pDesc->itemDesc.Additionaldata.empty()) {
+			Get_Component<CStaticModel>()->Link_Model("GamePlay_Level", pDesc->itemDesc.Additionaldata+".model");
+			Get_Component<CMaterial>()->Link_Material("GamePlay_Level", pDesc->itemDesc.Additionaldata+".mat");
+		}
 		m_ItemInfo = pDesc->itemDesc;
 	}
-	else {
-		Get_Component<CStaticModel>()->Link_Model("GamePlay_Level", "UnitIconPltFruitApple.model");
-		Get_Component<CMaterial>()->Link_Material("GamePlay_Level", "UnitIconPltFruitApple.mat");
-	}
-	
 	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	m_SyncedIndex = TileSystem->Get_IndexByPosition(Get_Position());
 	m_MarginY = TileSystem->Get_TileHeightByPosition(Get_Position());
@@ -139,6 +139,7 @@ void CItem_Object::Update_ByState(_float dt)
 		FollowHand(dt);
 		break;
 	case  READY_DESTROY: {
+		Remove_Item();
 		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
 		m_eState = IDLE;
 	}
@@ -310,17 +311,18 @@ void CItem_Object::FollowHand(_float dt)
 {
 	_vector trans, scale, rot;
 	XMMatrixDecompose(&scale, &rot, &trans, XMLoadFloat4x4(m_pOwnerMatrix));
-	_float3 pos = {};
-	XMStoreFloat3(&pos, trans);
-	m_pTransform->Set_Pos(pos);
-	_vector scaleRatio = m_pTransform->Get_Scale() - _vector{0.5f,0.5f,0.5f};
 
-	if(XMVectorGetX(XMVector3Length(scaleRatio)) > 0.05)
-		m_pTransform->AddScale({ -dt * 1.5f,-dt * 1.5f,-dt * 1.5f });
+	_vector vNowPos = m_pTransform->Get_Pos();
+	_vector vTargetPos = trans;
+
+	_vector vLerpPos = XMVectorLerp(vNowPos, vTargetPos, dt * 7.f);
+	m_pTransform->Set_vectorPos(vLerpPos);//vLerpPos
 }
+
 
 void CItem_Object::Remove_Item()
 {
+	m_eState = READY_DESTROY;
 	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	TileSystem->Remove_TileFlagByIndex(m_SyncedIndex, static_cast<_uint>(TILE_FLAG::FLAG_ONITEM));
 }

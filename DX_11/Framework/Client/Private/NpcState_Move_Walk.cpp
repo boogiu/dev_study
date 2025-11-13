@@ -43,7 +43,7 @@ void CNpcState_Move_Walk::OnUpdate(_float dt)
        nowPos.z += pack.fMoveSpeed * pack.vMoveAxis.y * dt;
        _uint Flag = tileSys->Get_TileFlagByIndex(tileSys->Get_IndexByPosition(nowPos));
 
-       if ((Flag & CANT_WALK) == 0)
+       if ((Flag & (CANT_WALK|TILE_FLAG::ONPLAYER)) == 0)
            break;
        else
             Rand_Direction();

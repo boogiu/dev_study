@@ -243,6 +243,11 @@ MINMAX_BOX CInstanceModel::Get_WorldBoundingBox()
 	return wordlBox;
 }
 
+MINMAX_BOX CInstanceModel::Get_MeshBoundingBox(_uint index)
+{
+	return m_pModelData->Get_LocalBoundingBox();
+}
+
 _bool CInstanceModel::Check_Valid(_uint MeshIndex)
 {
 	auto iter = m_MapMeshWithInstance.find(MeshIndex);

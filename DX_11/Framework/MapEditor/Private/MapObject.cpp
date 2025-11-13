@@ -80,10 +80,17 @@ HRESULT CMapObject::Link_Data(const string& folderName)
 
 	HRESULT hr = pMyModel->Link_Model(G_GlobalLevelKey, folderName + ".model");
 	CMaterial* pMaterial = Get_Component<CMaterial>();
+
 	hr = pMaterial->Link_Material(G_GlobalLevelKey, folderName + ".mat");
 
 	if (FAILED(hr))
 		return E_FAIL;
+
+	if (SkinnedMesh) {
+		for (auto& instance : pMaterial->Get_Material_Instance()) {
+			instance->Override_Pass("ForceSee");
+		};
+	}
 
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
 		instance->Override_Pass("Base");
@@ -95,6 +102,7 @@ HRESULT CMapObject::Link_Data(const string& folderName)
 			folderName + ".mat",
 			pRcsMgr->Get_ResourcePath(folderName + ".model"),
 			pRcsMgr->Get_ResourcePath(folderName + ".mat"),
+			""
 	};
 
 	ModelMapTable.emplace(
@@ -124,7 +132,7 @@ HRESULT CMapObject::Load_Object(MAP_OBJECT_HEADER ObjHeader)
 
 	m_InstanceName = ObjHeader.ObjectName;
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-	tileSystem->Set_Material_ID(m_SyncedIndex, { 1,1,0,0 });
+	tileSystem->Set_Material_ID(m_SyncedIndex, {0,0,0,0 });
 
 	return S_OK;
 }
@@ -133,28 +141,51 @@ HRESULT CMapObject::Save_MapData(ofstream& ofs)
 {
 	/*현재 인덱스*/
 	MAP_OBJECT_HEADER ObjHeader = {};
-
+	
 	ObjHeader.Index = m_SyncedIndex;
 	ObjHeader.Object_type = m_ObjeType;
 	ObjHeader.vWorldMatrix = m_pTransform->Get_WorldMatrix();
 	strcpy_s(ObjHeader.ObjectName, m_ObjName.c_str());
 	ofs.write(reinterpret_cast<const char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
+
+	//	NEW_MAP_OBJECT_HEADER ObjHeader = {};
+
+	//	ObjHeader.Index = m_SyncedIndex;
+	//	ObjHeader.Object_type = m_ObjeType;
+	//	ObjHeader.vWorldMatrix = m_pTransform->Get_WorldMatrix();
+	//	strcpy_s(ObjHeader.ObjectName, m_ObjName.c_str());
+	//	ofs.write(reinterpret_cast<const char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
 	return S_OK;
 }
 
 void CMapObject::Render_GUI()
 {
 	__super::Render_GUI();
-	if (ImGui::Button("Rotate 90")) {
-		m_pTransform->Rotation({ 0,XMConvertToRadians(90),0 });
-	}
-	if (ImGui::ArrowButton("Up15",ImGuiDir::ImGuiDir_Up)) {
-		m_pTransform->Translate({0,15,0,0});
-	}
-	if (ImGui::ArrowButton("Down15",ImGuiDir::ImGuiDir_Down)) {
-		m_pTransform->Translate({ 0,-15,0,0 });
-	}
+
+	static char nameBuf[64] = "";
+
+	// 현재 ObjectType을 버퍼에 반영 (초기 한 번만)
+	if (strlen(nameBuf) == 0 && !m_ObjectType.empty())
+		strcpy_s(nameBuf, IM_ARRAYSIZE(nameBuf), m_ObjectType.c_str());
+
+	//		// 입력창
+	//		ImGui::Text("ObjectType");
+	//		if (ImGui::InputText("##Object Name", nameBuf, IM_ARRAYSIZE(nameBuf)))
+	//		{
+	//			// 입력 내용이 바뀔 때만 적용
+	//			m_ObjectType = nameBuf;
+	//		}
+
+	if (ImGui::Button("Rotate 90"))
+		m_pTransform->Rotation({ 0, XMConvertToRadians(90), 0 });
+
+	if (ImGui::ArrowButton("Up15", ImGuiDir_Up))
+		m_pTransform->Translate({ 0, 15, 0, 0 });
+
+	if (ImGui::ArrowButton("Down15", ImGuiDir_Down))
+		m_pTransform->Translate({ 0, -15, 0, 0 });
 }
+
 
 HRESULT CMapObject::Save_ModelMap()
 {
@@ -185,7 +216,8 @@ HRESULT CMapObject::Save_ModelMap()
 				{"Model",     values[1]},
 				{"Mat",       values[2]},
 				{"ModelPath", values[3]},
-				{"MatPath",   values[4]}
+				{"MatPath",   values[4]},
+				{"AdditionalData",   values[5]},
 			};
 			jScene.push_back(entry);
 		}
@@ -242,15 +274,17 @@ HRESULT CMapObject::Load_ModelMap()
 				else if (item["ID"].is_string())
 					id = std::stoul(item["ID"].get<string>());
 			}
+
 			string model = item.value("Model", "");
 			string mat = item.value("Mat", "");
 			string modelPath = item.value("ModelPath", "");
 			string matPath = item.value("MatPath", "");
-
+			string AdditionalData = item.value("AdditionalData", "");
+		
 			if (key.empty())
 				continue;
 
-			ModelMapTable[key] = { to_string(id), model, mat, modelPath, matPath };
+			ModelMapTable[key] = { to_string(id), model, mat, modelPath, matPath,AdditionalData };
 		}
 		catch (...)
 		{

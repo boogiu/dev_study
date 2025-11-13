@@ -46,6 +46,9 @@
     <Filter Include="02. MapObject\MapObjects">
       <UniqueIdentifier>{ab1ca873-0e12-420f-b31d-7540af0b23dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. MapObject\ZoneObject">
+      <UniqueIdentifier>{83d437a7-5564-4322-a9de-798a48f18b04}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc">

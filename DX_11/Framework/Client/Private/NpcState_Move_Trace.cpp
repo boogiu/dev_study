@@ -60,35 +60,6 @@ void CNpcState_Move_Trace::OnUpdate(_float dt)
     myTransform->Translate(dir * dt* MovePack.fMoveSpeed);
 }
 
-
-void CNpcState_Move_Trace::OrdinaryMove(_float dt)
-{
-  //  auto* myTransform = m_pCharacter->Get_Component<CTransform>();
-  //  auto& MovePack = m_pCharacter->Get_MovementPack();
-  //  auto  tileSys = CGameInstance::GetInstance()->Get_TileSystem();
-  //
-  //  // 추적 대상 방향으로 단순 직진
-  //
-  //
-  //  MovePack.vMoveAxis = { dirAxis4.x, dirAxis4.z };
-  //  myTransform->Translate(dir * dt * MovePack.fMoveSpeed);
-}
-
-void CNpcState_Move_Trace::Request_ShortPath(TILE_INDEX start, TILE_INDEX blocked)
-{
-    auto  tileSys = CGameInstance::GetInstance()->Get_TileSystem();
-    auto& PlayerPack = m_pCharacter->Get_TracePack();
-    auto& TilePack = m_pCharacter->Get_TilePack();
-
-    const TILE_INDEX playerIdx = tileSys->Get_IndexByPosition(PlayerPack.Player_Pos);
-    m_PathIndex = tileSys->Request_Path_To(TilePack.NowIndex, playerIdx, static_cast<_uint>(CANT_WALK));
-
-    if (m_PathIndex.empty()) return;
-
-    m_nowIndex = 0;    
-    m_fElapsedTime = 0.f;
-}
-
 void CNpcState_Move_Trace::Request_Path()
 {
     auto  tileSys = CGameInstance::GetInstance()->Get_TileSystem();
@@ -104,9 +75,13 @@ void CNpcState_Move_Trace::Request_Path()
     m_fElapsedTime = 0.f;
 }
 
-
 HRESULT CNpcState_Move_Trace::OnExit()
 {
+    vector<TILE_INDEX> dummy;
+    m_PathIndex.swap(dummy);
+    m_fElapsedTime = 0.f;
+    m_nowIndex = 1;
+
     return S_OK;
 }
 

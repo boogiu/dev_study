@@ -21,6 +21,7 @@ public:
 
 	void Set_Pos(const _float3& position);
 	void Set_Pos(const _float4& position);
+	void Set_vectorPos(_fvector position);
 	void Set_Y(const _float& position);
 	void Rotate(const _float3& eular);
 	void Scale(const _float3& scale);

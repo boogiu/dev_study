@@ -174,15 +174,19 @@
     <ClInclude Include="..\Public\Client_Enum.h" />
     <ClInclude Include="..\Public\Client_Structs.h" />
     <ClInclude Include="..\Public\ClothParts.h" />
+    <ClInclude Include="..\Public\CraftCard.h" />
     <ClInclude Include="..\Public\DialoguePanel.h" />
+    <ClInclude Include="..\Public\DialogueManager.h" />
     <ClInclude Include="..\Public\EventSystem.h" />
     <ClInclude Include="..\Public\Event_Structs.h" />
     <ClInclude Include="..\Public\FieldHole.h" />
     <ClInclude Include="..\Public\FieldObject.h" />
+    <ClInclude Include="..\Public\Field_Structure.h" />
+    <ClInclude Include="..\Public\Field_Bridge.h" />
     <ClInclude Include="..\Public\Field_Out.h" />
     <ClInclude Include="..\Public\Field_Stone.h" />
-    <ClInclude Include="..\Public\Field_Tree.h" />
     <ClInclude Include="..\Public\Free_Camera.h" />
+    <ClInclude Include="..\Public\Furniture.h" />
     <ClInclude Include="..\Public\GamePlayLevel.h" />
     <ClInclude Include="..\Public\HairCapParts.h" />
     <ClInclude Include="..\Public\HairParts.h" />
@@ -198,6 +202,7 @@
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MapLoader.h" />
     <ClInclude Include="..\Public\NonPlayer.h" />
+    <ClInclude Include="..\Public\NpcRcm.h" />
     <ClInclude Include="..\Public\NpcRco.h" />
     <ClInclude Include="..\Public\NpcSpawner.h" />
     <ClInclude Include="..\Public\NpcState.h" />
@@ -212,6 +217,7 @@
     <ClInclude Include="..\Public\NpcState_Move_Trace.h" />
     <ClInclude Include="..\Public\NpcState_Interact_TransItem.h" />
     <ClInclude Include="..\Public\Npc_HubState.h" />
+    <ClInclude Include="..\Public\Plant_Grass.h" />
     <ClInclude Include="..\Public\Plant_Tree.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\PlayerPart_Hand.h" />
@@ -221,6 +227,7 @@
     <ClInclude Include="..\Public\PlayerState_AimWalk.h" />
     <ClInclude Include="..\Public\PlayerState_Axe.h" />
     <ClInclude Include="..\Public\PlayerState_ChopTree.h" />
+    <ClInclude Include="..\Public\PlayerState_Diy.h" />
     <ClInclude Include="..\Public\PlayerState_Eat.h" />
     <ClInclude Include="..\Public\PlayerState_Get.h" />
     <ClInclude Include="..\Public\PlayerState_Hand.h" />
@@ -236,6 +243,7 @@
     <ClInclude Include="..\Public\PlayerState_Run.h" />
     <ClInclude Include="..\Public\PlayerState_Scoop.h" />
     <ClInclude Include="..\Public\PlayerState_ShakeTree.h" />
+    <ClInclude Include="..\Public\PlayerState_TransferGet.h" />
     <ClInclude Include="..\Public\PlayerState_TransTool.h" />
     <ClInclude Include="..\Public\PlayerState_Walk.h" />
     <ClInclude Include="..\Public\Player_Inventory.h" />
@@ -246,9 +254,11 @@
     <ClInclude Include="..\Public\Target_Camera.h" />
     <ClInclude Include="..\Public\TexturePanel.h" />
     <ClInclude Include="..\PUblic\ToolItem.h" />
+    <ClInclude Include="..\Public\UI_CraftPanel.h" />
     <ClInclude Include="..\Public\UI_Cursor.h" />
     <ClInclude Include="..\Public\UI_EventMsg.h" />
     <ClInclude Include="..\Public\UI_InvenSlot.h" />
+    <ClInclude Include="..\Public\UI_ItemCard.h" />
     <ClInclude Include="..\Public\UI_ItemIcon.h" />
     <ClInclude Include="..\Public\UI_ItemText.h" />
     <ClInclude Include="..\Public\UI_NameTag.h" />
@@ -276,14 +286,18 @@
     <ClCompile Include="..\Private\AutoTile.cpp" />
     <ClCompile Include="..\Private\ClientHelper.cpp" />
     <ClCompile Include="..\Private\ClothParts.cpp" />
+    <ClCompile Include="..\Private\CraftCard.cpp" />
     <ClCompile Include="..\Private\DialoguePanel.cpp" />
+    <ClCompile Include="..\Private\DialogueManager.cpp" />
     <ClCompile Include="..\Private\EventSystem.cpp" />
     <ClCompile Include="..\Private\FieldHole.cpp" />
     <ClCompile Include="..\Private\FieldObject.cpp" />
+    <ClCompile Include="..\Private\Field_Structure.cpp" />
+    <ClCompile Include="..\Private\Field_Bridge.cpp" />
     <ClCompile Include="..\Private\Field_Out.cpp" />
     <ClCompile Include="..\Private\Field_Stone.cpp" />
-    <ClCompile Include="..\Private\Field_Tree.cpp" />
     <ClCompile Include="..\Private\Free_Camera.cpp" />
+    <ClCompile Include="..\Private\Furniture.cpp" />
     <ClCompile Include="..\Private\GamePlayLevel.cpp" />
     <ClCompile Include="..\Private\HairCapParts.cpp" />
     <ClCompile Include="..\Private\HairParts.cpp" />
@@ -299,6 +313,8 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapLoader.cpp" />
     <ClCompile Include="..\Private\NonPlayer.cpp" />
+    <ClCompile Include="..\Private\NpcRcm.cpp" />
+    <ClCompile Include="..\Private\NpcRco.cpp" />
     <ClCompile Include="..\Private\NpcSpawner.cpp" />
     <ClCompile Include="..\Private\NpcState.cpp" />
     <ClCompile Include="..\Private\NpcStateHub_Idle.cpp" />
@@ -312,6 +328,7 @@
     <ClCompile Include="..\Private\NpcState_Move_Trace.cpp" />
     <ClCompile Include="..\Private\NpcState_Interact_TransItem.cpp" />
     <ClCompile Include="..\Private\Npc_HubState.cpp" />
+    <ClCompile Include="..\Private\Plant_Grass.cpp" />
     <ClCompile Include="..\Private\Plant_Tree.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\PlayerPart_Hand.cpp" />
@@ -321,6 +338,7 @@
     <ClCompile Include="..\Private\PlayerState_AimWalk.cpp" />
     <ClCompile Include="..\Private\PlayerState_Axe.cpp" />
     <ClCompile Include="..\Private\PlayerState_ChopTree.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Diy.cpp" />
     <ClCompile Include="..\Private\PlayerState_Eat.cpp" />
     <ClCompile Include="..\Private\PlayerState_Get.cpp" />
     <ClCompile Include="..\Private\PlayerState_Hand.cpp" />
@@ -336,6 +354,7 @@
     <ClCompile Include="..\Private\PlayerState_Run.cpp" />
     <ClCompile Include="..\Private\PlayerState_Scoop.cpp" />
     <ClCompile Include="..\Private\PlayerState_ShakeTree.cpp" />
+    <ClCompile Include="..\Private\PlayerState_TransferGet.cpp" />
     <ClCompile Include="..\Private\PlayerState_TransTool.cpp" />
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
     <ClCompile Include="..\Private\Player_Inventory.cpp" />
@@ -346,16 +365,17 @@
     <ClCompile Include="..\Private\Target_Camera.cpp" />
     <ClCompile Include="..\Private\TexturePanel.cpp" />
     <ClCompile Include="..\Private\ToolItem.cpp" />
+    <ClCompile Include="..\Private\UI_CraftPanel.cpp" />
     <ClCompile Include="..\Private\UI_Cursor.cpp" />
     <ClCompile Include="..\Private\UI_EventMsg.cpp" />
     <ClCompile Include="..\Private\UI_InvenSlot.cpp" />
+    <ClCompile Include="..\Private\UI_ItemCard.cpp" />
     <ClCompile Include="..\Private\UI_ItemText.cpp" />
     <ClCompile Include="..\Private\UI_ItemIcon.cpp" />
     <ClCompile Include="..\Private\UI_NameTag.cpp" />
     <ClCompile Include="..\Private\UI_Responcer.cpp" />
     <ClCompile Include="..\Private\UI_TalkingMsg.cpp" />
     <ClCompile Include="..\Private\UI_Text.cpp" />
-    <ClCompile Include="..\Public\NpcRco.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -366,6 +386,7 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\FieldOutShader.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\PlayerShader.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

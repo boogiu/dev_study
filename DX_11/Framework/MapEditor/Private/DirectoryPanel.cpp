@@ -120,8 +120,7 @@ void CDirectoryPanel::LookUp_Directory(const string& path)
 		if (!entry.is_directory())
 			continue;
 		string folderName = entry.path().filename().string();
-		if (folderName == "FieldRoad")
-			continue;
+	
 
 		FolderInfo info = {};
 		info.strName = entry.path().filename().string();

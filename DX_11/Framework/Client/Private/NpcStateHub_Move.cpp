@@ -5,8 +5,6 @@
 
 #include "LayerState.h"
 #include "NpcState_Move_Walk.h"
-#include "NpcState_Move_Trace.h"
-
 CNpcStateHub_Move::CNpcStateHub_Move()
 {
 }
@@ -14,7 +12,6 @@ CNpcStateHub_Move::CNpcStateHub_Move()
 HRESULT CNpcStateHub_Move::Initialize()
 {
 	auto Walk = Add_State(CNpcState_Move_Walk::Create(), "Move_Walk");
-	auto Trace = Add_State(CNpcState_Move_Trace::Create(), "Move_Trace");
 	Execute(Walk);
 	return S_OK;
 }
@@ -43,11 +40,11 @@ CState* CNpcStateHub_Move::HandleTransition()
 	auto tracePack = m_pCharacter->Get_TracePack();
 	auto eventPack = m_pCharacter->Get_EventPack();
 
-	if (m_fMoveTime > 50.f) {
+	if (m_fMoveTime > 10.f) {
 		return m_pLayer->Get_State("State_Hub_Idle");
 	}
 
-	if (eventPack.HasAgenda&&tracePack.Player_Near) {
+	if (eventPack.isReservedAction()) {
 		return m_pLayer->Get_State("State_Hub_Interact");
 	}
 
@@ -63,14 +60,14 @@ void CNpcStateHub_Move::DecideSubState(_float dt)
 	auto tracePack = m_pCharacter->Get_TracePack();
 	auto eventPack = m_pCharacter->Get_EventPack();
 
-	if (eventPack.HasAgenda)
-	{
-		Change_State("Move_Trace");
-	}
-	else
-	{
-		Change_State("Move_Walk");
-	}
+	//if (eventPack.AgendaAction == "TracePlayer")
+	//{
+	//	Change_State("Move_Trace");
+	//}
+	//else
+	//{
+	//	Change_State("Move_Walk");
+	//}
 }
 
 

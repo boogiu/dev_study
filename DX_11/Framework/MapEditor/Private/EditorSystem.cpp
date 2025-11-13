@@ -26,7 +26,6 @@ IMPLEMENT_SINGLETON(CEditorSystem)
 
 CEditorSystem::CEditorSystem()
 {
-	Initialize();
 }
 
 
@@ -44,7 +43,7 @@ HRESULT CEditorSystem::Initialize()
 	/* 오브젝트*/
 	IProtoService* pProto = CGameInstance::GetInstance()->Get_PrototypeMgr();
 	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_Tile", CTileObject::Create());
-	CTileObject::PrepareForTile("../../Resources/Models/FieldRoad/");
+	CTileObject::PrepareForTile("../../Resources/Models/FieldModel/FieldRoad/");
 	pProto->Add_ProtoType(G_GlobalLevelKey, "Proto_GameObject_MapObject", CMapObject::Create());
 
 	/*팔레트 우선 등록*/
@@ -61,6 +60,7 @@ HRESULT CEditorSystem::Initialize()
 	Execute_TileSystem();
 
 	Create_GUIPanels();
+
 	return S_OK;
 }
 
@@ -87,6 +87,7 @@ void CEditorSystem::Execute_TileSystem()
 
 	CGameObject* pGrid = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Grid" })
 		.Position(m_EditorContext.ContextTileInfo.HalfPoint())
+
 		.Scale(m_EditorContext.ContextTileInfo.WorldSize())
 		.Build("Grid");
 
@@ -185,7 +186,9 @@ void CEditorSystem::ConvertMaterial(string brushType, TILE_INDEX Index)
 	_float4 vPos = m_pTileSystem->Get_PositionByIndex(Index, ANCHOR::Center); {
 		if (brushType == "Base_0") {
 			m_pTileSystem->Set_Material_ID(Index, { 1.f,1.f,0.f,0.f });
+			m_pTileSystem->Change_CornerHeight(Index, m_EditorContext.ObjHeight, m_EditorContext.ObjHeight, m_EditorContext.ObjHeight, m_EditorContext.ObjHeight);
 		}
+
 		else if ("Cliff") {
 			CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
 			objDesc->TypeName = brushType;
@@ -303,6 +306,15 @@ void CEditorSystem::Adjust_Flag()
 	}
 }
 
+
+void CEditorSystem::Adjust_Material()
+{
+	for (auto& index : m_selectedIndex) {
+		_float4 cornerHeight = m_EditorContext.m_fConerHeight;
+		m_pTileSystem->Set_Material_ID(index.index, {0,0,0,0});
+	}
+}
+
 HRESULT CEditorSystem::Delete_Object(CGameObject* pObject)
 {
 	if (pObject)
@@ -365,8 +377,8 @@ HRESULT CEditorSystem::Load_MapData()
 	}
 	for (size_t i = 0; i < MapFile.iTileCount; i++)
 	{
-		MAP_TILE_HEADER Tile_Header = {};
-		ifs.read(reinterpret_cast<char*>(&Tile_Header), sizeof(MAP_TILE_HEADER));
+		NEW_MAP_TILE_HEADER Tile_Header = {};
+		ifs.read(reinterpret_cast<char*>(&Tile_Header), sizeof(NEW_MAP_TILE_HEADER));
 
 		CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
 		objDesc->TypeName = string(Tile_Header.BaseTypeName);
@@ -375,7 +387,7 @@ HRESULT CEditorSystem::Load_MapData()
 		CGameObject* pObject =
 			Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
 			.Add_ObjDesc(objDesc)
-			.Position({ 0,0,0 })
+			.Position({ 0,Tile_Header.height<0.2? 0.2f: Tile_Header.height,0 })
 			.Scale({ 1,1,1 })
 			.Build(objDesc->TypeName);
 

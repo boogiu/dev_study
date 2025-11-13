@@ -2,7 +2,10 @@
 #include "Target_Camera.h"
 #include "Camera.h"
 #include "Light.h"
-
+#include "GameInstance.h"
+#include "EventSystem.h"
+#include "Level.h"
+#include "Helper_Func.h"
 CTarget_Camera::CTarget_Camera()
 {
 }
@@ -39,13 +42,25 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 	LIGHT_DESC desc = {};
 	desc.vLightPosition = { 0,20,0,0 };
 	desc.fLightRange = 150.0f;
-	desc.vLightDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	desc.vLightDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	desc.vLightAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
+	desc.vLightDirection = _float4(-1.f, -1.f, -1.f, 0.f);
+	desc.vLightDiffuse = _float4(.8f, .8f, .8f, 1.f);
+	desc.vLightAmbient = _float4(0.4f, 0.4f, 0.4f, 1.f);
 	desc.vLightSpecular = _float4(0.f, 1.f, 0.f, 1.f);
 
-	Get_Component<CLight>()->Set_Desc(desc, LIGHT_TYPE::POINT);
+	Get_Component<CLight>()->Set_Desc(desc, LIGHT_TYPE::DIRECTIONAL);
 	return S_OK;
+}
+
+void CTarget_Camera::Awake()
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	auto evtSys = nowLevel->Get_LevelObject<CEventSystem>();
+
+	evtSys->Add_Listner<CAM_MOVE>([this](const CAM_MOVE& move) {
+		m_prevState = m_eState;
+		if (move.moveTag == "Shake")
+			m_eState = SHAKE;
+		});
 }
 
 void CTarget_Camera::Priority_Update(_float dt)
@@ -66,6 +81,9 @@ void CTarget_Camera::Priority_Update(_float dt)
 		break;
 	case Client::CTarget_Camera::TALK_OUT:
 		Zoom_TalkingOut(dt);
+		break;
+	case Client::CTarget_Camera::SHAKE:
+		Shake_Cam(dt);
 		break;
 	default:
 		break;
@@ -180,19 +198,19 @@ void CTarget_Camera::Zoom_Talking(_float dt)
 		m_pSubject->Get_Component<CTransform>()->Get_Pos()
 		) * 0.5f;
 
-	_vector playerLookSubject = {
-		 m_pTarget->Get_Component<CTransform>()->Get_Pos() - m_pSubject->Get_Component<CTransform>()->Get_Pos()};
+	_vector SubjectLookPlayer = {
+		 m_pTarget->Get_Component<CTransform>()->Get_Pos() - m_pSubject->Get_Component<CTransform>()->Get_Pos() };
 
-	_float Zdistance = m_pTarget->Get_Position().z - m_pSubject->Get_Position().z;
-	_vector right = XMVector3Cross({ 0,1,0 }, playerLookSubject);
+	_vector right = XMVector3Cross({ 0,1,0 }, SubjectLookPlayer);
+	_float playerDeltaX = XMVectorGetX(m_pTarget->Get_Component<CTransform>()->Get_Pos()) - XMVectorGetX(m_pSubject->Get_Component<CTransform>()->Get_Pos());
 
-	if (Zdistance < 0.0001f)
+	if (playerDeltaX > 0.f)
 	{
-		playerLookSubject = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+		right = right * -1.f;
 	}
 
-	_vector target_Pos = ConnectVector + (right*0.9f + playerLookSubject * 0.8f) * 4.f;
-	target_Pos = XMVectorSetY(target_Pos, 25);
+	_vector target_Pos = ConnectVector + (SubjectLookPlayer * 0.6f + right * 1.1f) * 4.f;
+	target_Pos = XMVectorSetY(target_Pos, 35);
 
 	_vector cam_Pos = m_pTransform->Get_Pos(); //Now Pso
 	//Move Lerp
@@ -208,6 +226,7 @@ void CTarget_Camera::Zoom_Talking(_float dt)
 
 void CTarget_Camera::Zoom_TalkingOut(_float dt)
 {
+
 }
 
 void CTarget_Camera::Follow_Target(_float dt)
@@ -226,6 +245,48 @@ void CTarget_Camera::Follow_Target(_float dt)
 	XMStoreFloat4(&m_vBasePos, target_Pos + Offset);
 	XMStoreFloat4(&m_vBaseLookPos, XMVectorSet(XMVectorGetX(target_Pos), 0.f, XMVectorGetZ(target_Pos) + 10.f, 0.f));
 }
+void CTarget_Camera::Shake_Cam(_float dt)
+{
+	_float duration = 0.9f;				// 흔들림 지속시간
+	_float amplitude = 0.45f;		// 진폭 크기
+	_float frequency = 30.0f;		// 흔들림 속도
+	_float damping = 3.0f;			// 감쇠 정도
+
+	if (m_fShakeTime == 0.f)
+	{
+		m_vShakeBasePos = Get_Position();
+		m_vShakePhase = {
+			Helper::Get_Random_Float(0.f, XM_2PI),
+			Helper::Get_Random_Float(0.f, XM_2PI),
+			Helper::Get_Random_Float(0.f, XM_2PI)
+		};
+	}
+
+	m_fShakeTime += dt;
+
+	if (m_fShakeTime > duration)
+	{
+		m_eState = m_prevState;
+		m_fShakeTime = 0.f;
+		m_vShakeOffset = { 0, 0, 0, 0 };
+		m_pTransform->Set_Pos(m_vShakeBasePos);
+		return;
+	}
+
+	float attenuate = expf(-damping * m_fShakeTime); /*지수 함수*/
+
+	float offsetX = sinf(m_fShakeTime * frequency					+ m_vShakePhase.x);
+	float offsetY = cosf(m_fShakeTime * frequency * 0.9f	+ m_vShakePhase.y);
+	float offsetZ = sinf(m_fShakeTime * frequency * 1.1f		+ m_vShakePhase.z);
+
+	_vector offset = XMVectorSet(offsetX, offsetY, offsetZ, 0.f);
+	_vector newPos = XMLoadFloat4(&m_vShakeBasePos)+offset * amplitude * attenuate;
+
+	_float4 pos = {};
+	XMStoreFloat4(&pos, newPos);
+	m_pTransform->Set_Pos(pos);
+}
+
 
 void CTarget_Camera::Render_GUI()
 {

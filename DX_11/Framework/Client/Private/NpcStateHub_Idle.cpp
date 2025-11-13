@@ -44,7 +44,7 @@ CState* CNpcStateHub_Idle::HandleTransition()
 {
 	auto eventPack = m_pCharacter->Get_EventPack();
 
-	if (eventPack.Has_Event()) {
+	if (eventPack.isReservedAction()) {
 		return m_pLayer->Get_State("State_Hub_Interact");
 	}
 

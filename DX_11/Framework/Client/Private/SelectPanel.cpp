@@ -32,6 +32,7 @@ HRESULT CSelectPanel::Initialize(INIT_DESC* pArg)
 	Add_Component<CObjectContainer>();
 	Get_Component<CSprite2D>()->Link_Shader(G_GlobalLevelKey, "VTX_UI.hlsl");
 	Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_SelectPanel.png");
+	Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_SelectPanel2.png");
 	Get_Component<CSprite2D>()->Set_CompActive(false);
 
 	m_pSelectHighlight = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TexturePanel" })
@@ -104,8 +105,8 @@ void CSelectPanel::Update(_float dt)
 	if (!m_bActive) return;
 	_bool Sizecomp = 
 		Size_To({ 
-		MaxWidth * 1.5f, 
-			40.f * m_SelectCount < 140 ? 140 : 40.f * m_SelectCount}, 10 * dt);
+		MaxWidth * 1.3f < 130 ? 130 : MaxWidth * 1.3f,
+			40.f * m_SelectCount < 130 ? 130 : 40.f * m_SelectCount}, 10 * dt);
 
 	if (Sizecomp) {
 		m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);

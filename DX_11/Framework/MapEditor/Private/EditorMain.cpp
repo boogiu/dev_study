@@ -43,6 +43,8 @@ HRESULT CEditorMain::Initialize()
 	
 
 	m_pSystem = CEditorSystem::GetInstance();
+	if (m_pSystem)
+		m_pSystem->Initialize();
 	return S_OK;
 }
 

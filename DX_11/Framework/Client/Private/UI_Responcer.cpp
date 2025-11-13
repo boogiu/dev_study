@@ -23,13 +23,25 @@ HRESULT CUI_Responcer::Initialize_Prototype()
 	CUI_Object* pTalkingMsg = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TalkingMsg" })
 		.Add_To_Level("GamePlay_Level")
 		.Position({ 600,620.f })
-		.Build("EvtMsg");
+		.Build("TalkingMsg");
+
+
+	CUI_Object* pCraftUI = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_CraftPanel" })
+		.Add_To_Level("GamePlay_Level")
+		.Scale({ g_iWinSizeX ,g_iWinSizeY })
+		.Position({ g_iWinSizeX*0.5f,g_iWinSizeY * 0.5f })
+		.Build("Craft_UI");
+
 
 	CGameInstance::GetInstance()->Get_UIMgr()->Add_UIObject(pEventMsg, "GamePlay_Level");
 	m_UIContainer.emplace("EvtMsg", pEventMsg);
 
 	CGameInstance::GetInstance()->Get_UIMgr()->Add_UIObject(pTalkingMsg, "GamePlay_Level");
 	m_UIContainer.emplace("TalkingMsg", pTalkingMsg);
+
+
+	CGameInstance::GetInstance()->Get_UIMgr()->Add_UIObject(pCraftUI, "GamePlay_Level");
+	m_UIContainer.emplace("Craft_UI", pCraftUI);
 
 	return S_OK;
 }

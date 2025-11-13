@@ -13,6 +13,8 @@ HRESULT CAIModelData::Initialize(const aiScene* pAIScene, ID3D11Device* pDevice,
 {
 	_uint meshNum = pAIScene->mNumMeshes;
 	m_pSkeleton = CAISkeleton::Create(pAIScene->mRootNode);
+	aiMatrix4x4 identity;
+	CollectMeshNodes(pAIScene->mRootNode, identity);
 
 	for (size_t i = 0; i < meshNum; i++)
 	{
@@ -22,6 +24,25 @@ HRESULT CAIModelData::Initialize(const aiScene* pAIScene, ID3D11Device* pDevice,
 		m_Meshes.push_back(pMesh);
 	}
 	return S_OK;
+}
+
+void CAIModelData::CollectMeshNodes(aiNode* pNode, const aiMatrix4x4& parentTransform)
+{
+	aiMatrix4x4 current = parentTransform * pNode->mTransformation;
+
+	// 이 노드가 포함한 메쉬 정보 기록
+	for (UINT i = 0; i < pNode->mNumMeshes; i++)
+	{
+		UINT meshIndex = pNode->mMeshes[i];
+		m_MeshNodeTransform[meshIndex] = current;
+		m_MeshNodeName[meshIndex] = pNode->mName.C_Str();
+	}
+
+	// 자식 노드 반복
+	for (UINT c = 0; c < pNode->mNumChildren; c++)
+	{
+		CollectMeshNodes(pNode->mChildren[c], current);
+	}
 }
 
 void CAIModelData::Render_GUI()

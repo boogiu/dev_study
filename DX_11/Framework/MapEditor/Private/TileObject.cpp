@@ -18,6 +18,7 @@
 #include "GameInstance.h"
 #include "IInputService.h"
 #include "IResourceService.h"
+#include "EditorSystem.h"
 
 CTileObject::CTileObject()
 {
@@ -135,8 +136,12 @@ void CTileObject::Late_Update(_float dt)
 
 HRESULT CTileObject::Link_Data(const string& folderName, _bool Base)
 {
-	HRESULT hr = Get_Component<CModel>()->Link_Model(G_GlobalLevelKey, folderName + ".model");
-	hr = Get_Component<CMaterial>()->Link_Material(G_GlobalLevelKey, folderName + ".mat");
+	string name = folderName;
+	if (folderName == "Cliff8A_0")
+		name = "Cliff4A_0";
+
+	HRESULT hr = Get_Component<CModel>()->Link_Model(G_GlobalLevelKey, name + ".model");
+	hr = Get_Component<CMaterial>()->Link_Material(G_GlobalLevelKey, name + ".mat");
 	CMaterial* pMaterial = Get_Component<CMaterial>();
 
 	if (Base) {
@@ -156,8 +161,8 @@ HRESULT CTileObject::Link_Data(const string& folderName, _bool Base)
 	}
 
 	if (SUCCEEDED(hr)) {
-		ModelName = folderName + ".model";
-		MaterialName = folderName + ".mat";
+		ModelName = name + ".model";
+		MaterialName = name + ".mat";
 	}
 
 	return hr;
@@ -166,14 +171,24 @@ HRESULT CTileObject::Link_Data(const string& folderName, _bool Base)
 HRESULT CTileObject::Save_MapData(ofstream& ofs, _bool Base)
 {
 	/*ÇöÀç ÀÎµ¦½º*/
-	MAP_TILE_HEADER mapTile = {};
+	//		MAP_TILE_HEADER mapTile = {};
+	//		strcpy_s(mapTile.BaseTypeName, sizeof(mapTile.BaseTypeName), m_BaseTypeName.c_str());
+	//		mapTile.CurState = m_CurState;
+	//		mapTile.fRotation = m_fRotation;
+	//		mapTile.Index = Get_Component<CTileBlock>()->Get_Index();
+	//		mapTile.Is_Base = Is_Base;
+	//		
+	//		ofs.write(reinterpret_cast<const char*>(&mapTile), sizeof(MAP_TILE_HEADER));
+
+	NEW_MAP_TILE_HEADER mapTile = {};
 	strcpy_s(mapTile.BaseTypeName, sizeof(mapTile.BaseTypeName), m_BaseTypeName.c_str());
 	mapTile.CurState = m_CurState;
 	mapTile.fRotation = m_fRotation;
 	mapTile.Index = Get_Component<CTileBlock>()->Get_Index();
 	mapTile.Is_Base = Is_Base;
+	mapTile.height = Get_Position().y;
 
-	ofs.write(reinterpret_cast<const char*>(&mapTile), sizeof(MAP_TILE_HEADER));
+	ofs.write(reinterpret_cast<const char*>(&mapTile), sizeof(NEW_MAP_TILE_HEADER));
 	return S_OK;
 }
 
@@ -183,7 +198,7 @@ void CTileObject::Render_GUI()
 
 	_uint state = Get_Component<CTileBlock>()->Get_NeigborState();
 	ImGui::SeparatorText("Neighbor State");
-
+	
 	const char* dirLabels[9] = {
 		"LT", "T", "RT",
 		"L",  "C", "R",

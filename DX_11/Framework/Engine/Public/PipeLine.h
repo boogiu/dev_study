@@ -54,8 +54,12 @@ private:
 
 public:
     HRESULT Initialize(ID3D11Device* pDevice, class CRenderSystem* pSystem);
+
+public:
     HRESULT Update_FrameBuffer(ID3D11DeviceContext* pContext);
     HRESULT Update_ShadowBuffer(ID3D11DeviceContext* pContext);
+    void Update_Frustum();
+    _bool isVisible(MINMAX_BOX minMax, _fmatrix worldTransform);
 
     _uint Write_ObjectData(const _float4x4& worldMatrix);
     HRESULT Begin_ObjectBuffer(ID3D11DeviceContext* pContext);
@@ -96,6 +100,7 @@ private:
     unordered_map<string, class CTexture*> m_Palette;
     class CRenderSystem* m_pSystem = { nullptr };
 
+    BoundingFrustum m_Frustum;
 public:
     static CPipeLine* Create(ID3D11Device* pDevice, class CRenderSystem* pSystem);
     virtual void Free() override;

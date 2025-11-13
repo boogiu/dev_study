@@ -81,6 +81,9 @@ void OpaquePass::Execute(ID3D11DeviceContext* pContext)
 	  
 	for (auto& packet : m_Packets)
 	{
+		if (!pPipeLine->isVisible(packet.pModel->Get_MeshBoundingBox(packet.DrawIndex),XMLoadFloat4x4(packet.pWorldMatrix)))
+			continue;
+
 		//여기서 인덱스 추가 저장해줌
 		_uint TransformIndex = pPipeLine->Write_ObjectData(*packet.pWorldMatrix);
 		_uint SkinningOffset = 0;
@@ -95,13 +98,15 @@ void OpaquePass::Execute(ID3D11DeviceContext* pContext)
 
 		packet.TransformIndex = TransformIndex;
 		packet.SkinningOffset = SkinningOffset;
+
+		m_VisiblePackets.push_back(packet);
 	}
 
 	pPipeLine->End_ObjectBuffer(pContext);
 	pPipeLine->End_SkinningBuffer(pContext);
 
 	/*드로우콜 시작*/
-	for (auto& packet : m_Packets)
+	for (auto& packet : m_VisiblePackets)
 	{
 		if (packet.pMaterial->Get_Shader(packet.MaterialIndex) != pCurShader) {
 			BindConstant(pContext, packet.pModel, packet.pMaterial, packet.DrawIndex, packet.MaterialIndex);
@@ -120,6 +125,7 @@ void OpaquePass::Execute(ID3D11DeviceContext* pContext)
 	}
 
 	m_Packets.clear();
+	m_VisiblePackets.clear();
 }
 
 void OpaquePass::Submit(OPAQUE_PACKET packet)
@@ -201,6 +207,7 @@ void UIPass::Execute(ID3D11DeviceContext* pContext)
 			
 			BindConstant(pContext, packet.pSprite2D, packet.pSprite2D->Get_PassConstant());
 		}
+	
 		SHADER_PARAM WorldMatParam{ &packet.TransformIndex, "uint",sizeof(UINT) };
 		pCurShader->Bind_Value("TransformIndex", WorldMatParam);
 		packet.pSprite2D->Apply_Shader(pContext);
@@ -249,6 +256,7 @@ void DebugPass::Execute(ID3D11DeviceContext* pContext)
    		pContext->IASetInputLayout(pLayout);
 			pCurModel = packet.pModel;
 		}
+		
 		SHADER_PARAM WorldMatParam{ &packet.TransformIndex, "uint",sizeof(UINT) };
 		pCurShader->Bind_Value("TransformIndex", WorldMatParam);
 		pCurShader->Apply("Debug", pContext);
@@ -307,6 +315,9 @@ void ShadowPass::Execute_Opaque(ID3D11DeviceContext* pContext)
 
 	for (auto& packet : m_Packets)
 	{
+		if (!pPipeLine->isVisible(packet.pModel->Get_MeshBoundingBox(packet.DrawIndex), XMLoadFloat4x4(packet.pWorldMatrix)))
+			continue;
+
 		//여기서 인덱스 추가 저장해줌
 		_uint TransformIndex = pPipeLine->Write_ObjectData(*packet.pWorldMatrix);
 		_uint SkinningOffset = 0;
@@ -321,13 +332,14 @@ void ShadowPass::Execute_Opaque(ID3D11DeviceContext* pContext)
 
 		packet.TransformIndex = TransformIndex;
 		packet.SkinningOffset = SkinningOffset;
+		m_VisiblePackets.push_back(packet);
 	}
 
 	pPipeLine->End_ObjectBuffer(pContext);
 	pPipeLine->End_SkinningBuffer(pContext);
 
 	/*드로우콜 시작*/
-	for (auto& packet : m_Packets)
+	for (auto& packet : m_VisiblePackets)
 	{
 		if (packet.pMaterial->Get_Shader(packet.MaterialIndex) != pCurShader) {
 			CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
@@ -359,6 +371,7 @@ void ShadowPass::Execute_Opaque(ID3D11DeviceContext* pContext)
 	}
 
 	m_Packets.clear();
+	m_VisiblePackets.clear();
 	pContext->OMSetDepthStencilState(nullptr, 0);
 	pContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 	pContext->IASetInputLayout(nullptr);

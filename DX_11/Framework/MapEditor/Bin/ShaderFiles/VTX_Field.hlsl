@@ -8,6 +8,7 @@ struct VS_IN
     float2 vTexcoord : TEXCOORD0;
     float3 vTangent : TANGENT;
 };
+
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
@@ -15,6 +16,9 @@ struct VS_OUT
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
+    
+    float3 vTangent : TANGENT;
+    float3 vBinormal : BINORMAL;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -34,6 +38,9 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vWorldPos = mul(vector(In.vPosition, 1.f), matWorld[TransformIndex]);
     Out.vProjPos = Out.vPosition;
    
+    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), matWorld[TransformIndex])).xyz;
+    Out.vTangent *= -1;
+    Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
     return Out;
 }
 
@@ -45,6 +52,9 @@ struct PS_IN
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
+    
+    float3 vTangent : TANGENT;
+    float3 vBinormal : BINORMAL;
 };
 
 struct PS_OUT
@@ -66,8 +76,14 @@ PS_OUT PS_MAIN(PS_IN In)
     {
         discard;
     }
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
     
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+ 
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
  return Out;
 }
@@ -89,8 +105,16 @@ PS_OUT PS_BASE(PS_IN In)
     vector Grd = (Palette * (1 - Mask.a) + (Palette2) * (Mask.a));
 
     Out.vDiffuse = Grd;
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+ 
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    
     return Out;
 }
 
@@ -116,7 +140,14 @@ PS_OUT PS_EDGE(PS_IN In)
     if (Grd.a < 0.2f)
         discard;
     Out.vDiffuse = Grd;
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+ 
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
    return Out;
 }
@@ -132,7 +163,14 @@ PS_OUT PS_WATER(PS_IN In)
 
     // 파란색 톤으로 보이게
     Out.vDiffuse = blue;
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+ 
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
     return Out;
 }

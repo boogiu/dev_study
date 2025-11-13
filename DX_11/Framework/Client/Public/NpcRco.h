@@ -16,9 +16,11 @@ public:
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
     virtual void Render_GUI() override;
+    virtual void Set_Closed(OnEndDialogue endMsg)override;
 
 public:
-    void Find_Path();
+    virtual void Serve_Order(const string& order, _uint orderer) override;
+
 public:
     static CNpcRco* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

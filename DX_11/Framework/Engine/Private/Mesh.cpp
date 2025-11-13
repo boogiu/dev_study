@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "Bone.h"
+#include "Skeleton.h"
 
 CMesh::CMesh()
 	: CVIBuffer("")
@@ -70,18 +71,7 @@ HRESULT CMesh::Create_AnimateVertex(ID3D11Device* pDevice, ifstream& ifs)
 
 	HRESULT hr = pDevice->CreateBuffer(&VBDesc, &subData, &m_pVB);
 
-	m_vMeshMinLocal = { FLT_MAX,FLT_MAX ,FLT_MAX };
-	m_vMeshMaxLocal = { -FLT_MAX,-FLT_MAX ,-FLT_MAX };
-	for (const auto& vertex : vertices) {
-		m_vMeshMinLocal.x = min(m_vMeshMinLocal.x, vertex.vPosition.x);
-		m_vMeshMinLocal.y = min(m_vMeshMinLocal.y, vertex.vPosition.y);
-		m_vMeshMinLocal.z = min(m_vMeshMinLocal.z, vertex.vPosition.z);
-
-		m_vMeshMaxLocal.x = max(m_vMeshMaxLocal.x, vertex.vPosition.x);
-		m_vMeshMaxLocal.y = max(m_vMeshMaxLocal.y, vertex.vPosition.y);
-		m_vMeshMaxLocal.z = max(m_vMeshMaxLocal.z, vertex.vPosition.z);
-	}
-
+	m_Skined = vertices;
 	return hr;
 }
 
@@ -110,6 +100,7 @@ HRESULT CMesh::Create_StaticVertex(ID3D11Device* pDevice, ifstream& ifs)
 
 	m_vMeshMinLocal = { FLT_MAX,FLT_MAX ,FLT_MAX };
 	m_vMeshMaxLocal = { -FLT_MAX,-FLT_MAX ,-FLT_MAX };
+
 	for (const auto& vertex : vertices) {
 		m_vMeshMinLocal.x = min(m_vMeshMinLocal.x, vertex.vPosition.x);
 		m_vMeshMinLocal.y = min(m_vMeshMinLocal.y, vertex.vPosition.y);
@@ -119,6 +110,9 @@ HRESULT CMesh::Create_StaticVertex(ID3D11Device* pDevice, ifstream& ifs)
 		m_vMeshMaxLocal.y = max(m_vMeshMaxLocal.y, vertex.vPosition.y);
 		m_vMeshMaxLocal.z = max(m_vMeshMaxLocal.z, vertex.vPosition.z);
 	}
+	if (m_vMeshMinLocal.x > m_vMeshMaxLocal.x) swap(m_vMeshMinLocal.x, m_vMeshMaxLocal.x);
+	if (m_vMeshMinLocal.y > m_vMeshMaxLocal.y) swap(m_vMeshMinLocal.y, m_vMeshMaxLocal.y);
+	if (m_vMeshMinLocal.z > m_vMeshMaxLocal.z) swap(m_vMeshMinLocal.z, m_vMeshMaxLocal.z);
 
 	return hr;
 }
@@ -142,6 +136,33 @@ HRESULT CMesh::Create_Index(ID3D11Device* pDevice)
 	m_indices.swap(v);
 	return hr;
 
+}
+
+void CMesh::Create_BoneMinMax(CSkeleton* pSkeleton)
+{
+	if (!pSkeleton) return;
+
+	m_vMeshMinLocal = { FLT_MAX,FLT_MAX ,FLT_MAX };
+	m_vMeshMaxLocal = { -FLT_MAX,-FLT_MAX ,-FLT_MAX };
+	_float4x4 root = pSkeleton->Get_TransformationMatrix(0);
+	_matrix rootToModel = XMLoadFloat4x4(&root);
+
+	for (const auto& v : m_Skined)
+	{
+		XMVECTOR pos = XMVector3TransformCoord(XMLoadFloat3(&v.vPosition), rootToModel);
+
+		XMFLOAT3 out;
+		XMStoreFloat3(&out, pos);
+
+		m_vMeshMinLocal.x = min(m_vMeshMinLocal.x, out.x);
+		m_vMeshMinLocal.y = min(m_vMeshMinLocal.y, out.y);
+		m_vMeshMinLocal.z = min(m_vMeshMinLocal.z, out.z);
+
+		m_vMeshMaxLocal.x = max(m_vMeshMaxLocal.x, out.x);
+		m_vMeshMaxLocal.y = max(m_vMeshMaxLocal.y, out.y);
+		m_vMeshMaxLocal.z = max(m_vMeshMaxLocal.z, out.z);
+	}
+	vector<VTXSKINMESH>().swap(m_Skined);
 }
 
 void CMesh::Render_GUI()

@@ -26,13 +26,13 @@ void CPlayerState_Eat::OnUpdate(_float dt)
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	auto InfoPack = m_pPlayer->Get_InfoPack();
-	if (CGameObject* pObject = InfoPack.m_pObjectOnLeftHand) {
+	if (CGameObject* pObject = InfoPack.pObjectOnLeftHand) {
 		pObject->Get_Component<CModel>()->Set_CompActive(true);
-		pObject->Get_Component<CTransform>()->TranslateMatrix(XMLoadFloat4x4(InfoPack.m_pLeftHand->Get_WorldMatrix()));
+		pObject->Get_Component<CTransform>()->TranslateMatrix(XMLoadFloat4x4(InfoPack.pLeftHand->Get_WorldMatrix()));
 
 		if (Animator->isOverAnimTiming(0.7)) {
-			CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(m_pPlayer->Get_InfoPack().m_pObjectOnLeftHand);
-			m_pPlayer->Get_InfoPack().m_pObjectOnLeftHand = nullptr;
+			CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(m_pPlayer->Get_InfoPack().pObjectOnLeftHand);
+			m_pPlayer->Get_InfoPack().pObjectOnLeftHand = nullptr;
 		}
 	}
 }

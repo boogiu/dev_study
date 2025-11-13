@@ -27,13 +27,14 @@ HRESULT CPlayerState_NetSwing::OnEnter()
 	}
 	m_pPlayer->ActiveCollider_Tool(true, "NetSwing");
 
-
 	return hr;
 }
 
 void CPlayerState_NetSwing::OnUpdate(_float dt)
 {
-
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	if(Animator->isOverAnimTiming(0.7))
+		m_pPlayer->ActiveCollider_Tool(false, "");
 }
 
 HRESULT CPlayerState_NetSwing::OnExit()
@@ -78,7 +79,7 @@ void CPlayerState_NetSwing::OnCollisionEnter(COLLISION_CONTEXT context)
 		isCathced = true;
 		if (context.Owner->Get_Component<CModel>()) {
 			context.Owner->Get_Component<CModel>()->Set_CompActive(false);
-			m_pPlayer->Get_InfoPack().m_pObjectOnLeftHand = context.Owner;
+			m_pPlayer->Get_InfoPack().pObjectOnLeftHand = context.Owner;
 		}
 	}
 }

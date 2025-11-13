@@ -119,6 +119,11 @@ vector<MINMAX_BOX> CPlaneModel::Get_MeshBoundingBox()
 	return boxes;
 }
 
+MINMAX_BOX CPlaneModel::Get_MeshBoundingBox(_uint index)
+{
+	return MINMAX_BOX{ { -0.5f, 0.f, -0.5f, }, {0.5f,0.f ,0.5f} };
+}
+
 void CPlaneModel::Render_GUI()
 {
 }

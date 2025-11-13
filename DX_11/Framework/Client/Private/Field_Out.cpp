@@ -84,6 +84,9 @@ void CField_Out::Override_Pass()
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
 		instance->Override_Pass("Base");
 	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mBeach")) {
+		instance->Override_Pass("Base");
+	}
 }
 
 

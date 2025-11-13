@@ -15,6 +15,8 @@ CAIMesh::~CAIMesh()
 
 HRESULT CAIMesh::Initialize(ID3D11Device* pDevice, const aiMesh* pAIMesh, CSkeleton* pSkeleton, MESH_TYPE eType)
 {
+	pAIMesh->GetNumUVChannels();
+
 	m_VIKey = pAIMesh->mName.C_Str();
 	m_iVertexBufferCount = 1;
 	m_iVerticesCount = pAIMesh->mNumVertices;
@@ -64,7 +66,7 @@ HRESULT CAIMesh::Create_Vertex(ID3D11Device* pDevice)
 
 		if (m_pAIMesh->mNumUVComponents[0] > 0) {
 			memcpy(&mesh.vTexcoord, &m_pAIMesh->mTextureCoords[0][i], sizeof(_float2));
-			memcpy(&mesh.vTangent, &m_pAIMesh->mTangents[i], sizeof(_float3));
+			memcpy(&mesh.vTangent, &m_pAIMesh->mTangents[i], sizeof(_float3)); /*탄젠트도 PreTransformMatrix 기준으로 해야함*/
 		}
 		m_VBMeshContainer.push_back(mesh);
 	}

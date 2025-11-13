@@ -31,6 +31,7 @@ public:
     HRESULT Initialize(ID3D11Device* pDevice,  const string& filePath);
   /*Render*/
     void Apply(const string& m_passConstant,ID3D11DeviceContext* pContext);
+    HRESULT Reset_Value();
     HRESULT Bind_Value(const string& ConstantName, const SHADER_PARAM& parameter);
     HRESULT SetConstantBuffer(const string& ConstantName, ID3D11Buffer* pData);
 

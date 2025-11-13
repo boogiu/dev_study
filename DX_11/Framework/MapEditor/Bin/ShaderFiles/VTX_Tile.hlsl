@@ -26,6 +26,9 @@ struct VS_INSTANCE_OUT
     float4 vWorldPos : TEXCOORD1;
     float4 iMtlType : TEXCOORD2;
     float4 vProjPos : TEXCOORD3;
+    
+    float3 vTangent : TANGENT;
+    float3 vBinormal : BINORMAL;
 };
 
 VS_INSTANCE_OUT VS_INSTANCE(VS_INSTANCE_IN In)
@@ -63,7 +66,9 @@ VS_INSTANCE_OUT VS_INSTANCE(VS_INSTANCE_IN In)
     Out.iMtlType = In.iMtlType;
     Out.vNormal = mul(vector(In.vNormal, 0.f), instWorld);
     Out.vProjPos = Out.vPosition;
-
+    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), instWorld)).xyz;
+    Out.vTangent *= -1;
+    Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
     return Out;
 }
 
@@ -83,6 +88,9 @@ struct VS_OUT
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
+    
+    float3 vTangent : TANGENT;
+    float3 vBinormal : BINORMAL;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -99,6 +107,10 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
     Out.vWorldPos = mul(vector(In.vPosition, 1.f), matWorld[TransformIndex]);
     Out.vProjPos = Out.vPosition;
+    
+    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), matWorld[TransformIndex])).xyz;
+    Out.vTangent *= -1;
+    Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
     return Out;
 }
 
@@ -110,6 +122,9 @@ struct PS_INSTATNCE_IN
     float4 vWorldPos : TEXCOORD1;
     float4 iMtlType : TEXCOORD2;
     float4 vProjPos : TEXCOORD3;
+    
+    float3 vTangent : TANGENT;
+    float3 vBinormal : BINORMAL;
 };
 
 struct PS_IN
@@ -119,6 +134,9 @@ struct PS_IN
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
+    
+    float3 vTangent : TANGENT;
+    float3 vBinormal : BINORMAL;
 };
 
 struct PS_OUT
@@ -160,8 +178,15 @@ PS_OUT PS_BASE(PS_IN In)
         discard;
 
     Out.vDiffuse = BaseColor;
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
-    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+ 
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);\
 
     return Out;
 }
@@ -188,7 +213,15 @@ PS_OUT PS_EDGE(PS_IN In)
     if (Grd.a < 0.2f)
         discard;
     Out.vDiffuse = Grd;
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+ 
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
     return Out;
 }
@@ -196,7 +229,8 @@ PS_OUT PS_EDGE(PS_IN In)
 PS_OUT PS_TILE_INSTANCE(PS_INSTATNCE_IN In)
 {
     PS_OUT Out;
-    if (In.iMtlType.x == 0.f)
+   
+    if (In.iMtlType.x ==  0.f)
     {
         discard;
     }
@@ -208,14 +242,23 @@ PS_OUT PS_TILE_INSTANCE(PS_INSTATNCE_IN In)
     vector Mask = g_MaskTexture.Sample(LinearSampler, uv);
     vector Mask2 = g_MaskTexture.Sample(LinearSampler, WorldUV);
     vector Palette = g_PaletteTexture.Sample(DefaultSampler, float2(PalettePixel.x, PalettePixel.y));
-    vector Palette2 = g_PaletteTexture.Sample(LinearSampler, float2(PalettePixel.x + (1 - Mask2.r) * Mask2.b, PalettePixel.y));
+    vector Palette2 = g_PaletteTexture.Sample(LinearSampler, 
+    float2(PalettePixel.x + (1 - Mask2.r) * Mask2.b, PalettePixel.y));
     vector Grd = (Palette * (1 - Mask.a) + (Palette2) * (Mask.a));
     Diffuse = Grd;
     if (Diffuse.a < 0.2f)
         discard;
     Out.vDiffuse = Diffuse;
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+ 
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    
      return Out;
 }
 

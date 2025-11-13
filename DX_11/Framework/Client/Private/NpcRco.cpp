@@ -1,16 +1,8 @@
 #include "Client_Defines.h"
 #include "NpcRco.h"
 
-#include "SkeletalModel.h"
-#include "Material.h"
-#include "MaterialInstance.h"
-#include "MaterialData.h"
-#include "MaterialAnimator.h"
-#include "Texture.h"
-#include "Animator3D.h"
-#include "ObjectContainer.h"
-
 #include "NpcState_Machine.h"
+#include "EventSystem.h"
 
 CNpcRco::CNpcRco()
 {
@@ -32,43 +24,53 @@ HRESULT CNpcRco::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 
 	m_InstanceName = "Racoon";
-
-	HRESULT hr = Get_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", "NpcSpRco.model");
-	hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", "NpcSpRco.mat");
-	Get_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", "NpcSpRco.model");
-
-	
 	return S_OK;
 }
 
 void CNpcRco::Priority_Update(_float dt)
 {
+	__super::Priority_Update(dt);
 }
 
 void CNpcRco::Update(_float dt)
 {
-	Update_Movement(dt);
-	Update_TileInfo(dt);
-
-	m_pMachine->Update(dt);
+	__super::Update(dt);
 }
 
 void CNpcRco::Late_Update(_float dt)
 {
+	__super::Late_Update(dt);
 }
 
 void CNpcRco::Render_GUI()
 {
-	//if(ImGui::Button("Move"))
-		//m_pMachine->Request_ChangeState()
 	__super::Render_GUI();
 }
 
-void CNpcRco::Find_Path()
+void CNpcRco::Set_Closed(OnEndDialogue endMsg)
 {
+	__super::Set_Closed(endMsg);
 
+	string postType = endMsg.msg.Type;
 
+	if (postType.find("Order_") != string::npos) {
+		string key = "Order_";
+		string npcID= postType.substr(key.size(), postType.size());
+		EVNET_NPC_TO_NPC evt = {m_CharacterDesc.NpcID, stoi(npcID), endMsg.msg.Param1};
+		m_EventPack.eventSystem->OnBroadCast(evt);
+		m_EventPack.Reset();
+	}
 }
+
+void CNpcRco::Serve_Order(const string& order, _uint orderer)
+{
+	if (order == "GivePlayerScoop_Complete") {
+		m_EventPack.Reset();
+		m_EventPack.nextSequenceID = 5;
+		m_EventPack.externalCondition = "NormalTalking";
+	}
+}
+
 
 CNpcRco* CNpcRco::Create()
 {

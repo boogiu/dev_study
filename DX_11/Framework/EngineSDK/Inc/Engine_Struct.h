@@ -214,6 +214,9 @@ namespace Engine
 		tagTileIndex Add(const tagTileIndex& a) {
 			return { (a.IndexX + IndexX) , (a.IndexZ + IndexZ) };
 		}
+		_bool isSame(const tagTileIndex& a) {
+			return (a.IndexX == IndexX) && (a.IndexZ == IndexZ);
+		}
 	}TILE_INDEX;
 
 	inline  _bool operator == (const tagTileIndex& a, const tagTileIndex& b)
@@ -294,6 +297,14 @@ namespace Engine
 		char ObjectName[MAX_PATH];
 	}MAP_OBJECT_HEADER;
 
+	typedef struct tagMapObjectHeaderEx {
+		TILE_INDEX Index = {};
+		_uint Object_type = {};
+		_float4x4 vWorldMatrix = {};
+		char ObjectName[MAX_PATH];
+		char AdditionalData[MAX_PATH];
+	}NEW_MAP_OBJECT_HEADER;
+
 	typedef struct  tagMapTileHeader {
 		_bool Is_Base = { false };
 		_float fRotation = {};
@@ -301,6 +312,16 @@ namespace Engine
 		TILE_INDEX Index = {};
 		char BaseTypeName[MAX_PATH];
 	}MAP_TILE_HEADER;
+
+
+	typedef struct  tagMapTileHeaderEx {
+		_bool Is_Base = { false };
+		_float fRotation = {};
+		_uint CurState = {};
+		TILE_INDEX Index = {};
+		_float height = {};
+		char BaseTypeName[MAX_PATH];
+	}NEW_MAP_TILE_HEADER;
 
 	typedef struct tagAutoTileFileHeader {
 		_uint RuleCount = {};

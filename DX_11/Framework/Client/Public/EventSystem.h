@@ -53,14 +53,14 @@ public:
 template<typename T>
 inline void CEventSystem::Add_Listner(Callback<T> function)
 {
-	auto& list = GetList<T>();
+	auto& list = this->template GetList<T>();
 	list.push_back(move(function));
 }
 
 template<typename T>
 inline void CEventSystem::OnBroadCast( const T& data)
 {
-	auto& list = GetList<T>();
+	auto& list = this->template  GetList<T>();
 	for (auto& Listner : list)
 		Listner(data);
 }

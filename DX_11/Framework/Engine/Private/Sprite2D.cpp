@@ -40,12 +40,22 @@ void CSprite2D::Apply_Shader(ID3D11DeviceContext* pContext)
 	if (m_pTextures.empty()) return;
 	if (m_pTextures[m_iDrawIndex] == nullptr) return;
 
+	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+
+	for (UINT slot = 0; slot < MAX_TEXTURE_TYPE_VALUE; ++slot)
+		pContext->PSSetShaderResources(slot, 1, nullSRV);
+
 	SHADER_PARAM param = {};
 	param.typeName = "Texture2D";
 	param.iSize = 0;
 	param.pData = m_pTextures[m_iDrawIndex]->Get_SRV();
 
 	m_pShader->Bind_Value("SpriteTexture", param);
+
+	for (auto& Slot : m_DynamicSlots) {
+		m_pShader->Bind_Value(Slot.first, Slot.second);
+	}
+
 	m_pShader->Apply(m_PassConstant, pContext);
 }
 
@@ -117,6 +127,35 @@ HRESULT CSprite2D::Link_Shader(const string& levelKey, const string& shaderKey)
 
 	Safe_AddRef(m_pShader);
 	return S_OK;
+}
+
+HRESULT CSprite2D::ChangePass(const string& passConstant)
+{
+	m_PassConstant = passConstant;
+	return S_OK;
+}
+
+HRESULT CSprite2D::Set_Param(const string& ConstantName, const SHADER_PARAM& parameter)
+{
+	SHADER_PARAM DynamicSlot = parameter;
+	auto iter = m_DynamicSlots.emplace(ConstantName, DynamicSlot);
+
+	if (false == iter.second)
+		return E_FAIL;
+
+	else
+		return S_OK;
+}
+
+SHADER_PARAM* CSprite2D::Get_Param(const string& ConstantName)
+{
+	auto iter = m_DynamicSlots.find(ConstantName);
+
+	if (iter != m_DynamicSlots.end()) {
+		return &(iter->second);
+	}
+
+	return nullptr;
 }
 
 

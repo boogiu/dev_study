@@ -22,6 +22,7 @@
 #include "Item_Object.h"
 #include "Builder.h"
 #include "Helper_Func.h"
+#include "DebugRender.h"
 
 CPlant_Tree::CPlant_Tree()
 {
@@ -47,6 +48,7 @@ HRESULT CPlant_Tree::Initialize_Prototype()
 	Add_Component<CAABB_Collider>();
 	Add_Component<CAnimator3D>();
 	Add_Component<CObjectContainer>();
+	Add_Component<CDebugRender>();
 
 	return S_OK;
 }
@@ -280,6 +282,7 @@ void CPlant_Tree::Make_Fruits()
 	if (m_eState != IDLE) return;
 	if (m_HasFruit == true) return;
 	if (m_fLifeTime < 15.f) return;
+	if (m_InstanceTag =="Stump") return;
 
 	if (m_pFruits[0] == nullptr) {
 		for (size_t i = 0; i < 3; i++)

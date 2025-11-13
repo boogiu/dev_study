@@ -15,8 +15,6 @@ public:
     virtual CState* HandleTransition() override;
 
 private:
-    void OrdinaryMove(_float dt);
-    void Request_ShortPath(TILE_INDEX start, TILE_INDEX blocked);
     void Request_Path();
 
 private:

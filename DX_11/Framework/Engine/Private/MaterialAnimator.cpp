@@ -109,8 +109,8 @@ void CMaterialAnimator::Update_KeyFrame(const string& subsetKey, MAT_KEYFRAME& K
 	/*그중 도달 지점*/
 	_uint nowIndex = static_cast<_uint>(KeyFrame.fCurrentTime);
 	if (nowIndex >= FrameCount) {
-		KeyFrame.fCurrentTime = 0;
-		nowIndex = 0;
+	
+		nowIndex = FrameCount-1;
 	}
 
 	auto matInstance = m_pMasterMaterial->Find_MaterialByName(subsetKey);

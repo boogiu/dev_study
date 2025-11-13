@@ -29,7 +29,7 @@ public:
 		string baseType = {"Base_0"};
 		TILESYSTEM_INFO ContextTileInfo = {};
 		_float4 m_fConerHeight = {};
-		_float ObjHeight = {0.1f};
+		_float ObjHeight = {0.f};
 	};
 
 private:
@@ -48,6 +48,7 @@ public:
 	void Clear_Index();
 	void Adjust_Height();
 	void Adjust_Flag();
+	void Adjust_Material();
 public:
 	HRESULT Load_MapData();
 	HRESULT Save_MapData();

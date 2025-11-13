@@ -112,157 +112,8 @@ HRESULT CNpcSpawner::Read_CharacterData(const string& filePath)
 	return S_OK;
 }
 
-HRESULT CNpcSpawner::Read_CharacterSequece(const string& filePath)
-{
-    ifstream ifs(filePath);
-    if (!ifs.is_open()) {
-        MessageBoxW(nullptr, L"ItemData 파일을 찾을 수 없습니다.", L"Error", MB_OK);
-        return E_FAIL;
-    }
 
-    json jScene;
-
-    try {
-        ifs >> jScene;
-    }
-    catch (const json::parse_error& e) {
-        MessageBoxA(nullptr, e.what(), "JSON Parse Error", MB_OK);
-        return E_FAIL;
-    }
-    ifs.close();
-
-    m_NpcSequenceTable.clear();
-
-    for (auto& item : jScene)
-    {
-        try
-        {
-            SEQUENCE_DATA_DESC data = {};
-
-            // NpcID
-            if (item.contains("NpcID"))
-            {
-                if (item["NpcID"].is_number_integer())
-                    data.NpcID = item["NpcID"].get<_int>();
-                else if (item["NpcID"].is_string())
-                    data.NpcID = std::stoi(item["NpcID"].get<string>());
-            }
-
-            // SequenceID
-            if (item.contains("SequenceID"))
-            {
-                if (item["SequenceID"].is_number_integer())
-                    data.SequenceID = item["SequenceID"].get<_int>();
-                else if (item["SequenceID"].is_string())
-                    data.SequenceID = std::stoi(item["SequenceID"].get<string>());
-            }
-
-            // LineIndex
-            if (item.contains("LineIndex"))
-            {
-                if (item["LineIndex"].is_number_integer())
-                    data.LineIndex = item["LineIndex"].get<_int>();
-                else if (item["LineIndex"].is_string())
-                    data.LineIndex = std::stoi(item["LineIndex"].get<string>());
-            }
-
-            // 기본 대사 정보
-            data.Text = Helper::ConvertToWideString(item.value("Text", ""));
-            data.Emotion = item.value("Emotion", "");
-            data.Motion = item.value("Motion", "");
-            data.Voice = item.value("Voice", "");
-
-            /*강제 멈춤 시간*/
-            if (item.contains("Pause"))
-            {
-                if (item["Pause"].is_number_float() || item["Pause"].is_number_integer())
-                    data.pauseTime = item["Pause"].get<_float>();
-                else if (item["Pause"].is_string())
-                    data.pauseTime = std::stof(item["Pause"].get<string>());
-            }
-
-            if (item.contains("PostAction") && item["PostAction"].is_object())
-            {
-                auto& act = item["PostAction"];
-                data.postAction.Type = act.value("Type", "");
-                data.postAction.Param1 = act.value("Param1", "");
-                if (act.contains("Param2")) {
-                    try {
-                        if (act["Param2"].is_number_integer())
-                            data.postAction.Param2 = act["Param2"].get<int>();
-                        else if (act["Param2"].is_string())
-                            data.postAction.Param2 = std::stoi(act["Param2"].get<std::string>());
-                        else
-                            data.postAction.Param2 = 0;
-                    }
-                    catch (...) {
-                        data.postAction.Param2 = 0;
-                    }
-                }
-                else {
-                    data.postAction.Param2 = 0;
-                }
-
-                data.postAction.Continue = act.value("Continue", false);
-                data.postAction.NextSequenceID = act.value("NextSequenceID", -1);
-            }
-
-
-            if (item.contains("Choices") && item["Choices"].is_array())
-            {
-                for (auto& choice : item["Choices"])
-                {
-                    CHOICE_DATA_DESC choiceData{};
-
-                    if (choice.contains("ChoiceIndex"))
-                    {
-                        if (choice["ChoiceIndex"].is_number_integer())
-                            choiceData.ChoiceIndex = choice["ChoiceIndex"].get<_int>();
-                        else if (choice["ChoiceIndex"].is_string())
-                            choiceData.ChoiceIndex = std::stoi(choice["ChoiceIndex"].get<string>());
-                    }
-
-                    choiceData.Text = Helper::ConvertToWideString(choice.value("Text", ""));
-                    choiceData.NextSequenceID = choice.value("NextSequenceID", -1);
-
-                    data.choiceSelection.push_back(choiceData);
-                }
-
-               sort(data.choiceSelection.begin(), data.choiceSelection.end(),
-                    [](const CHOICE_DATA_DESC& a, const CHOICE_DATA_DESC& b)
-                    {
-                        return a.ChoiceIndex < b.ChoiceIndex;
-                    });
-            }
-
-            _int key = data.NpcID;
-            if (key < 0)
-                continue;
-
-            m_NpcSequenceTable[key][data.SequenceID].push_back(data);
-        }
-        catch (...)
-        {
-            continue;
-        }
-    }
-
-    for (auto& [npcID, seqMap] : m_NpcSequenceTable)
-    {
-        for (auto& [seqID, lines] : seqMap)
-        {
-            std::sort(lines.begin(), lines.end(),
-                [](const SEQUENCE_DATA_DESC& a, const SEQUENCE_DATA_DESC& b)
-                {
-                    return a.LineIndex < b.LineIndex;
-                });
-        }
-    }
-
-    return S_OK;
-}
-
-HRESULT CNpcSpawner::Spawn_Npc(const wstring& npcName,  _float3 position)
+HRESULT CNpcSpawner::Spawn_Npc(const wstring& npcName,  _float3 position, string SpcTag)
 {
     auto iter = m_NpcTable.find(npcName);
 
@@ -273,7 +124,7 @@ HRESULT CNpcSpawner::Spawn_Npc(const wstring& npcName,  _float3 position)
     data->characterDesc = iter->second;
 
     CGameObject* pNpc =
-        Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_NpcNrm" })
+        Builder::Create_Object({ "GamePlay_Level",SpcTag.empty()? "GamePlay_GameObject_NpcNrm": SpcTag })
         .Add_ObjDesc(data)
         .Position(position).Build("nPlayer");
 
@@ -282,24 +133,6 @@ HRESULT CNpcSpawner::Spawn_Npc(const wstring& npcName,  _float3 position)
     return S_OK;
 }
 
-vector<SEQUENCE_DATA_DESC> CNpcSpawner::Get_SequenceData(_int npcID, _int sequenceID)
-{
-    vector<SEQUENCE_DATA_DESC> empty;
-
-    auto iter = m_NpcSequenceTable.find(npcID);
-    if (iter == m_NpcSequenceTable.end())
-        return empty;
-
-    auto sequenceMap = iter->second;
-
-    auto vecIter = sequenceMap.find(sequenceID);
-    if (vecIter == sequenceMap.end())
-        return empty;
-
-    auto seqVector = vecIter->second;
-
-    return seqVector;
-}
 
 NPC_DATA_DESC CNpcSpawner::Get_NpcData(wstring npcName)
 {

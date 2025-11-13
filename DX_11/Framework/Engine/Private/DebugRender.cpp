@@ -35,13 +35,16 @@ HRESULT CDebugRender::Render_DebugBox(ID3D11DeviceContext* pContext, _uint DrawI
 	return S_OK;
 }
 
+/*로컬 상의 인맥스를 넣어줘야 함*/
 void CDebugRender::Add_DebugBounding(const MINMAX_BOX& box)
 {
 	_float3 vMin = box.vMin;
 	_float3 vMax = box.vMax;
+
 	vMin.x -= 0.01f;	vMax.x += 0.01f;
 	vMin.y -= 0.01f;	vMax.y += 0.01f;
 	vMin.z -= 0.01f;	vMax.z += 0.01f;
+
 	vector<VTXPOS> VB;
 	VB.resize(8);
 

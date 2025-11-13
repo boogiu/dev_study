@@ -1,5 +1,11 @@
 #include "Shader_Define.hlsl"
 
+Texture2D UI_MaskTexture;
+Texture2D UI_FrameTexture;
+Texture2D UI_GradationTexture;
+
+float2 MaskScale = (1.2f, 1.2f);
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -89,14 +95,56 @@ PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out;
     
-    vector vMtrlDiffuse = SpriteTexture.Sample(LinearSampler, In.vTexcoord);
+    vector vDiffuse = SpriteTexture.Sample(LinearSampler, In.vTexcoord);
     
-    //if(vMtrlDiffuse.a < 0.3f)
-    //    discard;
-    //
-    Out.vColor = vMtrlDiffuse;
+    Out.vColor = vDiffuse ;
     return Out;
 }
+
+PS_OUT PS_MAIN_GRAD(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vDiffuse = SpriteTexture.Sample(LinearSampler, In.vTexcoord);
+    vector vGrad = UI_GradationTexture.Sample(LinearSampler, In.vTexcoord);
+    
+    Out.vColor = vDiffuse + vDiffuse * (vGrad.r) * 0.2f;
+    return Out;
+}
+
+PS_OUT PS_MASKING_UI(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vDiffuse = SpriteTexture.Sample(LinearSampler, In.vTexcoord);
+
+    float MaskScale = 1.3f;
+    float2 uv = In.vTexcoord;
+    float2 scaledUV = ((uv - 0.5f) / MaskScale) + 0.5f;
+
+    vector vMasking = UI_MaskTexture.Sample(PointClampSampler, scaledUV);
+    vector vFrame = UI_FrameTexture.Sample(LinearSampler, In.vTexcoord);
+    
+    if (vFrame.a < 0.1f)
+        discard;
+    
+    Out.vColor = vDiffuse - vDiffuse*(vMasking.r)*0.1;
+    return Out;
+}
+
+PS_OUT PS_MASKING_INSIDE_UI(PS_IN In)
+{
+    PS_OUT Out;
+
+    vector vDiffuse = SpriteTexture.Sample(LinearSampler, In.vTexcoord);
+    float2 uv = In.vTexcoord;
+    float2 scaledUV = (uv - 0.5f) / MaskScale + 0.5f;
+    vector vMasking = UI_MaskTexture.Sample(PointClampSampler, In.vTexcoord);
+
+    Out.vColor = vDiffuse - vDiffuse * (vMasking.a);
+    return Out;
+}
+
 
 technique11 DefaultTechnique
 {
@@ -109,5 +157,42 @@ technique11 DefaultTechnique
         GeometryShader = compile gs_5_0 GS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
     }  
+    pass Gradtion
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        PixelShader = compile ps_5_0 PS_MAIN_GRAD();
+    }
+    pass MaskingScreen
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        PixelShader = compile ps_5_0 PS_MAIN();
+    }
+    pass Masking_UI
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        PixelShader = compile ps_5_0 PS_MASKING_UI();
+    }
+
+    pass Inside_Empty
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        PixelShader = compile ps_5_0 PS_MASKING_INSIDE_UI();
+    }
 }
 

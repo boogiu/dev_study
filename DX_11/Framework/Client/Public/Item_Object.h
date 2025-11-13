@@ -47,11 +47,11 @@ protected:
    virtual void Find_Ground();
    virtual void MoveToIndex(_float dt);
    virtual void FollowHand(_float dt);
-   virtual void Remove_Item();
    virtual void Update_ByState(_float dt);
 
 public:
     ITEM_DATA_DESC Get_ItemData() { return m_ItemInfo; }
+   virtual void Remove_Item();
 
 protected:
     _bool IsDangled = { false };

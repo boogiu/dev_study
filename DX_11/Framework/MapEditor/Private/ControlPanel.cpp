@@ -115,6 +115,8 @@ void CControlPanel::Render_BrushTab()
 		ImGui::EndCombo();
 	}
 
+	ImGui::Text("Tile_Height");
+	ImGui::InputFloat("##Height", &pContext->ObjHeight, 5.f);
 	ImGui::End();
 }
 
@@ -159,13 +161,15 @@ void CControlPanel::Render_TileEdit()
 	}
 	ImGui::SeparatorText("Flag");
 
-
-
 	ImGui::CheckboxFlags("Walkable", &pContext->tileFlag, static_cast<_uint>(TILE_FLAG::FLAG_WALKABLE));
 	ImGui::CheckboxFlags("Blocked", &pContext->tileFlag, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
 	ImGui::CheckboxFlags("Swimmable", &pContext->tileFlag, static_cast<_uint>(TILE_FLAG::FLAG_SWIMMABLE));
 	if (ImGui::Button("Adjust Flag")) {
 		CEditorSystem::GetInstance()->Adjust_Flag();
+	}
+
+	if (ImGui::Button("Clear Material")) {
+		CEditorSystem::GetInstance()->Adjust_Material();
 	}
 	ImGui::End();
 }

@@ -70,9 +70,6 @@
     <Filter Include="02. GameObjects\02. Field\FieldObject">
       <UniqueIdentifier>{abd88e48-bd3a-46e3-86fc-b8c1c7afbbb8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\02. Field\Field_Tree">
-      <UniqueIdentifier>{1d24c63f-5f89-4987-87c8-8a6d0166f368}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\02. Field\Field_Out">
       <UniqueIdentifier>{0ff94ed8-9fdd-42c3-ad79-d8fe32b8f8e9}</UniqueIdentifier>
     </Filter>
@@ -178,12 +175,6 @@
     <Filter Include="02. GameObjects\07. LevelObject\ItemSpawner">
       <UniqueIdentifier>{4ae5044e-a38c-489f-9b15-b55b342f9b9f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\02. Field\03. Plant">
-      <UniqueIdentifier>{ec53743e-ff98-42c5-b9e3-bce29f2710a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\02. Field\03. Plant\Plant_Tree">
-      <UniqueIdentifier>{37022cc5-4b02-4058-8287-09d623ee402a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\00. Player\Inventory\InvenSlot">
       <UniqueIdentifier>{70c062b6-443c-4ccd-b71d-ae481fa73e10}</UniqueIdentifier>
     </Filter>
@@ -256,14 +247,8 @@
     <Filter Include="02. GameObjects\10. NonPlayer">
       <UniqueIdentifier>{59d687fc-6124-4dfd-bfcd-19ac2fbef1a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\10. NonPlayer\NpcRco">
-      <UniqueIdentifier>{0e0afc67-ba05-476f-8ad1-c9f0ca3282c6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\10. NonPlayer\NpcState">
       <UniqueIdentifier>{2a093713-cdcb-4f17-bc00-6c6ad1ca555c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\10. NonPlayer\Npc_Super">
-      <UniqueIdentifier>{9e93d20e-1148-497e-a72c-5c2160415a7d}</UniqueIdentifier>
     </Filter>
     <Filter Include="03. Utility\CharacterState\HubState">
       <UniqueIdentifier>{5ffd4a4f-115e-4a14-a0b7-4d146a09d7e7}</UniqueIdentifier>
@@ -288,9 +273,6 @@
     </Filter>
     <Filter Include="02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\Walk">
       <UniqueIdentifier>{0c3df354-aaa7-4f79-9caf-3e0a5ea3800a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\WalkToPlayer">
-      <UniqueIdentifier>{b99ca3c4-2114-4e99-9644-f082244998eb}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\01. Camera\SunCam">
       <UniqueIdentifier>{281eb752-5d74-4ce9-9c4f-2388e36e6516}</UniqueIdentifier>
@@ -327,6 +309,54 @@
     </Filter>
     <Filter Include="02. GameObjects\10. NonPlayer\NpcState\NpcState_Super\Npc_HubState">
       <UniqueIdentifier>{647621ce-0376-488b-b6a0-2139236aa7da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\03. ForcedState\04. TransferGet">
+      <UniqueIdentifier>{a004eade-b69e-4fa3-8226-0578c0e52a39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\DialogueManager">
+      <UniqueIdentifier>{374e9b04-683d-4555-a04d-265a9a1e4fa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\WalkToPlayer">
+      <UniqueIdentifier>{b99ca3c4-2114-4e99-9644-f082244998eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\Special">
+      <UniqueIdentifier>{7e9fc362-b7e8-4686-83a2-698518c455c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\Npc_Super">
+      <UniqueIdentifier>{9e93d20e-1148-497e-a72c-5c2160415a7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\Special\Npc_Rcm">
+      <UniqueIdentifier>{6f376c1a-b3c3-4a5a-bd73-5aa4051c122a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\Special\Npc_Rco">
+      <UniqueIdentifier>{0e0afc67-ba05-476f-8ad1-c9f0ca3282c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\Plant_Tree">
+      <UniqueIdentifier>{37022cc5-4b02-4058-8287-09d623ee402a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\FieldBridge">
+      <UniqueIdentifier>{ec53743e-ff98-42c5-b9e3-bce29f2710a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\FieldStructure">
+      <UniqueIdentifier>{baa96a58-4e64-4399-b225-7e3fd2d8a452}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\Plant_Grass">
+      <UniqueIdentifier>{c3933fa2-76bb-4fed-a032-c9c49c93442b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\11. Furniture">
+      <UniqueIdentifier>{cfb2ae5a-7110-41fa-828f-839f328c0bf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\04. Generic\Diy">
+      <UniqueIdentifier>{ee43116c-dbc8-4160-87c6-fa1d020b55e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Craft_Panel">
+      <UniqueIdentifier>{2a680b71-0e0a-42af-a2cc-87ca0eb38dab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Craft_Panel\ItemCard">
+      <UniqueIdentifier>{51580108-8aab-4727-8d1c-2ac16b98c931}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Craft_Panel\CraftCard">
+      <UniqueIdentifier>{168c1c49-f612-4435-921a-15fcff9ff843}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -459,9 +489,6 @@
     <ClInclude Include="..\Public\FieldObject.h">
       <Filter>02. GameObjects\02. Field\FieldObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Field_Tree.h">
-      <Filter>02. GameObjects\02. Field\Field_Tree</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\PlayerState_TransTool.h">
       <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\01. TransItem</Filter>
     </ClInclude>
@@ -469,7 +496,7 @@
       <Filter>02. GameObjects\02. Field\FieldStone</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Plant_Tree.h">
-      <Filter>02. GameObjects\02. Field\03. Plant\Plant_Tree</Filter>
+      <Filter>02. GameObjects\02. Field\Plant_Tree</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
       <Filter>02. GameObjects\00. Player</Filter>
@@ -580,7 +607,7 @@
       <Filter>02. GameObjects\07. LevelObject\InsectSpawner</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NpcRco.h">
-      <Filter>02. GameObjects\10. NonPlayer\NpcRco</Filter>
+      <Filter>02. GameObjects\10. NonPlayer\Special\Npc_Rco</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NpcState_Machine.h">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\NpcStateMachine</Filter>
@@ -616,7 +643,7 @@
       <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\Walk</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NpcState_Move_Trace.h">
-      <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\WalkToPlayer</Filter>
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\WalkToPlayer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SunCam.h">
       <Filter>02. GameObjects\01. Camera\SunCam</Filter>
@@ -644,6 +671,39 @@
     </ClInclude>
     <ClInclude Include="..\Public\NpcState_Interact_TransItem.h">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\TransferItem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_TransferGet.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\04. TransferGet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DialogueManager.h">
+      <Filter>02. GameObjects\07. LevelObject\DialogueManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcRcm.h">
+      <Filter>02. GameObjects\10. NonPlayer\Special\Npc_Rcm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Field_Bridge.h">
+      <Filter>02. GameObjects\02. Field\FieldBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Field_Structure.h">
+      <Filter>02. GameObjects\02. Field\FieldStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Plant_Grass.h">
+      <Filter>02. GameObjects\02. Field\Plant_Grass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Furniture.h">
+      <Filter>02. GameObjects\11. Furniture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Diy.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\04. Generic\Diy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_CraftPanel.h">
+      <Filter>02. GameObjects\08. UI\Craft_Panel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_ItemCard.h">
+      <Filter>02. GameObjects\08. UI\Craft_Panel\ItemCard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CraftCard.h">
+      <Filter>02. GameObjects\08. UI\Craft_Panel\CraftCard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -763,9 +823,6 @@
     <ClCompile Include="..\Private\FieldObject.cpp">
       <Filter>02. GameObjects\02. Field\FieldObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Field_Tree.cpp">
-      <Filter>02. GameObjects\02. Field\Field_Tree</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\PlayerState_TransTool.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\01. TransItem</Filter>
     </ClCompile>
@@ -773,7 +830,7 @@
       <Filter>02. GameObjects\02. Field\FieldStone</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Plant_Tree.cpp">
-      <Filter>02. GameObjects\02. Field\03. Plant\Plant_Tree</Filter>
+      <Filter>02. GameObjects\02. Field\Plant_Tree</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_PickUp.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\03. PickUp</Filter>
@@ -880,9 +937,6 @@
     <ClCompile Include="..\Private\InsectSpawner.cpp">
       <Filter>02. GameObjects\07. LevelObject\InsectSpawner</Filter>
     </ClCompile>
-    <ClCompile Include="..\Public\NpcRco.cpp">
-      <Filter>02. GameObjects\10. NonPlayer\NpcRco</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\NpcState_Machine.cpp">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\NpcStateMachine</Filter>
     </ClCompile>
@@ -914,7 +968,7 @@
       <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\Walk</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\NpcState_Move_Trace.cpp">
-      <Filter>02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\WalkToPlayer</Filter>
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\WalkToPlayer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SunCam.cpp">
       <Filter>02. GameObjects\01. Camera\SunCam</Filter>
@@ -943,6 +997,42 @@
     <ClCompile Include="..\Private\NpcState_Interact_TransItem.cpp">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\TransferItem</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_TransferGet.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\04. TransferGet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DialogueManager.cpp">
+      <Filter>02. GameObjects\07. LevelObject\DialogueManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcRcm.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\Special\Npc_Rcm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcRco.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\Special\Npc_Rco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Field_Bridge.cpp">
+      <Filter>02. GameObjects\02. Field\FieldBridge</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Field_Structure.cpp">
+      <Filter>02. GameObjects\02. Field\FieldStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Plant_Grass.cpp">
+      <Filter>02. GameObjects\02. Field\Plant_Grass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Furniture.cpp">
+      <Filter>02. GameObjects\11. Furniture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Diy.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\04. Generic\Diy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_CraftPanel.cpp">
+      <Filter>02. GameObjects\08. UI\Craft_Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_ItemCard.cpp">
+      <Filter>02. GameObjects\08. UI\Craft_Panel\ItemCard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CraftCard.cpp">
+      <Filter>02. GameObjects\08. UI\Craft_Panel\CraftCard</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
@@ -951,6 +1041,9 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\PlayerShader.hlsl">
+      <Filter>97. Client_Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\FieldOutShader.hlsl">
       <Filter>97. Client_Shader</Filter>
     </FxCompile>
   </ItemGroup>

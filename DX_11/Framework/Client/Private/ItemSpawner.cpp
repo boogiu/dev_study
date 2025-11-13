@@ -78,12 +78,13 @@ HRESULT CItemSpawner::Read_ItemData(wstring filePath)
 			}
 			if (item.contains("Type"))
 			{
-				_int typeID = { -1 };
-				if (item["Type"].is_number_integer())
-					typeID = item["Type"].get<_int>();
-				else if (item["Type"].is_string())
-					typeID = std::stoul(item["Type"].get<string>());
-				data.TypeTag = static_cast<itemType>(typeID);
+				string type = item.value("Type", "");
+				//_int typeID = { -1 };
+				//if (item["Type"].is_number_integer())
+				//	typeID = item["Type"].get<_int>();
+				//else if (item["Type"].is_string())
+				//	typeID = std::stoul(item["Type"].get<string>());
+				data.TypeTag = MakeTypeByString(type);
 			}
 			if (item.contains("FullCount"))
 			{
@@ -92,6 +93,13 @@ HRESULT CItemSpawner::Read_ItemData(wstring filePath)
 				else if (item["FullCount"].is_string())
 					data.fullCount = std::stoul(item["FullCount"].get<string>());
 			}
+			if (item.contains("Additionaldata"))
+			{
+				data.Additionaldata = item.value("Additionaldata", "");
+			}
+
+			if (key == "UnitIconTentSet")
+				int i = 0;
 
 			data.modelName = item.value("Name", "") + ".model";
 			data.materialName = item.value("Name", "") + ".mat";
@@ -101,6 +109,7 @@ HRESULT CItemSpawner::Read_ItemData(wstring filePath)
 
 			if (key.empty())
 				continue;
+
 			string modelPath = item.value("model", "") + "/" + item.value("Name", "");
 			string materialPath = item.value("mat", "") + "/" + item.value("Name", "");
 			pRcsMgr->Add_ResourcePath(data.modelName, modelPath + ".model"); // model
@@ -199,6 +208,30 @@ CItem_Object* CItemSpawner::ThrowItem(ITEM_DATA_DESC data, _fvector pos, _cvecto
 		return item;
 	}
 	return nullptr;
+}
+
+itemType CItemSpawner::MakeTypeByString(const string typeStr)
+{
+	if (typeStr == "Fruit")
+		return itemType::Fruit;
+	else if (typeStr == "Ore")
+		return itemType::Ore;
+	else if (typeStr == "Plant")
+		return itemType::Plant;
+	else if (typeStr == "Insect")
+		return itemType::Insect;
+	else if (typeStr == "Axe")
+		return itemType::Axe;
+	else if (typeStr == "Net")
+		return itemType::Net;
+	else if (typeStr == "Scoop")
+		return itemType::Scoop;
+	else if (typeStr == "Represent")
+		return itemType::Represent;
+	else if (typeStr == "Furniture")
+		return itemType::Furniture;
+	
+	return itemType::None;
 }
 
 CItemSpawner* CItemSpawner::Create()

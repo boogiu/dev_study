@@ -12,15 +12,26 @@ CNpcState_Interact_SmallTalk::CNpcState_Interact_SmallTalk()
 
 HRESULT CNpcState_Interact_SmallTalk::OnEnter()
 {
-    TALKING_EVENT event{ m_pCharacter,nullptr, "Player"};
+
+    /*토킹 시작했다. 이벤트 전달.*/
+    /*잠깐, 플레이어가 먼저 시작한 이벤트라면? 굳이 보내줄 필요 없다. -> 이벤트 수신에서 처리*/
+    OnStartDialogue event{ 
+        m_pCharacter->Get_TracePack().pPlayer,
+        m_pCharacter,
+        m_pCharacter->Get_EventPack().ConsumeSequence(),
+        m_pCharacter->Get_EventPack().externalCondition,//=>플레이어가 말을 걸었다면 이걸 바꿔줄 것임
+        m_pCharacter->Get_NpcData().NpcName
+    };
+
     m_pCharacter->Get_EventPack().eventSystem->OnBroadCast(event);
 
      auto Animator = m_pCharacter->Get_Component<CAnimator3D>();
      Animator->Change_Animation("Base_Wait.anim", true);
 
-     TalkingMsgDesc desc = Make_EvtDesc();
-    m_pCharacter->Open_Dialogue("TalkingMsg", &desc);
-   m_pCharacter->LookTo(m_pCharacter->Get_TracePack().pPlayer->Get_Component<CTransform>()->Get_Pos());
+     m_pCharacter->LookTo(
+         m_pCharacter->Get_TracePack().pPlayer->Get_Component<CTransform>()->Get_Pos()
+     );
+
     return S_OK;
 }
 
@@ -39,27 +50,6 @@ HRESULT CNpcState_Interact_SmallTalk::OnExit()
 CState* CNpcState_Interact_SmallTalk::HandleTransition()
 {
     return nullptr;
-}
-
-TalkingMsgDesc CNpcState_Interact_SmallTalk::Make_EvtDesc()
-{
-    TalkingMsgDesc desc = {};
-    desc.OpenSize = { 800,160 };
-    desc.OpenSpeed = 8.f;
-    desc.SpeakerID = m_pCharacter->Get_NpcData().NpcID;
-    desc.startSequence = m_pCharacter->Get_EventPack().Ready_SequenceID;
-    desc.Speaker = m_pCharacter;
-
-    desc.OnClose = [this](_bool isEnd) {OnClose(isEnd); };
-    return desc;
-}
-
-void CNpcState_Interact_SmallTalk::OnClose(_bool isEnd)
-{
-    if(isEnd){
-    m_pCharacter->Get_EventPack().HasAgenda = false;
-    m_pCharacter->Get_TracePack().pPlayer->Get_InfoPack().m_pTalker = nullptr;
-    }
 }
 
 CNpcState_Interact_SmallTalk* CNpcState_Interact_SmallTalk::Create()

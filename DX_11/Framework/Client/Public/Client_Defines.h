@@ -33,3 +33,4 @@ constexpr Engine::TILE_INDEX NEIGHBOR_OFFSET[9] = {
 };
 
 static constexpr _float4 Ibory = { 1.0f, 0.984f, 0.905f ,1.f };
+

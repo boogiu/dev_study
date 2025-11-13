@@ -43,31 +43,40 @@ typedef struct tagCothDataDesc {
 /*선택지*/
 typedef struct tagChoiceDataDesc
 {
-	_int ChoiceIndex = 0;				 // 선택지 번호
-	wstring Text;								// 선택지 텍스트
-	_int NextSequenceID = -1;	// 선택 후 이동할 시퀀스 ID
+	_int ChoiceIndex = 0;					// 선택지 번호
+	wstring Text;									// 선택지 텍스트
+	_int NextSequenceID = -1;		// 선택 후 이동할 시퀀스 ID
 }CHOICE_DATA_DESC;
 
-typedef struct tagPostActionDataDesc
+struct PostActionMsg {
+	string Type = {};							// "GiveItem", "UnlockQuest", "MoveNpc", "TriggerEvent"
+	string Param1 = {};						// 대상 이름, 아이템 태그 등
+	string Param2 = {};						// 수량이나 세부 데이터
+	_int NextSequenceID = -1;		// PostAction 수행 후 이어질 시퀀스
+} ;
+
+typedef struct tagSequenceDataDesc
 {
-	string Type;				// 행동 이름
-	string Param1;			 // 인자 1
-	_int         Param2 = 0; // 인자 2
-	_bool         Continue = false; // 인자 2
-	_int         NextSequenceID = -1;
-}POST_ACTION_DATA_DESC;
-
-
-typedef struct tagSequenceDataDesc {
 	_int NpcID = {};
+
 	_int SequenceID = {};
+	string EntryCondition = {};
+
 	_int LineIndex = {};
+	_float pauseTime = {  };
+
 	wstring Text = {};
 	string Emotion = {};
 	string Motion = {};
 	string Voice = {};
-	_float pauseTime = {  };
+	string Camera = {};
 
-	POST_ACTION_DATA_DESC postAction;
 	vector<CHOICE_DATA_DESC> choiceSelection;
+
+	_int NextSequenceID = { -1 };        // -1  자동 전이 없음
+	string NextCondition = {};				// (선택지나 조건 분기용)
+
+	PostActionMsg postActionMsg;
+
 } SEQUENCE_DATA_DESC;
+

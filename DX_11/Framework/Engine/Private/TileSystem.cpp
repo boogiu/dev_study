@@ -218,40 +218,42 @@ _float4 CTileSystem::Get_PositionByIndex(TILE_INDEX tileIndex, ANCHOR anchor)
 
 	return _float4{ result.x, result.y, result.z, 1.f };
 }
-
 TILE_INDEX CTileSystem::Register_Tile(CTileBlock* block, TILE_INDEX index, _bool CanFail)
 {
 	if (!Check_ValidIndex(index))
 		return TILE_INDEX();
 
 	TILE_INDEX desireIndex = index;
-	while (true) {
+	const _int totalCount = m_tTileInfo.iTileCountX * m_tTileInfo.iTileCountZ;
+	_int tries = 0;
+
+	while (tries++ < totalCount) {
 		_int XZIndex = desireIndex.IndexX + desireIndex.IndexZ * m_tTileInfo.iTileCountX;
 
-		if (nullptr == m_TileInfos[XZIndex].pTileBlock) {
-			m_TileInfos[XZIndex].pTileBlock = block;
+		if (XZIndex < 0 || XZIndex >= static_cast<_int>(m_TileInfos.size()))
+			return TILE_INDEX{};
 
+		if (m_TileInfos[XZIndex].pTileBlock == nullptr) {
+			m_TileInfos[XZIndex].pTileBlock = block;
 			block->Set_Index(desireIndex);
 			block->Update_Position(m_tTileInfo);
 			return desireIndex;
 		}
 
-		else if (CanFail) {
-			return TILE_INDEX();
+		if (CanFail)
+			return TILE_INDEX{};
+
+		desireIndex.IndexX++;
+		if (desireIndex.IndexX >= static_cast<_int>(m_tTileInfo.iTileCountX)) {
+			desireIndex.IndexX = 0;
+			desireIndex.IndexZ++;
 		}
 
 		if (desireIndex.IndexZ >= static_cast<_int>(m_tTileInfo.iTileCountZ))
-		{
 			return TILE_INDEX{};
-		}
-		else {
-			desireIndex.IndexX += 1;
-			if (desireIndex.IndexX >= static_cast<_int>(m_tTileInfo.iTileCountZ)) {
-				desireIndex.IndexX = 0;
-				desireIndex.IndexZ += 1;
-			}
-		}
 	}
+
+	return TILE_INDEX{};
 }
 
 _uint CTileSystem::Get_NeighborInfoByIndex(TILE_INDEX index, vector<TILE_INFO>& container)
@@ -547,6 +549,7 @@ HRESULT CTileSystem::Executer_SystemByData(const string& LoadPath)
 	{
 		ifs.read(reinterpret_cast<char*>(&m_TileInfos[i]), sizeof(TILE_INFO));
 		ifs.read(reinterpret_cast<char*>(&m_InstanceTiles[i]), sizeof(INSTANCE_TILE));
+		m_TileInfos[i].pTileBlock = nullptr;
 	}
 	ifs.close();
 	return S_OK;

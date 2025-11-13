@@ -36,7 +36,7 @@ namespace Engine {
 	typedef struct DrawOpaquePacket : BASE_PACKET {
 		_bool bSkinning = { false }; /*그래서 본이 있니?*/
 
-		_uint DrawIndex = {}; /*몇번째 메시 그리는데?*/
+		_uint DrawIndex = {};		/*몇번째 메시 그리는데?*/
 		_uint MaterialIndex = {};/*그 메시는 뭐쓰는데*/
 		_uint SkinningOffset = {};
 

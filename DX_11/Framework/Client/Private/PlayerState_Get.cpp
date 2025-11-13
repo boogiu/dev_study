@@ -44,12 +44,12 @@ void CPlayerState_Get::OnUpdate(_float dt)
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	auto InfoPack = m_pPlayer->Get_InfoPack();
 
-	if (CGameObject* pObject = InfoPack.m_pObjectOnLeftHand) {
+	if (CGameObject* pObject = InfoPack.pObjectOnLeftHand) {
 		if (m_ePhase == Idle)
 			pObject->Get_Component<CModel>()->Set_CompActive(true);
-		_float4 pos = InfoPack.m_pLeftHand->Get_Position();
+		_float4 pos = InfoPack.pLeftHand->Get_Position();
 		pos.z += 1;
-		pObject->Get_Component<CTransform>()->TranslateMatrix(XMLoadFloat4x4(InfoPack.m_pLeftHand->Get_WorldMatrix()));
+		pObject->Get_Component<CTransform>()->TranslateMatrix(XMLoadFloat4x4(InfoPack.pLeftHand->Get_WorldMatrix()));
 	}
 	switch (m_ePhase)
 	{
@@ -70,7 +70,7 @@ void CPlayerState_Get::OnUpdate(_float dt)
 
 	case Client::CPlayerState_Get::Keep:
 		if (!m_bMsgComplete) {
-			EventMsgDesc desc = Make_Sequence(m_pPlayer->Get_InfoPack().m_pObjectOnLeftHand);
+			EventMsgDesc desc = Make_Sequence(m_pPlayer->Get_InfoPack().pObjectOnLeftHand);
 
 			m_pPlayer->Open_EventMsg(&desc);
 			m_bMsgComplete = true;
@@ -80,7 +80,7 @@ void CPlayerState_Get::OnUpdate(_float dt)
 	case Client::CPlayerState_Get::PutIn: {
 
 		if (Animator->isCurrentAnimEnd()) {
-			Add_Inventory(m_pPlayer->Get_InfoPack().m_pObjectOnLeftHand);
+			Add_Inventory(m_pPlayer->Get_InfoPack().pObjectOnLeftHand);
 			m_ePhase = End;
 		}
 	}
@@ -98,8 +98,8 @@ HRESULT CPlayerState_Get::OnExit()
 	m_ePhase = Phase::Priority;
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
-	CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(m_pPlayer->Get_InfoPack().m_pObjectOnLeftHand);
-	m_pPlayer->Get_InfoPack().m_pObjectOnLeftHand = nullptr;
+	CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(m_pPlayer->Get_InfoPack().pObjectOnLeftHand);
+	m_pPlayer->Get_InfoPack().pObjectOnLeftHand = nullptr;
 	m_bMsgComplete = false;
 	return S_OK;
 }

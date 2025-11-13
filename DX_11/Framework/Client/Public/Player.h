@@ -29,10 +29,11 @@ public:
     struct ItemPacket {
         TOOL_DATA_DESC  CurItem = {};
         TOOL_DATA_DESC  DstItem = {};
-        //ITEM_DATA_DESC   DstItem = {};
+
     };
 
     struct ControlPacket {
+        _bool MsgForceBlock = false; ///강제 막기
         _bool MsgMove = false; //방향키
         _bool MsgAction = false; //도구 사용키 스페이스
         _bool MsgPickup = false;
@@ -44,14 +45,24 @@ public:
     };
 
     struct StateInfoHubPacket {
-          CGameObject* m_pObjectOnLeftHand = { nullptr };//왼손에 쥔거
-          CGameObject* m_pLeftHand = { nullptr }; //왼손 정보
-          CGameObject* m_pRightHand = { nullptr };//오른손 정보
-          CGameObject* m_pTalker= { nullptr }; //지금 말하고 있는 놈
-          CGameObject* m_pEncounterNpc= { nullptr }; //부딪힌 놈
+          CGameObject* pObjectOnLeftHand = { nullptr };//왼손에 쥔거
+
+          CGameObject* pLeftHand = { nullptr }; //왼손 정보
+          CGameObject* pRightHand = { nullptr };//오른손 정보
+
+          CGameObject* pTalker= { nullptr }; //지금 말하고 있는 놈
+
+          CGameObject* pEncounter= { nullptr }; 
+          string EncounterTag= {}; 
+
+          class CNonPlayer* pEncounterNpc = { nullptr }; //부딪힌 놈
+          _bool isTalking = { false };
+
+          _bool WorkBenchEncounter = { false };
+          _bool isCrafting = { false };
+
+          TRANS_ITEM m_nowTrans = {}; //지금 건네 받은;
     };
-
-
 
 private:
     CPlayer();
@@ -71,9 +82,11 @@ private:
     void Update_Input(_float dt);
     void Update_Movement(_float dt);
     void Update_TileInfo(_float dt);
-    void Mark_TileFlag();
-    void BroadCast_Event();
+    void BroadCast_Position();
 
+    void Open_Craft();
+    void Close_Craft(const CRAFT_RESULT& result);
+    
 public:
     void Adjust_To(_fvector pos);
     void Adjust_To_Foward();
@@ -89,6 +102,7 @@ public:
     StateInfoHubPacket& Get_InfoPack() { return m_InfoPack; }
 
     _bool Can_Walk(_float2& moveAxis);
+    _bool Can_Talk();
     TILE_INDEX Get_FowardIndex();
 
 public:
@@ -106,11 +120,13 @@ public:
 
 public:
     void Open_EventMsg(EventMsgDesc* evtMsg);
-    void BroadCast_Talk(TALKING_EVENT evt);
+    void BroadCast_Talk(OnStartDialogue evt);
+
 public:
     void ActiveCollider_Tool(_bool active, string Event = {});
     void ActiveCollider_LeftHand(_bool active, string Event = {});
     void ActiveCollider_RightHand(_bool active, string Event = {});
+
  public:
     class CLevel* Get_NowLevel();
     
@@ -121,7 +137,6 @@ private:
     void Add_Inventory();
     void Set_TargetCamera();
     void Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey);
-
 
 private:
     class CPlayerStateMachine* m_pStateMachine= { nullptr };
@@ -134,7 +149,7 @@ private:
     ControlPacket m_ControlPack = {};
     StateInfoHubPacket m_InfoPack = {};
 
-    _float4 m_vPrevPos = {  };
+    TILE_INDEX m_vPrevIndex = {  };
 
     class CTarget_Camera* m_pCamera = { nullptr };
     class CPlayer_Inventory* m_pInventory = { nullptr };

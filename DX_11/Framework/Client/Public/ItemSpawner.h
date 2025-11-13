@@ -25,6 +25,8 @@ public:
     class CItem_Object* ThrowItem(ITEM_DATA_DESC data, _fvector pos, _cvector MoveDir);
 
 private:
+    itemType MakeTypeByString(const string typeStr);
+private:
     unordered_map<string, ITEM_DATA_DESC> m_ItemDataTable;
 
 public:

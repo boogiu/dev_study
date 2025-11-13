@@ -64,14 +64,16 @@ void CNonPlayer::Awake()
 	Make_Model(m_CharacterDesc);
 
 	ClientHelper::Add_AllClipsByFile("../../Resources/Data/CharacterAnim.json", "GamePlay_Level", "NPC", Get_Component<CAnimator3D>());
-	
+	Get_Component<CMaterialAnimator>()->LinkAnimate_Material(Get_Component<CMaterial>());
+
 	Get_Component<CAnimator3D>()->Change_Animation("Base_Wait.anim",false);
-	
 	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-5,0,-5}, {5,5,5} });
 
 	Add_Parts();
 	
 	Add_EventListen();
+
+	Add_MatAnimator();
 
 	m_EventPack.eventSystem = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
 }
@@ -79,7 +81,6 @@ void CNonPlayer::Awake()
 void CNonPlayer::Priority_Update(_float dt)
 {
 	m_EventPack.m_InteractCoolDown += dt;
-	prevPos = Get_Position();
 }
 
 void CNonPlayer::Update(_float dt)
@@ -87,6 +88,7 @@ void CNonPlayer::Update(_float dt)
 	Update_Movement(dt);
 	Update_TileInfo(dt);
 	m_pMachine->Update(dt);
+	Get_Component<CMaterialAnimator>()->Update_Animation(dt);
 }
 
 void CNonPlayer::Late_Update(_float dt)
@@ -124,7 +126,6 @@ void CNonPlayer::Update_Movement(_float dt)
 void CNonPlayer::Update_TileInfo(_float dt){
 
 	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
-	m_TileInfoPack.NowIndex = TileSys->Get_IndexByPosition(Get_Position());
 	TileSys->Get_NeighborInfoByIndex(m_TileInfoPack.NowIndex, m_TileInfoPack.infos);
 	m_TileInfoPack.infos.resize(9);
 
@@ -147,22 +148,21 @@ void CNonPlayer::Update_TileInfo(_float dt){
 		}
 	}
 
-	TILE_INDEX prevIndex = TileSys->Get_IndexByPosition(prevPos);
 	TILE_INDEX currIndex =TileSys->Get_IndexByPosition(Get_Position());
 
-	TileSys->Add_TileFlagByIndex(currIndex, static_cast<_uint>(TILE_FLAG::ONCHARACTER));
-	TileSys->Remove_TileFlagByIndex(prevIndex, static_cast<_uint>(TILE_FLAG::ONCHARACTER));
+	if (false==m_TileInfoPack.NowIndex.isSame(currIndex)) {
+		prevIndex = m_TileInfoPack.NowIndex;
+		m_TileInfoPack.NowIndex = currIndex;
+		TileSys->Add_TileFlagByIndex(m_TileInfoPack.NowIndex, static_cast<_uint>(TILE_FLAG::ONCHARACTER));
+		TileSys->Remove_TileFlagByIndex(prevIndex, static_cast<_uint>(TILE_FLAG::ONCHARACTER));
+	}
 }
 
 void CNonPlayer::Render_GUI()
 {
 	__super::Render_GUI();
-	ImGui::Begin("Npc_State");
-	ImGui::Text("MoveAxis : %.2f ,  %.2f", m_MovementPack.vMoveAxis.x, m_MovementPack.vMoveAxis.y);
-
-	ImGui::Checkbox("Has Agenda", &m_EventPack.HasAgenda);
+	
 	m_pMachine->Render_State(this);
-	ImGui::End();
 }
 
 HRESULT CNonPlayer::Make_Model(NPC_DATA_DESC desc)
@@ -192,11 +192,9 @@ void CNonPlayer::Add_EventListen()
 	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 	if (nowLevel)
 	{
-
 		auto EventSys = nowLevel->Get_LevelObject<CEventSystem>();
 
-		EventSys->Add_Listner<PLAYER_POS>(
-			[this](const PLAYER_POS& pos) {
+		EventSys->Add_Listner<PLAYER_POS>([this](const PLAYER_POS& pos) {
 				PLAYER_POS Playerpos = pos;
 				_float fDistance = XMVectorGetX(XMVector4Length(m_pTransform->Get_Pos() - XMLoadFloat4(&Playerpos.playerPos)));
 				m_TracePack.pPlayer = pos.pPlayer;
@@ -211,12 +209,46 @@ void CNonPlayer::Add_EventListen()
 					XMVector4Normalize(XMLoadFloat4(&Playerpos.playerPos) - m_pTransform->Get_Pos()));
 			});
 
-		EventSys->Add_Listner<TALKING_EVENT>([&](const TALKING_EVENT& evt) {
-			if (evt.pListner != this) return;
-			if (m_EventPack.m_InteractCoolDown <0.5f) return;
-				m_EventPack.HasAgenda = true; 
+		EventSys->Add_Listner<OnNoticeDialogue>([&](const OnNoticeDialogue& evt) {
+			if (evt.pSubject != this) return; //다이얼로그 시작
+				LookTo(
+					Get_TracePack().pPlayer->Get_Component<CTransform>()->Get_Pos()
+				);
+
+				m_EventPack.reservedMsg.Type = "Talking";
+			});
+
+		EventSys->Add_Listner<OnEndDialogue>([&](const OnEndDialogue& evt) {
+			if (evt.pSpeaker != this) return;
+				Set_Closed(evt); //끝
 		});
+
+		EventSys->Add_Listner<RESPONSE_TRANS_ITEM>([&](const RESPONSE_TRANS_ITEM& evt) {
+			if (evt.pSenderID != this->m_ObjectID) return;
+				m_ActionPack.NextPhase();
+			});
+
+		EventSys->Add_Listner<EVNET_NPC_TO_NPC>([&](const EVNET_NPC_TO_NPC& evt) {
+			if (evt.Server_NPCID != this->m_CharacterDesc.NpcID) return;
+			Serve_Order(evt.OrderMsg, evt.Orderer_NPCID);
+			});
 	};
+}
+
+void CNonPlayer::Add_MatAnimator()
+{
+	MATERIAL_CLIP clip = {};
+	clip.AnimationKeyFrame = { 10,10,10,11,11,11,11,11,11,11 ,11,11 ,11,11 ,11,11 ,};
+	clip.fDuration = 50.f;
+	clip.TickperSecond = 15.f;
+	clip.isLoop = false;
+	Get_Component<CMaterialAnimator>()->RegisterKeyFrame("mEye", "Smile", clip);
+
+	clip.AnimationKeyFrame = {6,6,6,6,6,6,6,7,7,8,8,8,8,8,7,7, 6,6,6,6,6,};
+	clip.isLoop = true;
+	Get_Component<CMaterialAnimator>()->RegisterKeyFrame("mEye", "IDLE", clip);
+
+	Get_Component<CMaterialAnimator>()->Change_Animation("mEye", "IDLE");
 }
 
 void CNonPlayer::LookToPlayer(_float dt)
@@ -291,41 +323,62 @@ void CNonPlayer::LookTo(_fvector pos)
 	m_MovementPack.fTargetDegree = m_MovementPack.fCurrentDegree + XMConvertToDegrees(angle);
 }
 
-void CNonPlayer::Open_Dialogue(const string tag, void* pArg)
-{
-	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
-	auto UI_Responder = nowLevel->Get_LevelObject<CUI_Responcer>();
-	UI_Responder->Active_UI(tag, pArg);
-}
 
-class CItem_Object* CNonPlayer::Spawn_Item(const string tag)
+CItem_Object* CNonPlayer::Spawn_Item(const string tag, _float3 pos)
 {
 	auto itemSpawner = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
-	return itemSpawner->SpawnItem(tag);
+	return itemSpawner->SpawnItem(tag, pos);
 }
+
 
 void CNonPlayer::Set_Animation(const string tag)
 {
-	Get_Component<CAnimator3D>()->Change_Animation(tag);
+	HRESULT hr = Get_Component<CAnimator3D>()->Change_Animation(tag);
+	//if (FAILED(hr))
+	//	Get_Component<CAnimator3D>()->Change_Animation("Base_Wait.anim");
 }
 
 void CNonPlayer::Set_Emotion(const string tag)
 {
+	Get_Component<CMaterialAnimator>()->Change_Animation("mEye", tag);
 }
 
 void CNonPlayer::Set_Voice(const string tag)
 {
 }
 
-void CNonPlayer::Do_PostAction(POST_ACTION_DATA_DESC data)
+void CNonPlayer::Set_Camera(const string tag)
 {
-	if (data.Type == "IndexReady") {
-		m_EventPack.Ready_SequenceID =data.Param2;
+	if (tag.empty())
+		return;
+
+	CAM_MOVE move = {tag};
+	m_EventPack.eventSystem->OnBroadCast(move);
+
+}
+
+void CNonPlayer::Set_Closed(OnEndDialogue endMsg)
+{
+	if (m_EventPack.isReservedAction()) {
+		m_EventPack.Reset();
 	}
-	else if (data.Type == "TransferItem") {
-		m_EventPack.AgendaType = data.Type;
-		m_ReservedPack.reservedAction = data;
-	}
+
+	m_EventPack.reservedMsg = endMsg.msg;
+	m_EventPack.nextSequenceID = endMsg.msg.NextSequenceID;
+
+	if (endMsg.NextSequenceID >=0)
+		m_EventPack.nextSequenceID = endMsg.NextSequenceID;
+
+	m_EventPack.externalCondition = endMsg.NextCondition;
+}
+
+void CNonPlayer::Serve_Order(const string& order, _uint orderer)
+{
+}
+
+_float4x4 CNonPlayer::Get_SocketMatrix(string socketName)
+{
+	return Get_Component<CAnimator3D>()->Get_BoneMatrix(socketName);
 }
 
 CNonPlayer* CNonPlayer::Create()

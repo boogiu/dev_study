@@ -60,7 +60,6 @@ HRESULT CAutoTile::Initialize(INIT_DESC* pArg)
 		tileSys->Set_Material_ID(m_Index, { 0,0,0,0 });
 		tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
 	}
-
 	return S_OK;
 }
 
@@ -216,7 +215,7 @@ CGameObject* CAutoTile::Clone(INIT_DESC* pArg)
 
 	if (FAILED(instance->Initialize(pArg)))
 	{
-		MSG_BOX("Object Clone Failed : CBaseField");
+		MSG_BOX("Object Clone Failed : CAutoTile");
 		Safe_Release(instance);
 	}
 

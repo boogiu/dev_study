@@ -12,9 +12,10 @@ HRESULT CPlayerState_Talking::OnEnter()
 	Animator->Release_AnimationBlend();
 	Animator->Change_Animation("Base_Wait.anim", true);
 
-	m_pPlayer->Adjust_To(m_pPlayer->Get_InfoPack().m_pTalker->Get_Component<CTransform>()->Get_Pos());
-	m_pPlayer->Camera_Zoom_In(m_pPlayer->Get_InfoPack().m_pTalker);
+	if(m_pPlayer->Get_InfoPack().pTalker)
+		m_pPlayer->Adjust_To(m_pPlayer->Get_InfoPack().pTalker->Get_Component<CTransform>()->Get_Pos());
 
+	m_pPlayer->Camera_Zoom_In(m_pPlayer->Get_InfoPack().pTalker);
 	return S_OK;
 }
 
@@ -24,14 +25,14 @@ void CPlayerState_Talking::OnUpdate(_float dt)
 
 HRESULT CPlayerState_Talking::OnExit()
 {
-	m_pPlayer->Camera_Zoom_Out();
 
 	return S_OK;
 }
 
 CState* CPlayerState_Talking::HandleTransition()
 {
-	if (m_pPlayer->Get_InfoPack().m_pTalker == nullptr) {
+	if (m_pPlayer->Get_InfoPack().pTalker == nullptr) {
+		m_pPlayer->Camera_Zoom_Out();
 		return m_pLayer->Get_State("Movement_Idle_State");
 	}
 	return nullptr;

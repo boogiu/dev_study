@@ -39,15 +39,25 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 
 	CState* nextState = nullptr;
 
+	//CheckPriority
+	if (infoPack.pEncounterNpc != nullptr) {
+		if (infoPack.pTalker == nullptr) {
+			nextState = m_pLayer->Get_State("Action_Interact_State");
+		}
+	}
+
+	if ((TILE_FLAG::FLAG_TREE & TilePack.Range_FowardInfo.TileFlag) != 0) {
+		nextState = m_pLayer->Get_State("Action_TreeShake_State");
+		m_pPlayer->Adjust_To_Foward();
+	}
+
+	if(nextState)
+		return nextState;
+
 	switch (tPacket.CurItem.TypeTag)
 	{
 	case itemType::None:
-		if (infoPack.m_pEncounterNpc != nullptr) {
-			nextState = m_pLayer->Get_State("Action_Interact_State"); 
-		}
-		else
-			nextState = m_pLayer->Get_State("Action_TreeShake_State");
-			m_pPlayer->Adjust_To_Foward();
+		
 		break;
 	case itemType::Axe:
 			nextState = m_pLayer->Get_State("Action_TreeChop_State");
@@ -64,7 +74,6 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 		break;
 	}
 
-	//if (nextState != nullptr)
 	return nextState;
 }
 

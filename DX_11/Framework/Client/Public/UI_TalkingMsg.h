@@ -43,7 +43,7 @@ private:
     class CUI_Text* m_pTexts = { nullptr };
     class CUI_NameTag* m_pNameTag = { nullptr };
     class CSelectPanel* m_pSelectPanel = { nullptr };
-    class CNpcSpawner* m_pNpcSpawner = { nullptr };
+    class CDialogueManager* m_pDialogueManager = { nullptr };
 
 
     /*던져지는 정보들*/
@@ -53,7 +53,7 @@ private:
     class CPlayer* m_pListner = { nullptr };
 
     vector<SEQUENCE_DATA_DESC> m_Sequences;
-    function<void(_bool)> m_onClose = {};
+    function<void(OnEndDialogue)> m_onClose = {};
     
     _int m_nowSeqIndex = {};
 

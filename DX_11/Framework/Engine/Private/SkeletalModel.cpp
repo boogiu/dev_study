@@ -118,6 +118,7 @@ MINMAX_BOX CSkeletalModel::Get_LocalBoundingBox()
 {
 	return m_pData->Get_LocalBoundingBox();
 }
+
  const vector<_float4x4>& CSkeletalModel::Get_BoneMatrices()
 {
 	 if (!m_bDirty) {
@@ -173,6 +174,11 @@ vector<MINMAX_BOX> CSkeletalModel::Get_MeshBoundingBox()
 		boxes.push_back(m_pData->Get_MeshBoundingBox(i));
 	}
 	return boxes;
+}
+
+MINMAX_BOX CSkeletalModel::Get_MeshBoundingBox(_uint index)
+{
+	return m_pData->Get_MeshBoundingBox(index);
 }
 
 _bool CSkeletalModel::isReadyToDraw()

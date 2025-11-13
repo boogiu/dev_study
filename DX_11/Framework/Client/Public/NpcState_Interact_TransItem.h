@@ -21,10 +21,10 @@ public:
     void OnClose(_bool isEnd);
 
 private:
-    TalkingMsgDesc Make_EvtDesc();
-private:
     State m_eState = { End };
     _float4x4 m_SocketMatrix = {};
+    TRANS_ITEM m_ItemData = {};
+
 public:
     static CNpcState_Interact_TransItem* Create();
     virtual void Free() override;

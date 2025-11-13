@@ -7,6 +7,7 @@
 #include "Animator3D.h"
 
 #include "Item_Object.h"
+#include "Player.h"
 CNpcState_Interact_TransItem::CNpcState_Interact_TransItem()
 {
 
@@ -15,49 +16,64 @@ CNpcState_Interact_TransItem::CNpcState_Interact_TransItem()
 HRESULT CNpcState_Interact_TransItem::OnEnter()
 {
 	auto Animator = m_pCharacter->Get_Component<CAnimator3D>();
-	Animator->Change_Animation("Generic_PullOut.anim", false);
+	Animator->Change_Animation("Transfer_PassForward.anim", false);
 	m_eState = PullOut;
 
-	//		TALKING_EVENT event{ m_pCharacter,nullptr, "Player" };
-	//		m_pCharacter->Get_EventPack().eventSystem->OnBroadCast(event);
-	//		
-	//		auto Animator = m_pCharacter->Get_Component<CAnimator3D>();
-	//		Animator->Change_Animation("Base_Wait.anim", true);
-	//		
-	//		m_pCharacter->Open_Dialogue("TalkingMsg", &desc);
-	//		m_pCharacter->LookTo(m_pCharacter->Get_TracePack().pPlayer->Get_Component<CTransform>()->Get_Pos());
-
+	m_pCharacter->Get_ActionPack().Begin("Transfer_Item");
 	return S_OK;
 }
 
 void CNpcState_Interact_TransItem::OnUpdate(_float dt)
 {
 	auto Animator = m_pCharacter->Get_Component<CAnimator3D>();
-	_float4x4 sockePtr = Animator->Get_BoneMatrix(m_pCharacter->Get_ReservedPack().Socketbone);
-	
+	_float4x4 sockePtr = m_pCharacter->Get_SocketMatrix("Armature_Hand_R");
+
 	XMStoreFloat4x4(&m_SocketMatrix, XMMatrixMultiply(XMLoadFloat4x4(&sockePtr), XMLoadFloat4x4(m_pCharacter->Get_Component<CTransform>()->Get_WorldMatrix_Ptr())));
-	switch (m_eState)
+	_vector socketPos, s, r;
+	XMMatrixDecompose(&s, &r, &socketPos, XMLoadFloat4x4(&m_SocketMatrix));
+	_float3 socketPosition;
+	m_pCharacter->Get_TracePack().pPlayer->Get_InfoPack().pTalker = m_pCharacter;
+
+	XMStoreFloat3(&socketPosition, socketPos);
+ 	switch (m_eState)
 	{
 	case Client::CNpcState_Interact_TransItem::PullOut:
-		if (Animator->isOverAnimTiming(0.8))
+		if (Animator->isOverAnimTiming(0.4))
 		{
-			string itemTag = m_pCharacter->Get_ReservedPack().reservedAction.Param1;
-			CItem_Object* pObj = m_pCharacter->Spawn_Item(itemTag);
+			/*어디서 지금 건넬 아이템 정보를 가져올 것인가.*/
+			string itemTag = m_pCharacter->Get_EventPack().ConsumePostAction().Param1;
+			CItem_Object* pObj = m_pCharacter->Spawn_Item(itemTag, socketPosition);
+
 			//본의 파이널 매트릭스에다가 내 월드 매트릭스를 곱해줘야 하지
 			pObj->Attach_Hand(&m_SocketMatrix);
+			m_ItemData.pObject = pObj;
+			m_ItemData.pSenderID = m_pCharacter->Get_ObjectID();
 			m_eState = ItemHandle;
+			m_pCharacter->Get_ActionPack().NextPhase();
 		}
 		break;
+
 	case Client::CNpcState_Interact_TransItem::ItemHandle:
 		if (Animator->isCurrentAnimEnd())
 		{
+			m_pCharacter->Get_EventPack().eventSystem->OnBroadCast(m_ItemData);
 			m_eState = Transferred;
 		}
 		break;
 	case Client::CNpcState_Interact_TransItem::Transferred:
-
+		if (m_pCharacter->Get_ActionPack().Is("Transfer_Item", ActionPhase::End)) {
+			m_eState = End;
+		}
 		break;
 	case Client::CNpcState_Interact_TransItem::End:
+		Animator->Change_Animation("Base_Wait.anim", false);
+		m_pCharacter->Get_ActionPack().Reset();
+
+		if (m_pCharacter->Get_EventPack().hasNextSequence()) {
+			m_pCharacter->Get_EventPack().reservedMsg.Type = "Talking";
+			m_pCharacter->Get_EventPack().externalCondition= "AfterTrans";
+		};
+
 		break;
 	default:
 		break;
@@ -66,6 +82,7 @@ void CNpcState_Interact_TransItem::OnUpdate(_float dt)
 
 HRESULT CNpcState_Interact_TransItem::OnExit()
 {
+	
 	return S_OK;
 }
 
@@ -76,19 +93,6 @@ CState* CNpcState_Interact_TransItem::HandleTransition()
 
 void CNpcState_Interact_TransItem::Render_State()
 {
-}
-
-TalkingMsgDesc CNpcState_Interact_TransItem::Make_EvtDesc()
-{
-	TalkingMsgDesc desc = {};
-	desc.OpenSize = { 800,160 };
-	desc.OpenSpeed = 8.f;
-	desc.SpeakerID = m_pCharacter->Get_NpcData().NpcID;
-	desc.startSequence = m_pCharacter->Get_EventPack().Ready_SequenceID;
-	desc.Speaker = m_pCharacter;
-
-	desc.OnClose = [this](_bool isEnd) {OnClose(isEnd); };
-	return desc;
 }
 
 void CNpcState_Interact_TransItem::OnClose(_bool isEnd)

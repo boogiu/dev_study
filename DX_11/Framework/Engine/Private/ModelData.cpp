@@ -41,6 +41,12 @@ HRESULT CModelData::Initialize(const string& filePath, ID3D11Device* pDevice)
 
 	ifs.close();
 
+	if (fileHeader.isAnimate) {
+		for (auto mesh : m_Meshes) {
+			mesh->Create_BoneMinMax(m_pSkeleton);
+		}
+	}
+
 	for (auto mesh : m_Meshes) {
 		_float3 meshMin = mesh->Get_MinVertexLocal();
 		_float3 meshMax = mesh->Get_MaxVertexLocal();

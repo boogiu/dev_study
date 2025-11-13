@@ -79,7 +79,7 @@ HRESULT CRenderSystem::Initialize()
 HRESULT CRenderSystem::Render()
 {
 	m_pPipeLine->Update_FrameBuffer(m_pContext);
-
+	m_pPipeLine->Update_Frustum();
 	Render_Shadow();
 
 	if (FAILED(m_pTargetManager->Begin_MRT("MRT_Deferred"))) return E_FAIL;

@@ -44,31 +44,33 @@ public:
 	_float HalfX() { return m_fSizeX * 0.5f; }
 	_float HalfY() { return m_fSizeY * 0.5f; }
 
-	/*Get Anchor*/
-	_float2 LT() { return { m_fWorldX - HalfX(), m_fWorldY - HalfY() }; }
-	_float2 LC() { return { m_fWorldX - HalfX(), m_fWorldY }; }
-	_float2 LB() { return { m_fWorldX - HalfX(), m_fWorldY + HalfY() }; }
-
-	_float2 CT() { return { m_fWorldX , m_fWorldY - HalfY() }; }
-	_float2 Center() { return { m_fWorldX,m_fWorldY }; }
-	_float2 CB() { return { m_fWorldX , m_fWorldY + HalfY() }; }
-
-	_float2 RT() { return { m_fWorldX + HalfX(), m_fWorldY - HalfY() }; }
-	_float2 RC() { return { m_fWorldX + HalfX(), m_fWorldY }; }
-	_float2 RB() { return   { m_fWorldX + HalfX(), m_fWorldY + HalfY()}; }
 
 	/*Get Anchor*/
-	_float2 Local_LT() { return { m_fLocalX - HalfX(), m_fLocalY - HalfY() }; }
-	_float2 Local_LC() { return { m_fLocalX - HalfX(), m_fLocalY }; }
-	_float2 Local_LB() { return { m_fLocalX - HalfX(), m_fLocalY + HalfY() }; }
+	_float2 LT(_float x = 0.f, _float y = 0.f) { return { m_fWorldX - HalfX() + x, m_fWorldY - HalfY() + y }; }
+	_float2 LC(_float x = 0.f, _float y = 0.f) { return { m_fWorldX - HalfX() + x, m_fWorldY + y }; }
+	_float2 LB(_float x = 0.f, _float y = 0.f) { return { m_fWorldX - HalfX() + x, m_fWorldY + HalfY() + y }; }
 
-	_float2 Local_CT() { return { m_fLocalX , m_fLocalY - HalfY() }; }
-	_float2 Local_Center() { return { m_fLocalX,m_fLocalY }; }
-	_float2 Local_CB() { return { m_fLocalX , m_fLocalY + HalfY() }; }
+	_float2 CT(_float x = 0.f, _float y = 0.f) { return { m_fWorldX + x , m_fWorldY - HalfY() + y }; }
+	_float2 Center(_float x = 0.f, _float y = 0.f) { return { m_fWorldX + x,m_fWorldY + y }; }
+	_float2 CB(_float x = 0.f, _float y = 0.f) { return { m_fWorldX + x , m_fWorldY + HalfY() + y }; }
 
-	_float2 Local_RT() { return { m_fLocalX + HalfX(), m_fLocalY - HalfY() }; }
-	_float2 Local_RC() { return { m_fLocalX + HalfX(), m_fLocalY }; }
-	_float2 Local_RB() { return   { m_fLocalX + HalfX(), m_fLocalY + HalfY() }; }
+	_float2 RT(_float x = 0.f, _float y = 0.f) { return { m_fWorldX + HalfX() + x, m_fWorldY - HalfY() + y }; }
+	_float2 RC(_float x = 0.f, _float y = 0.f) { return { m_fWorldX + HalfX() + x, m_fWorldY + y }; }
+	_float2 RB(_float x = 0.f, _float y = 0.f) { return   { m_fWorldX + HalfX() + x, m_fWorldY + HalfY() + y }; }
+
+	/*Get Anchor*/
+	_float2 Local_LT(_float x = 0.f, _float y = 0.f) { return { m_fLocalX - HalfX() + x, m_fLocalY - HalfY() + y }; }
+	_float2 Local_LC(_float x = 0.f, _float y = 0.f) { return { m_fLocalX - HalfX() + x, m_fLocalY + y }; }
+	_float2 Local_LB(_float x = 0.f, _float y = 0.f) { return { m_fLocalX - HalfX() + x, m_fLocalY + HalfY() + y }; }
+
+	_float2 Local_CT(_float x = 0.f, _float y = 0.f) { return { m_fLocalX + x, m_fLocalY - HalfY() + y }; }
+	_float2 Local_Center(_float x = 0.f, _float y = 0.f) { return { m_fLocalX + x,m_fLocalY + y }; }
+	_float2 Local_CB(_float x = 0.f, _float y = 0.f) { return { m_fLocalX + x, m_fLocalY + HalfY() + y }; }
+
+	_float2 Local_RT(_float x = 0.f, _float y = 0.f) { return { m_fLocalX + HalfX() + x, m_fLocalY - HalfY() + y }; }
+	_float2 Local_RC(_float x = 0.f, _float y = 0.f) { return { m_fLocalX + HalfX() + x, m_fLocalY + y }; }
+	_float2 Local_RB(_float x = 0.f, _float y = 0.f) { return   { m_fLocalX + HalfX() + x, m_fLocalY + HalfY() + y }; }
+
 
 	_float2 Align_To(ANCHOR pivot, _float2 _pivot);
 

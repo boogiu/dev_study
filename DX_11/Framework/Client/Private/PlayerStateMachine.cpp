@@ -32,6 +32,8 @@
 #include "PlayerState_Get.h"
 #include "PlayerState_Eat.h"
 #include "PlayerState_Talking.h"
+#include "PlayerState_TransferGet.h"
+#include "PlayerState_Diy.h"
 
 CPlayerStateMachine::CPlayerStateMachine(CPlayer* pPlayer)
 	:m_pOwner(pPlayer)
@@ -49,7 +51,9 @@ HRESULT CPlayerStateMachine::Initialize()
 	auto Open_Inven = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_OpenInven>("Action_OpenInven_State");
 	auto Get = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Get>("Action_Get_State");
 	auto Eat = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Eat>("Action_Eat_State");
+	auto Diy = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Diy>("Action_Diy_State");
 	auto Interact = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Interact>("Action_Interact_State");
+	auto TransGet = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_TransferGet>("Action_TransGet_State");
 
 	auto Talking = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Talking>("Interact_Talking_State");
 	Trans_Tool->Set_Owner(m_pOwner);
@@ -58,6 +62,8 @@ HRESULT CPlayerStateMachine::Initialize()
 	Eat->Set_Owner(m_pOwner);
 	Talking->Set_Owner(m_pOwner);
 	Interact->Set_Owner(m_pOwner);
+	TransGet->Set_Owner(m_pOwner);
+	Diy->Set_Owner(m_pOwner);
 	
 	auto toolLayer = CLayerState::Create();
 	toolLayer->Set_Machine(this);

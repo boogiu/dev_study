@@ -22,6 +22,9 @@ private:
 	void Render_EditTab();
 	void Render_TileEdit();
 	void Render_SaveTab();
+
+private:
+	void Render_ObjectCategory();
 private:
 	class CGridObject* m_pGrid = { nullptr };
 	Mode m_eMode = {};

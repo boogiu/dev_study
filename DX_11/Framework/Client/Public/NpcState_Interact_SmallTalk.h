@@ -14,9 +14,6 @@ public:
     virtual HRESULT OnExit() override;
     virtual CState* HandleTransition() override;
 
-private:
-    TalkingMsgDesc Make_EvtDesc();
-    void OnClose(_bool isEnd);
 
 public:
     static CNpcState_Interact_SmallTalk* Create();

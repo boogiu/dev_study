@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "NonPlayer.h"
 #include "NpcRco.h"
+#include "NpcRcm.h"
 
 #include "Target_Camera.h"
 #include "Free_Camera.h"
@@ -36,10 +37,13 @@
 #include "UI_ItemText.h"
 #include "TexturePanel.h"
 #include "SelectPanel.h"
+#include "CraftCard.h"
 #include "UI_Text.h"
 #include "UI_EventMsg.h"
 #include "UI_NameTag.h"
 #include "UI_TalkingMsg.h"
+#include "UI_CraftPanel.h"
+#include "UI_ItemCard.h"
 
 #include "Insect_Object.h"
 
@@ -48,6 +52,7 @@
 #include "UI_Responcer.h"
 #include "EventSystem.h"
 #include "NpcSpawner.h"
+#include "DialogueManager.h"
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 	:CLevel{ LevelKey },
@@ -66,7 +71,7 @@ HRESULT CGamePlayLevel::Initialize()
 	Add_LevelObject<CItemSpawner>()->Read_ItemData(L"../../Resources/Data/ItemData.json");
 	Add_LevelObject<CInsectSpawner>()->Link_ItemSpawner(Get_LevelObject<CItemSpawner>());
 	Add_LevelObject<CNpcSpawner>()->Read_CharacterData("../../Resources/Data/NpcData.json");
-	Add_LevelObject<CNpcSpawner>()->Read_CharacterSequece("../../Resources/Data/SequenceData.json");
+	Add_LevelObject<CDialogueManager>()->Read_CharacterSequece("../../Resources/Data/SequenceData.json");
 
 	CGameInstance::GetInstance()->Get_FontSystem()->Add_Font("Sindy", TEXT("../../Resources/Font/Sindy.spritefont"));
 	Add_LevelObject<CEventSystem>();
@@ -85,6 +90,11 @@ HRESULT CGamePlayLevel::Awake()
 	Get_LevelObject<CInsectSpawner>()->Read_InsectData(L"../../Resources/Data/InsectData.json");
 	Get_LevelObject<CInsectSpawner>()->Set_Target(pPlayer);
 
+	Get_LevelObject<CDialogueManager>()->Set_FreindSystem(
+		Get_LevelObject<CEventSystem>(), 
+		Get_LevelObject<CUI_Responcer>(),
+		Get_LevelObject<CNpcSpawner>());
+
 	CGameObject* pFreeCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_FreeCamera" })
 		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
 		.Position({ 550,10,550 })
@@ -101,12 +111,14 @@ HRESULT CGamePlayLevel::Awake()
 		.Position({ 750,150,750 })
 		.Build("Sun");
 
-	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"³Ê±¼", { 550,0,550 });
+	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"³Ê±¼", { 560,0,550 },"GamePlay_GameObject_NpcRco");
+	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"¹ãÅç", { 590,0,560 },"GamePlay_GameObject_NpcRcm");
 
 	m_pObjectManager->Add_Object(pPlayer, { "GamePlay_Level", "Player_Layer" });
 	m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 	m_pObjectManager->Add_Object(pSunCamera, { "GamePlay_Level", "Camera_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CInsectSpawner>(), { "GamePlay_Level", "Level_Layer" });
+	m_pObjectManager->Add_Object(Get_LevelObject<CUI_Responcer>(), { "GamePlay_Level", "Level_Layer" });
 
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(pSunCamera->Get_Component<CCamera>());
@@ -161,22 +173,17 @@ void CGamePlayLevel::PreLoad_Level()
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/NonPlayer/Racoon");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/Animations", "NPC");
 
-	/*Tiles  Path*/
-	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldRoad");
-	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/FieldRoad");
+	/*Field  Path*/
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldModel");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/FieldModel");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/FieldModel/FieldUnitAnim/PltTreeOakAnim", "OakTree");
 
-	/*FieldOuts  Path*/
-	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldOut");
-	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/FieldOut");
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Furniture");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Furniture");
 
-	/*Structure  Path*/
-	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Structure");
-	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Structure");
-
-	/*FieldUnit Path*/
-	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldUnit");
-	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/FieldUnit");
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/FieldUnitAnim/PltTreeOakAnim","OakTree");
+	/*Hole  Path*/
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Hole");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Hole");
 
 	/*Insect  Path*/
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Insect");
@@ -227,10 +234,14 @@ void CGamePlayLevel::PreLoad_Level()
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_NameTag", CUI_NameTag::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_EventMsg", CUI_EventMsg::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_TalkingMsg", CUI_TalkingMsg::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_CraftPanel", CUI_CraftPanel::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_ItemCardl", CUI_ItemCard::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_CraftCard", CCraftCard::Create());
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Insect_Object", CInsect_Object::Create());
-	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcRco", CNpcRco::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcNrm", CNonPlayer::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcRco", CNpcRco::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcRcm", CNpcRcm::Create());
 }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)

@@ -11,7 +11,7 @@
 #include "SelectPanel.h"
 
 #include "Level.h"
-#include "NpcSpawner.h"
+#include "DialogueManager.h"
 #include "NonPlayer.h"
 
 CUI_TalkingMsg::CUI_TalkingMsg()
@@ -42,7 +42,7 @@ HRESULT CUI_TalkingMsg::Initialize(INIT_DESC* pArg)
 
 
 	auto Level = CGameInstance::GetInstance()->Get_CurrentLevel();
-	m_pNpcSpawner = Level->Get_LevelObject<CNpcSpawner>();
+	m_pDialogueManager = Level->Get_LevelObject<CDialogueManager>();
 
 	m_bActive = false;
 
@@ -65,13 +65,6 @@ void CUI_TalkingMsg::Priority_Update(_float dt)
 			if (m_nowSeqIndex >= m_Sequences.size()) {
 				m_nowSeqIndex = m_Sequences.size() - 1; //마지막으로 유지 시키고,
 				UI_DeActive(nullptr);
-
-				//
-				//if (m_Sequences[m_nowSeqIndex].postAction.Type.empty()) {
-				//	UI_DeActive(nullptr); //직접 종료 해줌.
-				//}
-				//else {
-				//}
 			}
 			else {
 				m_iTypeSubStr = 0;
@@ -111,7 +104,7 @@ void CUI_TalkingMsg::Update(_float dt)
 			m_iTypeSubStr++; //타이핑 시간 지났으니 다음 것도 출력
 
 			if (Fulltext.substr(m_iTypeSubStr, 1) == L"."|| Fulltext.substr(m_iTypeSubStr, 1) == L",")
-				m_fTypePuaseTime = .25f;
+				m_fTypePuaseTime = .15f;
 			else
 				m_fTypePuaseTime = .05f;
 
@@ -162,18 +155,17 @@ void CUI_TalkingMsg::UI_Active(void* pArg)
 
 	m_fOpenSpeed = desc->OpenSpeed;
 	m_vOpenSize = desc->OpenSize;
-
-	m_pSpeaker = desc->Speaker;
-
 	m_SpeakerID = desc->SpeakerID;
-	m_Sequences = m_pNpcSpawner->Get_SequenceData(desc->SpeakerID, desc->startSequence);
+	m_Sequences = m_pDialogueManager->Get_SequenceData(desc->SpeakerID, desc->startSequence);
+
 	if (m_Sequences.empty()) {
 		UI_DeActive(nullptr);
 	}
+
 	m_nowSeqIndex = 0;
 	m_bActive = true;
-	m_SpeakerName = desc->Speaker->Get_NpcData().NpcName;
-
+	m_SpeakerName = desc->SpeakerName;
+	m_pSpeaker = desc->pSpeaker;
 	if (desc && desc->OnClose)
 		m_onClose = desc->OnClose;
 
@@ -183,8 +175,7 @@ void CUI_TalkingMsg::UI_Active(void* pArg)
 void CUI_TalkingMsg::UI_DeActive(void* pArg)
 {
 	m_bActive = false;
-	POST_ACTION_DATA_DESC NextSeq = m_Sequences[m_nowSeqIndex].postAction;
-
+	
 	m_vOpenSize = { 0,0 };
 	m_fSizeX = 0;
 	m_fSizeY = 0;
@@ -193,7 +184,6 @@ void CUI_TalkingMsg::UI_DeActive(void* pArg)
 
 	m_pTexts->Set_Active(false);
 	m_pTexts->Clear_Text();
-
 	m_pNameTag->Set_Active(false);
 	m_pSelectPanel->DeActive();
 	m_fElapseTime = 0.f;
@@ -201,10 +191,13 @@ void CUI_TalkingMsg::UI_DeActive(void* pArg)
 	m_fTypingTime = 0;
 
 	if (m_onClose)
-		m_onClose(!NextSeq.Continue);
-
-	if (NextSeq.Type.empty() == false)
-		m_pSpeaker->Do_PostAction(NextSeq);
+		m_onClose(
+			OnEndDialogue{
+			nullptr,
+			m_Sequences[m_nowSeqIndex].NextSequenceID,
+			m_Sequences[m_nowSeqIndex].NextCondition,
+			m_Sequences[m_nowSeqIndex].postActionMsg}
+		);
 
 	m_onClose = nullptr;
 	SequenceClear();
@@ -270,17 +263,21 @@ void CUI_TalkingMsg::Ready_Parts()
 
 	Get_Component<CObjectContainer>()->Add_Child(pSelectUI, false);
 	m_pSelectPanel = dynamic_cast<CSelectPanel*>(pSelectUI);
+	m_pSelectPanel->Get_Component<CSprite2D>()->ChangeSprite(1);
+
 }
 
 void CUI_TalkingMsg::DoSeqMotions()
 {
-	if (m_bMotionCalled) return;
 
 	/*화자의 모션을 제어 => string으로 혹은 스테이트  변경으로?*/
 	/*ㄴㄴ 단순 애니메이션 제어 형식이 깔끔*/
+
 	m_pSpeaker->Set_Animation(m_Sequences[m_nowSeqIndex].Motion);
+	if (m_bMotionCalled) return;
 	m_pSpeaker->Set_Voice(m_Sequences[m_nowSeqIndex].Voice);
 	m_pSpeaker->Set_Emotion(m_Sequences[m_nowSeqIndex].Emotion);
+	m_pSpeaker->Set_Camera(m_Sequences[m_nowSeqIndex].Camera);
 
 	m_bMotionCalled = true;
 }
@@ -309,7 +306,7 @@ void CUI_TalkingMsg::ReArrange_Sequence(_int selectChoice)
 	_int NextSeq = m_Sequences[m_nowSeqIndex].choiceSelection[selectChoice].NextSequenceID;
 	/*시퀀스 우선 종료 시키고*/
 
-	m_Sequences = m_pNpcSpawner->Get_SequenceData(m_SpeakerID, NextSeq);
+	m_Sequences = m_pDialogueManager->Get_SequenceData(m_SpeakerID, NextSeq);
 	m_nowSeqIndex = 0;
 	m_bActive = true;
 	m_bSelectionActive = false;

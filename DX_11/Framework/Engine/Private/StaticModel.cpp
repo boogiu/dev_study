@@ -105,6 +105,11 @@ vector<MINMAX_BOX> CStaticModel::Get_MeshBoundingBox()
     return boxes;
 }
 
+MINMAX_BOX CStaticModel::Get_MeshBoundingBox(_uint index)
+{
+    return m_pData->Get_MeshBoundingBox(index);
+}
+
 HRESULT CStaticModel::Draw(ID3D11DeviceContext* pContext, _uint Index)
 {
     return m_pData->Render_Mesh(pContext, Index);

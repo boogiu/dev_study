@@ -41,6 +41,7 @@ void CTexturePanel::Late_Update(_float dt)
 
 void CTexturePanel::Render_GUI()
 {
+	__super::Render_GUI();
 }
 
 
