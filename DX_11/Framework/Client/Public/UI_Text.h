@@ -27,6 +27,10 @@ public:
     void Rotate(_float radian);
     void Set_Color(_float4 color);
 
+public:
+    virtual void UI_Active(void* pArg) override;
+    virtual void UI_DeActive(void* pArg = nullptr) override;
+
 private:
     _bool m_bActive = { false };
     ANCHOR m_eAnchor = { ANCHOR::Center};

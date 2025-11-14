@@ -19,13 +19,13 @@ namespace Engine
 	
 	enum class LIGHT_TYPE { DIRECTIONAL, POINT, SPOTLIGHT };
 
-	enum class RENDER_PASS_TYPE { PRIORITY, RENDER_OPAQUE, NONLIGHT_OPAQUE };
 
 	enum class COLLIDER_TYPE { AABB, OBB, SPHERE };
 	
 	enum class SOUND_GROUP { BGM, SFX, UI, TALK, END };
 
-	enum class RENDER_PASS { RENDER_PRIORITY, RENDER_OPAQUE, RENDER_TRANSPARENT, RENDER_UI, RG_END };
+	enum class RENDER_PASS_TYPE { PRIORITY, RENDER_OPAQUE, NONLIGHT_OPAQUE };
+	enum class RENDER_LAYER { Default, CustomOnly, Both };
 
 	enum class ANCHOR : unsigned int {
 		Center = 0,

@@ -69,6 +69,18 @@ BlendState BS_AlphaBlend
     BlendOp = Add;
 };
 
+BlendState BS_Premultiplied
+{
+    BlendEnable[0] = true;
+    SrcBlend = One; 
+    DestBlend = Inv_Src_Alpha; 
+    BlendOp = Add;
+
+    SrcBlendAlpha = One;
+    DestBlendAlpha = Inv_Src_Alpha;
+    BlendOpAlpha = Add;
+};
+
 BlendState BS_Blend
 {
     BlendEnable[0] = true;
@@ -76,7 +88,13 @@ BlendState BS_Blend
     DestBlend = one;
     BlendOp = Add;
 };
-
+BlendState BS_UI_AlphaBlend
+{
+    BlendEnable[0] = true;
+    SrcBlend = one;
+    DestBlend = Inv_Src_Alpha; /* µ¤À» »ö»ó*/
+    BlendOp = Add;
+};
 
 SamplerState DefaultSampler = sampler_state
 {

@@ -28,15 +28,24 @@ public:
 	void Render_GUI();
 #endif // _USING_GUI
 
+#pragma region RenderTarget
 public:
+	virtual HRESULT Create_RenderTarget(const RenderTargetDesc& desc) override;
+	virtual void Add_RenderCommand(const RENDER_COMMAND& command) override;
+	virtual void DrawTo(const string& targetKey, function<void(ID3D11DeviceContext*)> drawCall) override;
+	virtual ID3D11ShaderResourceView* Get_TargetSRV(const string strTag) override;
+private:
+	void Process_RenderCommand();
+#pragma endregion
 
 public:
-	HRESULT Get_InputLayout(class CModel* pModel, class CShader* pShader, _uint DrawIndex, const string& passConstant,  ID3D11InputLayout** ppInputLayout);
-	HRESULT Get_BufferInputLayout(class CVIBuffer* pBuffer, class CShader* pShader,const string& passConstant,  ID3D11InputLayout** ppInputLayout);
+	virtual HRESULT Get_InputLayout(class CModel* pModel, class CShader* pShader, _uint DrawIndex, 
+		const string& passConstant,  ID3D11InputLayout** ppInputLayout) override;
+	virtual  HRESULT Get_BufferInputLayout(class CVIBuffer* pBuffer, class CShader* pShader,
+		const string& passConstant,  ID3D11InputLayout** ppInputLayout)override;
 	class CPipeLine* Get_Pipeline() { return m_pPipeLine; }
 
 private:
-	HRESULT ReadyShadow();
 	void Render_Shadow();
 	HRESULT Change_Viewport(_uint iWidth, _uint iHeight);
 
@@ -61,9 +70,7 @@ private:
 	UIPass* m_pUIPass = { nullptr };
 	DebugPass* m_pDebugPass = { nullptr };
 
-	/*Shadow Depth*/
-	ID3D11DepthStencilView* m_pShadowDepth = { nullptr };
-
+	vector<RENDER_COMMAND> m_RenderCommands;
 public:
 	static CRenderSystem* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

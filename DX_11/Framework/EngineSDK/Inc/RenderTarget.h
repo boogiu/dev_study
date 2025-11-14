@@ -15,8 +15,14 @@ public:
 	ID3D11ShaderResourceView* Get_SRV() const {
 		return m_pSRV;
 	}
+	ID3D11DepthStencilView* Get_DSV() const {
+		return m_pDSV;
+	}
+	D3D11_VIEWPORT* Get_ViewPort() {
+		return &m_viewPort;
+	}
 public:
-	HRESULT Initialize(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vClearColor);
+	HRESULT Initialize(const RenderTargetDesc& targetDesc);
 	void Clear();
 
 private:
@@ -25,10 +31,11 @@ private:
 	ID3D11Texture2D* m_pTexture2D = { nullptr };
 	ID3D11RenderTargetView* m_pRTV = { nullptr };
 	ID3D11ShaderResourceView* m_pSRV = { nullptr };
+	ID3D11DepthStencilView* m_pDSV = { nullptr };
 	_float4						m_vClearColor = {};
-
+	D3D11_VIEWPORT m_viewPort = {};
 public:
-	static CRenderTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vClearColor);
+	static CRenderTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const RenderTargetDesc& targetDesc);
 	virtual void Free() override;
 };
 

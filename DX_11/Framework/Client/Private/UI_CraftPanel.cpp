@@ -19,7 +19,7 @@
 #include "Helper_Func.h"
 #include "IResourceService.h"
 #include "Texture.h"
-
+#include "UI_ItemText.h"
 CUI_CraftPanel::CUI_CraftPanel()
 {
 }
@@ -55,71 +55,109 @@ HRESULT CUI_CraftPanel::Initialize(INIT_DESC* pArg)
 
 	auto Level = CGameInstance::GetInstance()->Get_CurrentLevel();
 
-	m_bActive = true;
+	m_bActive = false;
+	m_pCraftCard->UI_DeActive(nullptr);
+	for (size_t i = 0; i < m_pCards.size(); i++)
+	{
+		m_pCards[i]->UI_DeActive(nullptr);
+	}
+	Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
+
 	return S_OK;
 }
 
 void CUI_CraftPanel::Priority_Update(_float dt)
 {
+	Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
 	if (!m_bActive) return;
 
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_RIGHT)) {
-		Valid_Index(1);
+	if (m_eState == Closed)
+	{
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) 
+			m_eState = Opened;
 	}
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_LEFT)) {
-		Valid_Index(-1);
+	else if (m_eState == Opened) {
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_RIGHT)) {
+			Valid_Index(1);
+		}
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_LEFT)) {
+			Valid_Index(-1);
+		}
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_UP)) {
+			Valid_Index(-m_Col);
+		}
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_DOWN)) {
+			Valid_Index(m_Col);
+		}
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
+			m_eState = Selected;
+			m_pCraftCard->UI_Active(nullptr);
+		}
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SHIFT)) {
+			m_eState = Closed;
+			UI_DeActive(nullptr);
+		}
 	}
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_UP)) {
-		Valid_Index(-m_Col);
-	}
-	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_DOWN)) {
-		Valid_Index(m_Col);
+	else if (m_eState == Selected) {
+		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SHIFT)) {
+			m_eState = Opened;
+			m_pCraftCard->UI_DeActive(nullptr);
+		}
 	}
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
 void CUI_CraftPanel::Update(_float dt)
 {
-	if (!m_bActive) return;
+	//if (!m_bActive) return;
 	m_pCursor->Set_Pivot(m_pCards[m_NowIndex]->Get_CenterPos(), { xCardSize * 0.5f,yCardSize * 0.2f }, { .5f, .5f });
 	m_pCards[m_NowIndex]->Hover();
+	m_pText->Set_Text(L"µ¹", true);
+	m_pText->Set_CenterPos(m_pCards[m_NowIndex]->Local_CT(0.f - 20.f));
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
 void CUI_CraftPanel::Late_Update(_float dt)
 {
-	if (!m_bActive) return;
+	//if (!m_bActive) return;
 	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
 }
 
 void CUI_CraftPanel::Render_GUI()
 {
-	__super::Render_GUI();
-#ifdef _USING_GUI
 
-	auto& vector = Get_Children();
-	for (size_t i = 0; i < vector.size(); i++)
-	{
-		if (ImGui::Button(string(vector[i]->Get_InstanceName() + ":" + to_string(i)).c_str())) {
-			childIndex = i;
-		}
-	}
-	ImGui::Begin("UI_PANEL");
-	vector[childIndex]->Render_GUI();
-	ImGui::End();
-#endif // _USING_GUI
 }
 
 void CUI_CraftPanel::UI_Active(void* pArg)
 {
-	Get_Component<CSprite2D>()->Set_CompActive(true);
+	CRAFT_DATA_DESC*  pDesc = static_cast<CRAFT_DATA_DESC*>(pArg);
+	m_OnClose = pDesc->OnClose;
+	m_InvenData = pDesc->InvenData;
+
+	m_bActive = true;
+	m_pText->Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
+	Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
+	for (size_t i = 0; i < m_pCards.size(); i++)
+	{
+		m_pCards[i]->UI_Active(pArg);
+	}
 }
 
 void CUI_CraftPanel::UI_DeActive(void* pArg)
 {
-	Get_Component<CSprite2D>()->Set_CompActive(false);
+	m_bActive = false;
 
+	m_pText->Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
+	Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
+	m_pCraftCard->UI_DeActive(pArg);
+
+
+	CRAFT_RESULT result = {};
+	if(m_OnClose)
+			m_OnClose(result);
+
+	m_InvenData.clear();
 }
 
 void CUI_CraftPanel::Ready_Parts()
@@ -144,9 +182,9 @@ void CUI_CraftPanel::Ready_Parts()
 				.Add_To_Level("GamePlay_Level")
 				.Scale({ xCardSize ,yCardSize })
 				.Position({
-						xStart + (j * (xCardSize + xPadding)) ,
-						yStart + (i * (yCardSize + yPadding)) })
-						.Rotate(XMConvertToRadians(Helper::Get_Random_Float(-5.f, 5.f)))
+					xStart + (j * (xCardSize + xPadding)) ,
+					yStart + (i * (yCardSize + yPadding)) })
+					.Rotate(XMConvertToRadians(Helper::Get_Random_Float(-15.f, 15.f)))
 				.Build("ItemCard");
 
 			Get_Component<CObjectContainer>()->Add_Child(pItemCard, false);
@@ -175,6 +213,17 @@ void CUI_CraftPanel::Ready_Parts()
 	m_pCraftCard = dynamic_cast<CCraftCard*>(pCraftCard);
 	Get_Component<CObjectContainer>()->Add_Child(m_pCraftCard, false);
 	m_pCraftCard->Get_Component<CSprite2D>()->Set_CompActive(true);
+
+
+	CUI_Object* pObj = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_ItemText" })
+		.Add_To_Level("GamePlay_Level")
+		.Position({ 0,-55 })
+		.Build("Icon");
+
+	m_pText = dynamic_cast<CUI_ItemText*>(pObj);
+	Add_Component<CObjectContainer>()->Add_Child(m_pText, false); /*Ç¥½Ã */
+	m_pText->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_ItemText.png");
+	m_pText->Get_Component<CSprite2D>()->Set_CompActive(false);
 }
 
 
@@ -190,6 +239,11 @@ _int CUI_CraftPanel::Valid_Index(_int Add)
 
 	m_NowIndex = next;
 	return m_NowIndex;
+}
+
+HRESULT CUI_CraftPanel::Read_CraftData()
+{
+	return E_NOTIMPL;
 }
 
 

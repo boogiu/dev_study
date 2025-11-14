@@ -21,7 +21,7 @@ CGameObject::CGameObject()
 }
 
 CGameObject::CGameObject(const CGameObject& rhs)
-	:m_ObjectID(s_NextID++), m_InstanceTag(rhs.m_InstanceTag)
+	:m_ObjectID(s_NextID++), m_InstanceTag(rhs.m_InstanceTag),m_eRenderLayer{rhs.m_eRenderLayer}
 {
 	/*트랜스폼은 가장 먼저.*/
 	type_index transform = type_index(typeid(CTransform));
@@ -125,9 +125,8 @@ void CGameObject::Pre_EngineUpdate(_float dt)
 void CGameObject::Post_EngineUpdate(_float dt)
 {
 	/*패킷은 용도별로 따로 만든다.*/
-	if (m_InstanceTag == "Tree") {
-		int i = 0;
-	}
+	if (m_eRenderLayer != RENDER_LAYER::CustomOnly) {
+		
 	if (Get_Component<CInstanceModel>()) {
 		Make_InstancePacket();
 	}
@@ -151,6 +150,7 @@ void CGameObject::Post_EngineUpdate(_float dt)
 	}
 
 #endif // _DEBUG
+	}
 
 	for (auto& child : Get_Children()) {
 		if (child)

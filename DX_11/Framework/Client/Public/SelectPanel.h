@@ -21,6 +21,7 @@ public:
     void DeActive();
     void Set_Selecte(vector<wstring> select,_float dt);
     _int Check_Select() { return m_SelectedIndex; };
+
 private:
     _bool m_bActive = { false };
     _uint m_SelectCount = {};

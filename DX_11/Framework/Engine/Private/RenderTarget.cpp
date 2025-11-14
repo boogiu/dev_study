@@ -8,18 +8,18 @@ CRenderTarget::CRenderTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 	Safe_AddRef(m_pContext);
 }
 
-HRESULT CRenderTarget::Initialize(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vClearColor)
+HRESULT CRenderTarget::Initialize(const RenderTargetDesc& targetDesc)
 {
-	m_vClearColor = vClearColor;
+	m_vClearColor = targetDesc.vClearColor;
 
 	D3D11_TEXTURE2D_DESC	TextureDesc;
 	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
-	TextureDesc.Width = iWidth;
-	TextureDesc.Height = iHeight;
+	TextureDesc.Width = targetDesc.Width;
+	TextureDesc.Height = targetDesc.Height;
 	TextureDesc.MipLevels = 1;
 	TextureDesc.ArraySize = 1;
-	TextureDesc.Format = ePixelFormat;
+	TextureDesc.Format = targetDesc.ColorFormat;
 
 	TextureDesc.SampleDesc.Quality = 0;
 	TextureDesc.SampleDesc.Count = 1;
@@ -40,6 +40,39 @@ HRESULT CRenderTarget::Initialize(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixe
 	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture2D, nullptr, &m_pSRV)))
 		return E_FAIL;
 
+	/*µª½º ½ºÅÙ½Ç*/
+	ID3D11Texture2D* pDepthStencilTexture = nullptr;
+	D3D11_TEXTURE2D_DESC	DepthTextureDesc;
+	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+	DepthTextureDesc.Width = targetDesc.Width;
+	DepthTextureDesc.Height = targetDesc.Height;
+	DepthTextureDesc.MipLevels = 1;
+	DepthTextureDesc.ArraySize = 1;
+	DepthTextureDesc.Format = targetDesc.DepthFormat;
+
+	DepthTextureDesc.SampleDesc.Quality = 0;
+	DepthTextureDesc.SampleDesc.Count = 1;
+
+	DepthTextureDesc.Usage = D3D11_USAGE_DEFAULT /* Á¤Àû */;
+	DepthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	DepthTextureDesc.CPUAccessFlags = 0;
+	DepthTextureDesc.MiscFlags = 0;
+
+	if (FAILED(m_pDevice->CreateTexture2D(&DepthTextureDesc, nullptr, &pDepthStencilTexture)))
+		return E_FAIL;
+
+	if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr, &m_pDSV)))
+		return E_FAIL;
+
+	Safe_Release(pDepthStencilTexture);
+
+	m_viewPort.TopLeftX = 0.0f;
+	m_viewPort.TopLeftY = 0.0f;
+	m_viewPort.Width = (_float)targetDesc.Width;
+	m_viewPort.Height = (_float)targetDesc.Height;
+	m_viewPort.MinDepth = 0.0f;   
+	m_viewPort.MaxDepth = 1.0f;   
 
 	return S_OK;
 }
@@ -49,11 +82,11 @@ void CRenderTarget::Clear()
 	m_pContext->ClearRenderTargetView(m_pRTV, reinterpret_cast<_float*>(&m_vClearColor));
 }
 
-CRenderTarget* CRenderTarget::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vClearColor)
+CRenderTarget* CRenderTarget::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const RenderTargetDesc& targetDesc)
 {
 	CRenderTarget* pInstance = new CRenderTarget(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize(iWidth, iHeight, ePixelFormat, vClearColor)))
+	if (FAILED(pInstance->Initialize(targetDesc)))
 	{
 		MSG_BOX("Failed to Created : CRenderTarget");
 		Safe_Release(pInstance);
@@ -66,6 +99,7 @@ void CRenderTarget::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pDSV);
 	Safe_Release(m_pSRV);
 	Safe_Release(m_pRTV);
 	Safe_Release(m_pTexture2D);

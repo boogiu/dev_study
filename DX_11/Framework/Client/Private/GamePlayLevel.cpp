@@ -45,6 +45,8 @@
 #include "UI_CraftPanel.h"
 #include "UI_ItemCard.h"
 
+#include "Target_Texture.h"
+
 #include "Insect_Object.h"
 
 #include "ItemSpawner.h"
@@ -53,6 +55,7 @@
 #include "EventSystem.h"
 #include "NpcSpawner.h"
 #include "DialogueManager.h"
+#include "Target_Texture.h"
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 	:CLevel{ LevelKey },
@@ -141,6 +144,7 @@ HRESULT CGamePlayLevel::Render(ID3D11DeviceContext* pContext)
 	return S_OK;
 }
 
+
 void CGamePlayLevel::PreLoad_Level()
 {
 	auto pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
@@ -152,10 +156,12 @@ void CGamePlayLevel::PreLoad_Level()
 	pRcsMgr->Add_ResourcePath("mGrass_Grd.dds", "../../Resources/Palette/mGrass_Grd.dds");
 	pRcsMgr->Add_ResourcePath("mGrass_GrdEdge.dds", "../../Resources/Palette/mGrass_GrdEdge.dds");
 	pRcsMgr->Add_ResourcePath("mGrass_Mix.dds", "../../Resources/Palette/mGrass_Mix.dds");
+	pRcsMgr->Add_ResourcePath("UI_PartsShader.hlsl", "../Bin/ShaderFiles/UI_PartsShader.hlsl");
 
 	pRenderSys->Add_Palette("g_PaletteTexture", pRcsMgr->Load_Texture(G_GlobalLevelKey, "mGrass_Grd.dds"));
 	pRenderSys->Add_Palette("g_PaletteEdgeTexture", pRcsMgr->Load_Texture(G_GlobalLevelKey, "mGrass_GrdEdge.dds"));
 	pRenderSys->Add_Palette("g_MaskTexture", pRcsMgr->Load_Texture(G_GlobalLevelKey, "mGrass_Mix.dds"));
+
 	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Palette");
 
 	/*Player Model Path*/
@@ -237,6 +243,7 @@ void CGamePlayLevel::PreLoad_Level()
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_CraftPanel", CUI_CraftPanel::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_ItemCardl", CUI_ItemCard::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_CraftCard", CCraftCard::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture", CTarget_Texture::Create());
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Insect_Object", CInsect_Object::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcNrm", CNonPlayer::Create());

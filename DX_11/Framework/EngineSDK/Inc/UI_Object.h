@@ -30,6 +30,8 @@ public :
 	void Set_Size(_fvector size);
 
 	_bool Size_To(_fvector size, _float Speed);
+	_bool Move_To(_fvector size, _float Speed);
+	_bool Rotate_To(_float rad, _float Speed);
 
 	_float2 Get_CenterPos() { return{ m_fLocalX ,m_fLocalY }; }
 
@@ -96,6 +98,8 @@ protected:
 
 	_float m_fWorldX = {};
 	_float m_fWorldY = {};
+
+	_bool m_bAttachParent = { true };
 public:
 	virtual void Free() override;
 };

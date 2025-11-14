@@ -6,7 +6,10 @@
 #include "Texture.h"
 #include "IResourceService.h"
 #include "ObjectContainer.h"
+#include "IRenderService.h"
 
+#include "UI_Text.h"
+#include "Target_Texture.h"
 
 CCraftCard::CCraftCard()
 {
@@ -29,114 +32,233 @@ HRESULT CCraftCard::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 	/*∫ª¿Œ*/
 	Get_Component<CSprite2D>()->Link_Shader(G_GlobalLevelKey, "VTX_UI.hlsl");
-	Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_BackgroundOverlay.png");
 
 	Ready_Part();
+	
+	m_bActive = false;
+	m_vBasePos = { m_fLocalX, m_fLocalY };
 	return S_OK;
+}
+
+void CCraftCard::Awake()
+{
+	auto RenderSys = CGameInstance::GetInstance()->Get_RenderSystem();
+	RenderTargetDesc CardDesc = {
+		"CraftCard" ,
+		DXGI_FORMAT_R8G8B8A8_UNORM ,
+		DXGI_FORMAT_D24_UNORM_S8_UINT,
+		_float4(0.f, 0.f, 0.f, 0.f) ,
+		m_vTargetSize.x,m_vTargetSize.y
+	};
+
+	RenderSys->Create_RenderTarget(CardDesc);
+
+	SHADER_PARAM textureParam{ RenderSys->Get_TargetSRV("CraftCard"), "Texture2D",0 };
+	Get_Component<CSprite2D>()->Set_Param("SpriteTexture", textureParam);
 }
 
 void CCraftCard::Priority_Update(_float dt)
 {
+	Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
+	if (!m_bActive) return;
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
 void CCraftCard::Update(_float dt)
 {
+	Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
+	if (!m_bActive) return;
+	Move_To({ 0,0 }, 18 * dt);
+	Rotate_To(0, 18 * dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
 void CCraftCard::Late_Update(_float dt)
 {
+	Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
+	if (!m_bActive) return;
 	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
+
+	auto RenderSys = CGameInstance::GetInstance()->Get_RenderSystem();
+	RENDER_COMMAND cmd = { "CraftCard" ,
+		[this](ID3D11DeviceContext* pContext)
+		{Render_CraftCard(pContext); } };
+
+	RenderSys->Add_RenderCommand(cmd);
 }
 
 void CCraftCard::Render_GUI()
 {
-#ifdef _USING_GUI
-	auto& vector = Get_Children();
-	for (size_t i = 0; i < vector.size(); i++)
-	{
-		if (ImGui::Button(string(vector[i]->Get_InstanceName() + ":" + to_string(i)).c_str())) {
-			childIndex = i;
-		}
-	}
-	ImGui::Begin("UI_PANEL");
-	vector[childIndex]->Render_GUI();
-	ImGui::End();
-#endif // _USING_GUI
+
+}
+
+void CCraftCard::Render_CraftCard(ID3D11DeviceContext* pContext)
+{
+	m_pBaseBackGround->Render(pContext);
+	m_pImageBackGround->Render(pContext);
+	m_pInfoBackGround->Render(pContext);
+	m_pItemImage->Render(pContext);
+	m_pNameStroke->Render(pContext);
+	m_pCategoryIcon->Render(pContext);
+	m_pSourceItem_01->Render(pContext);
+	m_pSourceItemLine_01->Render(pContext);
+	m_pSourceItemBLine_01->Render(pContext);
+	m_pSourceItemCountSlot->Render(pContext);
+}
+
+void CCraftCard::UI_Active(void* pArg)
+{
+	m_bActive = true;
+	m_fLocalX = -15;
+	m_fLocalY = -15;
+	m_fRadian = XMConvertToRadians(5.f);
+}
+
+void CCraftCard::UI_DeActive(void* pArg)
+{
+	m_bActive = false;
 }
 
 void CCraftCard::Ready_Part()
 {
-	_float startX = m_fLocalX - m_fSizeX * 0.5f;
-	_float startY = m_fLocalY - m_fSizeY * 0.5f;
-	_float endX = m_fLocalX + m_fSizeX * 0.5f;
-
-	_float lineSizeX = { 500 };
-	CUI_Object* pLineStroke = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TexturePanel" })
-		.Add_To_Level("GamePlay_Level")
-		.Scale({ lineSizeX,3 })
-		.Position({ startX + lineSizeX * 0.5f + 80,startY + 120 })
-		.Rotate(0)
-		.Build("pLineStroke");
-
-	pLineStroke->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_LineStroke.png");
-
-	Get_Component<CObjectContainer>()->Add_Child(pLineStroke, false);
-
-	CUI_Object* pBack = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TexturePanel" })
-		.Add_To_Level("GamePlay_Level")
-		.Scale({ 500,500 })
-		.Rotate(0)
-		.Build("pBack");
+	m_vTargetSize = { 1280,720 };
 	
+	//Get_Component<CObjectContainer>()->Add_Child(psubItmeNeedCount, false);
+	//psubItmeNeedCount->Align_To(ANCHOR::Left | ANCHOR::Center, m_pCountMine->Local_RB());
+	//m_pCountNeed = dynamic_cast<CUI_Text*>(psubItmeNeedCount);
+	//m_pCountNeed->Set_Text(L"/ 5");
+	//m_pCountNeed->Set_Active(true);
+	//m_pCountNeed->Set_Anchor(ANCHOR::Left | ANCHOR::Center);
+	//m_pCountNeed->Set_Scale(0.7f);
+	//m_pCountNeed->Set_Color(Brown);
 
-	pBack->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_RecipeInfoBackground.png");
-	pBack->Align_To(ANCHOR::Right, { endX- 80,0 });
-	Get_Component<CObjectContainer>()->Add_Child(pBack, false);
+	auto RcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
+	CUI_Object* pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
+	.Add_To_Level("GamePlay_Level")
+	.Build("InsideCard");
+	m_pBaseBackGround = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pBaseBackGround->TargetSize(m_vTargetSize);
+	m_pBaseBackGround->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_BackgroundOverlay.png");
+	m_pBaseBackGround->Set_Size(m_vTargetSize);
+	m_pBaseBackGround->Center();
+	Get_Component<CObjectContainer>()->Add_Child(m_pBaseBackGround, false);
 
-	CUI_Object* pImageBack = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TexturePanel" })
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
 		.Add_To_Level("GamePlay_Level")
-		.Scale({ 450,450 })
-		.Rotate(0)
-		.Build("pImageBack");
+		.Build("InsideCard");
+	m_pImageBackGround = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pImageBackGround->TargetSize(m_vTargetSize);
+	m_pImageBackGround->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_RecipeInfoBackground.png");
+	m_pImageBackGround->Set_Size(_vector{550,500});
+	m_pImageBackGround->Center({ 280, -25.f});
+	Get_Component<CObjectContainer>()->Add_Child(m_pImageBackGround, false);
+
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
+		.Add_To_Level("GamePlay_Level")
+		.Build("InsideCard");
+	m_pInfoBackGround = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pInfoBackGround->TargetSize(m_vTargetSize);
+	m_pInfoBackGround->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_CraftIconImageMask.png");
 	auto pMaskTexture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", "UI_CraftIconMask.png");
 	SHADER_PARAM maskParam = { pMaskTexture->Get_SRV(),"Texture2D",0 };
-	pImageBack->Get_Component<CSprite2D>()->Set_Param("UI_MaskTexture", maskParam);
-	pImageBack->Get_Component<CSprite2D>()->ChangePass("Inside_Empty");
-	pImageBack->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_CraftIconImageMask.png");
-	pImageBack->Align_To(ANCHOR::Left, { pLineStroke->LC().x,40 });
+	m_pInfoBackGround->Get_Component<CSprite2D>()->Set_Param("UI_MaskTexture", maskParam);
+	m_pInfoBackGround->Get_Component<CSprite2D>()->ChangePass("Inside_Empty");
+	m_pInfoBackGround->Set_Size(_vector{ 500, 450 });
+	m_pInfoBackGround->Center({ -280, 25.f });
+	Get_Component<CObjectContainer>()->Add_Child(m_pInfoBackGround, false);
 
-	Get_Component<CObjectContainer>()->Add_Child(pImageBack, false);
 
-
-	CUI_Object* pImageIcon = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TexturePanel" })
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
 		.Add_To_Level("GamePlay_Level")
-		.Scale({ 250,250 })
-		.Rotate(0)
-		.Build("pImageBack");
-	pImageIcon->Align_To(ANCHOR::Center, pImageBack->Get_CenterPos());
-	pImageIcon->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "MenuLayout_FtrWoodPile.png");
+		.Build("InsideCard");
+	m_pItemImage = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pItemImage->TargetSize(m_vTargetSize);
+	m_pItemImage->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "MenuLayout_FtrWoodPile.png");
+	m_pItemImage->Set_Size(_vector{ 300, 300 });
+	m_pItemImage->Center({ -280, 25.f });
+	Get_Component<CObjectContainer>()->Add_Child(m_pItemImage, false);
 
-	Get_Component<CObjectContainer>()->Add_Child(pImageIcon, false);
-
-
-	CUI_Object* pCatIcon = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_TexturePanel" })
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
 		.Add_To_Level("GamePlay_Level")
-		.Scale({ 50,50 })
-		.Rotate(0)
-		.Build("pCatIcon");
-	pCatIcon->Align_To(ANCHOR::Bottom | ANCHOR::Left, pLineStroke->LT(0,-5));
-	pCatIcon->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_CatIconBackground.png");
-	auto pCatMaskTexture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", "UI_IconCatFurniture.png");
-	SHADER_PARAM maskCatParam = { pCatMaskTexture->Get_SRV(),"Texture2D",0 };
-	_float2 maskScale = { 0.7f,0.7f };
-	SHADER_PARAM scaleCatParam = { &maskScale,"float2",sizeof(_float2)};
-	pCatIcon->Get_Component<CSprite2D>()->Set_Param("UI_MaskTexture", maskCatParam);
-	pCatIcon->Get_Component<CSprite2D>()->Set_Param("MaskScale", scaleCatParam);
-	pCatIcon->Get_Component<CSprite2D>()->ChangePass("Inside_Empty");
+		.Build("InsideCard");
+	m_pNameStroke = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pNameStroke->TargetSize(m_vTargetSize);
+	m_pNameStroke->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_LineStroke.png");
+	m_pNameStroke->Set_Size(_vector{ 500, 3.f });
+	m_pNameStroke->Center({ -280, -250});
+	Get_Component<CObjectContainer>()->Add_Child(m_pNameStroke, false);
+	
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
+		.Add_To_Level("GamePlay_Level")
+		.Build("InsideCard");
+	m_pCategoryIcon = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pCategoryIcon->TargetSize(m_vTargetSize);
+	m_pCategoryIcon->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_IconCatFurniture.png");
+	m_pCategoryIcon->Set_Size(_vector{ 50,50 });
+	m_pCategoryIcon->Center({ -510, -285 });
+	Get_Component<CObjectContainer>()->Add_Child(m_pCategoryIcon, false);
 
-	Get_Component<CObjectContainer>()->Add_Child(pCatIcon, false);
+
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
+		.Add_To_Level("GamePlay_Level")
+		.Build("InsideCard");
+	m_pCategoryIcon = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pCategoryIcon->TargetSize(m_vTargetSize);
+	m_pCategoryIcon->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_IconCatFurniture.png");
+	m_pCategoryIcon->Set_Size(_vector{ 50,50 });
+	m_pCategoryIcon->Center({ -510, -285 });
+	Get_Component<CObjectContainer>()->Add_Child(m_pCategoryIcon, false);
+
+
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
+		.Add_To_Level("GamePlay_Level")
+		.Build("InsideCard");
+	m_pSourceItem_01 = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pSourceItem_01->TargetSize(m_vTargetSize);
+	m_pSourceItem_01->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "MenuLayout_DIYWoodNormal.png");
+	m_pSourceItem_01->Set_Size(_vector{ 55,55 });
+	m_pSourceItem_01->Center({ 55, -225.f });
+	Get_Component<CObjectContainer>()->Add_Child(m_pSourceItem_01, false);
+
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
+		.Add_To_Level("GamePlay_Level")
+		.Build("InsideCard");
+	m_pSourceItemLine_01 = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pSourceItemLine_01->TargetSize(m_vTargetSize);
+	m_pSourceItemLine_01->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_LindeStroke2.png");
+	m_pSourceItemLine_01->Set_Size(_vector{ 200,3 });
+	m_pSourceItemLine_01->Center({ 300, -225.f });
+	Get_Component<CObjectContainer>()->Add_Child(m_pSourceItemLine_01, false);
+
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
+		.Add_To_Level("GamePlay_Level")
+		.Build("InsideCard");
+	m_pSourceItemBLine_01 = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pSourceItemBLine_01->TargetSize(m_vTargetSize);
+	m_pSourceItemBLine_01->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_TextLine.png");
+	m_pSourceItemBLine_01->Set_Size(_vector{ 400,3 });
+	m_pSourceItemBLine_01->Center({ 300, -200.f });
+	Get_Component<CObjectContainer>()->Add_Child(m_pSourceItemBLine_01, false);
+
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
+		.Add_To_Level("GamePlay_Level")
+		.Build("InsideCard");
+	m_pSourceItemBLine_01 = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pSourceItemBLine_01->TargetSize(m_vTargetSize);
+	m_pSourceItemBLine_01->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_TextLine.png");
+	m_pSourceItemBLine_01->Set_Size(_vector{ 400,3 });
+	m_pSourceItemBLine_01->Center({ 300, -200.f });
+	Get_Component<CObjectContainer>()->Add_Child(m_pSourceItemBLine_01, false);
+
+	pImage = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture" })
+		.Add_To_Level("GamePlay_Level")
+		.Build("InsideCard");
+	m_pSourceItemCountSlot = dynamic_cast<CTarget_Texture*>(pImage);
+	m_pSourceItemCountSlot->TargetSize(m_vTargetSize);
+	m_pSourceItemCountSlot->Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_SlotRect.png");
+	m_pSourceItemCountSlot->Set_Size(_vector{ 40,40 });
+	m_pSourceItemCountSlot->Center({ 425, -225.f });
+	Get_Component<CObjectContainer>()->Add_Child(m_pSourceItemCountSlot, false);
 }
 
 CCraftCard* CCraftCard::Create()

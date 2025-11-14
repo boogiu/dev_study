@@ -28,10 +28,13 @@ public:
     void Set_Player(class CPlayer* pPlayer);
     void Open_Inventory();
     void Close_Inventory();
+
     HRESULT Add_ItemToInventory(ITEM_DATA_DESC desc);
     HRESULT PullOut_Item(_int Slot);
     HRESULT PullOut_ToOtherSlot(_int Slot);
 
+public:
+    unordered_map<wstring, _uint> Get_All_InventoryData();
 private:
     void Batch_Slots();
     void DeActive_Slots();

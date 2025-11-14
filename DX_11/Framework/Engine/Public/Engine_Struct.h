@@ -407,6 +407,16 @@ namespace Engine
 		void Reset() { fCurrentTime = 0.f; }
 	}MAT_KEYFRAME;
 
+	struct RenderTargetDesc
+	{
+		string Key;
+
+		DXGI_FORMAT ColorFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		DXGI_FORMAT DepthFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		_float4 vClearColor = { 0.f,0.f,0.f,0.f };
+		_uint Width = 1280;
+		_uint Height = 720;
+	};
 
 #pragma pack(pop)
 

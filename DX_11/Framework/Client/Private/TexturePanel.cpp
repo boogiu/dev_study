@@ -44,6 +44,16 @@ void CTexturePanel::Render_GUI()
 	__super::Render_GUI();
 }
 
+void CTexturePanel::UI_Active(void* pArg)
+{
+	Get_Component<CSprite2D>()->Set_CompActive(true);
+}
+
+void CTexturePanel::UI_DeActive(void* pArg)
+{
+	Get_Component<CSprite2D>()->Set_CompActive(false);
+}
+
 
 CTexturePanel* CTexturePanel::Create()
 {

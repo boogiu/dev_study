@@ -37,20 +37,20 @@ HRESULT CSprite2D::Initialize(COMPONENT_DESC* pArg)
 void CSprite2D::Apply_Shader(ID3D11DeviceContext* pContext)
 {
 	if (m_pShader == nullptr) return;
-	if (m_pTextures.empty()) return;
-	if (m_pTextures[m_iDrawIndex] == nullptr) return;
 
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 
 	for (UINT slot = 0; slot < MAX_TEXTURE_TYPE_VALUE; ++slot)
 		pContext->PSSetShaderResources(slot, 1, nullSRV);
 
-	SHADER_PARAM param = {};
-	param.typeName = "Texture2D";
-	param.iSize = 0;
-	param.pData = m_pTextures[m_iDrawIndex]->Get_SRV();
+	if (!m_pTextures.empty() && m_pTextures[m_iDrawIndex] != nullptr) {
+		SHADER_PARAM param = {};
+		param.typeName = "Texture2D";
+		param.iSize = 0;
+		param.pData = m_pTextures[m_iDrawIndex]->Get_SRV();
 
-	m_pShader->Bind_Value("SpriteTexture", param);
+		m_pShader->Bind_Value("SpriteTexture", param);
+	}
 
 	for (auto& Slot : m_DynamicSlots) {
 		m_pShader->Bind_Value(Slot.first, Slot.second);
@@ -137,14 +137,15 @@ HRESULT CSprite2D::ChangePass(const string& passConstant)
 
 HRESULT CSprite2D::Set_Param(const string& ConstantName, const SHADER_PARAM& parameter)
 {
-	SHADER_PARAM DynamicSlot = parameter;
-	auto iter = m_DynamicSlots.emplace(ConstantName, DynamicSlot);
-
-	if (false == iter.second)
-		return E_FAIL;
-
-	else
+	auto it = m_DynamicSlots.find(ConstantName);
+	if (it != m_DynamicSlots.end())
+	{
+		it->second = parameter;    // 기존 값 덮어쓰기
 		return S_OK;
+	}
+
+	m_DynamicSlots.emplace(ConstantName, parameter);
+	return S_OK;
 }
 
 SHADER_PARAM* CSprite2D::Get_Param(const string& ConstantName)
@@ -158,11 +159,21 @@ SHADER_PARAM* CSprite2D::Get_Param(const string& ConstantName)
 	return nullptr;
 }
 
-
-_bool CSprite2D::IsValid()
+bool CSprite2D::IsValid()
 {
-	return (m_pPoint&&m_pShader&&!m_pTextures.empty());
+	if (m_pPoint == nullptr || m_pShader == nullptr)
+		return false;
+
+	if (!m_pTextures.empty())
+		return true;
+
+	auto it = m_DynamicSlots.find("SpriteTexture");
+	if (it != m_DynamicSlots.end())
+		return true;
+
+	return false;
 }
+
 
 void CSprite2D::Render_GUI()
 {

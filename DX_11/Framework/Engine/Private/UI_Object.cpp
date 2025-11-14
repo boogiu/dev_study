@@ -20,6 +20,7 @@ CUI_Object::CUI_Object(const CUI_Object& rhs)
     m_fRadian = rhs.m_fRadian;
     m_WinSizeX = rhs.m_WinSizeX;
     m_WinSizeY = rhs.m_WinSizeY;
+    m_bAttachParent = rhs.m_bAttachParent;
 }
 
 HRESULT CUI_Object::Initialize_Prototype()
@@ -73,6 +74,7 @@ void CUI_Object::Late_Update(_float dt)
 void CUI_Object::Post_EngineUpdate(_float dt)
 {
     Update_UITransform();
+    if (m_eRenderLayer != RENDER_LAYER::CustomOnly) {
     UI_PACKET packet;
     packet.pSprite2D = Get_Component<CSprite2D>();
     packet.pWorldMatrix = m_pTransform->Get_WorldMatrix_Ptr();
@@ -86,6 +88,7 @@ void CUI_Object::Post_EngineUpdate(_float dt)
 
     CGameInstance::GetInstance()->Get_RenderSystem()->Submit_UI(packet);
 
+    }
 
     for (auto& child : Get_Children()) {
         if (child)
@@ -120,6 +123,45 @@ _bool CUI_Object::Size_To(_fvector size, _float Speed)
     m_fSizeY = vSize.y;
 }
 
+_bool CUI_Object::Move_To(_fvector pos, _float Speed)
+{
+    _float2 vPos = { m_fLocalX,m_fLocalY };
+
+    _vector length = XMVector2Length(pos - XMLoadFloat2(&vPos));
+    _vector nextSize;
+
+    if (XMVectorGetX(length) < 0.2f) {
+        nextSize = pos;
+        return true;
+    }
+    else {
+        nextSize = XMVectorLerp(XMLoadFloat2(&vPos), pos, Speed);
+    }
+    XMStoreFloat2(&vPos, nextSize);
+    m_fLocalX = vPos.x;
+    m_fLocalY = vPos.y;
+}
+
+_bool CUI_Object::Rotate_To(_float rad, _float Speed)
+{
+    _vector curVec = XMVectorSetX(XMVectorZero(), m_fRadian);
+    _vector targetVec = XMVectorSetX(XMVectorZero(), rad);
+
+    _vector diffVec = XMVectorAbs(XMVectorSubtract(targetVec, curVec));
+
+    if (XMVectorGetX(diffVec) < 0.01f)
+    {
+        m_fRadian = rad;
+        return true;
+    }
+
+    _vector nextVec = XMVectorLerp(curVec, targetVec, Speed);
+    m_fRadian = XMVectorGetX(nextVec);
+
+    return false;
+}
+
+
 void CUI_Object::Render_GUI()
 {
     __super::Render_GUI();
@@ -142,16 +184,16 @@ void CUI_Object::Render_GUI()
 
 void CUI_Object::Update_UITransform()
 {
-    m_WinSizeX = CGameInstance::GetInstance()->Get_ClientSize().x;
-    m_WinSizeY = CGameInstance::GetInstance()->Get_ClientSize().y;
+ 
 
     m_pTransform->Scale({ m_fSizeX, m_fSizeY, 1.f });
     m_pTransform->Rotate({ 0, 0, m_fRadian });
 
     if (auto pChildComp = Get_Component<CChild>())
     {
-        if (auto pParent = dynamic_cast<CUI_Object*>(pChildComp->Get_Parent()))
+        if (dynamic_cast<CUI_Object*>(pChildComp->Get_Parent())&& m_bAttachParent)
         {
+            auto pParent = dynamic_cast<CUI_Object*>(pChildComp->Get_Parent());
             m_fWorldX = m_fLocalX + pParent->m_fWorldX;
             m_fWorldY = m_fLocalY + pParent->m_fWorldY;
         }

@@ -9,8 +9,10 @@
 #include "Target_Manager.h"
 #include "IResourceService.h"
 #include "VIBuffer.h"
+#include "RenderTarget.h"
+
 CRenderSystem::CRenderSystem(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:m_pDevice{pDevice},m_pContext{ pContext }
+	:m_pDevice{ pDevice }, m_pContext{ pContext }
 {
 	Safe_AddRef(pDevice);
 	Safe_AddRef(m_pContext);
@@ -23,28 +25,38 @@ CRenderSystem::~CRenderSystem()
 HRESULT CRenderSystem::Initialize()
 {
 	/*pipeLine*/
-	m_pPipeLine = CPipeLine::Create(m_pDevice,this);
-	m_pTargetManager = CTarget_Manager::Create(m_pDevice,m_pContext);
-	
+	m_pPipeLine = CPipeLine::Create(m_pDevice, this);
+	m_pTargetManager = CTarget_Manager::Create(m_pDevice, m_pContext);
+
 	_uint				iNumViewports = { 1 };
 	D3D11_VIEWPORT		ViewportDesc{};
 	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
-	m_pTargetManager->Add_RenderTarget("Target_Diffuse", ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.0f, 0.f, 0.f, 0.f));
-	m_pTargetManager->Add_RenderTarget("Target_Normal", ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.0f, 0.f, 0.f, 0.f));
-	m_pTargetManager->Add_RenderTarget("Target_Depth", ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.0f, 0.f, 0.f, 0.f));
+	
+	RenderTargetDesc DiffuseDesc = { "Target_Diffuse" , DXGI_FORMAT_R8G8B8A8_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(DiffuseDesc);
 
-	m_pTargetManager->Add_RenderTarget("Target_Shadow", g_iMaxWidth, g_iMaxHeight, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f));
-	m_pTargetManager->Add_RenderTarget("Target_Shade", ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.0f, 0.f, 0.f, 0.f));
-	m_pTargetManager->Add_RenderTarget("Target_Specular", ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.0f, 0.f, 0.f, 0.f));
+	RenderTargetDesc NormalDesc = { "Target_Normal" , DXGI_FORMAT_R16G16B16A16_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(NormalDesc);
+
+	RenderTargetDesc DepthlDesc = { "Target_Depth" , DXGI_FORMAT_R32G32B32A32_FLOAT , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(DepthlDesc);
+
+	RenderTargetDesc ShadowDesc = { "Target_Shadow" , DXGI_FORMAT_R32G32B32A32_FLOAT , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(1.f, 1.f, 1.f, 1.f) ,g_iMaxWidth, g_iMaxHeight };
+	m_pTargetManager->Create_Target(ShadowDesc);
+
+	RenderTargetDesc ShadeDesc = { "Target_Shade" , DXGI_FORMAT_R16G16B16A16_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(ShadeDesc);
+
+	RenderTargetDesc SpecularDesc = { "Target_Specular" , DXGI_FORMAT_R16G16B16A16_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(SpecularDesc);
+
 
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Diffuse")))
 		return E_FAIL;
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Normal")))
-		return E_FAIL;	
+		return E_FAIL;
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Depth")))
 		return E_FAIL;
-
-
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_LightAcc", "Target_Shade")))
 		return E_FAIL;
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_LightAcc", "Target_Specular")))
@@ -52,11 +64,11 @@ HRESULT CRenderSystem::Initialize()
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_Shadow", "Target_Shadow")))
 		return E_FAIL;
 
-	m_pShader = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Shader(G_GlobalLevelKey,"Shader_Deferred.hlsl");
+	m_pShader = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Shader(G_GlobalLevelKey, "Shader_Deferred.hlsl");
 	if (nullptr == m_pShader)
 		return E_FAIL;
 
-	m_pVIBuffer = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_VIBuffer(G_GlobalLevelKey, "Engine_Default_Rect",BUFFER_TYPE::BASIC_RECT);
+	m_pVIBuffer = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_VIBuffer(G_GlobalLevelKey, "Engine_Default_Rect", BUFFER_TYPE::BASIC_RECT);
 	if (nullptr == m_pVIBuffer)
 		return E_FAIL;
 
@@ -72,7 +84,6 @@ HRESULT CRenderSystem::Initialize()
 	m_pDebugPass = DebugPass::Create(this);
 #endif // _DEBUG
 
-	ReadyShadow();
 	return S_OK;
 }
 
@@ -83,8 +94,8 @@ HRESULT CRenderSystem::Render()
 	Render_Shadow();
 
 	if (FAILED(m_pTargetManager->Begin_MRT("MRT_Deferred"))) return E_FAIL;
-		m_pOpaquePass->Execute(m_pContext);
-		m_pInstancePass->Execute(m_pContext);
+	m_pOpaquePass->Execute(m_pContext);
+	m_pInstancePass->Execute(m_pContext);
 	if (FAILED(m_pTargetManager->End_MRT()))return E_FAIL;
 	Render_LightAcc();
 	Render_Combined();
@@ -94,6 +105,9 @@ HRESULT CRenderSystem::Render()
 #endif // _DEBUG
 
 	m_pUIPass->Execute(m_pContext);
+
+	Process_RenderCommand();
+
 	return S_OK;
 }
 
@@ -172,50 +186,110 @@ void CRenderSystem::Render_GUI()
 }
 #endif // _USING_GUI
 
-HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CShader* pShader, _uint DrawIndex, const string& passConstant,ID3D11InputLayout** ppInputLayout)
+#pragma region RenderTarget
+
+HRESULT CRenderSystem::Create_RenderTarget(const RenderTargetDesc& desc)
+{
+	return 	m_pTargetManager->Create_Target(desc, false);
+}
+
+void CRenderSystem::Add_RenderCommand(const RENDER_COMMAND& command)
+{
+	m_RenderCommands.push_back(command);
+}
+
+void CRenderSystem::DrawTo(const string& targetKey, function<void(ID3D11DeviceContext*)> drawCall)
+{
+	RENDER_COMMAND cmd;
+	cmd.TargetKey = targetKey;
+	cmd.DrawCallback = drawCall;
+
+	m_RenderCommands.push_back(cmd);
+}
+
+ID3D11ShaderResourceView* CRenderSystem::Get_TargetSRV(const string strTag)
+{
+	CRenderTarget* pTarget = m_pTargetManager->Get_CustomTarget(strTag);
+	if (!pTarget)
+	{
+		return nullptr;
+	}
+	return pTarget->Get_SRV();
+}
+
+void CRenderSystem::Process_RenderCommand()
+{
+	for (auto& cmd : m_RenderCommands)
+	{
+		CRenderTarget* pTarget = m_pTargetManager->Get_CustomTarget(cmd.TargetKey);
+
+		if (!pTarget)
+		{
+			MSG_BOX("Invalid RenderCommand Target Key");
+			continue;
+		}
+
+		m_pTargetManager->Push_Target(cmd.TargetKey);
+
+		if (pTarget->Get_RTV())
+			pTarget->Clear(); 
+		if (pTarget->Get_DSV())
+			m_pContext->ClearDepthStencilView(pTarget->Get_DSV(),	D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,1.f, 0);
+
+		cmd.DrawCallback(m_pContext);
+
+		m_pTargetManager->Pop_Target();
+	}
+
+	m_RenderCommands.clear();
+}
+
+#pragma endregion
+
+HRESULT CRenderSystem::Get_InputLayout(CModel* pModel, CShader* pShader, _uint DrawIndex, const string& passConstant, ID3D11InputLayout** ppInputLayout)
 {
 	if (!pModel || !pShader || !ppInputLayout)
 		return E_FAIL;
 
 	/*메쉬를 생성할 떄마다 레이아웃을 만드는게아닌, 버텍스구조, 셰이더 구조를 이름으로 아이디화 시켜서 같은거면 그냥 들고 있는걸 쓰는거*/
-	
+
 	/*모델 데이터 이름 + 셰이더 이름*/
 	string LayOutID = string(pModel->Get_ElementKey(DrawIndex)) + pShader->Get_Key();
 
 	auto iter = m_InputLayouts.find(LayOutID);
-	
+
 	if (iter != m_InputLayouts.end()) {
 		*ppInputLayout = iter->second;
 		return S_OK;
 	}
 
 	D3DX11_PASS_DESC passDesc = {};
-	
+
 	if (FAILED(pShader->GetPassSignature(passConstant, &passDesc)))
 		return E_FAIL;
 
 	if (pModel->Get_ElementCount(DrawIndex) == 0 || pModel->Get_ElementDesc(DrawIndex) == nullptr)
 		return E_FAIL;
-	
+
 	HRESULT hr = m_pDevice->CreateInputLayout(
 		pModel->Get_ElementDesc(DrawIndex), pModel->Get_ElementCount(DrawIndex),
 		passDesc.pIAInputSignature, passDesc.IAInputSignatureSize,
 		ppInputLayout);
-	
+
 	if (FAILED(hr))
 		return E_FAIL;
-	
- 	m_InputLayouts.emplace(LayOutID, *ppInputLayout);
+
+	m_InputLayouts.emplace(LayOutID, *ppInputLayout);
 
 	return S_OK;
 }
 
 HRESULT CRenderSystem::Get_BufferInputLayout(class CVIBuffer* pBuffer, CShader* pShader, const string& passConstant, ID3D11InputLayout** ppInputLayout)
 {
-	if ( !pBuffer||!pShader || !ppInputLayout)
+	if (!pBuffer || !pShader || !ppInputLayout)
 		return E_FAIL;
 
-	string LayOutID = "Engine_" + pBuffer->Get_Key() +"_" + pShader->Get_Key();
+	string LayOutID = "Buffer_" + pBuffer->Get_Key() + "_" + pShader->Get_Key();
 
 	auto iter = m_InputLayouts.find(LayOutID);
 
@@ -245,39 +319,6 @@ HRESULT CRenderSystem::Get_BufferInputLayout(class CVIBuffer* pBuffer, CShader* 
 	return S_OK;
 }
 
-HRESULT CRenderSystem::ReadyShadow()
-{
-	if (nullptr == m_pDevice)
-		return E_FAIL;
-
-	ID3D11Texture2D* pDepthStencilTexture = nullptr;
-
-	D3D11_TEXTURE2D_DESC	TextureDesc;
-	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
-
-	TextureDesc.Width = g_iMaxWidth;
-	TextureDesc.Height = g_iMaxHeight;
-	TextureDesc.MipLevels = 1;
-	TextureDesc.ArraySize = 1;
-	TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	TextureDesc.SampleDesc.Quality = 0;
-	TextureDesc.SampleDesc.Count = 1;
-
-	TextureDesc.Usage = D3D11_USAGE_DEFAULT /* 정적 */;
-	TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	TextureDesc.CPUAccessFlags = 0;
-	TextureDesc.MiscFlags = 0;
-
-	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &pDepthStencilTexture)))
-		return E_FAIL;
-
-	if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr, &m_pShadowDepth)))
-		return E_FAIL;
-
-	Safe_Release(pDepthStencilTexture);
-	return S_OK;
-}
 
 void CRenderSystem::Render_Shadow()
 {
@@ -288,13 +329,11 @@ void CRenderSystem::Render_Shadow()
 
 	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
 
-	if (FAILED(m_pTargetManager->Begin_MRT("MRT_Shadow",m_pShadowDepth))) return;
-	
+	if (FAILED(m_pTargetManager->Begin_MRT("MRT_Shadow"))) return;
+
 	Change_Viewport(g_iMaxWidth, g_iMaxHeight);
-
 	m_pShadowPass->Execute(m_pContext);
-	m_pTargetManager->End_MRT(m_pShadowDepth);
-
+	m_pTargetManager->End_MRT();
 	Change_Viewport(ViewportDesc.Width, ViewportDesc.Height);
 }
 
@@ -317,7 +356,7 @@ HRESULT CRenderSystem::Change_Viewport(_uint iWidth, _uint iHeight)
 HRESULT CRenderSystem::Add_Palette(const string& ConstantName, CTexture* pTexture)
 {
 	if (m_pPipeLine)
-		return m_pPipeLine->Add_Palette(ConstantName,pTexture);
+		return m_pPipeLine->Add_Palette(ConstantName, pTexture);
 	else
 		return E_FAIL;
 }
@@ -334,9 +373,8 @@ void CRenderSystem::Free()
 	Safe_Release(m_pUIPass);
 	Safe_Release(m_pDebugPass);
 	Safe_Release(m_pShadowPass);
-	Safe_Release(m_pShadowDepth);
 	Safe_Release(m_pTargetManager);
-	
+
 	for (auto& pair : m_InputLayouts)
 		Safe_Release(pair.second);
 

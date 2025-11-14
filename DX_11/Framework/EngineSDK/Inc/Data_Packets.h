@@ -88,4 +88,10 @@ namespace Engine {
 		_uint iSize = {};
 	}SHADER_PARAM;
 
+
+
+	typedef struct tagRenderRequestCommand {
+		string TargetKey;                    
+		function<void(ID3D11DeviceContext*)> DrawCallback;  
+	}RENDER_COMMAND;
 }

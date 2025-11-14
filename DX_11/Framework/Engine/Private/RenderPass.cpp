@@ -227,7 +227,6 @@ void UIPass::Submit(UI_PACKET packet)
 #pragma region DEBUG_PASS
 void DebugPass::Execute(ID3D11DeviceContext* pContext)
 {
-
 	CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
 	if (pCurShader == nullptr) {
 		pCurShader = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Shader(G_GlobalLevelKey, "VTX_Debug.hlsl");

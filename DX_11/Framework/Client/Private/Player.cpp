@@ -829,6 +829,7 @@ void CPlayer::Open_Craft()
 		return;
 
 	CRAFT_DATA_DESC craftDesc = {};
+	craftDesc.InvenData = m_pInventory->Get_All_InventoryData();
 	craftDesc.OnClose = [this](const CRAFT_RESULT& result) {Close_Craft(result); };
 
 	nowLevel->Get_LevelObject<CUI_Responcer>()->Active_UI("Craft_UI",&craftDesc);

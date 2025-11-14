@@ -18,6 +18,10 @@ public:
     virtual void Render_GUI() override;
 
 public:
+    virtual void UI_Active(void* pArg) override;
+    virtual void UI_DeActive(void* pArg) override;
+
+public:
     static CTexturePanel* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;
     void Free() override;

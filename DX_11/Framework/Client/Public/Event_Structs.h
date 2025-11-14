@@ -73,6 +73,6 @@ typedef struct tagCraftResult
 
 typedef struct tagCraftDataDesc
 {
-
+	unordered_map<wstring, _uint> InvenData;
 	function<void(const CRAFT_RESULT& result)> OnClose;
 } CRAFT_DATA_DESC;

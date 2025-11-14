@@ -23,11 +23,12 @@ private:
 	ID3D11RenderTargetView* m_pBackBufferRTV = { nullptr };
 	ID3D11DepthStencilView* m_pDepthStencilView = { nullptr };
 
+	vector< ID3D11DepthStencilView*> m_RequestedDepthStencil;
+
 private:
 	HRESULT Ready_SwapChain(HWND hWnd, WINMODE isWindowed, _uint iWinCX, _uint iWinCY);
 	HRESULT Ready_BackBufferRenderTargetView();
 	HRESULT Ready_DepthStencilView(_uint iWinCX, _uint iWinCY);
-
 
 public:
 	static  CGraphicDevice* Create(ENGINE_DESC engine, ID3D11Device** ppDevice, ID3D11DeviceContext** ppDeviceContextOut);

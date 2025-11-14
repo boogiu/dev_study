@@ -88,31 +88,31 @@ void CTextSlot::Set_AutoPos(ANCHOR anchor, _float2 Pivot)
 	m_AnchorInfo.eAnchor = anchor;
 }
 
-void CTextSlot::Set_Anchor(ANCHOR anchot, _float2 Pivot)
+void CTextSlot::Set_Anchor(ANCHOR anchor, _float2 Pivot)
 {
 	_vector size = m_pFont->TextSize(m_Info.Text);
-	/*글꼴 패딩 보정*/
-	float w = XMVectorGetX(size) * 0.88f;
-	float h = XMVectorGetY(size) * 0.9f;
 
-	float baselineOffset = m_pFont->LineSpace() * 0.1f; // 글씨 높이 대비 약간 위로 보정
+	float w = XMVectorGetX(size);
+	float h = XMVectorGetY(size);
+	_uint anchorFlags = static_cast<_uint>(anchor);
 
-	_uint anchor = static_cast<_uint>(anchot);
-	if (anchor & static_cast<_uint>(ANCHOR::Left))
+	// X축
+	if (anchorFlags & static_cast<_uint>(ANCHOR::Left))
 		m_Info.TextPos.x = Pivot.x;
-	else if (anchor & static_cast<_uint>(ANCHOR::Right))
+	else if (anchorFlags & static_cast<_uint>(ANCHOR::Right) )
 		m_Info.TextPos.x = Pivot.x - w;
-	else
+	else // Center X
 		m_Info.TextPos.x = Pivot.x - w * 0.5f;
 
 	// Y축
-	if (anchor & static_cast<_uint>(ANCHOR::Top))
+	if (anchorFlags & static_cast<_uint>(ANCHOR::Top))
 		m_Info.TextPos.y = Pivot.y;
-	else if (anchor & static_cast<_uint>(ANCHOR::Bottom))
+	else if (anchorFlags & static_cast<_uint>(ANCHOR::Bottom))
 		m_Info.TextPos.y = Pivot.y - h;
-	else
+	else // Center Y
 		m_Info.TextPos.y = Pivot.y - h * 0.5f;
 }
+
 
 _float2 CTextSlot::Get_Anchor(ANCHOR anchot)
 {

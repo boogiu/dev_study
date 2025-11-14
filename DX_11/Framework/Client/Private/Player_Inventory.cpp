@@ -182,6 +182,27 @@ HRESULT CPlayer_Inventory::PullOut_ToOtherSlot(_int Slot)
 	return E_FAIL;
 }
 
+unordered_map<wstring, _uint> CPlayer_Inventory::Get_All_InventoryData()
+{
+	ITEM_DATA_DESC desc;
+	//vector<pair<wstring, _uint>> InvenData = {};
+	unordered_map<wstring, _uint> InvenData;
+
+	for (size_t i = 0; i < m_pSlots.size(); i++)
+	{
+		wstring key = m_pSlots[i]->Get_Data().ItemName;
+		_uint count = m_pSlots[i]->Get_Count();
+
+		auto iter = InvenData.emplace(key, count);
+
+		if (!iter.second) {
+			iter.first->second += count;
+		}
+	}
+
+	return InvenData;
+}
+
 void CPlayer_Inventory::Batch_Slots()
 {
 	const _uint slotColumn = 10;

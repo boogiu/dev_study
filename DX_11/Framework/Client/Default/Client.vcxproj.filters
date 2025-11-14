@@ -238,9 +238,6 @@
     <Filter Include="02. GameObjects\08. UI\Base\TexturePanel">
       <UniqueIdentifier>{c1324510-86f8-4feb-b6ca-db36ddba02fe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\08. UI\EventMessage">
-      <UniqueIdentifier>{15986ea5-9249-4a65-9f1f-caf6d021bb55}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\07. LevelObject\InsectSpawner">
       <UniqueIdentifier>{c2d61637-17be-48e0-bb3d-bdb998bcfee6}</UniqueIdentifier>
     </Filter>
@@ -357,6 +354,15 @@
     </Filter>
     <Filter Include="02. GameObjects\08. UI\Craft_Panel\CraftCard">
       <UniqueIdentifier>{168c1c49-f612-4435-921a-15fcff9ff843}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\EventMessage">
+      <UniqueIdentifier>{15986ea5-9249-4a65-9f1f-caf6d021bb55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Craft_Panel\CraftBtn">
+      <UniqueIdentifier>{08e34e7e-9bc9-4c32-8a74-4c62eb470613}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\Base\Target_UI">
+      <UniqueIdentifier>{8c5a228b-4c2e-4a3e-b3c4-951501f0ca52}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -705,6 +711,9 @@
     <ClInclude Include="..\Public\CraftCard.h">
       <Filter>02. GameObjects\08. UI\Craft_Panel\CraftCard</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Target_Texture.h">
+      <Filter>02. GameObjects\08. UI\Base\Target_UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1033,6 +1042,9 @@
     <ClCompile Include="..\Private\CraftCard.cpp">
       <Filter>02. GameObjects\08. UI\Craft_Panel\CraftCard</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Target_Texture.cpp">
+      <Filter>02. GameObjects\08. UI\Base\Target_UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
@@ -1044,6 +1056,9 @@
       <Filter>97. Client_Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\FieldOutShader.hlsl">
+      <Filter>97. Client_Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\UI_PartsShader.hlsl">
       <Filter>97. Client_Shader</Filter>
     </FxCompile>
   </ItemGroup>

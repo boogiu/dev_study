@@ -33,4 +33,5 @@ constexpr Engine::TILE_INDEX NEIGHBOR_OFFSET[9] = {
 };
 
 static constexpr _float4 Ibory = { 1.0f, 0.984f, 0.905f ,1.f };
-
+static constexpr _float4 Brown = { 135.f/255.f, 90.f/255.f, 35.f / 255.f ,1.f };
+static constexpr _float4 Red = { 255.f / 255.f, 84 / 255.f, 74 / 255.f ,1.f };

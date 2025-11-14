@@ -38,7 +38,7 @@
 #include <iostream>
 #include <fstream>
 #include <variant>
-
+#include <stack>
 
 #include <commdlg.h> // GetSaveFileName API를 위해 필요
 #pragma comment(lib, "Comdlg32.lib") // 라이브러리 링크

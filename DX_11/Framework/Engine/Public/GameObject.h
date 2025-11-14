@@ -50,6 +50,7 @@ public:
 public:
 	void Set_Layer(class CLayer* pLayer);
 	class CLayer* Get_Layer() { return m_pLayer; };
+
 public:
 	const string& Get_InstanceName() { return m_InstanceName; }
 	const _uint Get_ObjectID() { return m_ObjectID; }
@@ -57,6 +58,10 @@ public:
 	_float4 Get_Position();
  	_bool Is_Root() { return m_isRootObject; };
 	const vector<CGameObject*> Get_Children();
+
+public:
+	void SetRenderLayer(RENDER_LAYER layer) { m_eRenderLayer = layer; };
+	RENDER_LAYER GetRenderLayer() const {return m_eRenderLayer; };
 
 private:
 	HRESULT Make_OpaquePacket();
@@ -73,6 +78,9 @@ protected:
 	string m_InstanceTag = {};
 
 	map<type_index,class CComponent*> m_Components;
+
+protected:
+	RENDER_LAYER m_eRenderLayer = { RENDER_LAYER::Default };
 
 public:
 	virtual CGameObject* Clone(INIT_DESC* pArg = nullptr)PURE;

@@ -57,7 +57,7 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 	switch (tPacket.CurItem.TypeTag)
 	{
 	case itemType::None:
-		
+		nextState = m_pLayer->Get_State("Movement_Idle_State");
 		break;
 	case itemType::Axe:
 			nextState = m_pLayer->Get_State("Action_TreeChop_State");

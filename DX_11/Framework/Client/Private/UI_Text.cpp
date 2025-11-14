@@ -42,7 +42,7 @@ void CUI_Text::Priority_Update(_float dt)
 void CUI_Text::Update(_float dt)
 {
 	if (m_bActive) {
-		Get_Component<CTextSlot>()->Set_Anchor(m_eAnchor, { m_fWorldX,m_fWorldY });
+		Get_Component<CTextSlot>()->Set_Anchor(m_eAnchor, { m_fWorldX-m_fSizeX*0.5f,m_fWorldY - m_fSizeY * 0.5f });
 		Get_Component<CTextSlot>()->Push_Text();
 	}
 }
@@ -84,6 +84,16 @@ void CUI_Text::Rotate(_float radian)
 void CUI_Text::Set_Color(_float4 color)
 {
 	Get_Component<CTextSlot>()->Set_Color(color);
+}
+
+void CUI_Text::UI_Active(void* pArg)
+{
+	m_bActive = true;
+}
+
+void CUI_Text::UI_DeActive(void* pArg)
+{
+	m_bActive = false;
 }
 
 CUI_Text* CUI_Text::Create()

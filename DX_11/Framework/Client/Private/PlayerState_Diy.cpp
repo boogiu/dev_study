@@ -21,6 +21,12 @@ HRESULT CPlayerState_Diy::OnExit()
 
 CState* CPlayerState_Diy::HandleTransition()
 {
+	if (m_pPlayer->Get_InfoPack().isCrafting) {
+		return m_pLayer->Get_State("Movement_Idle_State");
+	}
+	if (m_pPlayer->Get_InfoPack().WorkBenchEncounter == false) {
+		return m_pLayer->Get_State("Movement_Idle_State");
+	}
 	return nullptr;
 }
 
