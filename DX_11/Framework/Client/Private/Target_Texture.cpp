@@ -104,6 +104,8 @@ void CTarget_Texture::Render(ID3D11DeviceContext* pContext)
 	auto RenderSys = CGameInstance::GetInstance()->Get_RenderSystem();
 	auto sprite = Get_Component<CSprite2D>();
 
+	if (Get_Component<CSprite2D>()->Get_CompActive() == false) return;
+
 	ID3D11InputLayout* pLayout;
 	RenderSys->Get_BufferInputLayout(
 		sprite->Get_Buffer(),

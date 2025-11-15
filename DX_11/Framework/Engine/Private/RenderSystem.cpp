@@ -104,9 +104,10 @@ HRESULT CRenderSystem::Render()
 	m_pDebugPass->Execute(m_pContext);
 #endif // _DEBUG
 
+	Process_RenderCommand();
+
 	m_pUIPass->Execute(m_pContext);
 
-	Process_RenderCommand();
 
 	return S_OK;
 }

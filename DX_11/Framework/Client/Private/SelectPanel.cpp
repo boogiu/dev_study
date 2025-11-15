@@ -115,9 +115,9 @@ void CSelectPanel::Update(_float dt)
 		for (size_t i = 0; i < m_SelectCount; i++)
 		{
 			m_pTexts[i]->Set_Active(true);
-			m_pTexts[i]->Set_Size(_float2{ m_pTexts[i]->Text_Length(),50 });
+			m_pTexts[i]->Set_Size(_float2{ m_pTexts[i]->Text_Length(),20.f*0.7f });
 
-			m_pTexts[i]->Align_To(ANCHOR::Center,
+			m_pTexts[i]->Align_To(ANCHOR::Left,
 				{ (-m_fSizeX * 0.5f) + 25.f,
 					(i - (m_SelectCount - 1) * 0.5f) * 30.f });
 		}
@@ -125,7 +125,7 @@ void CSelectPanel::Update(_float dt)
 
 		m_pSelectHighlight->Align_To(ANCHOR::Left,
 			{ (-m_fSizeX * 0.5f) + 20.f,
-			m_pTexts[m_NowIndex]->Local_Center().y + 5 });
+			m_pTexts[m_NowIndex]->Local_Center().y });
 
 		m_pCursor->Set_Pivot({ -m_fSizeX * 0.5f , m_pTexts[m_NowIndex]->Local_Center().y }, { 0,0 }, { 1,0 });
 

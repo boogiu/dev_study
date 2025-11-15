@@ -80,3 +80,58 @@ typedef struct tagSequenceDataDesc
 
 } SEQUENCE_DATA_DESC;
 
+struct CraftData {
+    ITEM_DATA_DESC Result_Item = {};
+    string RecipeImage = {};
+
+    ITEM_DATA_DESC ResourceItem_01 = {};
+    _uint ResourceItemCount_01 = {};
+    _uint nowCount_01 = {};
+
+    ITEM_DATA_DESC ResourceItem_02 = {};
+    _uint ResourceItemCount_02 = {};
+    _uint nowCount_02 = {};
+
+    ITEM_DATA_DESC ResourceItem_03 = {};
+    _uint ResourceItemCount_03 = {};
+    _uint nowCount_03 = {};
+
+    _bool isAbleToCraft() {
+        return
+            (ResourceItemCount_01 == nowCount_01) &&
+            (ResourceItemCount_02 == nowCount_02) &&
+            (ResourceItemCount_03 == nowCount_02);
+    }
+    _bool Has(wstring itemName) {
+        return
+            (ResourceItem_01.ItemName == itemName) ||
+            (ResourceItem_02.ItemName == itemName) ||
+            (ResourceItem_03.ItemName == itemName);
+    }
+    void Add(wstring itemName, _uint Count)
+    {
+        if (ResourceItem_01.ItemName == itemName)
+        {
+            nowCount_01 += Count;
+            return;
+        }
+
+        if (ResourceItem_02.ItemName == itemName)
+        {
+            nowCount_02 += Count;
+            return;
+        }
+
+        if (ResourceItem_03.ItemName == itemName)
+        {
+            nowCount_03 += Count;
+            return;
+        }
+    }
+	
+	void Reset() {
+		nowCount_01 =0;
+		nowCount_02 = 0;
+		nowCount_03 = 0;
+	}
+};

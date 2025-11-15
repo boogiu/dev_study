@@ -70,6 +70,7 @@ void CTextSlot::Push_Text()
 	if (!m_bActive || m_Info.Text.empty() || m_Info.FontTag.empty()) {
 		return;
 	}
+
 	if (m_AnchorInfo.bAutoPos) {
 		Set_Anchor(m_AnchorInfo.eAnchor, m_AnchorInfo.vPivot);
 	}
@@ -79,6 +80,22 @@ void CTextSlot::Push_Text()
 	else {
 		CGameInstance::GetInstance()->Get_FontSystem()->Push_Text(m_Info);
 	}
+}
+
+void CTextSlot::Render_Text()
+{
+	if (!m_bActive || m_Info.Text.empty() || m_Info.FontTag.empty()) {
+		return;
+	}
+
+	m_pFont->DrawSelf(
+		m_Info.Text,
+		m_Info.TextPos,
+		XMLoadFloat4(&m_Info.TextColor),
+		m_Info.Rotation,
+		m_Info.Origin,
+		m_Info.Scale
+	);
 }
 
 void CTextSlot::Set_AutoPos(ANCHOR anchor, _float2 Pivot)
@@ -94,6 +111,7 @@ void CTextSlot::Set_Anchor(ANCHOR anchor, _float2 Pivot)
 
 	float w = XMVectorGetX(size);
 	float h = XMVectorGetY(size);
+
 	_uint anchorFlags = static_cast<_uint>(anchor);
 
 	// Xรเ

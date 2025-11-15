@@ -6,6 +6,9 @@ class CUI_CraftPanel :
     public CUI_Object
 {
     enum  UI_State {Opening,Opened,Selected,Closed };
+ 
+
+
 private:
     CUI_CraftPanel();
     CUI_CraftPanel(const CUI_CraftPanel& rhs);
@@ -14,6 +17,7 @@ private:
 public:
     HRESULT Initialize_Prototype() override;
     HRESULT Initialize(INIT_DESC* pArg) override;
+    void Awake() override;
     void Priority_Update(_float dt) override;
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
@@ -22,11 +26,14 @@ public:
 public:
     virtual void UI_Active(void* pArg) override;
     virtual void UI_DeActive(void* pArg) override;
+    virtual void Craft_Selected(CRAFT_RESULT result);
 
 private:
     void Ready_Parts();
+    void Ready_Cards();
+    void Render_Cards();
+    void Compare_CraftData();
     _int Valid_Index(_int Add);
-
 
 private:
     HRESULT Read_CraftData();
@@ -42,13 +49,14 @@ private:
     _int m_Col = {5};
     _int m_Row = {5};
     _int m_NowIndex = {};
+
     class CUI_Cursor* m_pCursor = { nullptr };
     class CCraftCard* m_pCraftCard= { nullptr };
     class CUI_ItemText* m_pText = { nullptr };
 
     vector<class CUI_ItemCard*> m_pCards;
 
-    unordered_map<wstring, _uint> m_CraftData;
+    unordered_map<wstring, CraftData> m_CraftData;
     unordered_map<wstring, _uint> m_InvenData;
     function<void(const CRAFT_RESULT& result)> m_OnClose;
 

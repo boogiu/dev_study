@@ -131,6 +131,9 @@ HRESULT CSprite2D::Link_Shader(const string& levelKey, const string& shaderKey)
 
 HRESULT CSprite2D::ChangePass(const string& passConstant)
 {
+	if (passConstant.empty())
+		return S_OK;
+
 	m_PassConstant = passConstant;
 	return S_OK;
 }
@@ -143,8 +146,8 @@ HRESULT CSprite2D::Set_Param(const string& ConstantName, const SHADER_PARAM& par
 		it->second = parameter;    // 기존 값 덮어쓰기
 		return S_OK;
 	}
-
-	m_DynamicSlots.emplace(ConstantName, parameter);
+	SHADER_PARAM newparameter = parameter;
+	m_DynamicSlots.emplace(ConstantName, newparameter);
 	return S_OK;
 }
 

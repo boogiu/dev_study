@@ -1,14 +1,14 @@
 #pragma once
 #include "UI_Object.h"
-#include <TextSlot.h>
+
 NS_BEGIN(Client)
-class CUI_Text :
+class CTarget_Text :
     public CUI_Object
 {
 private:
-    CUI_Text();
-    CUI_Text(const CUI_Text& rhs);
-    virtual ~CUI_Text() override;
+    CTarget_Text();
+    CTarget_Text(const CTarget_Text& rhs);
+    virtual ~CTarget_Text() override;
 
 public:
     HRESULT Initialize_Prototype() override;
@@ -19,8 +19,11 @@ public:
     virtual void Render_GUI() override;
 
 public:
-    void Set_Active(_bool active) { m_bActive = active; }
-    void Set_Anchor(ANCHOR eAnchor) { m_eAnchor = eAnchor; }
+    void Render(ID3D11DeviceContext* pContext);
+
+public:
+    virtual void UI_Active(void* pArg) override;
+    virtual void UI_DeActive(void* pArg) override;
 public:
     _float Text_Length();
     void Set_Text(const wstring& text);
@@ -30,16 +33,19 @@ public:
     void Rotate(_float radian);
 
 public:
-    virtual void UI_Active(void* pArg) override;
-    virtual void UI_DeActive(void* pArg = nullptr) override;
-
+    void TargetSize(_float2 size);
+    void Center(_float2 offset = {});
+    _float2 Target_Center(_float2 offset = { });
+    _float Target_L(_float offset = { });
+    _float Target_R(_float offset = { });
+    _float Target_B(_float offset = { });
+    _float Target_T(_float offset = { });
 private:
-    _bool m_bActive = { false };
-    ANCHOR m_eAnchor = { ANCHOR::Center};
-    
+    _float4x4 m_OrthoProject = {};
 public:
-    static CUI_Text* Create();
+    static CTarget_Text* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;
     void Free() override;
 };
+
 NS_END

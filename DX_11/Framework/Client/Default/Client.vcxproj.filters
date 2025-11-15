@@ -364,6 +364,9 @@
     <Filter Include="02. GameObjects\08. UI\Base\Target_UI">
       <UniqueIdentifier>{8c5a228b-4c2e-4a3e-b3c4-951501f0ca52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\08. UI\Base\Target_UI\Target_Text">
+      <UniqueIdentifier>{9f0ffdbe-ed12-4749-a5b2-0ab3c762efe5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -714,6 +717,9 @@
     <ClInclude Include="..\Public\Target_Texture.h">
       <Filter>02. GameObjects\08. UI\Base\Target_UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Target_Text.h">
+      <Filter>02. GameObjects\08. UI\Base\Target_UI\Target_Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1044,6 +1050,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Target_Texture.cpp">
       <Filter>02. GameObjects\08. UI\Base\Target_UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Target_Text.cpp">
+      <Filter>02. GameObjects\08. UI\Base\Target_UI\Target_Text</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

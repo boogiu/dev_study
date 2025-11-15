@@ -36,9 +36,9 @@ HRESULT CUI_ItemText::Initialize(INIT_DESC* pArg)
 	Get_Component<CTextSlot>()->Set_Size(0.7f);
 	Get_Component<CTextSlot>()->Set_Color({ 1.0f, 0.984f, 0.905f ,1.f });
 	//Get_Component<CTextSlot>()->Set_AutoPos(ANCHOR::Center, { m_fWorldX,m_fWorldY });
-	m_Text = L"µ¹";
+	m_Text = L"";
 	m_fSizeX = 0;
-	m_fSizeY = 0;
+	m_fSizeY = 20;
 	return S_OK;
 }
 
@@ -55,7 +55,7 @@ void CUI_ItemText::Update(_float dt)
 	if (m_eState == Opened) {
 		m_fOpenTime += dt * 6;
 		_float2 CurSize = { m_fSizeX, m_fSizeY };
-		m_BaseSize.x = Get_Component<CTextSlot>()->Get_TextSize() + 5;
+		m_BaseSize.x = Get_Component<CTextSlot>()->Get_TextSize();
 		_vector LerpSize = XMVectorLerp(XMLoadFloat2(&CurSize), XMLoadFloat2(&m_BaseSize), m_fOpenTime);
 		Set_Size(LerpSize);
 
@@ -66,9 +66,7 @@ void CUI_ItemText::Update(_float dt)
 			m_fOpenTime = 0;
 		}
 	}
-	Get_Component<CTextSlot>()->Set_Anchor(ANCHOR::Center, 
-		{ m_fWorldX ,m_fWorldY +3 }
-	);
+	Get_Component<CTextSlot>()->Set_Anchor(ANCHOR::Center, { m_fWorldX ,m_fWorldY + 3 });
 }
 
 void CUI_ItemText::Late_Update(_float dt)

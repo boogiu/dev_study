@@ -58,7 +58,6 @@ void CUI_Text::Render_GUI()
 void CUI_Text::Set_Scale(_float size)
 {
 	Get_Component<CTextSlot>()->Set_Size( size);
-
 }
 
 _float CUI_Text::Text_Length()

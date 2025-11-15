@@ -6,6 +6,7 @@ Texture2D UI_GradationTexture;
 float4x4 transformMatrix;
 float4x4 matOrtho;
 float2 PartSize;
+float fLifeTime;
 
 struct VS_IN
 {
@@ -97,8 +98,11 @@ PS_OUT PS_MAIN(PS_IN In)
     PS_OUT Out;
     
     vector vDiffuse = SpriteTexture.Sample(LinearSampler, In.vTexcoord);
-    if(vDiffuse.a <0.1f )
+    if (vDiffuse.a < 0.1f)
+    {
         discard;
+    }
+        
     
     vDiffuse.rgb *= vDiffuse.a; // premultiply 보정
     Out.vColor = vDiffuse;
@@ -141,6 +145,27 @@ PS_OUT PS_MASKING_INSIDE_UI(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_MASKING_FlOW(PS_IN In)
+{
+    PS_OUT Out;
+
+    vector vDiffuse = SpriteTexture.Sample(LinearSampler, In.vTexcoord);
+    vDiffuse.rgb *= vDiffuse.a; // premultiply 보정
+    float MaskScale = .7f;
+    float2 uv = In.vTexcoord;
+    float2 scaledUV = ((uv - 0.5f) / MaskScale) + 0.5f;
+    scaledUV.x += fLifeTime*1.1f;
+    vector vMasking = UI_MaskTexture.Sample(LinearSampler, scaledUV);
+    vector vFrame = SpriteTexture.Sample(LinearSampler, In.vTexcoord);
+    
+    if (vFrame.a == 0.f)
+        discard;
+    
+    Out.vColor = vDiffuse + vDiffuse * (vMasking.r) * 0.4;
+    
+    return Out;
+}
+
 
 technique11 DefaultTechnique
 {
@@ -171,6 +196,15 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = compile gs_5_0 GS_MAIN();
         PixelShader = compile ps_5_0 PS_MASKING_INSIDE_UI();
+    }
+    pass Flow_Pattern
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Premultiplied, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        PixelShader = compile ps_5_0 PS_MASKING_FlOW();
     }
 }
 

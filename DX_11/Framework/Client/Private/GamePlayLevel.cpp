@@ -46,6 +46,7 @@
 #include "UI_ItemCard.h"
 
 #include "Target_Texture.h"
+#include "Target_Text.h"
 
 #include "Insect_Object.h"
 
@@ -55,7 +56,6 @@
 #include "EventSystem.h"
 #include "NpcSpawner.h"
 #include "DialogueManager.h"
-#include "Target_Texture.h"
 
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 	:CLevel{ LevelKey },
@@ -244,6 +244,7 @@ void CGamePlayLevel::PreLoad_Level()
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_ItemCardl", CUI_ItemCard::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_CraftCard", CCraftCard::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_Target_Texture", CTarget_Texture::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_UI_Target_Text", CTarget_Text::Create());
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Insect_Object", CInsect_Object::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcNrm", CNonPlayer::Create());

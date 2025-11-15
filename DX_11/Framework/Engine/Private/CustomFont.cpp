@@ -1,5 +1,5 @@
 #include "CustomFont.h"
-
+#include "GameInstance.h"
 CCustomFont::CCustomFont()
 {
 }
@@ -9,6 +9,15 @@ HRESULT CCustomFont::Initialize(ID3D11Device* pDevice, const wstring& FontFilePa
     m_pFont = new SpriteFont(pDevice, FontFilePath.c_str());
     if (!m_pFont)
         return E_FAIL;
+
+    m_pBatch = new SpriteBatch(CGameInstance::GetInstance()->Get_Context());
+    if (!m_pBatch)
+        return E_FAIL;
+
+    m_pStates = new CommonStates(pDevice);
+    if (!m_pStates)
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -48,6 +57,25 @@ void CCustomFont::DrawOutlinedText(SpriteBatch* pBatch, wstring text, const _flo
     );
 }
 
+void CCustomFont::DrawSelf(wstring pText, const _float2& vPosition, _fvector vColor, _float rotation, const _float2& origin, _float scale)
+{
+    m_pBatch->Begin(
+        SpriteSortMode_Deferred,
+        m_pStates->AlphaBlend(),   // ¡ç default´Â non-premultiplied
+        nullptr, nullptr, nullptr, nullptr, XMMatrixIdentity()
+    );
+
+    m_pFont->DrawString(m_pBatch,
+        pText.c_str(),
+        vPosition,
+        vColor,
+        rotation,
+        origin,
+        scale
+    );
+
+    m_pBatch->End();
+}
 
 CCustomFont* CCustomFont::Create(ID3D11Device* pDevice, const wstring& FontFilePath)
 {
@@ -66,4 +94,6 @@ void CCustomFont::Free()
 {
     __super::Free();
     Safe_Delete(m_pFont);
+    Safe_Delete(m_pBatch);
+    Safe_Delete(m_pStates);
 }

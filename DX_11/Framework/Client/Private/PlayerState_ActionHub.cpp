@@ -46,10 +46,7 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 		}
 	}
 
-	if ((TILE_FLAG::FLAG_TREE & TilePack.Range_FowardInfo.TileFlag) != 0) {
-		nextState = m_pLayer->Get_State("Action_TreeShake_State");
-		m_pPlayer->Adjust_To_Foward();
-	}
+
 
 	if(nextState)
 		return nextState;
@@ -57,7 +54,13 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 	switch (tPacket.CurItem.TypeTag)
 	{
 	case itemType::None:
-		nextState = m_pLayer->Get_State("Movement_Idle_State");
+		if ((TILE_FLAG::FLAG_TREE & TilePack.Range_FowardInfo.TileFlag) != 0) {
+			nextState = m_pLayer->Get_State("Action_TreeShake_State");
+			m_pPlayer->Adjust_To_Foward();
+		}
+		else {
+			nextState = m_pLayer->Get_State("Movement_Idle_State");
+		}
 		break;
 	case itemType::Axe:
 			nextState = m_pLayer->Get_State("Action_TreeChop_State");
