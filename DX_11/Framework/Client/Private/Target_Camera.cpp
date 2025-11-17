@@ -31,7 +31,7 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 	m_pTarget = pDesc->pTarget;
 	_float4 TagetPos = m_pTarget->Get_Position();
 
-	m_pTransform->Set_Pos({ TagetPos.x, 50,	TagetPos.z + 50 });
+	m_pTransform->Set_Pos({ TagetPos.x, 30,	TagetPos.z + 50 });
 	m_pTransform->LookAt({ TagetPos.x, 0,	TagetPos.z + 10 });
 	m_vOffset = pDesc->vOffset;
 
@@ -57,8 +57,6 @@ void CTarget_Camera::Awake()
 	auto evtSys = nowLevel->Get_LevelObject<CEventSystem>();
 
 	evtSys->Add_Listner<CTarget_Camera, BaseEvent>(this,&CTarget_Camera::Event_Listen);
-	
-	
 }
 
 void CTarget_Camera::Priority_Update(_float dt)

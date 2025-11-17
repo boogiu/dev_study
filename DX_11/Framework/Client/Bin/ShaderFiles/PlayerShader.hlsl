@@ -47,7 +47,16 @@ VS_OUT VS_MAIN(VS_IN In)
     vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
     vector vNormal = mul(float4(In.vNormal, 0.f), BoneMatrix);
     
-    Out.vPosition = mul(vPosition, matWVP);
+    float3 worldPos = mul(vPosition, matWorld[TransformIndex]).xyz;
+    float3 toObj = worldPos.xyz - vCamPosition.xyz;
+    float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
+    
+    float4 viewPos = mul(float4(worldPos, 1.f), matView);
+    float4 projPos = mul(viewPos, matProjection);
+    Out.vPosition = projPos;
+
     Out.vTexcoord = In.vTexcoord;
     Out.vNormal = mul(vNormal, matWorld[TransformIndex]);
     Out.vProjPos = Out.vPosition;
@@ -311,10 +320,7 @@ struct VS_OUT_SHADOW
 VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
-    
-    matrix matWV, matWVP;
-    matWV = mul(matWorld[TransformIndex], matShadowView);
-    matWVP = mul(matWV, matShadowProjection);
+   
     
     float fWeightW = 1.0 - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
 
@@ -325,8 +331,17 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
         g_BoneMatrices[SkinningOffset + In.vBlendIndex.w].BoneMat * fWeightW;
     
     vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
+    float3 worldPos = mul(vPosition, matWorld[TransformIndex]).xyz;
+
+    float3 toObj = worldPos.xyz - vCamPosition.xyz;
+    float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
     
-    Out.vPosition = mul(vPosition, matWVP);
+    float4 viewPos = mul(float4(worldPos, 1.f), matShadowView);
+    float4 projPos = mul(viewPos, matShadowProjection);
+    
+    Out.vPosition = projPos;
     Out.vProjPos = Out.vPosition;
     
     return Out;

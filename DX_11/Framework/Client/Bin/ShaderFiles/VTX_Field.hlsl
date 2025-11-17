@@ -29,12 +29,16 @@ VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out;
     
-    matrix matWV, matWVP;
+    float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
+    float3 toObj = worldPos - vCamPosition.xyz;
+     float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
     
-    matWV = mul(matWorld[TransformIndex], matView);
-    matWVP = mul(matWV, matProjection);
-    
-    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    float4 viewPos = mul(float4(worldPos, 1.f), matView);
+    float4 projPos = mul(viewPos, matProjection);
+
+    Out.vPosition = projPos;
     Out.vTexcoord = In.vTexcoord;
     
     //노멀 벡터를 월드 변환해줌
@@ -212,13 +216,18 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
     
-    matrix matWV, matWVP;
+    float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
+    float3 toObj = worldPos - vCamPosition.xyz;
+      float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
     
-    matWV = mul(matWorld[TransformIndex], matShadowView);
-    matWVP = mul(matWV, matShadowProjection);
+    float4 viewPos = mul(float4(worldPos, 1.f), matShadowView);
+    float4 projPos = mul(viewPos, matShadowProjection);
     
-    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vPosition = projPos;
     Out.vProjPos = Out.vPosition;
+    
     return Out;
 }
 struct PS_IN_SHADOW

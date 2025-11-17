@@ -14,8 +14,8 @@ cbuffer FrameBuffer : register(b0)
     matrix matProjectionInverse;
     matrix matOrthograph;
     float4 vCamPosition;
+    float3 CameraForward;
     float zFar;
-    float3 framePadding;
 };
 
 cbuffer LightBuffer : register(b1)
@@ -69,6 +69,12 @@ cbuffer ShadowBuffer : register(b8)
     float4 vShadowPosition;
     float zShadowFar;
     float3 ShadowPadding;
+};
+
+cbuffer CurvedWorldBuffer : register(b10)
+{
+    float CurveStrength = { 0.45};
+    float PlanetRadius = { 900};
 };
 
 struct BoneMatrix

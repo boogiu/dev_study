@@ -12,8 +12,15 @@ class CPipeLine :
         _float4x4 matProjectionInverse;
         _float4x4 matOrthograph;
         _float4 vCamPosition;
+        _float3 CameraForward;
         _float zFar;
-        _float3 padding; // ← 반드시 추가 (총 16바이트 맞추기)
+    };
+
+    /*내일 CBuffer로 만들기*/
+    struct alignas(16)  CurvedWorldBuffer
+    {
+        _float CurveStrength = { 0.25 };
+        _float PlanetRadius = { 900 };
     };
 
     struct alignas(16)  ShadowBuffer

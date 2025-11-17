@@ -56,9 +56,13 @@ VS_INSTANCE_OUT VS_INSTANCE(VS_INSTANCE_IN In)
 
     row_major float4x4 instWorld = float4x4(In.iRight, In.iUp, In.iLook, In.iTrans);
     float4 worldPos = mul(float4(localPos, 1.0f), instWorld);
+    float3 toObj = worldPos.xyz - vCamPosition.xyz;
+    float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
+
     float4 viewPos = mul(worldPos, matView);
     float4 projPos = mul(viewPos, matProjection);
-
 
     Out.vPosition = projPos;
     Out.vWorldPos = worldPos;
@@ -96,23 +100,35 @@ struct VS_OUT
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out;
-    
-    matrix matWV, matWVP;
-    
-    matWV = mul(matWorld[TransformIndex], matView);
-    matWVP = mul(matWV, matProjection);
-    
-    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+
+    float3 localPos = In.vPosition;
+    float3 worldPos = mul(float4(localPos, 1.f), matWorld[TransformIndex]).xyz;
+    float3 toObj = worldPos - vCamPosition.xyz;
+    float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
+
+    float4 viewPos = mul(float4(worldPos, 1.f), matView);
+    float4 projPos = mul(viewPos, matProjection);
+
+    Out.vPosition = projPos;
+    Out.vProjPos = projPos;
+    Out.vWorldPos = float4(worldPos, 1.f);
+
     Out.vTexcoord = In.vTexcoord;
-    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
-    Out.vWorldPos = mul(vector(In.vPosition, 1.f), matWorld[TransformIndex]);
-    Out.vProjPos = Out.vPosition;
-    
-    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), matWorld[TransformIndex])).xyz;
-    Out.vTangent *= -1;
+
+    float3 worldNormal = mul(float4(In.vNormal, 0.f), matWorld[TransformIndex]).xyz;
+    Out.vNormal = float4(normalize(worldNormal), 0.f);
+
+    float3 worldTangent = mul(float4(In.vTangent, 0.f), matWorld[TransformIndex]).xyz;
+    worldTangent *= -1; 
+    Out.vTangent = normalize(worldTangent);
+
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
+
     return Out;
 }
+
 
 struct PS_INSTATNCE_IN
 {
@@ -293,6 +309,11 @@ VS_OUT_SHADOW VS_MAIN_INSTANCE_SHADOW(VS_INSTANCE_IN In)
 
     row_major float4x4 instWorld = float4x4(In.iRight, In.iUp, In.iLook, In.iTrans);
     float4 worldPos = mul(float4(localPos, 1.0f), instWorld);
+    float3 toObj = worldPos.xyz - vCamPosition.xyz;
+    float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
+    
     float4 viewPos = mul(worldPos, matShadowView);
     float4 projPos = mul(viewPos, matShadowProjection);
     
@@ -305,13 +326,16 @@ VS_OUT_SHADOW VS_MAIN_INSTANCE_SHADOW(VS_INSTANCE_IN In)
 VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
+    float4 worldPos = mul(float4(In.vPosition, 1.0f), matWorld[TransformIndex]);
+    float3 toObj = worldPos.xyz - vCamPosition.xyz;
+    float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
     
-    matrix matWV, matWVP;
+    float4 viewPos = mul(worldPos, matShadowView);
+    float4 projPos = mul(viewPos, matShadowProjection);
     
-    matWV = mul(matWorld[TransformIndex], matShadowView);
-    matWVP = mul(matWV, matShadowProjection);
-    
-    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vPosition = projPos;
     Out.vProjPos = Out.vPosition;
     return Out;
 }

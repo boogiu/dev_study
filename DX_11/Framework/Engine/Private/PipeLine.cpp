@@ -76,6 +76,7 @@ HRESULT CPipeLine::Update_FrameBuffer(ID3D11DeviceContext* pContext)
 	frameBuffer.matViewInverse = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_InversedViewMatrix();
 	frameBuffer.matProjectionInverse = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_InversedProjMatrix();
 	frameBuffer.vCamPosition = CGameInstance::GetInstance()->Get_CameraMgr()->Get_CameraPos();
+	frameBuffer.CameraForward = { frameBuffer.matViewInverse._31,frameBuffer.matViewInverse._32,frameBuffer.matViewInverse._33 };
 	frameBuffer.zFar = CGameInstance::GetInstance()->Get_CameraMgr()->Get_Far();
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
