@@ -13,7 +13,7 @@ CNpcState_Move_Trace::CNpcState_Move_Trace()
 HRESULT CNpcState_Move_Trace::OnEnter()
 {
     auto Animator = m_pCharacter->Get_Component<CAnimator3D>();
-    Animator->Change_Animation("Move_Walk_F.anim", false);
+    Animator->Change_Animation("Act_PlaneRun.anim", false);
     Request_Path();
 
     return S_OK;
@@ -35,7 +35,10 @@ void CNpcState_Move_Trace::OnUpdate(_float dt)
     if (m_fElapsedTime > m_fRefresh) {
          Request_Path();
     }
-    
+    if (m_nowIndex >= m_PathIndex.size())
+    {
+        m_nowIndex -= 1;
+    }
     TILE_INDEX nextIdx = m_PathIndex[m_nowIndex];
      _float4    nextPos = tileSys->Get_PositionByIndex(nextIdx, ANCHOR::Center);
      _vector curPos = myTransform->Get_Pos();
@@ -57,7 +60,7 @@ void CNpcState_Move_Trace::OnUpdate(_float dt)
     XMStoreFloat4(&moveDirection, dir);
     MovePack.vMoveAxis = { moveDirection.x,moveDirection .z};
     XMVectorSetY(dir, MovePack.fCharacterHeight);
-    myTransform->Translate(dir * dt* MovePack.fMoveSpeed);
+    myTransform->Translate(dir * dt* MovePack.fMoveSpeed*2.f);
 }
 
 void CNpcState_Move_Trace::Request_Path()

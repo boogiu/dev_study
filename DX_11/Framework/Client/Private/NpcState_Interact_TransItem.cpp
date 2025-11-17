@@ -10,7 +10,7 @@
 #include "Player.h"
 CNpcState_Interact_TransItem::CNpcState_Interact_TransItem()
 {
-
+	m_ItemData.eType = EVENT_TYPE::TransItem;
 }
 
 HRESULT CNpcState_Interact_TransItem::OnEnter()
@@ -56,7 +56,7 @@ void CNpcState_Interact_TransItem::OnUpdate(_float dt)
 	case Client::CNpcState_Interact_TransItem::ItemHandle:
 		if (Animator->isCurrentAnimEnd())
 		{
-			m_pCharacter->Get_EventPack().eventSystem->OnBroadCast(m_ItemData);
+			m_pCharacter->Get_EventPack().eventSystem->OnBroadCast<BaseEvent>(m_ItemData);
 			m_eState = Transferred;
 		}
 		break;

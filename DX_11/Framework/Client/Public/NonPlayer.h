@@ -144,7 +144,9 @@ public:
 
 public:
 	virtual void Serve_Order(const string& order, _uint orderer);
-
+	virtual void Receive_QuestMsg(QUEST_MSG msg) {};
+public:
+		virtual void EventAction(const BaseEvent& event);
 public:
 	_float4x4 Get_SocketMatrix(string socketName);
 

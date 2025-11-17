@@ -78,6 +78,92 @@ PS_OUT PS_MAIN(PS_IN In)
    return Out;
 }
 
+PS_OUT PS_Gradation_Main(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vMixture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vAlbGry = AlbedoGrayTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = GradationTexture.Sample(DefaultSampler, float2(0.8 , 1-vMixture.r));
+    vMtrlDiffuse += (vAlbGry.r) * (vMixture.g);
+   if (vMtrlDiffuse.a < 0.3f)
+     discard;
+    
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+  
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    
+    return Out;
+}
+
+PS_OUT PS_Leaf_Main(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vMixture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vAlbGry = AlbedoGrayTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vMtrlDiffuse = GradationTexture.Sample(DefaultSampler, float2(vMixture.g, vMixture.b*0.1f));
+    
+   if (vMtrlDiffuse.a < 0.3f)
+       discard;
+    
+    vMtrlDiffuse += (vAlbGry);
+    
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+  
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    
+    return Out;
+}
+
+PS_OUT PS_Fruit_Main(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vMixture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vMtrlDiffuse.a = 1.f;
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+  
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    
+    return Out;
+}
+PS_OUT PS_FORCE(PS_IN In)
+{
+    PS_OUT Out;
+    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDiffuse = (1.f, 1.f, 1.f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    return Out;
+}
 
 struct VS_OUT_SHADOW
 {
@@ -130,6 +216,42 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
+    }  
+    pass PltWood_Mesh
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_Gradation_Main();
+    }  
+    pass Leaf_Mesh
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_Leaf_Main();
+    }  
+    pass PltFruit_Mesh
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_Fruit_Main();
+    }  
+    pass Force_See
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_FORCE();
     }  
     pass Shadow
     {

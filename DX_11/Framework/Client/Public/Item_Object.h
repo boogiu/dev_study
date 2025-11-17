@@ -49,6 +49,9 @@ protected:
    virtual void FollowHand(_float dt);
    virtual void Update_ByState(_float dt);
 
+private:
+   virtual void Check_Palette();
+
 public:
     ITEM_DATA_DESC Get_ItemData() { return m_ItemInfo; }
    virtual void Remove_Item();

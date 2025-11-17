@@ -5,6 +5,10 @@
 #include "Material.h"
 #include "MaterialInstance.h"
 
+#include "GameInstance.h"
+#include "IResourceService.h"
+#include "Texture.h"
+
 CField_Out::CField_Out()
 {
 }
@@ -42,6 +46,11 @@ void CField_Out::Priority_Update(_float dt)
 
 void CField_Out::Update(_float dt)
 {
+		m_fElpaseTime += dt*.5f;
+		m_fWaveTime = fabs(sinf(m_fElpaseTime));
+		m_fWaveTime = 0.05f + m_fWaveTime * 0.95f;
+		_float t = fmod(m_fWaveTime, 2.0f); // 0~2
+		m_fFade = (t <= 1.0f) ? t : (2.0f - t); // 0->1->0
 }
 
 void CField_Out::Late_Update(_float dt)
@@ -53,7 +62,7 @@ void CField_Out::Render_GUI()
 	__super::Render_GUI();
 }
 
-HRESULT CField_Out::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
+HRESULT CField_Out::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
 	// iter->first ID
 		// iter->second  name , modelID, MaterialID, path,path
@@ -71,7 +80,7 @@ HRESULT CField_Out::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mod
 void CField_Out::Override_Pass()
 {
 	CMaterial* pMaterial = Get_Component<CMaterial>();
-
+	auto pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassXlu")) {
 		instance->Override_Pass("Edge");
 	}
@@ -85,7 +94,23 @@ void CField_Out::Override_Pass()
 		instance->Override_Pass("Base");
 	}
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mBeach")) {
-		instance->Override_Pass("Base");
+		instance->Override_Pass("Water");
+		SHADER_PARAM param = { pRcsMgr->Load_Texture("GamePlay_Level","Palette_mWater_Alb.png")->Get_SRV(),"Texture2D",0 };
+		SHADER_PARAM WaveParam = { &m_fWaveTime,"float",sizeof(_float) };
+		SHADER_PARAM fadeParam = { &m_fFade,"float",sizeof(_float) };
+		instance->Set_Param("DiffuseTexture", param);
+		instance->Set_Param("fWaveTime", WaveParam);
+		instance->Set_Param("fFade", fadeParam);
+		instance->Override_Pass("Water");
+	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaveFoam")) {
+		SHADER_PARAM param = { pRcsMgr->Load_Texture("GamePlay_Level","Palette_mWater_Alb.png")->Get_SRV(),"Texture2D",0 };
+		SHADER_PARAM WaveParam = { &m_fWaveTime,"float",sizeof(_float)};
+		SHADER_PARAM fadeParam = { &m_fFade,"float",sizeof(_float)};
+		instance->Set_Param("DiffuseTexture", param);
+		instance->Set_Param("fWaveTime", WaveParam);
+		instance->Set_Param("fFade", fadeParam);
+		instance->Override_Pass("Wave");
 	}
 }
 

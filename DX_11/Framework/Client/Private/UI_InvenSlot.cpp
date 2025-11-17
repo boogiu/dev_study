@@ -60,10 +60,10 @@ HRESULT CUI_InvenSlot::Initialize(INIT_DESC* pArg)
 
 	Get_Component<CObjectContainer>()->Add_Child(pCount, false);
 	m_pCount = dynamic_cast<CUI_Text*>(pCount);
-	m_pCount->Get_Component<CTextSlot>()->Set_Color(_float4(0.447, 0.365, 0.259, 1.0));
+	m_pCount->Get_Component<CTextSlot>()->Set_Color(Brown);
 	m_pCount->Get_Component<CTextSlot>()->Set_Font("Sindy");
 	m_pCount->Get_Component<CTextSlot>()->Set_Size(0.7);
-	m_pCount->Get_Component<CTextSlot>()->Set_OutLine(1.f, { 1.0f, 0.984f, 0.905f ,1.5f });
+	m_pCount->Get_Component<CTextSlot>()->Set_OutLine(1.f, Ibory);
 	return S_OK;
 }
 
@@ -87,6 +87,9 @@ void CUI_InvenSlot::Update(_float dt)
 
 	if (m_itemData.itemCount == 0) {
 		m_itemData = {};
+		m_pIcon->Get_Component<CSprite2D>()->Set_CompActive(false);
+		m_pText->Get_Component<CSprite2D>()->Set_CompActive(false);
+		m_pText->Get_Component<CTextSlot>()->Set_CompActive(false);
 		m_pCount->Set_Active(false);
 	}
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
@@ -99,6 +102,7 @@ void CUI_InvenSlot::Active()
 	m_pIcon->Get_Component<CSprite2D>()->Set_CompActive(true);
 	Get_Component<CSprite2D>()->Set_CompActive(true);
 }
+
 void CUI_InvenSlot::DeActive()
 {
 	m_pCount->Set_Active(false);
@@ -155,11 +159,17 @@ HRESULT CUI_InvenSlot::Add_Data(ITEM_DATA_DESC desc)
 
 void CUI_InvenSlot::PullOut_Data()
 {
-	if (m_itemData.itemCount > 0)
-		m_itemData.itemCount--;
+	/*1개 이상이면 개수 깎음*/
+	if (m_itemData.itemCount <= 0) {
+		m_itemData.itemCount = 0;
+		return;
+	}
+
+	m_itemData.itemCount--;
 
 	if (m_itemData.itemCount == 0) {
 		m_itemData = {};
+		/*빠지고도 살아있음*/
 		m_pText->Get_Component<CSprite2D>()->Set_CompActive(false);
 		m_pIcon->Get_Component<CSprite2D>()->Set_CompActive(false);
 		m_pCount->Set_Active(false);

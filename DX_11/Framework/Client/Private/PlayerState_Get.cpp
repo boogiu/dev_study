@@ -20,6 +20,7 @@ HRESULT CPlayerState_Get::OnEnter()
 	Animator->Stop_AnimationBlend();
 	m_pPlayer->Adjust_To_WorldFoward();
 	itemType nowType = m_pPlayer->Get_ItemPacket().CurItem.TypeTag;
+
 	switch (nowType)
 	{
 	case itemType::None:
@@ -48,7 +49,6 @@ void CPlayerState_Get::OnUpdate(_float dt)
 		if (m_ePhase == Idle)
 			pObject->Get_Component<CModel>()->Set_CompActive(true);
 		_float4 pos = InfoPack.pLeftHand->Get_Position();
-		pos.z += 1;
 		pObject->Get_Component<CTransform>()->TranslateMatrix(XMLoadFloat4x4(InfoPack.pLeftHand->Get_WorldMatrix()));
 	}
 	switch (m_ePhase)

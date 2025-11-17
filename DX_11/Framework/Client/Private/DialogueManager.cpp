@@ -61,11 +61,7 @@ void CDialogueManager::Set_FreindSystem(CEventSystem* pSystem, CUI_Responcer* pU
 
 void CDialogueManager::Set_EventSystem()
 {
-	m_pSystem->Add_Listner<OnStartDialogue>([this](const OnStartDialogue& evt) {
-		if (evt.pSpeaker == m_pCurrentSpeaker) return;
-
-			this->onStart_Dialogue(evt);
-		});
+	m_pSystem->Add_Listner<CDialogueManager, BaseEvent>(this,&CDialogueManager::Dialogue_Event);
 }
 
 void CDialogueManager::onStart_Dialogue(OnStartDialogue startMsg)
@@ -83,8 +79,8 @@ void CDialogueManager::onStart_Dialogue(OnStartDialogue startMsg)
 	if (!expectedCond.empty() && expectedCond != startMsg.EntryCondition)
 		return;
 
-	m_pSystem->OnBroadCast(OnNoticeDialogue{ startMsg.pSpeaker, startMsg.pListner });
-	m_pSystem->OnBroadCast(OnNoticeDialogue{ startMsg.pListner, startMsg.pSpeaker });
+	m_pSystem->OnBroadCast<BaseEvent>(OnNoticeDialogue{ EVENT_TYPE::NoticeDialogue, startMsg.pSpeaker, startMsg.pListner });
+	m_pSystem->OnBroadCast<BaseEvent>(OnNoticeDialogue{ EVENT_TYPE::NoticeDialogue, startMsg.pListner, startMsg.pSpeaker });
 
 	TalkingMsgDesc desc = {};
 	desc.OpenSize = { 800,160 };
@@ -99,13 +95,25 @@ void CDialogueManager::onStart_Dialogue(OnStartDialogue startMsg)
 	m_pCurrentSpeaker = startMsg.pSpeaker;
 }
 
+void CDialogueManager::Dialogue_Event(const BaseEvent& event)
+{
+	if (event.eType == EVENT_TYPE::DialougueStart) {
+		const auto& evt = static_cast<const OnStartDialogue&>(event);
+		if (evt.pSpeaker == m_pCurrentSpeaker) return;
+		this->onStart_Dialogue(evt);
+	}
+	//	if (event.eType == EVENT_TYPE::DialougueEnd) {
+	//		const auto& evt = static_cast<const OnEndDialogue&>(event);
+	//		this->onEnd_Dialogue(evt);
+	//	}
+}
+
 void CDialogueManager::onEnd_Dialogue(OnEndDialogue endMsg)
 {
 	 endMsg.pSpeaker = m_pCurrentSpeaker;
-	m_pSystem->OnBroadCast(endMsg);
+	m_pSystem->OnBroadCast<BaseEvent>(endMsg); 
 	m_pCurrentSpeaker = nullptr;
 }
-
 
 HRESULT CDialogueManager::Read_CharacterSequece(const string& filePath)
 {

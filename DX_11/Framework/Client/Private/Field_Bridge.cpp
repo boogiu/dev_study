@@ -45,9 +45,10 @@ void CField_Bridge::Late_Update(_float dt)
 void CField_Bridge::Render_GUI()
 {
 	__super::Render_GUI();
+	ImGui::Text("Type : %d", m_iObjType);
 }
 
-HRESULT CField_Bridge::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
+HRESULT CField_Bridge::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
 
 	HRESULT hr = Get_Component<CModel>()->Link_Model("GamePlay_Level", modelMapTable[1]);
@@ -66,7 +67,6 @@ HRESULT CField_Bridge::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> 
 	for (auto idx : Indecies)
 	{
 		tileSystem->Add_TileFlagByIndex(idx, static_cast<_uint>(TILE_FLAG::FLAG_BRIDGE));
-		tileSystem->Set_Material_ID(idx, { 1,1,0,0 });
 	}
 
 	return hr;

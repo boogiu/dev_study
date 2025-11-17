@@ -19,7 +19,7 @@ public:
     void Late_Update(_float dt) override;
     virtual void Render_GUI()override;
 public:
-    virtual HRESULT Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable);
+    virtual HRESULT Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable);
 
 protected:
     _uint m_iObjType = {};

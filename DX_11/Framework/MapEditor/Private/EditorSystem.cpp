@@ -359,8 +359,8 @@ HRESULT CEditorSystem::Load_MapData()
 	ifs.read(reinterpret_cast<char*>(&MapFile), sizeof(MAP_FILE_HEADER));
 	for (size_t i = 0; i < MapFile.iObjectCount; i++)
 	{
-		MAP_OBJECT_HEADER ObjectHeader = {};
-		ifs.read(reinterpret_cast<char*>(&ObjectHeader), sizeof(MAP_OBJECT_HEADER));
+		NEW_MAP_OBJECT_HEADER ObjectHeader = {};
+		ifs.read(reinterpret_cast<char*>(&ObjectHeader), sizeof(NEW_MAP_OBJECT_HEADER));
 
 		CGameObject* pObject =
 			Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_MapObject" })

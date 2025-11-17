@@ -62,8 +62,10 @@ HRESULT CNonPlayer::Initialize(INIT_DESC* pArg)
 void CNonPlayer::Awake()
 {
 	Make_Model(m_CharacterDesc);
+	/*경로 실수 .Model 들어감*/
+	ClientHelper::Add_AllClipsByFile("../../Resources/Data/CharacterAnim.json","GamePlay_Level", m_CharacterDesc.NpcKey,
+	Get_Component<CAnimator3D>());
 
-	ClientHelper::Add_AllClipsByFile("../../Resources/Data/CharacterAnim.json", "GamePlay_Level", "NPC", Get_Component<CAnimator3D>());
 	Get_Component<CMaterialAnimator>()->LinkAnimate_Material(Get_Component<CMaterial>());
 
 	Get_Component<CAnimator3D>()->Change_Animation("Base_Wait.anim",false);
@@ -193,45 +195,7 @@ void CNonPlayer::Add_EventListen()
 	if (nowLevel)
 	{
 		auto EventSys = nowLevel->Get_LevelObject<CEventSystem>();
-
-		EventSys->Add_Listner<PLAYER_POS>([this](const PLAYER_POS& pos) {
-				PLAYER_POS Playerpos = pos;
-				_float fDistance = XMVectorGetX(XMVector4Length(m_pTransform->Get_Pos() - XMLoadFloat4(&Playerpos.playerPos)));
-				m_TracePack.pPlayer = pos.pPlayer;
-				if (fabs(fDistance) <11.f)
-					m_TracePack.Player_Near = true;
-				else
-					m_TracePack.Player_Near = false;
-
-				m_TracePack.Player_distance = fDistance;
-				m_TracePack.Player_Pos = pos.playerPos;
-				XMStoreFloat4(&m_TracePack.vLook_Player, 
-					XMVector4Normalize(XMLoadFloat4(&Playerpos.playerPos) - m_pTransform->Get_Pos()));
-			});
-
-		EventSys->Add_Listner<OnNoticeDialogue>([&](const OnNoticeDialogue& evt) {
-			if (evt.pSubject != this) return; //다이얼로그 시작
-				LookTo(
-					Get_TracePack().pPlayer->Get_Component<CTransform>()->Get_Pos()
-				);
-
-				m_EventPack.reservedMsg.Type = "Talking";
-			});
-
-		EventSys->Add_Listner<OnEndDialogue>([&](const OnEndDialogue& evt) {
-			if (evt.pSpeaker != this) return;
-				Set_Closed(evt); //끝
-		});
-
-		EventSys->Add_Listner<RESPONSE_TRANS_ITEM>([&](const RESPONSE_TRANS_ITEM& evt) {
-			if (evt.pSenderID != this->m_ObjectID) return;
-				m_ActionPack.NextPhase();
-			});
-
-		EventSys->Add_Listner<EVNET_NPC_TO_NPC>([&](const EVNET_NPC_TO_NPC& evt) {
-			if (evt.Server_NPCID != this->m_CharacterDesc.NpcID) return;
-			Serve_Order(evt.OrderMsg, evt.Orderer_NPCID);
-			});
+		EventSys->Add_Listner<CNonPlayer, BaseEvent>(this, &CNonPlayer::EventAction);
 	};
 }
 
@@ -352,9 +316,10 @@ void CNonPlayer::Set_Camera(const string tag)
 	if (tag.empty())
 		return;
 
-	CAM_MOVE move = {tag};
-	m_EventPack.eventSystem->OnBroadCast(move);
-
+	CAM_MOVE move; move.
+	eType = EVENT_TYPE::CameraMove;
+	move.moveTag = tag;
+	m_EventPack.eventSystem->OnBroadCast<BaseEvent>(move);
 }
 
 void CNonPlayer::Set_Closed(OnEndDialogue endMsg)
@@ -374,6 +339,52 @@ void CNonPlayer::Set_Closed(OnEndDialogue endMsg)
 
 void CNonPlayer::Serve_Order(const string& order, _uint orderer)
 {
+}
+
+void CNonPlayer::EventAction(const BaseEvent& event)
+{
+	if (event.eType == EVENT_TYPE::Player_Pos) {
+		const auto& evt = static_cast<const PLAYER_POS&>(event);
+		_float fDistance = XMVectorGetX(XMVector4Length(m_pTransform->Get_Pos() - XMLoadFloat4(&evt.playerPos)));
+		m_TracePack.pPlayer = evt.pPlayer;
+
+		if (fabs(fDistance) < 11.f)
+			m_TracePack.Player_Near = true;
+		else
+			m_TracePack.Player_Near = false;
+
+		m_TracePack.Player_distance = fDistance;
+		m_TracePack.Player_Pos = evt.playerPos;
+		XMStoreFloat4(&m_TracePack.vLook_Player,
+			XMVector4Normalize(XMLoadFloat4(&evt.playerPos) - m_pTransform->Get_Pos()));
+	}
+	if (event.eType == EVENT_TYPE::NoticeDialogue) {
+		const auto& evt = static_cast<const OnNoticeDialogue&>(event);
+		if (evt.pSubject != this) return; //다이얼로그 시작
+		LookTo(
+			Get_TracePack().pPlayer->Get_Component<CTransform>()->Get_Pos()
+		);
+
+		m_EventPack.reservedMsg.Type = "Talking";
+	}
+
+	if (event.eType == EVENT_TYPE::DialougueEnd) {
+		const auto& evt = static_cast<const OnEndDialogue&>(event);
+		if (evt.pSpeaker != this) return;
+		Set_Closed(evt); //끝
+	}
+
+	if (event.eType == EVENT_TYPE::TransItem_Response) {
+		const auto& evt = static_cast<const RESPONSE_TRANS_ITEM&>(event);
+		if (evt.pSenderID != this->m_ObjectID) return;
+		m_ActionPack.NextPhase();
+	}
+
+	if (event.eType == EVENT_TYPE::Npc_To_Npc) {
+		const auto& evt = static_cast<const EVNET_NPC_TO_NPC&>(event);
+		if (evt.Server_NPCID != this->m_CharacterDesc.NpcID) return;
+		Serve_Order(evt.OrderMsg, evt.Orderer_NPCID);
+	}
 }
 
 _float4x4 CNonPlayer::Get_SocketMatrix(string socketName)

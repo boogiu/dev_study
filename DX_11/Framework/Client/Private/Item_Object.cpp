@@ -7,7 +7,8 @@
 #include "GameInstance.h"
 #include "Child.h"
 #include "Animator3D.h"
-
+#include "MaterialData.h"
+#include "MaterialInstance.h"
 CItem_Object::CItem_Object()
 {
 }
@@ -47,10 +48,12 @@ HRESULT CItem_Object::Initialize(INIT_DESC* pArg)
 		}
 		m_ItemInfo = pDesc->itemDesc;
 	}
+
 	auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	m_SyncedIndex = TileSystem->Get_IndexByPosition(Get_Position());
 	m_MarginY = TileSystem->Get_TileHeightByPosition(Get_Position());
 	m_InstanceTag = "Item";
+	Check_Palette();
 
 	return S_OK;
 }
@@ -145,6 +148,11 @@ void CItem_Object::Update_ByState(_float dt)
 	}
 					   break;
 	}
+}
+
+void CItem_Object::Check_Palette()
+{
+	
 }
 
 void CItem_Object::Render_GUI()

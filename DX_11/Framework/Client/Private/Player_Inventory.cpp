@@ -182,6 +182,31 @@ HRESULT CPlayer_Inventory::PullOut_ToOtherSlot(_int Slot)
 	return E_FAIL;
 }
 
+HRESULT CPlayer_Inventory::PullOut_Item(ITEM_DATA_DESC data, _uint Count)
+{
+	_uint RemovedCount = 0;
+
+	for (size_t i = 0; i < m_pSlots.size(); i++)
+	{
+		if (RemovedCount == Count)
+			return S_OK;
+
+		ITEM_DATA_DESC item = m_pSlots[i]->Get_Data();
+		if (item.FileName != data.FileName)
+			continue;
+
+		//카운트 남아있고, 삭제할게 남아있으면
+		while (m_pSlots[i]->Get_Count() > 0 && RemovedCount < Count)
+		{
+			m_pSlots[i]->PullOut_Data();
+			RemovedCount++;
+		}
+	}
+
+	return S_OK;
+}
+
+
 unordered_map<wstring, _uint> CPlayer_Inventory::Get_All_InventoryData()
 {
 	ITEM_DATA_DESC desc;
@@ -401,6 +426,10 @@ vector<wstring> CPlayer_Inventory::Switch_ItemSelect(itemType type, _uint count)
 		if (m_pPlayer->Get_ItemPacket().CurItem.TypeTag == type)
 			SelectScript[0] = L"장착 해제하기";
 		break;
+	case itemType::Represent:
+	case itemType::Furniture:
+		SelectScript = {L"배치하기", L"근처에 두기" };
+			break;
 	default:
 		break;
 	}

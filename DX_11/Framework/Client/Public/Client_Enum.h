@@ -136,18 +136,15 @@ static  constexpr unsigned int OnlyAction = 0xffffffff;
 static  constexpr unsigned int OnlyTrans = 0xffffffff;
 static  constexpr unsigned int OnlyInteraction = 0xffffffff;
 
-
-enum class AgendaType {
-    None,
-    SmallTalk,
-    ReQuest,
-    Reward,
-};
-
-
 enum class NpcState {
     Idle,
     Angry,
     Depressed,
     Happy
 };
+
+enum class GAME_MODE {
+    NORMAL,
+    RYTHM
+};
+

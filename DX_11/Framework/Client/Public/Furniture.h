@@ -25,7 +25,7 @@ public:
     void OnCollisionExit(COLLISION_CONTEXT context)override;
 
 public:
-    HRESULT Make_FurnitureByMapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable);
+    HRESULT Make_FurnitureByMapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable);
 
 protected:
     string m_FurnitureName = {};

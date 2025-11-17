@@ -170,7 +170,7 @@ PS_OUT PS_EYE(PS_IN In)
     //  알파가 있고, RGB가 거의 없으면 -> 눈 영역
     else if (a > 0.05 && baseCol.r < 0.1)
     {
-        color = lerp(baseCol, eyeColor.rgb, saturate(a * 1.0)) * (1 - tex.a);
+        color = lerp(baseCol, tex.rgb, saturate(a * 1.0)) * (1 - tex.a);
     }
     // 나머지는 텍스처 색 그대로
     else

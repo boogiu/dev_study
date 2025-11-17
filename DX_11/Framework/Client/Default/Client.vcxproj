@@ -187,7 +187,9 @@
     <ClInclude Include="..\Public\Field_Stone.h" />
     <ClInclude Include="..\Public\Free_Camera.h" />
     <ClInclude Include="..\Public\Furniture.h" />
+    <ClInclude Include="..\Public\GameModeController.h" />
     <ClInclude Include="..\Public\GamePlayLevel.h" />
+    <ClInclude Include="..\Public\Glass_Acc.h" />
     <ClInclude Include="..\Public\HairCapParts.h" />
     <ClInclude Include="..\Public\HairParts.h" />
     <ClInclude Include="..\Public\HubState.h" />
@@ -217,6 +219,7 @@
     <ClInclude Include="..\Public\NpcState_Move_Trace.h" />
     <ClInclude Include="..\Public\NpcState_Interact_TransItem.h" />
     <ClInclude Include="..\Public\Npc_HubState.h" />
+    <ClInclude Include="..\Public\NpcTkk.h" />
     <ClInclude Include="..\Public\Plant_Grass.h" />
     <ClInclude Include="..\Public\Plant_Tree.h" />
     <ClInclude Include="..\Public\Player.h" />
@@ -227,6 +230,7 @@
     <ClInclude Include="..\Public\PlayerState_AimWalk.h" />
     <ClInclude Include="..\Public\PlayerState_Axe.h" />
     <ClInclude Include="..\Public\PlayerState_ChopTree.h" />
+    <ClInclude Include="..\Public\PlayerState_CraftAction.h" />
     <ClInclude Include="..\Public\PlayerState_Diy.h" />
     <ClInclude Include="..\Public\PlayerState_Eat.h" />
     <ClInclude Include="..\Public\PlayerState_Get.h" />
@@ -300,7 +304,9 @@
     <ClCompile Include="..\Private\Field_Stone.cpp" />
     <ClCompile Include="..\Private\Free_Camera.cpp" />
     <ClCompile Include="..\Private\Furniture.cpp" />
+    <ClCompile Include="..\Private\GameModeController.cpp" />
     <ClCompile Include="..\Private\GamePlayLevel.cpp" />
+    <ClCompile Include="..\Private\Glass_Acc.cpp" />
     <ClCompile Include="..\Private\HairCapParts.cpp" />
     <ClCompile Include="..\Private\HairParts.cpp" />
     <ClCompile Include="..\Private\HubState.cpp" />
@@ -330,6 +336,7 @@
     <ClCompile Include="..\Private\NpcState_Move_Trace.cpp" />
     <ClCompile Include="..\Private\NpcState_Interact_TransItem.cpp" />
     <ClCompile Include="..\Private\Npc_HubState.cpp" />
+    <ClCompile Include="..\Private\NpcTkk.cpp" />
     <ClCompile Include="..\Private\Plant_Grass.cpp" />
     <ClCompile Include="..\Private\Plant_Tree.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
@@ -340,6 +347,7 @@
     <ClCompile Include="..\Private\PlayerState_AimWalk.cpp" />
     <ClCompile Include="..\Private\PlayerState_Axe.cpp" />
     <ClCompile Include="..\Private\PlayerState_ChopTree.cpp" />
+    <ClCompile Include="..\Private\PlayerState_CraftAction.cpp" />
     <ClCompile Include="..\Private\PlayerState_Diy.cpp" />
     <ClCompile Include="..\Private\PlayerState_Eat.cpp" />
     <ClCompile Include="..\Private\PlayerState_Get.cpp" />

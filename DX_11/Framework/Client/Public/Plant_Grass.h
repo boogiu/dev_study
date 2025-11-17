@@ -19,10 +19,12 @@ public:
     virtual void Render_GUI();
 
 public:
-    virtual HRESULT Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable) override;
+    virtual HRESULT Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable) override;
 
 private:
     TILE_INDEX m_Index = {};
+    _bool m_bPlayerOn = {};
+    _float m_fScaleTime = {};
 public:
     static CPlant_Grass* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

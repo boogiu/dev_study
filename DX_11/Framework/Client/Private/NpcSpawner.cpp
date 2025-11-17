@@ -5,6 +5,7 @@
 #include "IResourceService.h"
 #include "IObjectService.h"
 #include "NonPlayer.h"
+#include "ClientHelper.h"
 
 CNpcSpawner::CNpcSpawner()
 {
@@ -90,6 +91,7 @@ HRESULT CNpcSpawner::Read_CharacterData(const string& filePath)
 			data.ModelName		= item.value("ModelName", "");
 			data.MaterialName = item.value("MaterialName", "");
 			data.FolderPath		= item.value("FolderPath", "");
+			data.NpcKey = item.value("NpcKey", "");
 			wstring key = data.NpcName;
 
 			if (key.empty())

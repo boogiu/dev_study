@@ -138,6 +138,8 @@ private:
     void Set_TargetCamera();
     void Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey);
 
+public:
+    void OnEventAction(const BaseEvent& event);
 private:
     class CPlayerStateMachine* m_pStateMachine= { nullptr };
  

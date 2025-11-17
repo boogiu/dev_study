@@ -15,7 +15,7 @@ HRESULT CPlayerState_TransferGet::OnEnter()
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Release_AnimationBlend();
 	auto TrasData = m_pPlayer->Get_InfoPack().m_nowTrans;
-	m_data = { TrasData.pObject,TrasData.pSenderID };
+	m_data = {EVENT_TYPE::TransItem, TrasData.pObject,TrasData.pSenderID };
 
 	m_pPlayer->Get_InfoPack().m_nowTrans = {};
 	if (m_data.pObject) {
@@ -50,6 +50,7 @@ void CPlayerState_TransferGet::OnUpdate(_float dt)
 		m_fOutime += dt;
 		if (m_fOutime > 1.f) {
 			if (Animator->isCurrentAnimEnd()) {
+				Animator->Change_Animation("Generic_Putaway.anim");
 				m_pPlayer->Add_ITEM(m_data.pObject->Get_ItemData());
 				m_data.pObject->Remove_Item();
 				m_eState = End;
@@ -63,10 +64,14 @@ void CPlayerState_TransferGet::OnUpdate(_float dt)
 
 HRESULT CPlayerState_TransferGet::OnExit()
 {
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	Animator->Restart_AnimationBlend();
+
 	RESPONSE_TRANS_ITEM data = {};
+	data.eType = EVENT_TYPE::TransItem_Response;
 	data.pSenderID = m_data.pSenderID;
 	data.pObject = data.pObject;
-	CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>()->OnBroadCast(
+	CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>()->OnBroadCast<BaseEvent>(
 		data
 	);
 

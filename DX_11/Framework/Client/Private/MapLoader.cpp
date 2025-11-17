@@ -28,10 +28,10 @@
 
 _bool isFieldOut(_uint type) { return 0 <= type && type < 61; }
 _bool isTree(_uint type) { return 60 <= type && type < 70; }
-_bool isWeed(_uint type) { return 70 <= type && type <= 80; }
-_bool isStone(_uint type) { return 81 <= type && type < 90; }
-_bool isBridge(_uint type) { return 90 <= type && type < 100; }
-_bool isStructure(_uint type) { return 100 <= type && type < 200; }
+_bool isWeed(_uint type) { return 70 <= type && type <= 99; }
+_bool isStone(_uint type) { return 100 <= type && type < 110; }
+_bool isBridge(_uint type) { return 110 <= type && type < 120; }
+_bool isStructure(_uint type) { return 120 <= type && type < 200; }
 _bool isFurniture(_uint type) { return 200 <= type && type < 300;}
 _bool isIndoor(_uint type) { return 300 <= type; }
 
@@ -66,8 +66,8 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 
 	for (size_t i = 0; i < mapFileHeader.iObjectCount; i++)
 	{
-		MAP_OBJECT_HEADER objHeader = {};
-		ifs.read(reinterpret_cast<char*>(&objHeader), sizeof(MAP_OBJECT_HEADER));
+		NEW_MAP_OBJECT_HEADER objHeader = {};
+		ifs.read(reinterpret_cast<char*>(&objHeader), sizeof(NEW_MAP_OBJECT_HEADER));
 		auto iter = g_ModelMapTable.find(objHeader.Object_type);
 		if (iter == g_ModelMapTable.end())
 			continue;

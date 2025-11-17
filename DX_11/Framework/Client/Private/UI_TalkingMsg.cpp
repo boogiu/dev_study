@@ -193,6 +193,7 @@ void CUI_TalkingMsg::UI_DeActive(void* pArg)
 	if (m_onClose)
 		m_onClose(
 			OnEndDialogue{
+			EVENT_TYPE::DialougueEnd,
 			nullptr,
 			m_Sequences[m_nowSeqIndex].NextSequenceID,
 			m_Sequences[m_nowSeqIndex].NextCondition,
@@ -234,7 +235,7 @@ void CUI_TalkingMsg::Ready_Parts()
 	CUI_Object* pText = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_BaseText" })
 		.Add_To_Level("GamePlay_Level")
 		.Scale({ 200,50 })
-		.Position({ 0,0 })
+		.Position({ 100,25 })
 		.Build("Text");
 
 	Get_Component<CObjectContainer>()->Add_Child(pText, false);

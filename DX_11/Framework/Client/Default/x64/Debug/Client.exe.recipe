@@ -2,18 +2,18 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\dev_study\DX_11\Framework\Client\Bin\Client.exe</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\Client.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Client\Bin\ShaderFiles\FieldOutShader.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\FieldOutShader.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Client\Bin\ShaderFiles\PlayerShader.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\PlayerShader.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Client\Bin\ShaderFiles\UI_PartsShader.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\UI_PartsShader.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />

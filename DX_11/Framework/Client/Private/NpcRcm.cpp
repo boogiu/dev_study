@@ -65,8 +65,8 @@ void CNpcRcm::Set_Closed(OnEndDialogue endMsg)
 	if (postType.find("Response_") != string::npos) {
 		string key = "Response_";
 		string npcID = postType.substr(key.size(), postType.size());
-		EVNET_NPC_TO_NPC evt = { m_CharacterDesc.NpcID, stoi(npcID), endMsg.msg.Param1 };
-		m_EventPack.eventSystem->OnBroadCast(evt);
+		EVNET_NPC_TO_NPC evt = { EVENT_TYPE::Npc_To_Npc,m_CharacterDesc.NpcID, stoi(npcID), endMsg.msg.Param1 };
+		m_EventPack.eventSystem->OnBroadCast<BaseEvent>(evt);
 		m_EventPack.Reset();
 	}
 
@@ -75,11 +75,16 @@ void CNpcRcm::Set_Closed(OnEndDialogue endMsg)
 
 void CNpcRcm::Serve_Order(const string& order, _uint orderer)
 {
-	if (order == "GivePlayerScoop") {
+	if (order == "GivePlayerTool") {
 		m_EventPack.reservedMsg.Type = "Talking";
 		m_EventPack.nextSequenceID = 2;
 		m_EventPack.externalCondition = "QuestTalking";
 	}
+}
+
+void CNpcRcm::EventAction(const BaseEvent& event)
+{
+	__super::EventAction(event);
 }
 
 CNpcRcm* CNpcRcm::Create()

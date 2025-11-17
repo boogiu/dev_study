@@ -69,15 +69,21 @@ void CAnimator3D::LinkAnimate_Model(const string& LevelKey, const string& ModelK
 	}
 }
 
-HRESULT CAnimator3D::Add_AnimClips(const string& LevelKey, const string& AnimKey, const string& Subject, _bool Loop)
+HRESULT CAnimator3D::Add_AnimClips(const string& LevelKey, 
+	const string& AnimKey,
+	const string& Subject, _bool Loop)
 {
 	if (m_pAnimNames.count(AnimKey))
 		return S_OK;
 
-	CAnimationClip* pClips = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_AnimClip(LevelKey, AnimKey, Subject);
+	CAnimationClip* pClips = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_AnimClip(
+		LevelKey, AnimKey, Subject);
 
-	if (!pClips)
+	if (!pClips) {
+			string msg = "Anim Add Failed: " + AnimKey + "_" + Subject + "\n";
+			OutputDebugStringA(msg.c_str());
 		return E_FAIL;
+	}
 
 	m_pAnimClips.push_back(pClips);
 	Safe_AddRef(pClips);

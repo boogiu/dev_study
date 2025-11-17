@@ -46,8 +46,6 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 		}
 	}
 
-
-
 	if(nextState)
 		return nextState;
 

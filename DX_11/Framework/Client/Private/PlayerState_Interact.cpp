@@ -29,7 +29,8 @@ HRESULT CPlayerState_Interact::OnEnter()
 	if (Seq == -1) 
 		return E_FAIL;
 
-	OnStartDialogue event{ 
+	OnStartDialogue event{
+		EVENT_TYPE::DialougueStart,
 		m_pPlayer,
 		encounter, 
 		Seq,

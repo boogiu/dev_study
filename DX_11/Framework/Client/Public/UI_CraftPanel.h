@@ -26,10 +26,9 @@ public:
 public:
     virtual void UI_Active(void* pArg) override;
     virtual void UI_DeActive(void* pArg) override;
-    virtual void Craft_Selected(CRAFT_RESULT result);
+    virtual void Craft_Selected(CraftData result);
 
 private:
-    void Ready_Parts();
     void Ready_Cards();
     void Render_Cards();
     void Compare_CraftData();

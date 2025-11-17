@@ -118,12 +118,12 @@ HRESULT CMapObject::Link_Data(const string& folderName)
 	return hr;
 }
 
-HRESULT CMapObject::Load_Object(MAP_OBJECT_HEADER ObjHeader)
+HRESULT CMapObject::Load_Object(NEW_MAP_OBJECT_HEADER ObjHeader)
 {
 	m_SyncedIndex = ObjHeader.Index;
 	m_pTransform->TranslateMatrix(XMLoadFloat4x4(&ObjHeader.vWorldMatrix));
 	m_ObjeType = ObjHeader.Object_type;
-	
+	m_AdditionalData = ObjHeader.AdditionalData;
 	auto iter = ModelMapTable.find(ObjHeader.ObjectName);
 	if (iter != ModelMapTable.end()) {
 		m_ObjeType = stoi(iter->second[0]);
@@ -140,21 +140,25 @@ HRESULT CMapObject::Load_Object(MAP_OBJECT_HEADER ObjHeader)
 HRESULT CMapObject::Save_MapData(ofstream& ofs)
 {
 	/*현재 인덱스*/
-	MAP_OBJECT_HEADER ObjHeader = {};
-	
+	//		MAP_OBJECT_HEADER ObjHeader = {};
+	//		
+	//		ObjHeader.Index = m_SyncedIndex;
+	//		ObjHeader.Object_type = m_ObjeType;
+	//		ObjHeader.vWorldMatrix = m_pTransform->Get_WorldMatrix();
+	//		strcpy_s(ObjHeader.ObjectName, m_ObjName.c_str());
+	//		ofs.write(reinterpret_cast<const char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
+
+	NEW_MAP_OBJECT_HEADER ObjHeader = {};
 	ObjHeader.Index = m_SyncedIndex;
 	ObjHeader.Object_type = m_ObjeType;
 	ObjHeader.vWorldMatrix = m_pTransform->Get_WorldMatrix();
 	strcpy_s(ObjHeader.ObjectName, m_ObjName.c_str());
-	ofs.write(reinterpret_cast<const char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
+	strcpy_s(ObjHeader.AdditionalData, m_AdditionalData.c_str());
+	ofs.write(reinterpret_cast<const char*>(&ObjHeader), sizeof(NEW_MAP_OBJECT_HEADER));
 
-	//	NEW_MAP_OBJECT_HEADER ObjHeader = {};
-
-	//	ObjHeader.Index = m_SyncedIndex;
-	//	ObjHeader.Object_type = m_ObjeType;
-	//	ObjHeader.vWorldMatrix = m_pTransform->Get_WorldMatrix();
-	//	strcpy_s(ObjHeader.ObjectName, m_ObjName.c_str());
-	//	ofs.write(reinterpret_cast<const char*>(&ObjHeader), sizeof(MAP_OBJECT_HEADER));
+	if (Get_Position().x == 475.f
+		&& Get_Position().z == 605.f)
+		int i = 0;
 	return S_OK;
 }
 
@@ -165,16 +169,16 @@ void CMapObject::Render_GUI()
 	static char nameBuf[64] = "";
 
 	// 현재 ObjectType을 버퍼에 반영 (초기 한 번만)
-	if (strlen(nameBuf) == 0 && !m_ObjectType.empty())
-		strcpy_s(nameBuf, IM_ARRAYSIZE(nameBuf), m_ObjectType.c_str());
+	if (strlen(nameBuf) == 0 && !m_AdditionalData.empty())
+		strcpy_s(nameBuf, IM_ARRAYSIZE(nameBuf), m_AdditionalData.c_str());
 
-	//		// 입력창
-	//		ImGui::Text("ObjectType");
-	//		if (ImGui::InputText("##Object Name", nameBuf, IM_ARRAYSIZE(nameBuf)))
-	//		{
-	//			// 입력 내용이 바뀔 때만 적용
-	//			m_ObjectType = nameBuf;
-	//		}
+	// 입력창
+	ImGui::Text("AdditionalData");
+	if (ImGui::InputText("##AdditionalData", nameBuf, IM_ARRAYSIZE(nameBuf)))
+	{
+		// 입력 내용이 바뀔 때만 적용
+		m_AdditionalData = nameBuf;
+	}
 
 	if (ImGui::Button("Rotate 90"))
 		m_pTransform->Rotation({ 0, XMConvertToRadians(90), 0 });

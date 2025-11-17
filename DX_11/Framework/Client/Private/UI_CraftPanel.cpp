@@ -11,8 +11,6 @@
 #include "SelectPanel.h"
 #include "CraftCard.h"
 
-#include "Level.h"
-#include "DialogueManager.h"
 #include "NonPlayer.h"
 #include "UI_ItemCard.h"
 
@@ -21,7 +19,9 @@
 #include "Texture.h"
 #include "UI_ItemText.h"
 
+#include "Level.h"
 #include "ItemSpawner.h"
+#include "EventSystem.h"
 
 CUI_CraftPanel::CUI_CraftPanel()
 {
@@ -43,7 +43,6 @@ HRESULT CUI_CraftPanel::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 
 	Add_Component<CObjectContainer>();
-	Ready_Parts();
 
 	Get_Component<CSprite2D>()->Link_Shader(G_GlobalLevelKey, "VTX_UI.hlsl");
 	Get_Component<CSprite2D>()->Add_Texture("GamePlay_Level", "UI_Craft_BackGround.png");
@@ -174,22 +173,21 @@ void CUI_CraftPanel::UI_DeActive(void* pArg)
 	Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
 	m_pCraftCard->UI_DeActive(pArg);
 
-	CRAFT_RESULT result = {};
+		CRAFT_RESULT result = {};
+	if(pArg != nullptr){
+		CraftData* data = static_cast<CraftData*>(pArg);
+		result.Make_Result(*data);
+	}
 	if (m_OnClose)
 		m_OnClose(result);
-
 	m_InvenData.clear();
 }
 
-void CUI_CraftPanel::Craft_Selected(CRAFT_RESULT result)
+void CUI_CraftPanel::Craft_Selected(CraftData result)
 {
+	CraftData SelectedData = result;
 	m_pCraftCard->UI_DeActive(nullptr);
-	UI_DeActive(nullptr);
-}
-
-void CUI_CraftPanel::Ready_Parts()
-{
-
+	UI_DeActive(&SelectedData);
 }
 
 void CUI_CraftPanel::Ready_Cards()

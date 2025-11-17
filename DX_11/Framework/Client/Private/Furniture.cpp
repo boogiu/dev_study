@@ -60,7 +60,7 @@ void CFurniture::OnCollisionExit(COLLISION_CONTEXT context)
 {
 }
 
-HRESULT CFurniture::Make_FurnitureByMapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
+HRESULT CFurniture::Make_FurnitureByMapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
 	HRESULT hr = Get_Component<CModel>()->Link_Model("GamePlay_Level", modelMapTable[1]);
 	hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);

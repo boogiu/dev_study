@@ -1,5 +1,9 @@
 #include "Shader_Define.hlsl"
 
+float3 ShallowColor = float3(0.05, 0.25, 0.45); // 밝고 옥색
+float3 DeepColor    = float3(0.08, 0.30, 0.55); // 짙은 파랑
+float fWaveTime;
+float fFade;
 
 struct VS_IN
 {
@@ -156,13 +160,8 @@ PS_OUT PS_WATER(PS_IN In)
 {
     PS_OUT Out;
 
-    vector vSample = DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
-
-    // Blue 채널만 사용
-    float blue = vSample.b;
-
-    // 파란색 톤으로 보이게
-    Out.vDiffuse = blue;
+    Out.vDiffuse = 1.f;
+    
     vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
     
@@ -175,12 +174,40 @@ PS_OUT PS_WATER(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_WAVE(PS_IN In)
+{
+    PS_OUT Out;
+
+    vector vIdxMap = IndexMap.Sample(LinearSampler, In.vTexcoord);
+    float3 waterColor = vIdxMap.b*DeepColor + (1 - vIdxMap.b) * ShallowColor;
+    //lerp(DeepColor, ShallowColor, vIdxMap.b);
+    
+    float u = frac(In.vTexcoord.x); // X 래핑
+    float v = clamp(In.vTexcoord.y + fWaveTime, 0, 1); // Y 클램프
+    vector vAlbGry = AlbedoGrayTexture.Sample(PointClampSampler, float2(u, v));
+    vector vAlbOry = AlbedoOryTexture.Sample(PointClampSampler, float2(In.vTexcoord.x, In.vTexcoord.y - fWaveTime * 0.6));
+
+    waterColor += vAlbGry.rgb;
+    waterColor += vAlbOry.rgb;
+   
+    Out.vDiffuse = float4(waterColor, fFade*0.4f);
+    
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    Out.vNormal = float4(vNormal * 0.5f + 0.5f, 1.0f);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w,  In.vProjPos.w / zFar, 0, 1);
+
+    return Out;
+}
+
 struct VS_OUT_SHADOW
 {
     float4 vPosition : SV_POSITION;
     float4 vProjPos : TEXCOORD0;
 };
-
 VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
@@ -194,13 +221,11 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
     Out.vProjPos = Out.vPosition;
     return Out;
 }
-
 struct PS_IN_SHADOW
 {
     float4 vPosition : SV_POSITION;
     float4 vProjPos : TEXCOORD0;
 };
-
 struct PS_OUT_SHADOW
 {
     vector vShadow : SV_TARGET0;
@@ -254,6 +279,15 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_WATER();
+    }
+    pass Wave
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_WAVE();
     }
     pass Shadow
     {

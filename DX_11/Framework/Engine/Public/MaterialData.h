@@ -30,6 +30,8 @@ public:
 	const string& Get_MaterialName() { return m_MaterialKey; }
 
 public:
+	_bool Has_Texture(TEXTURE_TYPE eType);
+public:
 	virtual void Render_GUI();
 	virtual void Render_GUI( vector<_uint>& TextureIndexs);
 

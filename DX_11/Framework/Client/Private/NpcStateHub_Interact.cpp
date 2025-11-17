@@ -70,7 +70,7 @@ void CNpcStateHub_Interact::DecideSubState(_float dt)
 
 		else {
 			/*가까워졌다면, */
-			if (eventPack.reservedMsg.Type == "Talking") {
+  			if (eventPack.reservedMsg.Type == "Talking") {
 				
 				if (m_pCharacter->Get_TracePack().pPlayer->Can_Talk())
 					Change_State("Interact_SamllTalk");

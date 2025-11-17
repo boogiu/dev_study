@@ -19,10 +19,14 @@ public:
     virtual void Render_GUI();
 
 public:
-    virtual HRESULT Sync_MapData(MAP_OBJECT_HEADER objHeader,vector<string> modelMapTable) override;
+    virtual HRESULT Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader,vector<string> modelMapTable) override;
 private:
     void Override_Pass();
 
+private:
+    _float m_fElpaseTime = {0.f};
+    _float m_fWaveTime = {0.f};
+    _float m_fFade = {0.f};
 public:
     static CField_Out* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

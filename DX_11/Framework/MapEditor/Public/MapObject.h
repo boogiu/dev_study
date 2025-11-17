@@ -19,7 +19,7 @@ public:
 public:
     void Object_OnGrid(TILE_INDEX index);
     HRESULT Link_Data(const string& folderName);
-    HRESULT Load_Object(MAP_OBJECT_HEADER ObjHeader);
+    HRESULT Load_Object(NEW_MAP_OBJECT_HEADER ObjHeader);
 
 public:
     HRESULT Save_MapData(ofstream& ofs);
@@ -37,8 +37,10 @@ private:
     TILE_INDEX m_SyncedIndex = {};
     _bool OnGrid = { false };
     _uint m_ObjeType = {};
-    string m_ObjectType = {};
     string m_ObjName = {};
+
+    string m_AdditionalData = {};
+
 public:
     static CMapObject* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

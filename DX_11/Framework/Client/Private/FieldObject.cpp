@@ -47,9 +47,10 @@ void CFieldObject::Late_Update(_float dt)
 void CFieldObject::Render_GUI()
 {
 	__super::Render_GUI();
+	ImGui::Text("Type : %d", m_iObjType);
 }
 
-HRESULT CFieldObject::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
+HRESULT CFieldObject::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
 	HRESULT hr = Get_Component<CModel>()->Link_Model("GamePlay_Level", modelMapTable[1]);
 	hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);

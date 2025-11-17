@@ -107,9 +107,15 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	TOOL_DATA_DESC AxeData = ItemSpawner->Get_ItemData("ToolAxeFirst");
 	TOOL_DATA_DESC NetData = ItemSpawner->Get_ItemData("ToolNetFirst");
 	TOOL_DATA_DESC ScoopData = ItemSpawner->Get_ItemData("ToolScoopFirst");
+
 	Add_ITEM(AxeData);
 	Add_ITEM(NetData);
 	Add_ITEM(ScoopData);
+
+	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
+	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
+	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
+	Add_ITEM(ItemSpawner->Get_ItemData("FtrWoodPile"));
 
 	return S_OK;
 }
@@ -120,35 +126,7 @@ void CPlayer::Awake()
 	if (!nowLevel)
 		return;
 	auto EventSys = nowLevel->Get_LevelObject<CEventSystem>();
-
-	//누군가와의 대화를 끝냈다. -> 이전 대화를 걸었을 때 아이디라면 이제 나도 끝내겠다.
-	EventSys->Add_Listner<OnEndDialogue>([&](const OnEndDialogue& evt) {
-		if (m_InfoPack.isTalking && evt.pSpeaker == m_InfoPack.pTalker)
-		{
-			m_InfoPack.isTalking = false;
-			m_InfoPack.pTalker = nullptr;
-			//m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Idle_State");
-		}
-	});
-
-	//누가 내게 말을 걸었다.
-	EventSys->Add_Listner<OnNoticeDialogue>([&](const OnNoticeDialogue& evt) {
-		if (evt.pSubject != this) return;
-		if (m_InfoPack.isTalking) return;
-
-		m_InfoPack.isTalking = true;
-		m_InfoPack.pTalker = evt.pCounter;
-
-		m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Interact_Talking_State");
-	});
-
-	//누가 나에게 아이템을 건네주면 듣겠다.
-	EventSys->Add_Listner<TRANS_ITEM>([&](const TRANS_ITEM& evt) {
-		if (evt.pObject) {
-			m_InfoPack.m_nowTrans = evt;
-			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TransGet_State");
-		}
-		});
+	EventSys->Add_Listner<CPlayer, BaseEvent>(this, &CPlayer::OnEventAction);
 }
 
 void CPlayer::Priority_Update(_float dt)
@@ -302,7 +280,7 @@ void CPlayer::Update_TileInfo(_float dt)
 		m_TileInfoPack.nowIndex = currIndex;
 		TileSys->Add_TileFlagByIndex(m_TileInfoPack.nowIndex, static_cast<_uint>(TILE_FLAG::ONPLAYER));
 		TileSys->Remove_TileFlagByIndex(m_vPrevIndex, static_cast<_uint>(TILE_FLAG::ONPLAYER));
-		
+
 	}
 }
 
@@ -387,7 +365,9 @@ void CPlayer::OnCollisionEnter(COLLISION_CONTEXT context)
 	m_InfoPack.EncounterTag = context.Owner->Get_Tag();
 
 	if (context.EventTag == "PickedByHand")
-	{m_pInventory->Add_ItemToInventory(dynamic_cast<CItem_Object*>(context.Owner)->Get_ItemData());}
+	{
+		m_pInventory->Add_ItemToInventory(dynamic_cast<CItem_Object*>(context.Owner)->Get_ItemData());
+	}
 
 	if (context.Owner->Has_Tag("WorkBench")) {
 		m_InfoPack.WorkBenchEncounter = true;
@@ -436,7 +416,6 @@ void CPlayer::Open_Inventory()
 {
 	m_pInventory->Open_Inventory();
 }
-
 void CPlayer::Close_Inventory()
 {
 	m_pInventory->Close_Inventory();
@@ -514,9 +493,8 @@ void CPlayer::BroadCast_Talk(OnStartDialogue evt)
 	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 	auto evtSys = nowLevel->Get_LevelObject<CEventSystem>();
 
-	evtSys->OnBroadCast(evt);
+	evtSys->OnBroadCast<BaseEvent>(evt);
 }
-
 
 _bool CPlayer::Can_Walk(_float2& moveAxis)
 {
@@ -575,7 +553,7 @@ _bool CPlayer::Can_Walk(_float2& moveAxis)
 
 _bool CPlayer::Can_Talk()
 {
-	return (m_InfoPack.isTalking||m_InfoPack.isCrafting);
+	return !(m_InfoPack.isTalking || m_InfoPack.isCrafting);
 }
 
 TILE_INDEX CPlayer::Get_FowardIndex()
@@ -620,72 +598,73 @@ CLevel* CPlayer::Get_NowLevel()
 
 void CPlayer::Add_AnimationClips()
 {
-	Get_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", "PlayerBody.model");
+	auto Animator = Get_Component<CAnimator3D>();
+	Animator->LinkAnimate_Model("GamePlay_Level", "PlayerBody.model");
 
 	/*움직임*/
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_Wait.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "Base_Wait.anim", "Player", true);
 
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Move_Run_F.anim", "Player", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Move_Dash_F.anim", "Player", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "MoveTurn_Run_L.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "MoveTurn_Dash_L.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToStop_RunLatter_L.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToStop_DashLatter_L.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Move_Run_F.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "Move_Dash_F.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "MoveTurn_Run_L.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "MoveTurn_Dash_L.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToStop_RunLatter_L.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToStop_DashLatter_L.anim", "Player", false);
 
 	/*툴 = Axe*/
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_Air.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_APose.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_Hit.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_Ready.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_ReadyKeep.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolAxe_Repelled.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolAxe_Air.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolAxe_APose.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolAxe_Hit.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolAxe_Ready.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolAxe_ReadyKeep.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolAxe_Repelled.anim", "Player", false);
 
 	/*툴 = NET*/
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_APose.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_AimWalk_F.anim", "Player", true);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_Get.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_Slip.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_Swing.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Ground.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Upper.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Lower.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Middle.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolNet_APose.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolNet_AimWalk_F.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolNet_Get.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolNet_Slip.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolNet_Swing.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Ground.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Upper.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Lower.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolNet_SwingStop_Middle.anim", "Player", false);
 
 	/*툴 = SCOOP*/
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_APose.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_Air.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_BuryHole.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_Dig.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_DigStump.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolScoop_Repelled.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolScoop_APose.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolScoop_Air.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolScoop_BuryHole.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolScoop_Dig.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolScoop_DigStump.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolScoop_Repelled.anim", "Player", false);
 
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Tree_Shake.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Tree_ShakeReadyKeep.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "Tree_Shake.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Tree_ShakeReadyKeep.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "Base_EquipOff.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Base_EquipOn.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Menu_Think.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "Pickup.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Pickup_Get.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Generic_Get.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Generic_GetKeep.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Generic_PullOut.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Generic_Putaway.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Generic_PutawayKeep.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Transfer_Eat.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Menu_Eat.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveForward.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveReturn.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveBack.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Transfer_Putaway.anim", "Player", false);
 
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_EquipOff.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Base_EquipOn.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Menu_Think.anim", "Player", true);
-
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Pickup.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Pickup_Get.anim", "Player", false);
-
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_Get.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_GetKeep.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_PullOut.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_Putaway.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Generic_PutawayKeep.anim", "Player", false);
-
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_Eat.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Menu_Eat.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveForward.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveReturn.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveBack.anim", "Player", false);
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Transfer_Putaway.anim", "Player", false);
-
+	Animator->Add_AnimClips("GamePlay_Level", "Generic_Putaway.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "Etc_DiyCreating.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "Etc_DiyFinish.anim", "Player", false);
 }
 
 void CPlayer::Add_MaterialAnim()
 {
+	/*머티리얼 애니메이션 클림좀 다르게 해야할 듯. 키프레임 만 지정 / 인덱스 지정/ 방식응로*/
 	MATERIAL_CLIP clip = {};
 	clip.AnimationKeyFrame = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2 };
 	clip.fDuration = 50.f;
@@ -710,6 +689,9 @@ void CPlayer::Add_PartObjects()
 
 	PLAYER_PARTS_DESC* pHairCapDesc = new PLAYER_PARTS_DESC;
 	pHairCapDesc->pPlayer = this;
+
+	PLAYER_PARTS_DESC* pGlassDesc = new PLAYER_PARTS_DESC;
+	pGlassDesc->pPlayer = this;
 
 	CClothParts::CLOTHES_DESC* pTopDesc = new CClothParts::CLOTHES_DESC;
 	pTopDesc->pPlayer = this;
@@ -744,6 +726,9 @@ void CPlayer::Add_PartObjects()
 		.Build("Bottom");
 	Adjust_Cloth_Material(pBottom, "Sweat_mBottoms", "mBottoms");
 
+	CGameObject* pGlass = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_GlassParts" })
+		.Add_ObjDesc(pGlassDesc)
+		.Build("Glass");
 
 	Get_Component<CObjectContainer>()->Add_Child(m_InfoPack.pRightHand, false);
 	Get_Component<CObjectContainer>()->Add_Child(m_InfoPack.pLeftHand, false);
@@ -751,6 +736,7 @@ void CPlayer::Add_PartObjects()
 	Get_Component<CObjectContainer>()->Add_Child(pHairCap, false);
 	Get_Component<CObjectContainer>()->Add_Child(pTop, true);
 	Get_Component<CObjectContainer>()->Add_Child(pBottom, true);
+	Get_Component<CObjectContainer>()->Add_Child(pGlass, false);
 }
 
 void CPlayer::Add_Inventory()
@@ -774,6 +760,7 @@ void CPlayer::Set_TargetCamera()
 		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
 		.Add_ObjDesc(pCamDesc)
 		.Build("Target_Cam");
+
 	m_pCamera = dynamic_cast<CTarget_Camera*>(pCamera);
 	Safe_AddRef(m_pCamera);
 	Get_Component<CObjectContainer>()->Add_Child(pCamera, false);
@@ -783,6 +770,7 @@ void CPlayer::Set_TargetCamera()
 	psCamDesc->pTarget = this;
 	psCamDesc->vOffset = { 0,150,150,0 };
 
+	/*햇빛으로 사용해야하는데 나중에 고치자.*/
 	CGameObject* psunCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_TargetCamera" })
 		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
 		.Add_ObjDesc(psCamDesc)
@@ -819,6 +807,33 @@ void CPlayer::Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, str
 	instance->Set_Param("OpacityTexture", param);
 }
 
+void CPlayer::OnEventAction(const BaseEvent& event)
+{
+	if (event.eType == EVENT_TYPE::DialougueEnd) {
+		const auto& evt = static_cast<const OnEndDialogue&>(event);
+		if (m_InfoPack.isTalking && evt.pSpeaker == m_InfoPack.pTalker)
+		{
+			m_InfoPack.isTalking = false; m_InfoPack.pTalker = nullptr;
+		}
+	}
+
+	if (event.eType == EVENT_TYPE::NoticeDialogue) {
+		const auto& evt = static_cast<const OnNoticeDialogue&>(event);
+		if (evt.pSubject == this && !m_InfoPack.isTalking) {
+			m_InfoPack.pTalker = evt.pCounter;
+			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Interact_Talking_State");
+		}
+	}
+
+	if (event.eType == EVENT_TYPE::TransItem) {
+		const auto& evt = static_cast<const TRANS_ITEM&>(event);
+		if (evt.pObject) {
+			m_InfoPack.m_nowTrans = evt;
+			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TransGet_State");
+		}
+	}
+}
+
 void CPlayer::Open_Craft()
 {
 	m_ControlPack.MsgForceBlock = true;
@@ -832,13 +847,28 @@ void CPlayer::Open_Craft()
 	craftDesc.InvenData = m_pInventory->Get_All_InventoryData();
 	craftDesc.OnClose = [this](const CRAFT_RESULT& result) {Close_Craft(result); };
 
-	nowLevel->Get_LevelObject<CUI_Responcer>()->Active_UI("Craft_UI",&craftDesc);
+	nowLevel->Get_LevelObject<CUI_Responcer>()->Active_UI("Craft_UI", &craftDesc);
 }
 
 void CPlayer::Close_Craft(const CRAFT_RESULT& result)
 {
 	m_ControlPack.MsgForceBlock = false;
 	m_InfoPack.isCrafting = false;
+
+	if (result.Result_ItemTag.empty()) {
+		m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Movement_Idle_State");
+		return;
+	}
+
+	m_pInventory->PullOut_Item(result.ResourceItem_01, result.ResourceItemCount_01);
+	m_pInventory->PullOut_Item(result.ResourceItem_02, result.ResourceItemCount_02);
+	m_pInventory->PullOut_Item(result.ResourceItem_03, result.ResourceItemCount_03);
+
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+
+	m_InfoPack.pObjectOnLeftHand = nowLevel->Get_LevelObject<CItemSpawner>()->SpawnItem(result.Result_ItemTag);
+	m_InfoPack.pObjectOnLeftHand->Get_Component<CModel>()->Set_CompActive(false);
+	m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_Craft_State");
 }
 
 void CPlayer::BroadCast_Position()
@@ -847,9 +877,9 @@ void CPlayer::BroadCast_Position()
 	if (!nowLevel)
 		return;
 	auto EventSys = nowLevel->Get_LevelObject<CEventSystem>();
-	PLAYER_POS event{ Get_Position(),this };
+	PLAYER_POS event{ EVENT_TYPE::Player_Pos,Get_Position(),this };
 
-	EventSys->OnBroadCast(event);
+	EventSys->OnBroadCast<BaseEvent>(event);
 }
 
 CPlayer* CPlayer::Create()

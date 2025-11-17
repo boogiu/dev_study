@@ -25,6 +25,8 @@ public:
     void Late_Update(_float dt) override;
 
 public:
+    void Event_Listen(const BaseEvent& event);
+public:
     void Execute_ZoomIn();
     void Release_ZoomIn();
 

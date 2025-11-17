@@ -2,6 +2,8 @@
 #include "NpcRco.h"
 
 #include "NpcState_Machine.h"
+#include "GameInstance.h"
+#include "Level.h"
 #include "EventSystem.h"
 
 CNpcRco::CNpcRco()
@@ -25,6 +27,11 @@ HRESULT CNpcRco::Initialize(INIT_DESC* pArg)
 
 	m_InstanceName = "Racoon";
 	return S_OK;
+}
+
+void CNpcRco::Awake()
+{
+	__super::Awake();
 }
 
 void CNpcRco::Priority_Update(_float dt)
@@ -55,22 +62,56 @@ void CNpcRco::Set_Closed(OnEndDialogue endMsg)
 
 	if (postType.find("Order_") != string::npos) {
 		string key = "Order_";
-		string npcID= postType.substr(key.size(), postType.size());
-		EVNET_NPC_TO_NPC evt = {m_CharacterDesc.NpcID, stoi(npcID), endMsg.msg.Param1};
-		m_EventPack.eventSystem->OnBroadCast(evt);
+		string npcID = postType.substr(key.size(), postType.size());
+		EVNET_NPC_TO_NPC evt = { EVENT_TYPE::Npc_To_Npc,m_CharacterDesc.NpcID, stoi(npcID), endMsg.msg.Param1 };
+		m_EventPack.eventSystem->OnBroadCast<BaseEvent>(evt);
 		m_EventPack.Reset();
 	}
 }
 
 void CNpcRco::Serve_Order(const string& order, _uint orderer)
 {
-	if (order == "GivePlayerScoop_Complete") {
+	if (order == "GivePlayerAxe_Complete") {
 		m_EventPack.Reset();
 		m_EventPack.nextSequenceID = 5;
 		m_EventPack.externalCondition = "NormalTalking";
 	}
+
+	if (order == "GivePlayerScoop_Complete") {
+		m_EventPack.Reset();
+		m_EventPack.nextSequenceID = 6;
+		m_EventPack.externalCondition = "NormalTalking";
+	}
+
 }
 
+void CNpcRco::Receive_QuestMsg(QUEST_MSG msg)
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	auto EventSys = nowLevel->Get_LevelObject<CEventSystem>();
+
+	if (msg.eventMsg == "Event01_TreeBlock") {
+		if (m_EventPack.nextSequenceID == 8) {
+			m_EventPack.nextSequenceID = 9;
+			EventSys->OnBroadCast<BaseEvent>(QUEST_RESPONSE{ EVENT_TYPE::Quest_Msg_Responese,msg.pQuestPublisher, true });
+		}
+	}
+	if (msg.eventMsg == "Event02_TreeChoped") {
+		if (m_EventPack.nextSequenceID == 13) {
+			m_EventPack.nextSequenceID = 14;
+			EventSys->OnBroadCast<BaseEvent>(QUEST_RESPONSE{ EVENT_TYPE::Quest_Msg_Responese,msg.pQuestPublisher, true });
+		}
+	}
+}
+
+void CNpcRco::EventAction(const BaseEvent& event)
+{
+	__super::EventAction(event);
+	if (event.eType ==EVENT_TYPE::Quest_Msg) {
+		const auto& evt = static_cast<const QUEST_MSG&>(event);
+		Receive_QuestMsg(evt);
+	}
+}
 
 CNpcRco* CNpcRco::Create()
 {

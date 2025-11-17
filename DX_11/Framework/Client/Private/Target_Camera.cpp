@@ -44,7 +44,7 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 	desc.fLightRange = 150.0f;
 	desc.vLightDirection = _float4(-1.f, -1.f, -1.f, 0.f);
 	desc.vLightDiffuse = _float4(.8f, .8f, .8f, 1.f);
-	desc.vLightAmbient = _float4(0.4f, 0.4f, 0.4f, 1.f);
+	desc.vLightAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
 	desc.vLightSpecular = _float4(0.f, 1.f, 0.f, 1.f);
 
 	Get_Component<CLight>()->Set_Desc(desc, LIGHT_TYPE::DIRECTIONAL);
@@ -56,11 +56,9 @@ void CTarget_Camera::Awake()
 	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 	auto evtSys = nowLevel->Get_LevelObject<CEventSystem>();
 
-	evtSys->Add_Listner<CAM_MOVE>([this](const CAM_MOVE& move) {
-		m_prevState = m_eState;
-		if (move.moveTag == "Shake")
-			m_eState = SHAKE;
-		});
+	evtSys->Add_Listner<CTarget_Camera, BaseEvent>(this,&CTarget_Camera::Event_Listen);
+	
+	
 }
 
 void CTarget_Camera::Priority_Update(_float dt)
@@ -98,6 +96,16 @@ void CTarget_Camera::Update(_float dt)
 
 void CTarget_Camera::Late_Update(_float dt)
 {
+}
+
+void CTarget_Camera::Event_Listen(const BaseEvent& event)
+{
+	if (event.eType == EVENT_TYPE::CameraMove) {
+		const auto& evt = static_cast<const CAM_MOVE&>(event);
+		m_prevState = m_eState;
+			if (evt.moveTag == "Shake")
+				m_eState = SHAKE;
+	}
 }
 
 void CTarget_Camera::Execute_ZoomIn()

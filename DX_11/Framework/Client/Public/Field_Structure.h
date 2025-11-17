@@ -21,7 +21,7 @@ public:
 public:
     void OnCollisionEnter(COLLISION_CONTEXT ctx) override;
 public:
-    virtual HRESULT Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable) override;
+    virtual HRESULT Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable) override;
 
 private:
     TILE_INDEX m_Index;

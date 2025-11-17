@@ -367,6 +367,21 @@
     <Filter Include="02. GameObjects\08. UI\Base\Target_UI\Target_Text">
       <UniqueIdentifier>{9f0ffdbe-ed12-4749-a5b2-0ab3c762efe5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\03. ForcedState\05. CraftingAction">
+      <UniqueIdentifier>{145b1d33-6d95-4563-8e89-5e952d3a899d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\05. Parts\Glass">
+      <UniqueIdentifier>{a841bc77-7c8b-4750-81d5-3726c701250a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\GameModeController">
+      <UniqueIdentifier>{05f47b4e-e016-42bd-bb9f-fb091bb96870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\GameModeController\GameMode">
+      <UniqueIdentifier>{f0b38f20-d3c7-47f6-9800-3d14ed1827b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\Special\NpcTkk">
+      <UniqueIdentifier>{de797582-62a4-4a82-ad3e-d1a019a5e248}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -720,6 +735,18 @@
     <ClInclude Include="..\Public\Target_Text.h">
       <Filter>02. GameObjects\08. UI\Base\Target_UI\Target_Text</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_CraftAction.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\05. CraftingAction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Glass_Acc.h">
+      <Filter>02. GameObjects\05. Parts\Glass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GameModeController.h">
+      <Filter>02. GameObjects\07. LevelObject\GameModeController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcTkk.h">
+      <Filter>02. GameObjects\10. NonPlayer\Special\NpcTkk</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1053,6 +1080,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\Target_Text.cpp">
       <Filter>02. GameObjects\08. UI\Base\Target_UI\Target_Text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_CraftAction.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\05. CraftingAction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Glass_Acc.cpp">
+      <Filter>02. GameObjects\05. Parts\Glass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GameModeController.cpp">
+      <Filter>02. GameObjects\07. LevelObject\GameModeController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcTkk.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\Special\NpcTkk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

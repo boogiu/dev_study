@@ -168,7 +168,8 @@ namespace Engine
 		GRADATION_EDGE = 14,
 		MIX = 15,
 		SPECULAR = 16,
-		END = 17
+		ALPHA = 17,
+		END = 18
 	};
 
 }

@@ -12,6 +12,7 @@
 #include "NonPlayer.h"
 #include "NpcRco.h"
 #include "NpcRcm.h"
+#include "NpcTkk.h"
 
 #include "Target_Camera.h"
 #include "Free_Camera.h"
@@ -22,6 +23,7 @@
 #include "HairParts.h"
 #include "HairCapParts.h"
 #include "ClothParts.h"
+#include "Glass_Acc.h"
 #include "PlayerPart_Hand.h"
 #include "MapLoader.h"
 #include "AutoTile.h"
@@ -70,6 +72,7 @@ CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 
 HRESULT CGamePlayLevel::Initialize()
 {
+
 	
 	Add_LevelObject<CItemSpawner>()->Read_ItemData(L"../../Resources/Data/ItemData.json");
 	Add_LevelObject<CInsectSpawner>()->Link_ItemSpawner(Get_LevelObject<CItemSpawner>());
@@ -78,10 +81,7 @@ HRESULT CGamePlayLevel::Initialize()
 
 	CGameInstance::GetInstance()->Get_FontSystem()->Add_Font("Sindy", TEXT("../../Resources/Font/Sindy.spritefont"));
 	Add_LevelObject<CEventSystem>();
-
 	CMapLoader::Load_ModelData();
-	CMapLoader::Load_MapData("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });
-
 	return S_OK;
 }
 
@@ -97,6 +97,8 @@ HRESULT CGamePlayLevel::Awake()
 		Get_LevelObject<CEventSystem>(), 
 		Get_LevelObject<CUI_Responcer>(),
 		Get_LevelObject<CNpcSpawner>());
+
+	CMapLoader::Load_MapData("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });
 
 	CGameObject* pFreeCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_FreeCamera" })
 		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
@@ -116,6 +118,8 @@ HRESULT CGamePlayLevel::Awake()
 
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"≥ ±º", { 560,0,550 },"GamePlay_GameObject_NpcRco");
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"π„≈Á", { 590,0,560 },"GamePlay_GameObject_NpcRcm");
+	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"¿ËΩº", { 570,0,550 },"GamePlay_GameObject_NpcNrm");
+	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"KK", { 590,0,550 },"GamePlay_GameObject_NpcNrm");
 
 	m_pObjectManager->Add_Object(pPlayer, { "GamePlay_Level", "Player_Layer" });
 	m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
@@ -175,15 +179,24 @@ void CGamePlayLevel::PreLoad_Level()
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Transfer", "Player");
 
 	/*NonPlayer Model Path*/
-	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/NonPlayer/Racoon");
-	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/NonPlayer/Racoon");
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/Animations", "NPC");
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpRco");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpRco");
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpRcm");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpRcm");
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpTkk");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpTkk");
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/NonPlayer/NpcNmlCat23");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/NonPlayer/NpcNmlCat23");
+
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpRco/Animation", "NpcSpRco");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpRcm/Animation", "NpcSpRcm");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpTkk/Animation", "NpcSpTkk");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/NpcNmlCat23/Animation", "NpcNmlCat23");
 
 	/*Field  Path*/
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldModel");
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/FieldModel");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/FieldModel/FieldUnitAnim/PltTreeOakAnim", "OakTree");
-
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Furniture");
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Furniture");
 
@@ -216,6 +229,7 @@ void CGamePlayLevel::PreLoad_Level()
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_HairParts", CHairParts::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_HairCapParts", CHairCapParts::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_GlassParts", CGlass_Acc::Create());
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_ClothParts", CClothParts::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_AutoTile", CAutoTile::Create());
@@ -250,6 +264,7 @@ void CGamePlayLevel::PreLoad_Level()
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcNrm", CNonPlayer::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcRco", CNpcRco::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcRcm", CNpcRcm::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcTkk", CNpcTkk::Create());
 }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)

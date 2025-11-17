@@ -13,7 +13,6 @@
 #include "Target_Texture.h"
 #include "Target_Text.h"
 #include "UI_CraftPanel.h"
-
 CCraftCard::CCraftCard()
 {
 }
@@ -67,7 +66,8 @@ void CCraftCard::Priority_Update(_float dt)
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 
 	if (m_fElpasedTime >0.5f&&CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
-		ButtonOn = true;
+		if(m_data.isAbleToCraft())
+			ButtonOn = true;
 	}
 }
 
@@ -87,15 +87,17 @@ void CCraftCard::Update(_float dt)
 		m_Templete.pButton->Size_To({195,50}, 8 * dt);
 		m_Templete.pButtonEffect->Get_Component<CSprite2D>()->Set_CompActive(true);
 		m_fEffectTime += dt*10;
+
 		m_Templete.pButtonEffect->Get_Component<CSprite2D>()->ChangeSprite(static_cast<_uint>(m_fEffectTime));
+		
 		if (m_fEffectTime > 1.5f) {
 			m_Templete.pButtonBG->Size_To({ 230, 80 }, 8 * dt);
 			m_Templete.pButton->Size_To({ 215,70 }, 8 * dt);
 		}
+
 		if (m_fEffectTime > 3.f) {
 			m_Templete.pButtonEffect->Get_Component<CSprite2D>()->Set_CompActive(false);
-			CRAFT_RESULT result;
-			m_pPanel->Craft_Selected(result);
+			m_pPanel->Craft_Selected(m_data);
 		}
 	}
 

@@ -20,7 +20,9 @@ public:
 
 public:
 	void Set_FreindSystem(class CEventSystem* pSystem, class CUI_Responcer* pUIResponcer, class CNpcSpawner*pSpawner);
+	
 public:
+	void Dialogue_Event(const BaseEvent& event);
 	void onStart_Dialogue(OnStartDialogue startMsg);
 	void onEnd_Dialogue(OnEndDialogue endMsg);
 

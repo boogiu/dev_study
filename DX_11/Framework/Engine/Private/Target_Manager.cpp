@@ -40,6 +40,11 @@ HRESULT CTarget_Manager::Begin_MRT(const string& strMRTTag)
 		return E_FAIL;
 	}
 
+	ID3D11ShaderResourceView* pSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {
+		nullptr
+	};
+	m_pContext->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, pSRV);
+
 	m_pContext->OMGetRenderTargets(1, &m_pBackBufferRTV, &m_pDSV);
 	ID3D11RenderTargetView* pRenderTargets[8] = {};
 	UINT iNumRenderTargets = 0;
@@ -251,7 +256,10 @@ void CTarget_Manager::Push_Target(const string& key)
 	CRenderTarget* target = Get_CustomTarget(key);
 	ID3D11RenderTargetView* rtv = target->Get_RTV();
 	ID3D11DepthStencilView* dsv = target->Get_DSV();
-
+	ID3D11ShaderResourceView* pSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {
+	nullptr
+	};
+	m_pContext->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, pSRV);
 	m_pContext->OMSetRenderTargets(1, &rtv, dsv);
 	m_pContext->RSSetViewports(1, target->Get_ViewPort());
 }

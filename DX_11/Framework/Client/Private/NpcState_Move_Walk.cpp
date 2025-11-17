@@ -36,17 +36,25 @@ void CNpcState_Move_Walk::OnUpdate(_float dt)
        Rand_Direction();
    }
 
- while (true)
+   int tries = 20; // 20번 정도면 충분
+   while (tries-- > 0)
    {
        _float4 nowPos = m_pCharacter->Get_Position();
        nowPos.x += pack.fMoveSpeed * pack.vMoveAxis.x * dt;
        nowPos.z += pack.fMoveSpeed * pack.vMoveAxis.y * dt;
+
        _uint Flag = tileSys->Get_TileFlagByIndex(tileSys->Get_IndexByPosition(nowPos));
 
-       if ((Flag & (CANT_WALK|TILE_FLAG::ONPLAYER)) == 0)
+       if ((Flag & (CANT_WALK | TILE_FLAG::ONPLAYER)) == 0)
            break;
-       else
-            Rand_Direction();
+
+       Rand_Direction();
+   }
+
+   // 결국 못 찾았으면 멈춤
+   if (tries <= 0)
+   {
+       pack.vMoveAxis = { 0,0 };
    }
 
    m_pCharacter->Get_Component<CTransform>()->Translate({

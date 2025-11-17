@@ -66,11 +66,11 @@ void CField_Stone::Late_Update(_float dt)
 void CField_Stone::Render_GUI()
 {
 	__super::Render_GUI();
-	ImGui::Text("nowIndex X : %d, Z : %d", m_SyncedIndex.IndexX, m_SyncedIndex.IndexZ);
+	ImGui::Text("Type : %d", m_iObjType);
 
 }
 
-HRESULT CField_Stone::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
+HRESULT CField_Stone::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
 
 	HRESULT hr = Get_Component<CModel>()->Link_Model("GamePlay_Level", modelMapTable[1]);

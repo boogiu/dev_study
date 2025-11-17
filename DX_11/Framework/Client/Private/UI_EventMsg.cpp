@@ -33,7 +33,7 @@ HRESULT CUI_EventMsg::Initialize(INIT_DESC* pArg)
 	CUI_Object* pUI = Builder::Create_UIObject({ "GamePlay_Level", "GamePlay_GameObject_UI_BaseText" })
 		.Add_To_Level("GamePlay_Level")
 		.Scale({ 200,50 })
-		.Position({ 0,0 })
+		.Position({ 100,25 })
 		.Build("Text");
 
 	Get_Component<CObjectContainer>()->Add_Child(pUI, false);

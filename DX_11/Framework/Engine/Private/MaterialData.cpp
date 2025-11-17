@@ -70,6 +70,8 @@ void CMaterialData::ApplyData(ID3D11DeviceContext* pContext, const vector<_uint>
 
 		if (it != m_Textures.end())
 		{
+			if (it->second.empty())
+				continue;
 			_uint texIndex = TextureIndexs[i];
 			if (texIndex < it->second.size())
 				param.pData = it->second[texIndex]->Get_SRV();
@@ -88,6 +90,11 @@ void CMaterialData::ApplyData(ID3D11DeviceContext* pContext, const vector<_uint>
 HRESULT CMaterialData::Set_MaterialConstantBuffer(ID3D11Buffer* pCBuffer)
 {
 	return m_pShader->SetConstantBuffer("MaterialBuffer",pCBuffer);
+}
+
+_bool CMaterialData::Has_Texture(TEXTURE_TYPE eType)
+{
+	return !m_Textures[eType].empty();
 }
 
 void CMaterialData::Render_GUI()

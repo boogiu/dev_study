@@ -1,5 +1,5 @@
-#include "Plant_Tree.h"
 #include "Client_Defines.h"
+#include "Plant_Tree.h"
 
 #include "SkeletalModel.h"
 #include "Material.h"
@@ -23,6 +23,7 @@
 #include "Builder.h"
 #include "Helper_Func.h"
 #include "DebugRender.h"
+#include "EventSystem.h"
 
 CPlant_Tree::CPlant_Tree()
 {
@@ -71,6 +72,9 @@ void CPlant_Tree::Update(_float dt)
 {
 	if (m_eState == STUMP)return;
 	m_fLifeTime += dt;
+	m_fWind += dt;
+
+	XMStoreFloat4x4(&m_WindMat, XMMatrixRotationZ(sinf(m_fWind)));
 	Make_Fruits();
 	Get_Component<CAnimator3D>()->Update_Animation(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
@@ -88,10 +92,10 @@ void CPlant_Tree::Render_GUI()
 		Regenerate_Items();
 	}
 
-	ImGui::InputFloat2("PaletteIndex", reinterpret_cast<float*>(&LeafPalette));
+	ImGui::Text("Type : %d", m_iObjType);
 }
 
-HRESULT CPlant_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
+HRESULT CPlant_Tree::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
 	/*00. Base*/
 	Normalize_Name(modelMapTable[0]);
@@ -104,6 +108,7 @@ HRESULT CPlant_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mo
 
 	m_pTransform->TranslateMatrix(XMLoadFloat4x4(&objHeader.vWorldMatrix));
 	m_iObjType = objHeader.Object_type;
+	m_AdditionalData = objHeader.AdditionalData;
 
 	HRESULT hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);
 
@@ -125,7 +130,27 @@ HRESULT CPlant_Tree::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> mo
 	Add_Animation();
 	Adjust_Material();
 
+	if (!m_AdditionalData.empty()) {
+		auto eventSys = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
+		eventSys->Add_Listner<CPlant_Tree, BaseEvent>(this, &CPlant_Tree::Remove_Additional);
+	}
 	return S_OK;
+}
+
+void CPlant_Tree::Remove_Additional(const BaseEvent& event)
+{
+	if (event.eType == EVENT_TYPE::Quest_Msg_Responese) {
+		const auto& evt = static_cast<const QUEST_RESPONSE&>(event);
+		if (evt.pEventPublisher != this)
+			return;
+
+		if (evt.EvtConsumed == true) {
+			if(m_AdditionalData == "Event01_TreeBlock")
+				m_AdditionalData = {"Event02_TreeChoped"};
+			else
+				m_AdditionalData = {};
+		}
+	}
 }
 
 void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
@@ -152,6 +177,10 @@ void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 
 	else if (context.Owner->Has_Tag("Player")) {
 		m_eState = ENCOUNTERED;
+		if (m_AdditionalData=="Event01_TreeBlock") {
+			auto eventSys  = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
+			eventSys->OnBroadCast<BaseEvent>(QUEST_MSG{ EVENT_TYPE::Quest_Msg, this, m_AdditionalData });
+		}
 	}
 }
 
@@ -333,6 +362,7 @@ void CPlant_Tree::Adjust_Material()
 	Leaf.pData = &LeafPalette;
 
 	auto LeafInstance = pMaterial->Get_MaterialInstanceByName("mTreeOakLeaf");
+
 	if (LeafInstance) {
 		SHADER_PARAM palette = {};
 		palette.iSize = 0;
@@ -340,7 +370,8 @@ void CPlant_Tree::Adjust_Material()
 		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "Palette_mPltTreeOakLeafColor_Grd.png")->Get_SRV();
 
 		LeafInstance->Set_Param("g_PaletteTexture", palette);
-		//LeafInstance->Set_Param("leafPalette", Leaf);
+		SHADER_PARAM wind = {&m_WindMat, "float4x4",sizeof(_float4x4)};
+		LeafInstance->Set_Param("fWind_Matrix", wind);
 		LeafInstance->Override_Pass("Leaf");
 	}
 
@@ -401,6 +432,20 @@ void CPlant_Tree::Digged_Self(_float dt)
 		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
 		auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 		tileSystem->Remove_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_TREE));
+		if (m_AdditionalData == "Event02_TreeChoped") {
+			
+			for (int i = 0; i < 8; ++i)
+			{
+				TILE_INDEX ni = { m_Index.IndexX + NEIGHBOR_OFFSET[i].IndexX,
+								  m_Index.IndexZ + NEIGHBOR_OFFSET[i].IndexZ };
+
+				tileSystem->Remove_TileFlagByIndex(ni,
+					static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED)
+				);
+			}
+			auto eventSys = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
+			eventSys->OnBroadCast<BaseEvent>(QUEST_MSG{ EVENT_TYPE::Quest_Msg, this, m_AdditionalData });
+		}
 	}
 }
 
@@ -468,4 +513,6 @@ CGameObject* CPlant_Tree::Clone(INIT_DESC* pArg)
 void CPlant_Tree::Free()
 {
 	__super::Free();
+	auto eventSys = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
+	eventSys->UnregisterAll(this);
 }

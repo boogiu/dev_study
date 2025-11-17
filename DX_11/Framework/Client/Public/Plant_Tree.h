@@ -27,7 +27,8 @@ public:
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
     virtual void Render_GUI();
-    virtual HRESULT Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable) override;
+    virtual HRESULT Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable) override;
+    void Remove_Additional(const BaseEvent& event);
 
 public:
     void OnCollisionEnter(COLLISION_CONTEXT context) override;
@@ -54,26 +55,29 @@ private:
     void Digged_Self(_float dt);
 
 private:
+    _float2 LeafPalette = {};
+    _float m_fWind = {};
+    _float4x4 m_WindMat = {};
+    
     TILE_INDEX m_Index = {};
 
     string m_ModelName = {};
     string m_TypeName = {};
-    _uint m_iGrownLevel = {};
 
     _bool m_isTargetRight = {};
-    _bool m_isCutted = {false};
 
+    _bool m_isCutted = {false};
     _float m_fShakeTime = {};
+    _uint m_iGrownLevel = {};
     _uint m_AxeHitCount = {};
     Tree_State m_eState = { IDLE };
 
-    class CItem_Object* m_pFruits[3] = { nullptr, nullptr, nullptr};
-
-    _bool m_HasFruit = { false };
     _float m_fLifeTime = {};
 
-    _float2 LeafPalette = {};
+    _bool m_HasFruit = { false };
+    class CItem_Object* m_pFruits[3] = { nullptr, nullptr, nullptr};
 
+    string m_AdditionalData = {};
 public:
     static CPlant_Tree* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

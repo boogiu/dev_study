@@ -33,9 +33,14 @@ typedef struct tagNpcDataDesc {
 	string FolderPath = {};
 	string ModelName = {};
 	string MaterialName = {};
+	string NpcKey = {};
 } NPC_DATA_DESC;
 
 typedef struct tagCothDataDesc {
+	string OuterName = {};
+	string TopName = {};
+	string BottomName = {};
+	string BaseToolName = {};
 
 } CLOTH_DATA_DESC;
 

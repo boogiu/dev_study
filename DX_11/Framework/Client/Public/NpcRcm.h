@@ -20,6 +20,7 @@ public:
 
 public:
     virtual void Serve_Order(const string& order, _uint orderer) override;
+    virtual void EventAction(const BaseEvent& event) override;
 
 public:
     static CNpcRcm* Create();

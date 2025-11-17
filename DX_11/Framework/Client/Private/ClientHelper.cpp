@@ -48,12 +48,17 @@ HRESULT ClientHelper::Add_AnimPathFromDirectory(string directoryPath, string Sub
 	for (const auto& entry : filesystem::recursive_directory_iterator(filesystem::path(directoryPath))) {
 		if (!entry.is_regular_file())
 			continue;
-
+		if (!filesystem::exists(directoryPath)) {
+			string msg = "No such directory: " + directoryPath + "\n";
+			OutputDebugStringA(msg.c_str());
+		}
 		string ext = entry.path().extension().string();
 
 		if (ext == ".anim") {
 			string fileName = entry.path().filename().string();;
-			CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath(fileName + "_" + Subject, entry.path().string());
+			CGameInstance::GetInstance()->Get_ResourceMgr()->
+				Add_ResourcePath(fileName + "_" + Subject, entry.path().string());
+			
 		}
 	}
 
@@ -120,12 +125,11 @@ HRESULT ClientHelper::Add_AllClipsByFile(string filePath, string Level, string S
 					transform(value.begin(), value.end(), value.begin(), ::tolower); // 전부 소문자로 변환
 
 					loopFlag = (value == "true" || value == "1" || value == "yes" || value == "on");
-					if (loopFlag)
-						int i = 0;
 				}
 			}
 
-			pAnimator->Add_AnimClips(Level, animName, Subject, loopFlag);
+			HRESULT hr = pAnimator->Add_AnimClips(Level, animName, Subject, loopFlag);
+			
 		}
 		catch (...)
 		{

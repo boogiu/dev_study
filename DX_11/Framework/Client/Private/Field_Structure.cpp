@@ -47,6 +47,7 @@ void CField_Structure::Late_Update(_float dt)
 void CField_Structure::Render_GUI()
 {
 	__super::Render_GUI();
+	ImGui::Text("Type : %d", m_iObjType);
 }
 
 void CField_Structure::OnCollisionEnter(COLLISION_CONTEXT ctx)
@@ -56,7 +57,7 @@ void CField_Structure::OnCollisionEnter(COLLISION_CONTEXT ctx)
 	}
 }
 
-HRESULT CField_Structure::Sync_MapData(MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
+HRESULT CField_Structure::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
 
 	HRESULT hr = Get_Component<CModel>()->Link_Model("GamePlay_Level", modelMapTable[1]);

@@ -58,14 +58,14 @@ void CResourceMgr::Clear_Resource(const string& levelTag)
 		Safe_Release(pair.second);
 
 	for (auto& pair : m_Resources[index].m_ModelDatas)
-			Safe_Release(pair.second);
+		Safe_Release(pair.second);
 
 	for (auto& pair : m_Resources[index].m_MaterialInstances)
-		for(auto& materialData : pair.second)
+		for (auto& materialData : pair.second)
 			Safe_Release(materialData);
 
 	for (auto& pair : m_Resources[index].m_Animations)
-			Safe_Release(pair.second);
+		Safe_Release(pair.second);
 
 	m_Resources[index] = {};
 }
@@ -155,7 +155,7 @@ vector<CMaterialInstance*> CResourceMgr::Load_MaterialFromFile(const string& lev
 	if (index == -1) {
 		MSG_BOX("Wrong Level Tag. :Load_MaterialFromFile ");
 		return MaterialHandles;
-	} 
+	}
 	/*일단 레벨에서 꺼내봐*/
 
 	/*머티리얼 데이터 벡터를 가진 맵*/
@@ -178,7 +178,7 @@ vector<CMaterialInstance*> CResourceMgr::Load_MaterialFromFile(const string& lev
 		vector<CMaterialData*> materialDataContainer;
 
 		string filePath = MakePath(fileHeader.materialFileKey);
-		string fileDirectory = filesystem::path(filePath).parent_path().string()+"/";
+		string fileDirectory = filesystem::path(filePath).parent_path().string() + "/";
 
 		for (size_t i = 0; i < fileHeader.MaterialDataCount; i++)
 		{
@@ -193,12 +193,12 @@ vector<CMaterialInstance*> CResourceMgr::Load_MaterialFromFile(const string& lev
 	//그런 키가 있다면
 	else {
 		vector<CMaterialData*>& vector = iter->second;
-		for (auto& pData  : vector)
+		for (auto& pData : vector)
 		{ //순회하면서 핸들에 담아.
 			CMaterialInstance* pMaterialHandle = CMaterialInstance::Make_Handle(pData, m_pDevice);
 			MaterialHandles.push_back(pMaterialHandle);
 		}
-	}	
+	}
 
 	return MaterialHandles;
 }
@@ -245,7 +245,9 @@ CTexture* CResourceMgr::Load_Texture(const string& levelTag, const string& textu
 	return pData;
 }
 
-CAnimationClip* CResourceMgr::Load_AnimClip(const string& levelTag,  const string& AnimClipKey, const string& Subject)
+CAnimationClip* CResourceMgr::Load_AnimClip(const string& levelTag, 
+	const string& AnimClipKey, 
+	const string& Subject)
 {
 	int index = ValidLevel(levelTag);
 	if (index == -1) {
@@ -254,15 +256,15 @@ CAnimationClip* CResourceMgr::Load_AnimClip(const string& levelTag,  const strin
 	}
 
 	auto& map = m_Resources[index].m_Animations;
- 	auto iter = map.find(AnimClipKey + "_" + Subject);
+	auto iter = map.find(AnimClipKey + "_" + Subject);
 
 	if (iter != map.end()) {
-		if(iter->second->Get_Subject() == Subject)
+		if (iter->second->Get_Subject() == Subject)
 			return iter->second;
 	}
 
 	CAnimationClip* pData = CAnimationClip::Create(MakePath(AnimClipKey + "_" + Subject), AnimClipKey, Subject);
-	if(pData)
+	if (pData)
 		map.emplace(AnimClipKey + "_" + Subject, pData);
 
 	return pData;
@@ -281,7 +283,7 @@ CModelData* CResourceMgr::Load_ModelData(const string& levelTag, const string& M
 
 	if (iter != map.end()) return iter->second;
 
-	CModelData* pData = CModelData::Create(MakePath(ModelKey),m_pDevice);
+	CModelData* pData = CModelData::Create(MakePath(ModelKey), m_pDevice);
 	map.emplace(ModelKey, pData);
 
 	return pData;
@@ -299,7 +301,12 @@ HRESULT CResourceMgr::Add_ResourcePath(const string& resourceKey, const string& 
 {
 	auto iter = m_KeyPath.find(resourceKey);
 
-	if (iter != m_KeyPath.end()) return E_FAIL;
+	if (iter != m_KeyPath.end()) {
+		string msg = "directory Exist: " + resourceKey + "\n";
+		//string msg = "directory Exist: " + resourcePath + "\n";
+		OutputDebugStringA(msg.c_str());
+		return E_FAIL;
+	}
 
 	m_KeyPath.emplace(resourceKey, resourcePath);
 	return S_OK;
@@ -320,28 +327,28 @@ void CResourceMgr::Load_InitialResource()
 
 	m_LevelIndex.emplace(G_GlobalLevelKey, 0);
 	m_Resources.resize(1);
-	Add_ResourcePath("VTX_TexPos.hlsl",  "../Bin/ShaderFiles/VTX_TexPos.hlsl");
-	Add_ResourcePath("VTX_Mesh.hlsl",  "../Bin/ShaderFiles/VTX_Mesh.hlsl");
-	Add_ResourcePath("VTX_NorTex.hlsl",  "../Bin/ShaderFiles/VTX_NorTex.hlsl");
-	Add_ResourcePath("VTX_SkinMesh.hlsl",  "../Bin/ShaderFiles/VTX_SkinMesh.hlsl");
-	Add_ResourcePath("VTX_Debug.hlsl",  "../Bin/ShaderFiles/VTX_Debug.hlsl");
-	Add_ResourcePath("VTX_Tile.hlsl",  "../Bin/ShaderFiles/VTX_Tile.hlsl");
-	Add_ResourcePath("VTX_Field.hlsl",  "../Bin/ShaderFiles/VTX_Field.hlsl");
+	Add_ResourcePath("VTX_TexPos.hlsl", "../Bin/ShaderFiles/VTX_TexPos.hlsl");
+	Add_ResourcePath("VTX_Mesh.hlsl", "../Bin/ShaderFiles/VTX_Mesh.hlsl");
+	Add_ResourcePath("VTX_NorTex.hlsl", "../Bin/ShaderFiles/VTX_NorTex.hlsl");
+	Add_ResourcePath("VTX_SkinMesh.hlsl", "../Bin/ShaderFiles/VTX_SkinMesh.hlsl");
+	Add_ResourcePath("VTX_Debug.hlsl", "../Bin/ShaderFiles/VTX_Debug.hlsl");
+	Add_ResourcePath("VTX_Tile.hlsl", "../Bin/ShaderFiles/VTX_Tile.hlsl");
+	Add_ResourcePath("VTX_Field.hlsl", "../Bin/ShaderFiles/VTX_Field.hlsl");
 
-	Add_ResourcePath("Anim.dat",  "../../Anim.dat");
+	Add_ResourcePath("Anim.dat", "../../Anim.dat");
 
 	m_Resources[0].m_Buffers.emplace("Engine_Default_Rect", CVI_Rect::Create(m_pDevice, "Engine_Default_Rect"));
 	m_Resources[0].m_Buffers.emplace("Engine_Default_Plane", CVI_Plane::Create(m_pDevice, "Engine_Default_Plane"));
 
-	m_Resources[0].m_Shaders.emplace("VTX_TexPos.hlsl", CShader::Create(m_pDevice,		"../Bin/ShaderFiles/VTX_TexPos.hlsl", "VTX_TexPos.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_Mesh.hlsl", CShader::Create(m_pDevice,			"../Bin/ShaderFiles/VTX_Mesh.hlsl", "VTX_Mesh.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_NorTex.hlsl", CShader::Create(m_pDevice,		"../Bin/ShaderFiles/VTX_NorTex.hlsl", "VTX_NorTex.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_SkinMesh.hlsl", CShader::Create(m_pDevice,	"../Bin/ShaderFiles/VTX_SkinMesh.hlsl", "VTX_SkinMesh.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_Debug.hlsl", CShader::Create(m_pDevice,			"../Bin/ShaderFiles/VTX_Debug.hlsl", "VTX_Debug.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_Tile.hlsl", CShader::Create(m_pDevice,				"../Bin/ShaderFiles/VTX_Tile.hlsl", "VTX_Tile.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_Field.hlsl", CShader::Create(m_pDevice,				"../Bin/ShaderFiles/VTX_Field.hlsl", "VTX_Field.hlsl"));
-	m_Resources[0].m_Shaders.emplace("VTX_UI.hlsl", CShader::Create(m_pDevice,				"../Bin/ShaderFiles/VTX_UI.hlsl", "VTX_UI.hlsl"));
-	m_Resources[0].m_Shaders.emplace("Shader_Deferred.hlsl", CShader::Create(m_pDevice,				"../Bin/ShaderFiles/Shader_Deferred.hlsl", "Shader_Deferred.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_TexPos.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/VTX_TexPos.hlsl", "VTX_TexPos.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Mesh.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/VTX_Mesh.hlsl", "VTX_Mesh.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_NorTex.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/VTX_NorTex.hlsl", "VTX_NorTex.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_SkinMesh.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/VTX_SkinMesh.hlsl", "VTX_SkinMesh.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Debug.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/VTX_Debug.hlsl", "VTX_Debug.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Tile.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/VTX_Tile.hlsl", "VTX_Tile.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_Field.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/VTX_Field.hlsl", "VTX_Field.hlsl"));
+	m_Resources[0].m_Shaders.emplace("VTX_UI.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/VTX_UI.hlsl", "VTX_UI.hlsl"));
+	m_Resources[0].m_Shaders.emplace("Shader_Deferred.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/Shader_Deferred.hlsl", "Shader_Deferred.hlsl"));
 }
 
 
@@ -351,6 +358,8 @@ string CResourceMgr::MakePath(const string& pathKey)
 	if (iter != m_KeyPath.end()) {
 		return iter->second;
 	}
+	string msg = "Cant Find Path: " + pathKey + "\n";
+	OutputDebugStringA(msg.c_str());
 	return string();
 }
 
