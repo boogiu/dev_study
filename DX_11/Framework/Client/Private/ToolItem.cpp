@@ -10,6 +10,7 @@
 #include "OBB_Collider.h"
 #include "ObjectContainer.h"
 #include "FishSub_Tool.h"
+
 CToolItem::CToolItem()
 {
 }
@@ -30,6 +31,7 @@ HRESULT CToolItem::Initialize_Prototype()
 	Add_Component<CMaterial>();
 	Add_Component<COBB_Collider>();
 	Add_Component<CObjectContainer>();
+	Add_Component<CAnimator3D>();
 
 	return S_OK;
 }
@@ -44,14 +46,17 @@ HRESULT CToolItem::Initialize(INIT_DESC* pArg)
 	Get_Component<CSkeletalModel>()->ShadowCast(true);
 	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
 
+	Get_Component<CAnimator3D>()->Set_CompActive(false);
 
 	CGameObject* pSub =
 		Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_FishSub" })
-		.Position({ 0, 4, 0 })
+		.Position({ 550, 10, 550 })
 		.Build("Sub",&m_SubIndex);
 
 	Get_Component<CObjectContainer>()->Add_Child(pSub, false);
 	pSub->Get_Component<CModel>()->Set_CompActive(false);
+
+	m_pSubTool = dynamic_cast<CFishSub_Tool*>(pSub);
 	return S_OK;
 }
 
@@ -62,6 +67,9 @@ void CToolItem::Priority_Update(_float dt)
 
 void CToolItem::Update(_float dt)
 {
+	if(Get_Component<CAnimator3D>()->Get_CompActive())
+	Get_Component<CAnimator3D>()->Update_Animation(dt);
+
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
@@ -75,13 +83,21 @@ void CToolItem::Render_GUI()
 	Get_Component<COBB_Collider>()->Render_GUI();
 	Get_Component<CMaterial>()->Render_GUI();
 	Get_Component<CModel>()->Render_GUI();
+
+	if (Get_Component<CAnimator3D>()->Get_CompActive())
+		Get_Component<CAnimator3D>()->Render_GUI();
 }
 
 void CToolItem::AdjustByItem(itemType type)
 {
 	//m_pTransform->Reset_Rotation();
 	m_pTransform->Set_Pos({0,0,0});
-	//m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(0));
+
+	if (type == itemType::FishingRod) {
+		m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
+	}else{
+		m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(0));
+	}
 }
 
 void CToolItem::Set_Item(TOOL_DATA_DESC data)
@@ -126,11 +142,35 @@ void CToolItem::Set_Item(TOOL_DATA_DESC data)
 	Get_Component<CCollider>()->Make_MinMaxCollider(Get_Component<CModel>()->Get_LocalBoundingBox());
 
 	if (data.TypeTag == itemType::FishingRod) {
-		CGameObject* pSub = Get_Component<CObjectContainer>()->Find_ObjectByID(m_SubIndex);
-		pSub->Get_Component<CModel>()->Set_CompActive(true);
+	
+		Get_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", data.modelName);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_APose.anim", "FishingRod");
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_Aim.anim", "FishingRod",true);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_Air.anim", "FishingRod");
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_Catch.anim", "FishingRod");
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_CatchKeep.anim", "FishingRod", true);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_CatchKeepBig.anim", "FishingRod", true);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_Complete.anim", "FishingRod");
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_CompleteKeep.anim", "FishingRod", true);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_Get.anim", "FishingRod");
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_GetKeep.anim", "FishingRod", true);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_Hit.anim", "FishingRod", true);
+		Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "ToolPoleAnim_Swing.anim", "FishingRod");
 
-		return;
+		Get_Component<CAnimator3D>()->Set_CompActive(true);
+		Get_Component<CAnimator3D>()->Change_Animation("ToolPoleAnim_APose.anim");
+
+		m_pSubTool->Get_Component<CModel>()->Set_CompActive(true);
+		m_pSubTool->Sync_Bont_To_Rod(Get_Component<CAnimator3D>(), "Armature_Sub");
 	}
+	else {
+		Get_Component<CAnimator3D>()->Set_CompActive(false);
+	}
+}
+
+void CToolItem::Change_Tool_Animation(const string& animName)
+{
+	Get_Component<CAnimator3D>()->Change_Animation(animName);
 }
 
 void CToolItem::OnCollisionEnter(COLLISION_CONTEXT context)

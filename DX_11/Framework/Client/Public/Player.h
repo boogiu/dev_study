@@ -125,7 +125,7 @@ public:
     void ActiveCollider_Tool(_bool active, string Event = {});
     void ActiveCollider_LeftHand(_bool active, string Event = {});
     void ActiveCollider_RightHand(_bool active, string Event = {});
-
+    void Change_Tool_Anim(const string& animName);
  public:
     class CLevel* Get_NowLevel();
     

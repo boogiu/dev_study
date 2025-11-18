@@ -6,6 +6,8 @@
 #include "BoneFollower.h"
 #include "Animator3D.h"
 #include "AABB_Collider.h"
+#include "BoneFollower.h"
+#include "Animator3D.h"
 
 CFishSub_Tool::CFishSub_Tool()
 {
@@ -27,6 +29,7 @@ HRESULT CFishSub_Tool::Initialize_Prototype()
 	Add_Component<CSkeletalModel>();
 	Add_Component<CMaterial>();
 	Add_Component<CAABB_Collider>();
+	Add_Component<CBoneFollower>();
 	return S_OK;
 }
 
@@ -35,6 +38,7 @@ HRESULT CFishSub_Tool::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 	Get_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", "Sub.model");
 	Get_Component<CMaterial>()->Link_Material("GamePlay_Level", "Sub.mat");
+
 	m_InstanceTag = "Sub";
 	return S_OK;
 }
@@ -46,6 +50,10 @@ void CFishSub_Tool::Priority_Update(_float dt)
 
 void CFishSub_Tool::Update(_float dt)
 {
+	if (m_bAttached)
+		Get_Component<CBoneFollower>()->Sync_Transform(dt, m_pTransform);
+
+	m_pTransform->Translate(XMLoadFloat3(&m_vCurrentOffset));
 }
 
 void CFishSub_Tool::Late_Update(_float dt)
@@ -64,6 +72,8 @@ void CFishSub_Tool::Render_GUI()
 	ImGui::Text("X: %.3f", pos.x);
 	ImGui::Text("Y: %.3f", pos.y);
 	ImGui::Text("Z: %.3f", pos.z);
+
+	ImGui::DragFloat3("offset", reinterpret_cast<_float*>(&m_vCurrentOffset));
 }
 
 
@@ -77,6 +87,13 @@ void CFishSub_Tool::OnCollisionStay(COLLISION_CONTEXT context)
 
 void CFishSub_Tool::OnCollisionExit(COLLISION_CONTEXT context)
 {
+}
+
+void CFishSub_Tool::Sync_Bont_To_Rod(CAnimator3D* pAnimator, const string& boneName)
+{
+	Get_Component<CBoneFollower>()->Link_Bone(pAnimator, boneName);
+	m_bAttached = true;
+	m_vCurrentOffset = m_vBaseOffset;
 }
 
 CFishSub_Tool* CFishSub_Tool::Create()

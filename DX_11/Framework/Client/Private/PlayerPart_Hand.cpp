@@ -122,6 +122,11 @@ void CPlayerPart_Hand::Change_Item(TOOL_DATA_DESC data)
 	m_eItemType = data.TypeTag;
 }
 
+void CPlayerPart_Hand::Change_Tool_Anim(const string& animName)
+{
+	m_pToolItem->Change_Tool_Animation(animName);
+}
+
 void CPlayerPart_Hand::Active_ColliderTool(_bool Active, string Event)
 {
 	m_pToolItem->Get_Component<CCollider>()->Set_ColliderActive(Active);

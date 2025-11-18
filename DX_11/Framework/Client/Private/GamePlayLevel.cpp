@@ -189,6 +189,8 @@ void CGamePlayLevel::PreLoad_Level()
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Item/Tool/FishingRod/Sub");
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Item/Tool/FishingRod/Sub");
 
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Item/Tool/FishingRod/Animation","FishingRod");
+
 	/*Player Anim Path*/
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Movement","Player");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Interaction", "Player");

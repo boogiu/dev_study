@@ -1,5 +1,8 @@
 #pragma once
 #include "GameObject.h"
+NS_BEGIN(Engine)
+class CAnimator3D;
+NS_END
 
 NS_BEGIN(Client)
 class CFishSub_Tool :
@@ -22,6 +25,14 @@ public:
     void OnCollisionEnter(COLLISION_CONTEXT context) override;
     void OnCollisionStay(COLLISION_CONTEXT context) override;
     void OnCollisionExit(COLLISION_CONTEXT context) override;
+
+public:
+    void Sync_Bont_To_Rod(class CAnimator3D* pAnimator, const string& boneName);
+
+private:
+    _bool m_bAttached = { false };
+    _float3 m_vBaseOffset = {0,0,0};
+    _float3 m_vCurrentOffset = {};
 
 public:
     static CFishSub_Tool* Create();

@@ -30,6 +30,7 @@ public:
 
 public:
     void Change_Item(TOOL_DATA_DESC data);
+    void Change_Tool_Anim(const string& animName);
     void Active_ColliderTool(_bool Active, string Event);
     void Active_ColliderHand(_bool Active, string Event);
 

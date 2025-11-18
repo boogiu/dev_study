@@ -256,10 +256,12 @@ HRESULT CGameObject::Make_OpaquePacket()
 	if (!packet.pModel || !packet.pModel->isReadyToDraw()) return E_FAIL;
 	if (packet.pModel->Get_RenderType() == RENDER_PASS_TYPE::RENDER_OPAQUE) {
 		if (!packet.pModel->Get_CompActive()) return E_FAIL;
-		packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel) ? true : false;
+
+		packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel);
 
 		if (auto Animator = Get_Component<CAnimator3D>()) {
-			packet.pPayLoad = Animator;
+			if(Animator->Get_CompActive())
+				packet.pPayLoad = Animator;
 		}
 		else if (auto Follower = Get_Component<CSkeletonFollower>()) {
 			packet.pPayLoad = Follower;

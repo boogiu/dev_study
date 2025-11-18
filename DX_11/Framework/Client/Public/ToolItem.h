@@ -29,12 +29,14 @@ public:
 
 private:
     void AdjustByItem(itemType type);
+
 public:
     void Set_Item(TOOL_DATA_DESC data);
-
+    void Change_Tool_Animation(const string& animName);
 private:
-    CGameObject* m_pOwner = { nullptr };
     _uint m_SubIndex = {};
+    CGameObject* m_pOwner = { nullptr };
+    class CFishSub_Tool* m_pSubTool = { nullptr };
 
 public:
     static CToolItem* Create();

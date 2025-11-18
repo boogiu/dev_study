@@ -593,6 +593,13 @@ void CPlayer::ActiveCollider_RightHand(_bool active, string Event)
 	pHandPart->Active_ColliderHand(active, Event);
 }
 
+void CPlayer::Change_Tool_Anim(const string& animName)
+{
+	CGameObject* pHand = Get_Component<CObjectContainer>()->Find_ObjectByName("Right_Hand");
+	CPlayerPart_Hand* pHandPart = dynamic_cast<CPlayerPart_Hand*>(pHand);
+	pHandPart->Change_Tool_Anim(animName);
+}
+
 CLevel* CPlayer::Get_NowLevel()
 {
 	return CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel();
