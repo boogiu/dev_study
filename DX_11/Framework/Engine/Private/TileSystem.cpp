@@ -54,7 +54,7 @@ void CTileSystem::Update(_float dt)
 	}
 }
 
-HRESULT CTileSystem::Execute_InstanceModel(const string& levelKey, const string& modelKey, const string& materialKey)
+HRESULT CTileSystem::Execute_InstanceModel(const string& levelKey, const string& modelKey, const string& materialKey, const string& pass)
 {
 	ID3D11Device* pDevice = CGameInstance::GetInstance()->Get_Device();
 	m_pContext = CGameInstance::GetInstance()->Get_Context();
@@ -77,7 +77,7 @@ HRESULT CTileSystem::Execute_InstanceModel(const string& levelKey, const string&
 	m_InstanceTiles.resize(m_TileInfos.size());
 	m_pTileMaterial->Link_Material(levelKey, materialKey);
 	for (auto& instance : m_pTileMaterial->Get_Material_Instance()) {
-		instance->Override_Pass("Instancing");
+		instance->Override_Pass(pass);
 	}
 
 	m_pInstanceModel->Link_InstanceData(pDevice, m_instanceDesc, levelKey, modelKey);

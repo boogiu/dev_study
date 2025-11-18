@@ -163,7 +163,8 @@ void CControlPanel::Render_TileEdit()
 
 	ImGui::CheckboxFlags("Walkable", &pContext->tileFlag, static_cast<_uint>(TILE_FLAG::FLAG_WALKABLE));
 	ImGui::CheckboxFlags("Blocked", &pContext->tileFlag, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
-	ImGui::CheckboxFlags("Swimmable", &pContext->tileFlag, static_cast<_uint>(TILE_FLAG::FLAG_SWIMMABLE));
+	ImGui::CheckboxFlags("River", &pContext->tileFlag, static_cast<_uint>(TILE_FLAG::FLAG_RIVER));
+	ImGui::CheckboxFlags("Sea", &pContext->tileFlag, static_cast<_uint>(TILE_FLAG::FLAG_SEA));
 	if (ImGui::Button("Adjust Flag")) {
 		CEditorSystem::GetInstance()->Adjust_Flag();
 	}

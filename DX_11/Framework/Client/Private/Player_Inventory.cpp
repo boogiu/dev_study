@@ -422,6 +422,7 @@ vector<wstring> CPlayer_Inventory::Switch_ItemSelect(itemType type, _uint count)
 	case itemType::Axe:
 	case itemType::Scoop:
 	case itemType::Net:
+	case itemType::FishingRod:
 		SelectScript = { L"들기" , L"배치하기", L"근처에 두기" };
 		if (m_pPlayer->Get_ItemPacket().CurItem.TypeTag == type)
 			SelectScript[0] = L"장착 해제하기";

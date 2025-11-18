@@ -71,6 +71,9 @@ CState* CPlayerState_ActionHub::Check_ItemType()
 	case itemType::Net:
 			nextState = m_pLayer->Get_State("Action_NetSwing_State");
 		break;
+	case itemType::FishingRod:
+			nextState = m_pLayer->Get_State("Action_PoleAction_State");
+		break;
 	default:
 		break;
 	}

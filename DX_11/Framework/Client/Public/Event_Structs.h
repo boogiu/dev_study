@@ -17,7 +17,7 @@ enum class EVENT_TYPE {
 	Craft_MsgUI,
 	Quest_Msg,
 	Quest_Msg_Responese,
-	Player_Pos
+	Player_Pos,
 };
 
 struct BaseEvent {
@@ -122,3 +122,4 @@ typedef struct tagQuestEventResponse : public BaseEvent {
 	CGameObject* pEventPublisher = { nullptr };
 	_bool EvtConsumed = { false };
 }QUEST_RESPONSE;
+

@@ -16,12 +16,6 @@ class CPipeLine :
         _float zFar;
     };
 
-    /*내일 CBuffer로 만들기*/
-    struct alignas(16)  CurvedWorldBuffer
-    {
-        _float CurveStrength = { 0.25 };
-        _float PlanetRadius = { 900 };
-    };
 
     struct alignas(16)  ShadowBuffer
     {
@@ -65,6 +59,7 @@ public:
     _bool isVisible(MINMAX_BOX minMax, _fmatrix worldTransform);
 public:
     HRESULT Update_FrameBuffer(ID3D11DeviceContext* pContext);
+    HRESULT Update_CurvedBuffer(ID3D11DeviceContext* pContext);
     HRESULT Update_ShadowBuffer(ID3D11DeviceContext* pContext);
     void Update_Frustum();
 

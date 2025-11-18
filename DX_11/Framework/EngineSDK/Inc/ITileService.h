@@ -8,7 +8,7 @@ protected:
 	virtual  ~ITileService() DEFAULT;
 public:
 	virtual void Update(_float dt) PURE;
-	virtual HRESULT Execute_InstanceModel(const string& levelKey, const string& modelKey, const string& materialKey) PURE;
+	virtual HRESULT Execute_InstanceModel(const string& levelKey, const string& modelKey, const string& materialKey, const string& pass) PURE;
 	virtual HRESULT Set_Material_ID(TILE_INDEX tileIndex, _float4 materialID) PURE;
 	virtual TILE_INDEX Get_IndexByPosition(_float4 WorldPos) PURE;
 	virtual _float Get_TileHeightByPosition(_float4 WorldPos)PURE;

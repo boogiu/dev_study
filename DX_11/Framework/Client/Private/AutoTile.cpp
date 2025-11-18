@@ -9,6 +9,9 @@
 #include "ITileService.h"
 #include "IResourceService.h"
 #include "Transform.h"
+#include "Level.h"
+#include "FishSpawner.h"
+
 
 static vector<AUTO_TILE> TileRuleDB;
 
@@ -56,9 +59,13 @@ HRESULT CAutoTile::Initialize(INIT_DESC* pArg)
 
 	tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_TILE | TILE_FLAG::FLAG_WALKABLE));
 	tileSys->Remove_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
+
 	if (m_BaseTypeName.find("River") != string::npos) {
 		tileSys->Set_Material_ID(m_Index, { 0,0,0,0 });
 		tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
+
+		auto FishSpawner =CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CFishSpawner>();
+		FishSpawner->Notice_River(m_Index);
 	}
 	return S_OK;
 }
@@ -82,6 +89,7 @@ void CAutoTile::Late_Update(_float dt)
 
 void CAutoTile::Render_GUI()
 {
+	__super::Render_GUI();
 }
 
 HRESULT CAutoTile::Link_Data(const string& folderName)
@@ -89,7 +97,12 @@ HRESULT CAutoTile::Link_Data(const string& folderName)
 	HRESULT hr = Get_Component<CModel>()->Link_Model(G_GlobalLevelKey, folderName + ".model");
 	hr = Get_Component<CMaterial>()->Link_Material(G_GlobalLevelKey, folderName + ".mat");
 	CMaterial* pMaterial = Get_Component<CMaterial>();
-
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
+		instance->Override_Pass("Base");
+	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mRiver")) {
+		instance->Override_Pass("River");
+	}
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassXlu")) {
 		instance->Override_Pass("Edge");
 	}

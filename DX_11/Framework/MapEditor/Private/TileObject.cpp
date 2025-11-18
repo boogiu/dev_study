@@ -147,6 +147,7 @@ HRESULT CTileObject::Link_Data(const string& folderName, _bool Base)
 	if (Base) {
 		for (auto& instance : pMaterial->Get_Material_Instance()) {
 			instance->Override_Pass("Base");
+			instance->Override_Pass("NoCurve");
 		}
 	}
 

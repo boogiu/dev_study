@@ -55,7 +55,6 @@ HRESULT CInsect_Object::Initialize(INIT_DESC* pArg)
 
 void CInsect_Object::Priority_Update(_float dt)
 {
-	auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
 	m_PrevIndex = m_CurrIndex;
 }
 

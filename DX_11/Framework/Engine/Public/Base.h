@@ -10,8 +10,8 @@ protected:
 	virtual ~CBase() = default;
 
 	public:
-		_uint AddRef() ;
-		_uint Release();
+		virtual _uint AddRef() ;
+		virtual _uint Release();
 
 protected:
 	unsigned int			m_iRefCnt = 0;

@@ -323,7 +323,7 @@ void CItem_Object::FollowHand(_float dt)
 	_vector vNowPos = m_pTransform->Get_Pos();
 	_vector vTargetPos = trans;
 
-	_vector vLerpPos = XMVectorLerp(vNowPos, vTargetPos, dt * 7.f);
+	_vector vLerpPos = XMVectorLerp(vNowPos, vTargetPos, dt * 10.f);
 	m_pTransform->Set_vectorPos(vLerpPos);//vLerpPos
 }
 

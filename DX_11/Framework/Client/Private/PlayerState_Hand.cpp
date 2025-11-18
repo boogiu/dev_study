@@ -39,6 +39,8 @@ CState* CPlayerState_HandAction::HandleTransition()
 		return m_pLayer->Get_State("Tool_Scoop_State");
 	case itemType::Net:
 		return m_pLayer->Get_State("Tool_Net_State");
+	case itemType::FishingRod:
+		return m_pLayer->Get_State("Tool_Pole_State");
 	default:
 		break;
 	}

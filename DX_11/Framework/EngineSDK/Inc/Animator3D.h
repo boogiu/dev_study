@@ -57,6 +57,7 @@ public:
     _float4x4 Get_BoneMatrix(const string& boneName);
     _float4x4 Get_BoneMatrix(_uint Index);
     _float4x4* Get_BoneMatrixPtr(const string& boneName);
+    _float4x4* Get_BoneTransformMatrixPtr(const string& boneName);
 
 protected:
     void Animation_Run(_float dt);
@@ -74,6 +75,8 @@ protected:
 public:
     virtual void Render_GUI();
 
+private:
+    void Reset_Anim();
 protected:
     class CModelData* m_pData = {};
     ANIMATOR_STATE m_eState = {};

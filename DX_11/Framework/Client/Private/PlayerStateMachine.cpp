@@ -19,7 +19,7 @@
 #include "PlayerState_Axe.h"
 #include "PlayerState_Net.h"
 #include "PlayerState_Scoop.h"
-
+#include "PlayerState_Pole.h"
 #include "PlayerState_ActionHub.h"
 #include "PlayerState_ShakeTree.h"
 #include "PlayerState_Dig.h"
@@ -35,6 +35,7 @@
 #include "PlayerState_TransferGet.h"
 #include "PlayerState_Diy.h"
 #include "PlayerState_CraftAction.h"
+#include "PlayerState_PoleAction.h"
 
 CPlayerStateMachine::CPlayerStateMachine(CPlayer* pPlayer)
 	:m_pOwner(pPlayer)
@@ -84,6 +85,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	auto DigAction= m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Dig>("Action_Dig_State");
 	auto TreeChop = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_ChopTree>("Action_TreeChop_State");
 	auto NetSwing = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_NetSwing>("Action_NetSwing_State");
+	auto PoleAction = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_PoleAction>("Action_PoleAction_State");
 
 	/*ToolPoseSTate*/
 	auto Hand = m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_HandAction>("Tool_Hand_State");
@@ -91,6 +93,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	auto Axe= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Axe>("Tool_Axe_State");
 	auto Scoop= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Scoop>("Tool_Scoop_State");
 	auto Net= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Net>("Tool_Net_State");
+	auto Pole= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Pole>("Tool_Pole_State");
 
 	Idle->Set_Owner(m_pOwner);
 	Walk->Set_Owner(m_pOwner);
@@ -106,6 +109,9 @@ HRESULT CPlayerStateMachine::Initialize()
 	DigAction->Set_Owner(m_pOwner);
 	Net->Set_Owner(m_pOwner);
 	NetSwing->Set_Owner(m_pOwner);
+	Pole->Set_Owner(m_pOwner);
+	PoleAction->Set_Owner(m_pOwner);
+
 	ActionHub->Set_Owner(m_pOwner);
 
 	m_LayerStates[STATE_LAYER::TOOL]->Excute(ToolBase);

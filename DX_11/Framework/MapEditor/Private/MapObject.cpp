@@ -91,6 +91,11 @@ HRESULT CMapObject::Link_Data(const string& folderName)
 			instance->Override_Pass("ForceSee");
 		};
 	}
+	else {
+		for (auto& instance : pMaterial->Get_Material_Instance()) {
+			instance->Override_Pass("Force_See");
+		};
+	}
 
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
 		instance->Override_Pass("Base");

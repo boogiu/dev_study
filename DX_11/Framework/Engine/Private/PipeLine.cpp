@@ -29,9 +29,9 @@ HRESULT CPipeLine::Initialize(ID3D11Device* pDevice, class CRenderSystem* pSyste
 	pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceShadowBuffer);
 
 	/*프레임 시작 시 한번에 모든 트랜스폼 바인딩*/
-	desc.ByteWidth = sizeof(ObjectBufferArray);  
+	desc.ByteWidth = sizeof(ObjectBufferArray);
 	pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceObjectBuffer);
-
+	
 	/*---------------------------------------------------------------------------------------------------- - */
 	/*스키닝 본 버퍼 - > 이건 셰이더 리소스 뷰도 같이 만들어버림*/
 	vector<_float4x4> BoneMatrices;
@@ -55,6 +55,8 @@ HRESULT CPipeLine::Initialize(ID3D11Device* pDevice, class CRenderSystem* pSyste
 	pDevice->CreateShaderResourceView(m_pDeviceSkinningBuffer, &SkinningResourceDesc, &m_pSkinningResource);
 
 	m_pSystem = pSystem;
+
+	/*커브 1회 설정*/
 	return S_OK;
 }
 
@@ -236,7 +238,7 @@ HRESULT CPipeLine::Begin_SkinningBuffer(ID3D11DeviceContext* pContext)
 		return hr;
 
 	m_pSkinningArray = reinterpret_cast<_float4x4*>(m_mappedSkinningBuffer.pData);
-	m_SkinningOffset = 0;   
+	m_SkinningOffset = 0;
 	return S_OK;
 }
 
@@ -281,7 +283,7 @@ HRESULT CPipeLine::Add_Palette(const string& ConstantName, CTexture* pTexture)
 
 HRESULT CPipeLine::Bind_Light(CShader* pShader, class CVIBuffer* pBuffer, ID3D11DeviceContext* pContext)
 {
-	
+
 	auto& vector = CGameInstance::GetInstance()->Get_LightMgr()->Get_VisibleLight();
 	if (vector.empty()) return E_FAIL;
 
@@ -290,15 +292,15 @@ HRESULT CPipeLine::Bind_Light(CShader* pShader, class CVIBuffer* pBuffer, ID3D11
 		if (vector[i] == nullptr)
 			continue;
 		LIGHT_DESC desc = *vector[i]->Get_Desc(); // 값 복사
-	
+
 		SHADER_PARAM LightParam;
 		LightParam.iSize = sizeof(_float4);
 		LightParam.typeName = "float4";
 		LightParam.pData = &desc.vLightDiffuse;
-		pShader->Bind_Value("g_vLightDiffuse",LightParam);
+		pShader->Bind_Value("g_vLightDiffuse", LightParam);
 
 		LightParam.pData = &desc.vLightAmbient;
-		pShader->Bind_Value("g_vLightAmbient",LightParam);
+		pShader->Bind_Value("g_vLightAmbient", LightParam);
 
 		LightParam.pData = &desc.vLightDirection;
 		pShader->Bind_Value("g_vLightDir", LightParam);
@@ -315,7 +317,7 @@ HRESULT CPipeLine::Bind_Light(CShader* pShader, class CVIBuffer* pBuffer, ID3D11
 		pShader->Bind_Value("g_fLightRange", LightParam);
 
 		ID3D11InputLayout* pLayout;
-	
+
 		switch (vector[i]->Get_Type())
 		{
 		case Engine::LIGHT_TYPE::DIRECTIONAL:
@@ -338,7 +340,7 @@ HRESULT CPipeLine::Bind_Light(CShader* pShader, class CVIBuffer* pBuffer, ID3D11
 			break;
 		}
 	}
-	
+
 	return S_OK;
 }
 

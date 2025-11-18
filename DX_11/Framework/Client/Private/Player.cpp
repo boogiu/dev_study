@@ -107,10 +107,12 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	TOOL_DATA_DESC AxeData = ItemSpawner->Get_ItemData("ToolAxeFirst");
 	TOOL_DATA_DESC NetData = ItemSpawner->Get_ItemData("ToolNetFirst");
 	TOOL_DATA_DESC ScoopData = ItemSpawner->Get_ItemData("ToolScoopFirst");
+	TOOL_DATA_DESC FishingRod = ItemSpawner->Get_ItemData("Main");
 
 	Add_ITEM(AxeData);
 	Add_ITEM(NetData);
 	Add_ITEM(ScoopData);
+	Add_ITEM(FishingRod);
 
 	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
 	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
@@ -637,6 +639,24 @@ void CPlayer::Add_AnimationClips()
 	Animator->Add_AnimClips("GamePlay_Level", "ToolScoop_Dig.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "ToolScoop_DigStump.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "ToolScoop_Repelled.anim", "Player", false);
+
+	/*Åø = FISHINGROD*/
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_APose.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Aim.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Air.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Swing.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Catch.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Catch_Big.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_CatchKeep.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_CatchKeepBig.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Get.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Get_Big.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_GetKeep_Big.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Hit.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Putback.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Swing.anim", "Player", false);
+
+
 
 	Animator->Add_AnimClips("GamePlay_Level", "Tree_Shake.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "Tree_ShakeReadyKeep.anim", "Player", true);

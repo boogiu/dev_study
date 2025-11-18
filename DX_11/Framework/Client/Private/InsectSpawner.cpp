@@ -189,6 +189,7 @@ void CInsectSpawner::Update_Spawner(_float dt)
 			m_fElapsedTime = 0.f;
 			return;
 		}
+
 		CInsect_Object::InsectSpawnDesc* ObjDesc = new CInsect_Object::InsectSpawnDesc;
 
 		ObjDesc->insectDataDesc = iter->second;

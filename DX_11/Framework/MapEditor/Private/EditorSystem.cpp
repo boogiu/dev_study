@@ -193,8 +193,9 @@ void CEditorSystem::ConvertMaterial(string brushType, TILE_INDEX Index)
 			CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
 			objDesc->TypeName = brushType;
 			objDesc->index = Index;
+			
 			CGameObject* pObject = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
-				.Position({ 0,15,0 })
+				.Position({ 0,m_EditorContext.ObjHeight,0 })
 				.Scale({ 1,1,1 })
 				.Add_ObjDesc(objDesc)
 				.Build(brushType);
@@ -341,7 +342,7 @@ HRESULT CEditorSystem::Load_MapData()
 	}
 
 	m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
- 	m_pTileSystem->Execute_InstanceModel(G_GlobalLevelKey, "Base_0.model", "Base_0.mat");
+	m_pTileSystem->Execute_InstanceModel(G_GlobalLevelKey, "Base_0.model", "Base_0.mat", "InstancingNoCurve");
 	m_EditorContext.ContextTileInfo = m_pTileSystem->Get_TileSystemInfo();
 	if (FAILED(TileInfo))
 	{

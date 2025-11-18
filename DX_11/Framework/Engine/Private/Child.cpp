@@ -43,6 +43,7 @@ void CChild::Set_Parent(CGameObject* pParent)
 
 void CChild::Dettach_Parent()
 {
+	m_pParent = nullptr;
 	CTransform* myTransform = m_pOwner->Get_Component<CTransform>();
 	myTransform->Set_ParentTransform(nullptr);
 }

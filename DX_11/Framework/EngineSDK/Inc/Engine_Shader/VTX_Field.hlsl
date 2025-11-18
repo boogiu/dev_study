@@ -52,6 +52,30 @@ VS_OUT VS_MAIN(VS_IN In)
     return Out;
 }
 
+VS_OUT VS_NOCURVE_MAIN(VS_IN In)
+{
+    VS_OUT Out;
+    
+    float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
+
+    float4 viewPos = mul(float4(worldPos, 1.f), matView);
+    float4 projPos = mul(viewPos, matProjection);
+
+    Out.vPosition = projPos;
+    Out.vTexcoord = In.vTexcoord;
+    
+    //노멀 벡터를 월드 변환해줌
+    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
+    Out.vWorldPos = mul(vector(In.vPosition, 1.f), matWorld[TransformIndex]);
+    Out.vProjPos = Out.vPosition;
+   
+    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), matWorld[TransformIndex])).xyz;
+    Out.vTangent *= -1;
+    Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
+    return Out;
+}
+
+
 
 struct PS_IN
 {
@@ -160,23 +184,28 @@ PS_OUT PS_EDGE(PS_IN In)
    return Out;
 }
 
-PS_OUT PS_WATER(PS_IN In)
+PS_OUT PS_RIVER(PS_IN In)
 {
     PS_OUT Out;
+  
+    vector diffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector Mix = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    Out.vDiffuse = 1.f;
+    Out.vDiffuse = Mix.a * diffuse;
+    Out.vDiffuse += float4((1 - Mix.a) * ShallowColor, 1)  ;
     
     vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
-    
     float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
  
     vNormal = mul(vNormal, WorldMatrix);
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    
     return Out;
 }
+
 
 PS_OUT PS_WAVE(PS_IN In)
 {
@@ -260,6 +289,15 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
     }
+    pass Force_See
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_NOCURVE_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN();
+    }
 
     pass Base
     {
@@ -280,14 +318,15 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_EDGE();
     }
-    pass Water
+
+    pass River
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_WATER();
+        PixelShader = compile ps_5_0 PS_RIVER();
     }
     pass Wave
     {

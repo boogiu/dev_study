@@ -16,7 +16,7 @@ public:
     virtual void Update(_float dt) override;
 
 public:
-    virtual HRESULT Execute_InstanceModel(const string& levelKey, const string& modelKey, const string& materialKey) override;
+    virtual HRESULT Execute_InstanceModel(const string& levelKey, const string& modelKey, const string& materialKey, const string& pass = "Instancing") override;
     virtual HRESULT Set_Material_ID(TILE_INDEX tileIndex, _float4 materialID) override;
 
 public:

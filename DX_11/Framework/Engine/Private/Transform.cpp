@@ -294,7 +294,6 @@ void CTransform::Reset_Rotation()
 	MarkDirty();
 }
 
-
 void CTransform::Update_Transform()
 {
 	if (m_pParentTransform && m_pParentTransform->m_bDirty)
@@ -324,19 +323,32 @@ void CTransform::Update_Transform()
 
 	XMStoreFloat4x4(&m_WorldInversMatrix, XMMatrixInverse(nullptr, combined));
 	m_bDirty = false;
+	++m_VersionCounter;
+	if (m_pParentTransform)
+		m_ParentVersionCounter = m_pParentTransform->m_VersionCounter;
 }
 
 _bool CTransform::Check_Dirty()
 {
- 	if (m_pParentTransform)
+	bool dirty = m_bDirty;
+
+	if (m_pParentTransform)
 	{
-		if (m_ParentVersionCounter != m_pParentTransform->m_VersionCounter) {
+		// 부모가 실제 Dirty였는지 확인 (조상 포함)
+		if (m_pParentTransform->Check_Dirty())
+			dirty = true;
+
+		// 부모 버전 변화 체크
+		if (m_ParentVersionCounter != m_pParentTransform->m_VersionCounter)
+		{
+			dirty = true;
 			m_ParentVersionCounter = m_pParentTransform->m_VersionCounter;
-			return true;
 		}
 	}
-	return m_bDirty;
+
+	return dirty;
 }
+
 
 void CTransform::MarkDirty()
 {

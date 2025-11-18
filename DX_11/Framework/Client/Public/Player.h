@@ -29,7 +29,6 @@ public:
     struct ItemPacket {
         TOOL_DATA_DESC  CurItem = {};
         TOOL_DATA_DESC  DstItem = {};
-
     };
 
     struct ControlPacket {

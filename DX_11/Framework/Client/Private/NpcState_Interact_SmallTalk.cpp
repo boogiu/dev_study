@@ -29,7 +29,9 @@ HRESULT CNpcState_Interact_SmallTalk::OnEnter()
      Animator->Change_Animation("Base_Wait.anim", true);
      m_pCharacter->Get_TracePack().pPlayer->Get_InfoPack().isTalking = true;
 
-
+     m_pCharacter->LookTo(
+         m_pCharacter->Get_TracePack().pPlayer->Get_Component<CTransform>()->Get_Pos()
+     );
     return S_OK;
 }
 

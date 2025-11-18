@@ -25,8 +25,6 @@ void CPlayerState_Net::OnUpdate(_float dt)
 
 HRESULT CPlayerState_Net::OnExit()
 {
-	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Release_AnimationBlend();
 	return S_OK;
 }
 
@@ -43,6 +41,8 @@ CState* CPlayerState_Net::HandleTransition()
 		return m_pLayer->Get_State("Tool_Scoop_State");
 		case itemType::Net:
 	return m_pLayer->Get_State("Tool_Net_State"); 
+		case itemType::FishingRod:
+		return m_pLayer->Get_State("Tool_Pole_State"); 
 	default:
 		break;
 	}

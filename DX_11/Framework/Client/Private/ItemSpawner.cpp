@@ -114,7 +114,10 @@ HRESULT CItemSpawner::Read_ItemData(wstring filePath)
 			string materialPath = item.value("mat", "") + "/" + item.value("Name", "");
 			pRcsMgr->Add_ResourcePath(data.modelName, modelPath + ".model"); // model
 			pRcsMgr->Add_ResourcePath(data.materialName, materialPath + ".mat"); // material
+			pRcsMgr->Add_ResourcePath("OnKeep.anim_" + data.FileName, modelPath + "_OnKeep.anim");
+
 			m_ItemDataTable[data.FileName] = data;
+
 		}
 		catch (...)
 		{
@@ -230,7 +233,10 @@ itemType CItemSpawner::MakeTypeByString(const string typeStr)
 		return itemType::Represent;
 	else if (typeStr == "Furniture")
 		return itemType::Furniture;
-	
+	else if (typeStr == "Fish")
+		return itemType::Fish;
+	else if (typeStr == "FishingRod")
+		return itemType::FishingRod;
 	return itemType::None;
 }
 

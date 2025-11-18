@@ -18,6 +18,9 @@ enum class TILE_FLAG : unsigned int {
     FLAG_GRASS = 1 << 10,
     FLAG_BRIDGE = 1 << 11,
 
+    FLAG_RIVER = 1 << 12,
+    FLAG_SEA = 1 << 13,
+
     /*ON*/
     FLAG_ONFURNITURE = 1 << 27,
     FLAG_ONITEM= 1 << 28,
@@ -77,9 +80,11 @@ enum class itemType {
     Ore, 
     Plant, 
     Insect,
+    Fish,
     Axe,  
     Net, 
     Scoop,
+    FishingRod,
     Represent,
     Furniture,
 };

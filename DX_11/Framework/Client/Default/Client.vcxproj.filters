@@ -19,12 +19,6 @@
     <Filter Include="97. Client_Shader">
       <UniqueIdentifier>{0192430b-364d-419f-a00b-efda2080a236}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Levels\00. Loading">
-      <UniqueIdentifier>{6b063c59-ba3e-44d5-9c62-456de7fa6450}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Levels\00. Loading\Loader">
-      <UniqueIdentifier>{36658160-8782-4246-b69a-2749e756da4a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Levels\01. Logo">
       <UniqueIdentifier>{7f67d290-47ad-4648-bada-50e58a05b461}</UniqueIdentifier>
     </Filter>
@@ -171,9 +165,6 @@
     </Filter>
     <Filter Include="02. GameObjects\07. LevelObject\EventListner">
       <UniqueIdentifier>{f30ebd76-dc08-489b-8e87-468ccce4bd7d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\07. LevelObject\ItemSpawner">
-      <UniqueIdentifier>{4ae5044e-a38c-489f-9b15-b55b342f9b9f}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\00. Player\Inventory\InvenSlot">
       <UniqueIdentifier>{70c062b6-443c-4ccd-b71d-ae481fa73e10}</UniqueIdentifier>
@@ -381,6 +372,30 @@
     </Filter>
     <Filter Include="02. GameObjects\10. NonPlayer\Special\NpcTkk">
       <UniqueIdentifier>{de797582-62a4-4a82-ad3e-d1a019a5e248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\FishSpawner">
+      <UniqueIdentifier>{40a20b9b-8cab-4ff7-a7ee-cceaa453e511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\ItemSpawner">
+      <UniqueIdentifier>{4ae5044e-a38c-489f-9b15-b55b342f9b9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\12. Fish">
+      <UniqueIdentifier>{6caa4d74-d544-4a3d-807a-c3d108ff39b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Levels\00. Loading">
+      <UniqueIdentifier>{6b063c59-ba3e-44d5-9c62-456de7fa6450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Levels\00. Loading\Loader">
+      <UniqueIdentifier>{36658160-8782-4246-b69a-2749e756da4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolPose\05. Pole">
+      <UniqueIdentifier>{5297da71-da4f-4bbc-bb6b-2939347f9644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\06. PoleAction">
+      <UniqueIdentifier>{f9d0ddd0-9f2a-4867-93e3-d44627fc9c7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\04. Tools\FishSub">
+      <UniqueIdentifier>{60e19cd8-7bd2-4dfe-8ba9-eb8beda31a8c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -747,6 +762,21 @@
     <ClInclude Include="..\Public\NpcTkk.h">
       <Filter>02. GameObjects\10. NonPlayer\Special\NpcTkk</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\FishSpawner.h">
+      <Filter>02. GameObjects\07. LevelObject\FishSpawner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Fish_Object.h">
+      <Filter>02. GameObjects\12. Fish</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Pole.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\05. Pole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_PoleAction.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\06. PoleAction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FishSub_Tool.h">
+      <Filter>02. GameObjects\04. Tools\FishSub</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1092,6 +1122,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\NpcTkk.cpp">
       <Filter>02. GameObjects\10. NonPlayer\Special\NpcTkk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FishSpawner.cpp">
+      <Filter>02. GameObjects\07. LevelObject\FishSpawner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Fish_Object.cpp">
+      <Filter>02. GameObjects\12. Fish</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Pole.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\05. Pole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_PoleAction.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\06. PoleAction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FishSub_Tool.cpp">
+      <Filter>02. GameObjects\04. Tools\FishSub</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -32,6 +32,7 @@
 
 #include "Player_Inventory.h"
 #include "Item_Object.h"
+#include "FishSub_Tool.h"
 
 #include "UI_InvenSlot.h"
 #include "UI_Cursor.h"
@@ -51,7 +52,9 @@
 #include "Target_Text.h"
 
 #include "Insect_Object.h"
+#include "Fish_Object.h"
 
+#include "FishSpawner.h"
 #include "ItemSpawner.h"
 #include "InsectSpawner.h"
 #include "UI_Responcer.h"
@@ -73,14 +76,17 @@ CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 HRESULT CGamePlayLevel::Initialize()
 {
 
-	
 	Add_LevelObject<CItemSpawner>()->Read_ItemData(L"../../Resources/Data/ItemData.json");
 	Add_LevelObject<CInsectSpawner>()->Link_ItemSpawner(Get_LevelObject<CItemSpawner>());
 	Add_LevelObject<CNpcSpawner>()->Read_CharacterData("../../Resources/Data/NpcData.json");
 	Add_LevelObject<CDialogueManager>()->Read_CharacterSequece("../../Resources/Data/SequenceData.json");
 
 	CGameInstance::GetInstance()->Get_FontSystem()->Add_Font("Sindy", TEXT("../../Resources/Font/Sindy.spritefont"));
+
 	Add_LevelObject<CEventSystem>();
+	Add_LevelObject<CFishSpawner>()->Link_ItemSpawner(Get_LevelObject<CItemSpawner>());
+	Add_LevelObject<CFishSpawner>()->Read_FishData("../../Resources/Data/FishData.json");
+
 	CMapLoader::Load_ModelData();
 	return S_OK;
 }
@@ -125,7 +131,15 @@ HRESULT CGamePlayLevel::Awake()
 	m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 	m_pObjectManager->Add_Object(pSunCamera, { "GamePlay_Level", "Camera_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CInsectSpawner>(), { "GamePlay_Level", "Level_Layer" });
+	m_pObjectManager->Add_Object(Get_LevelObject<CFishSpawner>(), { "GamePlay_Level", "Level_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CUI_Responcer>(), { "GamePlay_Level", "Level_Layer" });
+
+	/*레이어에 넣었으니, 애드레프 +1*/CInsectSpawner* pSpawner = Get_LevelObject<CInsectSpawner>();
+	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pSpawner);
+	/*레이어에 넣었으니, 애드레프 +1*/CFishSpawner* pFishSpawner = Get_LevelObject<CFishSpawner>();
+	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pFishSpawner);
+	/*레이어에 넣었으니, 애드레프 +1*/CUI_Responcer* pUI_Responcer = Get_LevelObject<CUI_Responcer>();
+	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pUI_Responcer);
 
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(pSunCamera->Get_Component<CCamera>());
@@ -172,6 +186,9 @@ void CGamePlayLevel::PreLoad_Level()
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Player");
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Player");
 
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Item/Tool/FishingRod/Sub");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Item/Tool/FishingRod/Sub");
+
 	/*Player Anim Path*/
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Movement","Player");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Interaction", "Player");
@@ -210,6 +227,12 @@ void CGamePlayLevel::PreLoad_Level()
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Insect/ButterFly","InsectAgehacho");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Insect/DragonFly","InsectAkiakane");
 
+	/*Fish*/
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Fish");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Fish");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Fish/Shadow/FishShadowJ", "FishShadowJ");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Fish/Shadow/FishShadowS", "FishShadowS");
+
 	/*Texture Path*/
 	ClientHelper::Add_TexturePathFromDirectory("../../Resources/UI");
 	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Models/MenuLayout");
@@ -225,6 +248,7 @@ void CGamePlayLevel::PreLoad_Level()
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_PlayerTool", CToolItem::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_PlayerPart_Hand", CPlayerPart_Hand::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_FishSub", CFishSub_Tool::Create());
 
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_HairParts", CHairParts::Create());
@@ -265,6 +289,8 @@ void CGamePlayLevel::PreLoad_Level()
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcRco", CNpcRco::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcRcm", CNpcRcm::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcTkk", CNpcTkk::Create());
+
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Fish", CFish_Object::Create());
 }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)

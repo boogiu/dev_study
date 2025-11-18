@@ -32,8 +32,10 @@ HRESULT CAnimator3D::Initialize(COMPONENT_DESC* pArg)
 
 void CAnimator3D::LinkAnimate_Model(const string& LevelKey, const string& ModelKey)
 {
-	if(m_pData)
-		Safe_Release(m_pData);
+	if (m_pData) {
+		Reset_Anim();
+	}
+
 	m_pData = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_ModelData(LevelKey, ModelKey);
 	Safe_AddRef(m_pData);
 	_float4x4 IdentityMatrix;
@@ -356,6 +358,15 @@ _float4x4* CAnimator3D::Get_BoneMatrixPtr(const string& boneName)
 	}
 }
 
+_float4x4* CAnimator3D::Get_BoneTransformMatrixPtr(const string& boneName)
+{
+	_int Index = m_pData->Find_BoneIndexByName(boneName);
+	if (Index == -1)  return nullptr;
+	else {
+		return &m_TransfromationMatrices[Index];
+	}
+}
+
 void CAnimator3D::Animation_Run(_float dt)
 {
 	if (m_iCurrentClipIndex == -1)  return;
@@ -603,6 +614,10 @@ void CAnimator3D::Render_GUI()
 
 		ImGui::PushID(("##" + m_pAnimClips[i]->Get_Name() + "Loop").c_str());
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 0));
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("%s", m_pAnimClips[i]->Get_Name().c_str());
+		}
 		if (ImGui::Button(string(m_pAnimLoops[i] ? "Do Once" : "Do Loop").c_str(), ImVec2{ childWidth * 0.35f, textLineHeight + 4 }))
 			(m_pAnimLoops[i]) = !(m_pAnimLoops[i]);
 		ImGui::PopStyleVar();
@@ -636,6 +651,52 @@ void CAnimator3D::Render_GUI()
 
 	ImGui::EndChild();
 
+}
+
+void CAnimator3D::Reset_Anim()
+{
+	vector<_float4x4> dum1;
+	m_TransfromationMatrices.swap(dum1);
+	vector<_float4x4> dum2;
+	m_CombinedMatrices.swap(dum2);
+	vector<_float4x4> dum3;
+	m_FinalMatices.swap(dum3);
+	vector<_float4x4> dum4;
+	m_ManipulateMatrices.swap(dum4);
+
+	m_iNextClipIndex = { -1 }; //다음 애니메이션 전환 용
+	m_fConvertDuration = {};
+	m_fPrevTrackPosition = {}; //다음 애니메이션 전환 용
+
+	 m_iCurrentClipIndex = { -1 };
+	 m_fCurrentTrackPosition = {};
+	 isAnimEnd = { false };
+	 m_DettachedBone = {};
+
+
+	  m_iBlendAnimation = { -1 };
+	  m_fBlendTrackPosition = {};
+	  m_fBlendConversionTrackPosition = {};
+	  m_fBlendWeight = { 1.5f };
+	  vector<_uint> dum5;
+	  m_BlendIndex.swap(dum5);
+	  vector<_float4x4> dum6;
+	  m_BlendTransfomationMatices.swap(dum6);
+	  isBlendAnimEnd = { false };
+	  m_eBlendState = {BLENDER_STATE::NONE};
+	  m_eState = { ANIMATOR_STATE::IDLE };
+
+	 /*Managing*/
+	  vector<_bool> dum7;
+	m_pAnimLoops.swap(dum7);
+	 unordered_map<string, _uint> m_pAnimNames;
+
+	for (auto& Clip : m_pAnimClips) {
+		Safe_Release(Clip);
+	}
+	m_pAnimNames.clear();
+	m_pAnimClips.clear();
+	Safe_Release(m_pData);
 }
 
 CAnimator3D* CAnimator3D::Create()

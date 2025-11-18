@@ -24,6 +24,43 @@ struct VS_OUT
 };
 
 
+VS_OUT VS_NOCURVE_MAIN(VS_IN In)
+{
+    VS_OUT Out;
+    
+    matrix matWV, matWVP;
+    
+    matWV = mul(matWorld[TransformIndex], matView);
+    matWVP = mul(matWV, matProjection);
+    
+    float fWeightW = 1.0 - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
+
+    float4x4 BoneMatrix =
+        g_BoneMatrices[SkinningOffset + In.vBlendIndex.x].BoneMat * In.vBlendWeight.x +
+        g_BoneMatrices[SkinningOffset + In.vBlendIndex.y].BoneMat * In.vBlendWeight.y +
+        g_BoneMatrices[SkinningOffset + In.vBlendIndex.z].BoneMat * In.vBlendWeight.z +
+        g_BoneMatrices[SkinningOffset + In.vBlendIndex.w].BoneMat * fWeightW;
+    
+    vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
+    vector vNormal = mul(float4(In.vNormal, 0.f), BoneMatrix);
+    
+    float3 worldPos = mul(vPosition, matWorld[TransformIndex]).xyz;
+    float4 viewPos = mul(float4(worldPos, 1.f), matView);
+    float4 projPos = mul(viewPos, matProjection);
+
+    Out.vPosition = projPos;
+    
+    Out.vTexcoord = In.vTexcoord;
+    Out.vNormal  = mul(vNormal, matWorld[TransformIndex]);
+    Out.vProjPos = Out.vPosition;
+
+    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), BoneMatrix)).xyz;
+   Out.vTangent *= -1;
+    Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
+    return Out;
+}
+
+
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out;
@@ -265,6 +302,14 @@ PS_OUT PS_FORCE(PS_IN In)
 }
 
 
+PS_OUT PS_FISH(PS_IN In)
+{
+    PS_OUT Out;
+    Out.vDiffuse = float4(0.f, 0.f, 0.f, 1.0f);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    return Out;
+}
+
 
 struct VS_OUT_SHADOW
 {
@@ -370,12 +415,23 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_FLOWER();
     }
-    pass ForceSee
+
+    pass Fish
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_FISH();
+    }
+
+    pass ForceSee
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_NOCURVE_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_FORCE();
     }

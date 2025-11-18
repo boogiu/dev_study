@@ -25,6 +25,17 @@ typedef struct tagInsectDataDesc{
 	wstring Comment = {};
 } INSECT_DATA_DESC;
 
+typedef struct tagFishDataDesc {
+	_int FishIndex = {};
+	string FishFileName = {};
+	string modelName = {};
+	string materialName = {};
+	wstring FishName = {};
+	string ItemFile = {};
+	string IconName = {};
+	wstring Comment = {};
+	string sizeTag = {};
+}FISH_DATA_DESC;
 
 typedef struct tagNpcDataDesc {
 	_int NpcIndex = {};

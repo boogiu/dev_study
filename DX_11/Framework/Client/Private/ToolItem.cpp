@@ -8,7 +8,8 @@
 
 #include "Player.h"
 #include "OBB_Collider.h"
-
+#include "ObjectContainer.h"
+#include "FishSub_Tool.h"
 CToolItem::CToolItem()
 {
 }
@@ -28,6 +29,8 @@ HRESULT CToolItem::Initialize_Prototype()
 	Add_Component<CSkeletalModel>();
 	Add_Component<CMaterial>();
 	Add_Component<COBB_Collider>();
+	Add_Component<CObjectContainer>();
+
 	return S_OK;
 }
 
@@ -40,33 +43,45 @@ HRESULT CToolItem::Initialize(INIT_DESC* pArg)
 	Get_Component<COBB_Collider>()->Make_MinMaxCollider({ {-2,-2,-2},{2,2,2} });
 	Get_Component<CSkeletalModel>()->ShadowCast(true);
 	Get_Component<COBB_Collider>()->Set_ColliderActive(false);
+
+
+	CGameObject* pSub =
+		Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_FishSub" })
+		.Position({ 0, 4, 0 })
+		.Build("Sub",&m_SubIndex);
+
+	Get_Component<CObjectContainer>()->Add_Child(pSub, false);
+	pSub->Get_Component<CModel>()->Set_CompActive(false);
 	return S_OK;
 }
 
 void CToolItem::Priority_Update(_float dt)
 {
+	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
 void CToolItem::Update(_float dt)
 {
+	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
 void CToolItem::Late_Update(_float dt)
 {
+	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
 }
 
 void CToolItem::Render_GUI()
 {
 	Get_Component<COBB_Collider>()->Render_GUI();
 	Get_Component<CMaterial>()->Render_GUI();
-	
+	Get_Component<CModel>()->Render_GUI();
 }
 
 void CToolItem::AdjustByItem(itemType type)
 {
-	m_pTransform->Reset_Rotation();
+	//m_pTransform->Reset_Rotation();
 	m_pTransform->Set_Pos({0,0,0});
-	m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(0));
+	//m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(0));
 }
 
 void CToolItem::Set_Item(TOOL_DATA_DESC data)
@@ -88,6 +103,9 @@ void CToolItem::Set_Item(TOOL_DATA_DESC data)
 	case itemType::Net:
 		m_InstanceTag = "Net";
 		break;
+	case itemType::FishingRod:
+		m_InstanceTag = "FishingRod";
+		break;
 	default:
 		break;
 	}
@@ -106,6 +124,13 @@ void CToolItem::Set_Item(TOOL_DATA_DESC data)
 	Get_Component<CModel>()->Link_Model("GamePlay_Level", data.modelName);
 	Get_Component<CMaterial>()->Link_Material("GamePlay_Level", data.materialName);
 	Get_Component<CCollider>()->Make_MinMaxCollider(Get_Component<CModel>()->Get_LocalBoundingBox());
+
+	if (data.TypeTag == itemType::FishingRod) {
+		CGameObject* pSub = Get_Component<CObjectContainer>()->Find_ObjectByID(m_SubIndex);
+		pSub->Get_Component<CModel>()->Set_CompActive(true);
+
+		return;
+	}
 }
 
 void CToolItem::OnCollisionEnter(COLLISION_CONTEXT context)

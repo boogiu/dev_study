@@ -34,6 +34,7 @@ public:
 
 private:
     CGameObject* m_pOwner = { nullptr };
+    _uint m_SubIndex = {};
 
 public:
     static CToolItem* Create();

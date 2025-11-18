@@ -50,7 +50,7 @@ HRESULT CMapLoader::Load_MapData(string filePath, const LAYER_DESC& Desc)
 	ifs.read(reinterpret_cast<char*>(&mapFileHeader), sizeof(MAP_FILE_HEADER));
 	string Systempath = "../../Resources/Data/TileSystemData.dat";
 	CGameInstance::GetInstance()->Excute_TileSystemByData(Systempath);
-	CGameInstance::GetInstance()->Get_TileSystem()->Execute_InstanceModel(G_GlobalLevelKey, "Base_0.model", "Base_0.mat");
+	CGameInstance::GetInstance()->Get_TileSystem()->Execute_InstanceModel(G_GlobalLevelKey, "Base_0.model", "Base_0.mat","Instancing");
 
 	auto pProto = CGameInstance::GetInstance()->Get_PrototypeMgr();
 	auto pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();

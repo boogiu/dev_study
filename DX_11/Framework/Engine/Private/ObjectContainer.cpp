@@ -181,6 +181,7 @@ void CObjectContainer::Dettach_Child(_uint ChildIndex)
 	//여기서 자식 오브젝트들 떼어내는 작업 필요.
 	//떼어냈지만 레이어에는 살아있고, 바로 아래 단계 자식들은 루트 오브젝트가 되어야 함.
 	target->Get_Component<CChild>()->Dettach_Parent();
+	target->Remove_Component<CChild>();
 	Safe_Release(target);
 }
 
