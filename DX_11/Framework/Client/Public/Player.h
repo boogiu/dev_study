@@ -60,6 +60,8 @@ public:
           _bool WorkBenchEncounter = { false };
           _bool isCrafting = { false };
 
+          _bool isFishBitted = { false };
+
           TRANS_ITEM m_nowTrans = {}; //지금 건네 받은;
     };
 
@@ -120,6 +122,7 @@ public:
 public:
     void Open_EventMsg(EventMsgDesc* evtMsg);
     void BroadCast_Talk(OnStartDialogue evt);
+    void BroadCast_Event(const BaseEvent& evt);
 
 public:
     void ActiveCollider_Tool(_bool active, string Event = {});

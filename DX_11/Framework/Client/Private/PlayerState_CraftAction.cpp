@@ -57,6 +57,7 @@ void CPlayerState_CraftAction::OnUpdate(_float dt)
 			Animator->Change_Animation("Generic_Putaway.anim");
 			pItem->Remove_Item();
 			m_pPlayer->Add_ITEM(pItem->Get_ItemData());
+			m_pPlayer->Get_InfoPack().pObjectOnLeftHand = nullptr;
 		}
 		break;
 	case Client::CPlayerState_CraftAction::Putin:
@@ -76,8 +77,6 @@ HRESULT CPlayerState_CraftAction::OnExit()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
-	m_pPlayer->Get_InfoPack().pObjectOnLeftHand = nullptr;
-
 	return S_OK;
 }
 

@@ -2,42 +2,42 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\Engine.dll</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\Engine.dll</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\Shader_Deferred.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\Shader_Deferred.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\Shader_Define.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\Shader_Define.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\Shader_State.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\Shader_State.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\VTX_Debug.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_Debug.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\VTX_Field.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_Field.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\VTX_Mesh.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_Mesh.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\VTX_NorTex.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_NorTex.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\VTX_SkinMesh.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_SkinMesh.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\VTX_TexPos.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_TexPos.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\VTX_Tile.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_Tile.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Engine\Bin\VTX_UI.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Engine\Bin\VTX_UI.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />

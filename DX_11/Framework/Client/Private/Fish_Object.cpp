@@ -11,6 +11,8 @@
 #include "TileSystem.h"
 #include "Helper_Func.h"
 
+#include "FishSub_Tool.h"
+
 CFish_Object::CFish_Object()
 {
 }
@@ -33,7 +35,7 @@ HRESULT CFish_Object::Initialize(INIT_DESC* pArg)
 
 	FishSpawnDesc* pDesc = static_cast<FishSpawnDesc*>(pArg);
 
-	HRESULT hr = Add_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", pDesc->FishDataDesc.sizeTag+".model");
+	HRESULT hr = Add_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", pDesc->FishDataDesc.sizeTag + ".model");
 	hr = Add_Component<CMaterial>()->Link_Material("GamePlay_Level", pDesc->FishDataDesc.sizeTag + ".mat");
 	Add_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", pDesc->FishDataDesc.sizeTag + ".model");
 
@@ -44,22 +46,123 @@ HRESULT CFish_Object::Initialize(INIT_DESC* pArg)
 
 	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Swim.anim", pDesc->FishDataDesc.sizeTag, true);
 	Get_Component<CAnimator3D>()->Change_Animation("Swim.anim");
-	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-3,-5,-3},{3,5,3 } });
+	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-2,-2,-2},{2,5,2,} });
 
-	m_fDetectRange = 30.f;
+
+	auto& Instances = Get_Component<CMaterial>()->Get_Material_Instance();
+	for (auto instance : Instances )
+	{
+		instance->Set_Param("fFishAlpha",{&m_fAlpha, "float", sizeof(float)});
+		//fFishAlpha
+	}
 	return S_OK;
 }
 
 void CFish_Object::Priority_Update(_float dt)
 {
 	m_fElapseTime += dt;
-
 }
 
 void CFish_Object::Update(_float dt)
 {
 	Get_Component<CAnimator3D>()->Update_Animation(dt);
 
+	switch (m_eState)
+	{
+	case Client::CFish_Object::IDLE:
+		Move_IDLE(dt);
+		break;
+	case Client::CFish_Object::FIND_ENTRANCE:
+		Move_FIND(dt);
+		break;
+	case Client::CFish_Object::FIND_BACK:
+		Move_BACK(dt);
+		break;
+	case Client::CFish_Object::HIT:
+		Move_HIT(dt);
+			break;
+	case Client::CFish_Object::BITE:
+		Move_BITE(dt);
+			break;
+	case Client::CFish_Object::CATCHED:
+		Move_CATCHED(dt);
+			break;
+	case Client::CFish_Object::DISAPPEAR:
+		Move_DISAPPEAR(dt);
+		break;
+	case Client::CFish_Object::GETTED:
+		break;
+	default:
+		break;
+	}
+}
+
+void CFish_Object::Late_Update(_float dt)
+{
+}
+
+void CFish_Object::Render_GUI()
+{
+	static _bool m;
+	m = m_eState == HIT;
+	ImGui::Checkbox("Hit", &(m));
+	__super::Render_GUI();
+}
+
+void CFish_Object::Set_TargetBey(CGameObject* pTarget)
+{
+	m_pTarget = dynamic_cast<CFishSub_Tool*>(pTarget);
+	if (!m_pTarget)
+		return;
+
+	m_eState = FIND_ENTRANCE;
+	m_BiteCount = 1;// Helper::Get_Random_Int(3, 4);
+	m_fDetectTime = 0.f;
+}
+
+_bool CFish_Object::Hit()
+{
+	if(m_eState == HIT)
+		m_eState = BITE;
+
+	return m_eState == BITE;
+}
+
+void CFish_Object::Missed()
+{
+	m_eState = DISAPPEAR;
+}
+
+void CFish_Object::Catch()
+{
+	m_eState = CATCHED;
+	HRESULT hr = Add_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", m_FishDesc.modelName);
+	hr = Add_Component<CMaterial>()->Link_Material("GamePlay_Level", m_FishDesc.materialName);
+	Add_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", m_FishDesc.modelName);
+	/*애니메이션 추가 필요*/
+	Get_Component<CAnimator3D>()->Change_Animation("GamePlay_Level", "Get.anim");
+}
+
+void CFish_Object::Get()
+{
+	m_eState = GETTED;
+}
+
+void CFish_Object::OnCollisionEnter(COLLISION_CONTEXT context)
+{
+	
+}
+
+void CFish_Object::OnCollisionStay(COLLISION_CONTEXT context)
+{
+}
+
+void CFish_Object::OnCollisionExit(COLLISION_CONTEXT context)
+{
+}
+
+void CFish_Object::Move_IDLE(_float dt)
+{
 	if (m_fElapseTime > 5.f) {
 		Check_Axis();
 	}
@@ -72,34 +175,141 @@ void CFish_Object::Update(_float dt)
 	if (!inWater) {
 		Check_Axis();
 	}
-	m_pTransform->Translate({ m_vAxis.x * dt*3,0,m_vAxis.y * dt * 3 });
+
+	m_pTransform->Translate({ m_vAxis.x * dt * 3,0,m_vAxis.y * dt * 3 });
 	Check_Rotation(dt);
 }
 
-void CFish_Object::Late_Update(_float dt)
+void CFish_Object::Move_FIND(_float dt)
 {
+	if (!m_pTarget)
+		return;
+
+	_vector TargetPos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
+	_vector MyPos = m_pTransform->Get_Pos();
+
+
+	_vector vDistance = TargetPos - MyPos;
+	XMVectorSetY(vDistance, 0); /*Y이도 지우기*/
+
+	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
+	_vector Move = vDistance * dt * 3;
+	_float4 NextPos = {};
+	XMStoreFloat4(&NextPos, Move + m_pTransform->Get_Pos());
+	_bool inWater = TileSys->Check_TileFlagByPosition(NextPos, static_cast<_uint>(TILE_FLAG::FLAG_RIVER));
+
+	if (inWater)
+		m_pTransform->Translate(Move);
+
+	_vector direction =  XMVector4Normalize(vDistance);
+	m_vAxis = { XMVectorGetX(direction), XMVectorGetZ(direction) };
+
+	Check_Rotation(dt);
+
+	if (XMVectorGetX(XMVector3Length(vDistance)) < 1.f) {
+		m_eState = FIND_BACK;
+		m_NowBiteCount++;
+
+		if (m_NowBiteCount > m_BiteCount) {
+			m_eState = HIT;
+			m_fDetectTime = 0.f;
+		}
+	}
 }
 
-void CFish_Object::Render_GUI()
+
+void CFish_Object::Move_BACK(_float dt)
 {
-	__super::Render_GUI();
+	if (!m_pTarget)
+		return;
+
+	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
+	_vector inverseDir = _vector{ m_vAxis.x,0,m_vAxis.y,1 } *-1;
+	_vector Move = inverseDir * dt * 3;
+	_float4 NextPos = {};
+	XMStoreFloat4(&NextPos, Move + m_pTransform->Get_Pos());
+	_bool inWater = TileSys->Check_TileFlagByPosition(NextPos, static_cast<_uint>(TILE_FLAG::FLAG_RIVER));
+
+	if(inWater)
+		m_pTransform->Translate(Move);
+
+	_vector TargetPos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
+	_vector MyPos = m_pTransform->Get_Pos();
+
+	_vector vDistance = TargetPos - MyPos;
+	XMVectorSetY(vDistance, 0); /*Y이도 지우기*/
+
+	if (XMVectorGetX(XMVector3Length(vDistance)) > 8.f || !inWater) {
+		m_eState = FIND_ENTRANCE;
+	}
 }
 
-void CFish_Object::OnCollisionEnter(COLLISION_CONTEXT context)
+void CFish_Object::Move_HIT(_float dt)
 {
+	m_fDetectTime += dt;
+	if (m_fDetectTime > 1.5f) {
+		m_eState = DISAPPEAR;
+	}
 }
 
-void CFish_Object::OnCollisionStay(COLLISION_CONTEXT context)
+void CFish_Object::Move_BITE(_float dt)
 {
+	m_fDetectTime += dt*10;
+	m_fBiteTime += dt;
+	_float4 pos = m_pTarget->Get_Position();
+
+	_vector targetPos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
+	_vector myPos = m_pTransform->Get_Pos();
+	_vector dir = targetPos - myPos;
+
+	m_vAxis.x = XMVectorGetX(dir);
+	m_vAxis.y = XMVectorGetZ(dir);
+
+	_float4 CirclePos = {
+		pos.x+cosf(m_fDetectTime) * 2.f,
+		0.f,
+		pos.z+sinf(m_fDetectTime) * 2.f,
+		1.f
+	};
+
+	Check_Rotation(dt);
+	m_pTransform->Set_Pos(CirclePos);
 }
 
-void CFish_Object::OnCollisionExit(COLLISION_CONTEXT context)
+void CFish_Object::Move_CATCHED(_float dt)
 {
+	_vector targetPos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
+	_vector myPos = m_pTransform->Get_Pos();
+
+	_vector pos = XMVectorLerp(myPos, targetPos, dt*5);
+	m_pTransform->Set_PosVector(pos);
+	m_pTransform->LookAt(pos);
+}
+
+
+void CFish_Object::Move_DISAPPEAR(_float dt)
+{
+	_vector targetPos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
+	_vector myPos = m_pTransform->Get_Pos();
+	_vector dir = (targetPos - myPos)*-1.f;
+	_vector direction = XMVector4Normalize(dir);
+
+	m_vAxis.x = XMVectorGetX(direction);
+	m_vAxis.y = XMVectorGetZ(direction);
+
+	Check_Rotation(dt);
+
+	m_pTransform->Translate(direction*dt*3);
+	m_fAlpha -= dt*0.5f;
+
+	if (m_fAlpha < 0.1f) {
+		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
+		m_pTarget->Missed();
+	}
 }
 
 void CFish_Object::Check_Axis()
 {
-	
 	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
 
 	_int TryCount = {};
@@ -116,10 +326,10 @@ void CFish_Object::Check_Axis()
 		XMStoreFloat2(&NewAxis, XMVector2Normalize(XMLoadFloat2(&NewAxis)));
 
 		_float4 nowPos = Get_Position();
-		_float4 nextPos = { nowPos.x + NewAxis.x ,nowPos.y,nowPos.z+ NewAxis.y,1.f };
+		_float4 nextPos = { nowPos.x + NewAxis.x ,nowPos.y,nowPos.z + NewAxis.y,1.f };
 
 
-		_bool inWater = TileSys->Check_TileFlagByPosition(nextPos,static_cast<_uint>(TILE_FLAG::FLAG_RIVER));
+		_bool inWater = TileSys->Check_TileFlagByPosition(nextPos, static_cast<_uint>(TILE_FLAG::FLAG_RIVER));
 
 		if (inWater) {
 			m_vAxis = NewAxis;
@@ -134,7 +344,7 @@ void CFish_Object::Check_Axis()
 
 void CFish_Object::Check_Rotation(_float dt)
 {
-	m_fDestRadian= atan2(m_vAxis.x, m_vAxis.y);
+	m_fDestRadian = atan2(m_vAxis.x, m_vAxis.y);
 	_float DeltaRadian = m_fDestRadian - m_fCurrentRadian;
 
 	while (DeltaRadian > XM_PI)  DeltaRadian -= XM_2PI;
@@ -142,7 +352,7 @@ void CFish_Object::Check_Rotation(_float dt)
 
 	_float RotSpeed = dt * 5.f;
 
-	if (fabs(DeltaRadian) > .3f) 
+	if (fabs(DeltaRadian) > .3f)
 		m_fCurrentRadian += (DeltaRadian > 0 ? RotSpeed : -RotSpeed);
 	else
 		m_fCurrentRadian = m_fDestRadian;
@@ -161,7 +371,7 @@ CFish_Object* CFish_Object::Create()
 	return instance;
 }
 
-CGameObject* CFish_Object::Clone(INIT_DESC * pArg)
+CGameObject* CFish_Object::Clone(INIT_DESC* pArg)
 {
 	CFish_Object* instance = new CFish_Object(*this);
 

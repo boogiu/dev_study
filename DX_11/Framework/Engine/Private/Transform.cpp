@@ -115,6 +115,15 @@ void CTransform::Set_Pos(const _float4& position)
 	}
 }
 
+void CTransform::Set_PosVector(_fvector position)
+{
+	if (XMVector3NotEqual(XMLoadFloat4(&m_vPosition), position))
+	{
+		XMStoreFloat4(&m_vPosition, XMVectorSetW(position,1.f));
+		MarkDirty();
+	}
+}
+
 void CTransform::Set_vectorPos(_fvector position)
 {
 	if (XMVector3NotEqual(XMLoadFloat4(&m_vPosition), position))

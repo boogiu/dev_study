@@ -33,6 +33,7 @@ private:
 public:
     void Set_Item(TOOL_DATA_DESC data);
     void Change_Tool_Animation(const string& animName);
+
 private:
     _uint m_SubIndex = {};
     CGameObject* m_pOwner = { nullptr };

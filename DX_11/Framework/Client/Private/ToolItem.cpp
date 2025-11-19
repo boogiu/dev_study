@@ -57,6 +57,7 @@ HRESULT CToolItem::Initialize(INIT_DESC* pArg)
 	pSub->Get_Component<CModel>()->Set_CompActive(false);
 
 	m_pSubTool = dynamic_cast<CFishSub_Tool*>(pSub);
+	m_pSubTool->Set_Owner(this);
 	return S_OK;
 }
 
@@ -161,10 +162,12 @@ void CToolItem::Set_Item(TOOL_DATA_DESC data)
 		Get_Component<CAnimator3D>()->Change_Animation("ToolPoleAnim_APose.anim");
 
 		m_pSubTool->Get_Component<CModel>()->Set_CompActive(true);
-		m_pSubTool->Sync_Bont_To_Rod(Get_Component<CAnimator3D>(), "Armature_Sub");
+		m_pSubTool->Sync_Bont_To_Rod(Get_Component<CAnimator3D>()->Get_BoneMatrixPtr("Armature_Sub"));
 	}
 	else {
 		Get_Component<CAnimator3D>()->Set_CompActive(false);
+		m_pSubTool->Get_Component<CModel>()->Set_CompActive(false);
+		m_pSubTool->Sync_Bont_To_Rod(nullptr);
 	}
 }
 

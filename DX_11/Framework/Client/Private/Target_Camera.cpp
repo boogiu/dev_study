@@ -175,7 +175,6 @@ void CTarget_Camera::Zoom_Out(_float dt)
 
 	_float3 LookPos;
 	XMStoreFloat3(&LookPos, target_Pos);
-
 	// LookY를 0으로 천천히 복귀
 	if (XMVectorGetX(XMVector3Length(Origin_Pos - MoveDir)) < 0.1f)
 	{

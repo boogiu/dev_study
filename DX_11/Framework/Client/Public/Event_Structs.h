@@ -18,6 +18,9 @@ enum class EVENT_TYPE {
 	Quest_Msg,
 	Quest_Msg_Responese,
 	Player_Pos,
+	FishBeyThrow,
+	FishBeyReceive,
+	FishBeyResult,
 };
 
 struct BaseEvent {
@@ -123,3 +126,19 @@ typedef struct tagQuestEventResponse : public BaseEvent {
 	_bool EvtConsumed = { false };
 }QUEST_RESPONSE;
 
+
+typedef struct tagFishBeyThrowEvent : public BaseEvent {
+	_vector vDirection = {};
+	_bool bActiveAction = {};
+}POLE_THROW_EVENT;
+
+
+typedef struct tagFishBeyRecieveEvent : public BaseEvent {
+	_float4* pDestPos = { nullptr };
+}POLE_BEY_RECIEVE;
+
+typedef struct tagFishBeyBiteEvent : public BaseEvent {
+	enum state {NONE, BITE, MISSED, CATCHED};
+	state evtState = {};
+	CGameObject* pCapturedFish = { nullptr };
+}POLE_BITE_RESULT;

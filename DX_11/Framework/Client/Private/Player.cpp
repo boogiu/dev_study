@@ -173,7 +173,9 @@ void CPlayer::Update_Input(_float dt)
 		return;
 
 	_uint StateActionMask = m_pStateMachine->Get_CurrentMask(STATE_LAYER::ACTION);
-	auto AllowAction = [&](InputMask type) {return (StateActionMask & (1 << static_cast<_uint>(type))) != 0; };
+	auto AllowAction = [&](InputMask type) {
+		return (StateActionMask & static_cast<_uint>(type)) != 0;
+		};
 
 	if (pInpuDev->Key_Down(VK_SHIFT))
 		control.MsgAdd = true; /*대쉬*/
@@ -498,6 +500,14 @@ void CPlayer::BroadCast_Talk(OnStartDialogue evt)
 	evtSys->OnBroadCast<BaseEvent>(evt);
 }
 
+void CPlayer::BroadCast_Event(const BaseEvent& evt)
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	auto evtSys = nowLevel->Get_LevelObject<CEventSystem>();
+
+	evtSys->OnBroadCast<BaseEvent>(evt);
+}
+
 _bool CPlayer::Can_Walk(_float2& moveAxis)
 {
 	//대각선 블럭 대응 못하는 중
@@ -659,7 +669,7 @@ void CPlayer::Add_AnimationClips()
 	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Get.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Get_Big.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_GetKeep_Big.anim", "Player", true);
-	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Hit.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Hit.anim", "Player", true);
 	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Putback.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Swing.anim", "Player", false);
 
@@ -795,7 +805,7 @@ void CPlayer::Set_TargetCamera()
 
 	CTarget_Camera::TARGET_CAM_DESC* psCamDesc = new CTarget_Camera::TARGET_CAM_DESC;
 	psCamDesc->pTarget = this;
-	psCamDesc->vOffset = { 0,150,150,0 };
+	psCamDesc->vOffset = { 0,100,150,0 };
 
 	/*햇빛으로 사용해야하는데 나중에 고치자.*/
 	CGameObject* psunCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_TargetCamera" })
@@ -857,6 +867,13 @@ void CPlayer::OnEventAction(const BaseEvent& event)
 		if (evt.pObject) {
 			m_InfoPack.m_nowTrans = evt;
 			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TransGet_State");
+		}
+	}
+
+	if (event.eType == EVENT_TYPE::FishBeyResult) {
+		const auto& evt = static_cast<const POLE_BITE_RESULT&>(event);
+		if (evt.evtState == POLE_BITE_RESULT::BITE) {
+			m_InfoPack.isFishBitted = true;
 		}
 	}
 }

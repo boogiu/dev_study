@@ -58,9 +58,14 @@ void CFishSpawner::Priority_Update(_float dt)
 
 void CFishSpawner::Update(_float dt)
 {
-	if (m_fElapsedTime >15.f) {
+	static bool span = { false };
+	if (!span) {
 		Spawn_Fish();
+		span = true;
 	}
+//	if (m_fElapsedTime >5.f) {
+//		Spawn_Fish();
+//	}
 }
 
 void CFishSpawner::Late_Update(_float dt)
@@ -120,8 +125,12 @@ HRESULT CFishSpawner::Read_FishData(string filePath)
 			string modelPath = item.value("model", "") + "/" + item.value("Name", "");
 			string materialPath = item.value("mat", "") + "/" + item.value("Name", "");
 
+			pRcsMgr->Add_ResourcePath(data.modelName, modelPath + ".model");		// model
+			pRcsMgr->Add_ResourcePath(data.materialName, materialPath + ".mat"); // material
+
 			pRcsMgr->Add_ResourcePath("Swim.anim_" + data.FishFileName, modelPath + "/Animation/Get.anim");
 			pRcsMgr->Add_ResourcePath("Swim.anim_" + data.FishFileName, modelPath + "/Animation/Swim.anim");
+
 			m_FishDataTable[data.FishFileName] = data;
 			_uint index = m_NameTable.size();
 			m_NameTable[index] = data.FishFileName;
@@ -179,7 +188,7 @@ _float3 CFishSpawner::CheckRandPositon()
 	_int Index = Helper::Get_Random_Int(0, Max);
 	_float4 pos = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(m_RiverTile[Index],ANCHOR::Center);
 
-	return { pos.x,pos.y-5.f,pos.z };
+	return { pos.x,pos.y,pos.z };
 }
 
 CGameObject* CFishSpawner::Clone(INIT_DESC* pArg)

@@ -1,6 +1,7 @@
 #include "Shader_Define.hlsl"
 float2 leafPalette = { 0.25,0.3};
 float4x4 fWind_Matrix ;
+float fFishAlpha ;
 
 struct VS_IN
 {
@@ -305,7 +306,7 @@ PS_OUT PS_FORCE(PS_IN In)
 PS_OUT PS_FISH(PS_IN In)
 {
     PS_OUT Out;
-    Out.vDiffuse = float4(0.f, 0.f, 0.f, 1.0f);
+    Out.vDiffuse = float4(0.f, 0.f, 0.f, fFishAlpha);
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     return Out;
 }
@@ -420,7 +421,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_FISH();

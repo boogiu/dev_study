@@ -1,6 +1,9 @@
 #include "Client_Defines.h"
 #include "PlayerState_PoleAction.h"
 #include "Animator3D.h"
+#include "GameInstance.h"
+#include "Level.h"
+#include "EventSystem.h"
 
 CPlayerState_PoleAction::CPlayerState_PoleAction()
 {
@@ -33,29 +36,66 @@ void CPlayerState_PoleAction::OnUpdate(_float dt)
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 
+	m_LeftHand = m_pPlayer->Get_InfoPack().pLeftHand->Get_Position();
+	if (m_eState== PULLBACK && m_pPlayer->Get_InfoPack().isFishBitted) {
+		m_eState = HIT;
+	}
+
 	switch (m_eState)
 	{
 	case Client::CPlayerState_PoleAction::BEGIN:
-		if (Animator->isOverAnimTiming(0.6f)) {
+		if (Animator->isOverAnimTiming(0.4f)) {
+			m_pPlayer->BroadCast_Event(POLE_THROW_EVENT{ EVENT_TYPE::FishBeyThrow, m_pPlayer->Get_Component<CTransform>()->Dir(STATE::LOOK),false });
 			m_eState = THROW;
 		}
 		break;
+
 	case Client::CPlayerState_PoleAction::AIR:
 		if (Animator->isCurrentAnimEnd()) {
 			m_eState = END;
 		}
 		break;
+
 	case Client::CPlayerState_PoleAction::THROW:
 		if (Animator->isCurrentAnimEnd()) {
 			Animator->Change_Animation("ToolPole_Aim.anim");
 			m_pPlayer->Change_Tool_Anim("ToolPoleAnim_Aim.anim");
+			m_eState = AIM;
 		}
 		break;	
+
 	case Client::CPlayerState_PoleAction::AIM:
+		if (m_pPlayer->Get_ControlPack().MsgAction) {
+			Animator->Change_Animation("ToolPole_Putback.anim");
+			m_pPlayer->Change_Tool_Anim("ToolPoleAnim_Putback.anim");
+
+			m_pPlayer->BroadCast_Event(
+				POLE_THROW_EVENT{ EVENT_TYPE::FishBeyThrow, {},true });
+				m_eState = PULLBACK;
+		}
 		break;
+
 	case Client::CPlayerState_PoleAction::HIT:
+		Animator->Change_Animation("ToolPole_Hit.anim");
+		Animator->Change_Animation("ToolPoleAnim_Hit.anim");
+		m_HitTime += dt;
+
+		if (m_HitTime > 2.5f) {
+			m_eState = CATCH;
+			m_pPlayer->BroadCast_Event(POLE_BEY_RECIEVE{ EVENT_TYPE::FishBeyReceive, &m_LeftHand });
+			Animator->Change_Animation("ToolPole_Catch.anim");
+			Animator->Change_Animation("ToolPoleAnim_Catch.anim"); 
+		}
 		break;
+
 	case Client::CPlayerState_PoleAction::PULLBACK:
+	
+		if (Animator->isCurrentAnimEnd()) {
+			m_eState = END;
+		}
+		break;
+
+	case Client::CPlayerState_PoleAction::CATCH:
 		break;
 	case Client::CPlayerState_PoleAction::GET:
 		break;
@@ -90,7 +130,7 @@ void CPlayerState_PoleAction::Render_State()
 
 _uint CPlayerState_PoleAction::Get_InputMask() const
 {
-	return _uint();
+	return static_cast<_uint>(InputMask::ACTION);
 }
 
 CPlayerState_PoleAction* CPlayerState_PoleAction::Create()

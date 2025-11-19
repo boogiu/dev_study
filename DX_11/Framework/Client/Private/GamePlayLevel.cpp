@@ -141,7 +141,7 @@ HRESULT CGamePlayLevel::Awake()
 	/*레이어에 넣었으니, 애드레프 +1*/CUI_Responcer* pUI_Responcer = Get_LevelObject<CUI_Responcer>();
 	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pUI_Responcer);
 
-	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
+	CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(pSunCamera->Get_Component<CCamera>());
 
 	return S_OK;
