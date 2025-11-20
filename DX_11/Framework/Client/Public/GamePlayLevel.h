@@ -30,6 +30,9 @@ private:
 	IProtoService* m_pProtoManager = { nullptr };
 	IObjectService* m_pObjectManager = { nullptr };
 
+	CGameObject* m_pSky = { nullptr };
+	CGameObject* m_pPlayer = { nullptr };
+
 public:
 	static CGamePlayLevel* Create(const string& LevelKey);
 	virtual void Free() override;

@@ -149,6 +149,15 @@ void CFishSub_Tool::Get_Event(const BaseEvent& event)
 		m_eState = ReAttached;
 		m_vLeftHand = evt.pDestPos;
 		m_pTarget->Catch();
+
+		/*여기서 속도 값 구해서-> 더해줌.(1초 동안 움직일 거리)*/
+		/*Y값을 원래 올라가야하는 값보다 2배로 더해서. 2배로 더 빠르게 내리면 된다.*/
+		/*그런데 중요한건 손은 실시간으로 위치가 변하기 때문에 x와 z는 그대로 따라서 움직이고. 
+		Y는 가상의 점을 두고 그 점을 목표로 가다가. 시간의 절반이 되면 원래 목표로 돌아가는 형태로 움직인다?
+		그러면 꺾이는 형태가 될 것 같은데.
+		
+		그래서 내가 위치 벡터 포인터를 받아서 함수 내에서 계산을 해줄 것임.*/
+
 	}
 	}
 }
@@ -227,9 +236,33 @@ void CFishSub_Tool::FlowBey(_float dt)
 
 void CFishSub_Tool::ReturnToBone(_float dt)
 {
-	_vector dst = XMLoadFloat4(m_vLeftHand) - m_pTransform->Get_Pos();;
+	_vector myPos = m_pTransform->Get_Pos();
+	_vector dstPos = XMLoadFloat4(m_vLeftHand);
 
-	m_pTransform->Translate(dst * dt);
+	_vector dir = dstPos - myPos;
+	_float dist = XMVectorGetX(XMVector3Length(dir));
+
+	_float maxSpeed = 6.0f;      
+	_float speed = max(dist * 2.f, 1.f);
+	speed = min(speed, maxSpeed);
+
+	_float t = clamp(1.f - (dist / 4.f), 0.f, 1.f);
+
+	_float curveHeight = 0.8f * (t * (2.f - t));  // 0~1 → 0~1
+	dstPos = XMVectorSetY(dstPos, XMVectorGetY(dstPos) + curveHeight);
+
+	_vector newPos = XMVectorLerp(myPos, dstPos, dt * speed);
+	m_pTransform->Set_PosVector(newPos);
+
+	if (dist < 1.5f) {
+		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+		if (nowLevel) {
+			auto eventSys = nowLevel->Get_LevelObject<CEventSystem>();
+			eventSys->OnBroadCast<BaseEvent>(POLE_BITE_RESULT{EVENT_TYPE::FishBeyResult,POLE_BITE_RESULT ::CATCHED,m_pTarget});
+			m_pTarget = nullptr;
+			m_eState = Attach;
+		}
+	}
 }
 
 void CFishSub_Tool::Missed()

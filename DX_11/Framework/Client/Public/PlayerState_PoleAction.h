@@ -5,7 +5,7 @@ NS_BEGIN(Client)
 class CPlayerState_PoleAction :
     public CPlayerState
 {
-    enum state {BEGIN,AIR,THROW,AIM, CHECK, HIT, PULLBACK, CATCH, GET ,END};
+    enum state {BEGIN,AIR,THROW,AIM, CHECK, HIT, PULLBACK, CATCH, GET , GETKEEP,PUTIN, END};
 private:
     CPlayerState_PoleAction();
     virtual ~CPlayerState_PoleAction() DEFAULT;
@@ -25,7 +25,7 @@ private:
     class CEventSystem* m_pEvtSys = { nullptr };
     _float m_HitTime = {};
     _float4 m_LeftHand = {};
-
+    _bool isCatch = { false };
  public:
     static CPlayerState_PoleAction* Create();
     virtual void Free();

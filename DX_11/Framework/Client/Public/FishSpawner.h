@@ -23,6 +23,9 @@ public:
     HRESULT Link_ItemSpawner(class CItemSpawner* pItemSpawner);
     _float3 CheckRandPositon();
 
+public:
+    FISH_DATA_DESC Get_Data(const string& insectName);
+    ITEM_DATA_DESC Get_ItemData(const string& insectName);
 private:
     void Spawn_Fish();
 

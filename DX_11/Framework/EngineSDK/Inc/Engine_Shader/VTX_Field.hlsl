@@ -1,7 +1,8 @@
 #include "Shader_Define.hlsl"
 
-float3 ShallowColor = float3(0.05, 0.25, 0.45); // ¹à°í ¿Á»ö
-float3 DeepColor    = float3(0.08, 0.30, 0.55); // Â£Àº ÆÄ¶û
+float3 ShallowColor = float3(0.38, 0.60, 0.85); // ¹à°í ¿Á»ö ¡æ ¾èÀº ¹Ù´Ù
+float3 DeepColor = float3(0.35, 0.55, 0.75); // ´õ ¾îµÎ¿î ÆÄ¶û ¡æ ±íÀº ¹Ù´Ù
+
 float fWaveTime;
 float fFade;
 
@@ -31,7 +32,7 @@ VS_OUT VS_MAIN(VS_IN In)
     
     float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
     float3 toObj = worldPos - vCamPosition.xyz;
-     float dist = dot(toObj, CameraForward);
+    float dist = dot(toObj, CameraForward);
     float curve = (dist * dist) / PlanetRadius * CurveStrength;
     worldPos.y -= curve;
     
@@ -117,7 +118,7 @@ PS_OUT PS_MAIN(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
- return Out;
+    return Out;
 }
 
 PS_OUT PS_BASE(PS_IN In)
@@ -172,7 +173,7 @@ PS_OUT PS_EDGE(PS_IN In)
     if (Grd.a < 0.2f)
         discard;
     Out.vDiffuse = Grd;
-    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = NormalTexture.Sample(LinearSampler, In.vTexcoord);
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
     
     float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
@@ -181,7 +182,7 @@ PS_OUT PS_EDGE(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
-   return Out;
+    return Out;
 }
 
 PS_OUT PS_RIVER(PS_IN In)
@@ -192,9 +193,9 @@ PS_OUT PS_RIVER(PS_IN In)
     vector Mix = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
 
     Out.vDiffuse = Mix.a * diffuse;
-    Out.vDiffuse += float4((1 - Mix.a) * ShallowColor, 1)  ;
+    Out.vDiffuse += float4((1 - Mix.a) * ShallowColor, 1);
     
-    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = NormalTexture.Sample(LinearSampler, In.vTexcoord);
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
     float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
  
@@ -212,27 +213,79 @@ PS_OUT PS_WAVE(PS_IN In)
     PS_OUT Out;
 
     vector vIdxMap = IndexMap.Sample(LinearSampler, In.vTexcoord);
-    float3 waterColor = vIdxMap.b*DeepColor + (1 - vIdxMap.b) * ShallowColor;
-    //lerp(DeepColor, ShallowColor, vIdxMap.b);
+    float4 waterColor = float4(vIdxMap.b * DeepColor + (1 - vIdxMap.b) * ShallowColor, 1.f);
     
     float u = frac(In.vTexcoord.x); // X ·¡ÇÎ
     float v = clamp(In.vTexcoord.y + fWaveTime, 0, 1); // Y Å¬·¥ÇÁ
-    vector vAlbGry = AlbedoGrayTexture.Sample(PointClampSampler, float2(u, v));
-    vector vAlbOry = AlbedoOryTexture.Sample(PointClampSampler, float2(In.vTexcoord.x, In.vTexcoord.y - fWaveTime * 0.6));
+    vector vAlbGry = AlbedoGrayTexture.Sample(PointClampSampler, float2(u, In.vTexcoord.y + fWaveTime*2));
+    vector vAlbOry = AlbedoOryTexture.Sample(PointClampSampler, float2(In.vTexcoord.x,  fWaveTime));
 
-    waterColor += vAlbGry.rgb;
-    waterColor += vAlbOry.rgb;
-   
-    Out.vDiffuse = float4(waterColor, fFade*0.4f);
+    waterColor += vAlbGry;
     
-    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    if (vAlbGry.a < 0.2f)
+        discard;
+    
+    waterColor.a = fWaveTime;
+    Out.vDiffuse = waterColor;
+    
+    vector vNormalDesc = NormalTexture.Sample(LinearSampler, float2( In.vTexcoord.x + fWaveTime,v));
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
     
     float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
     Out.vNormal = float4(vNormal * 0.5f + 0.5f, 1.0f);
-    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w,  In.vProjPos.w / zFar, 0, 1);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0, 1);
+    return Out;
+}
 
+PS_OUT PS_SEA_WAVE(PS_IN In)
+{
+    PS_OUT Out;
+    vector vNormalDesc = NormalTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y + fWaveTime));
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vNormal = float4(vNormal * 0.5f + 0.5f, 1.0f);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0, 1);
+    return Out;
+}
+
+PS_OUT PS_BEACH(PS_IN In)
+{
+    PS_OUT Out;
+    vector Index = IndexMap.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
+    vector Diffuse = DiffuseTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
+    vector AlbGry = AlbedoGrayTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
+    
+    vector color = Diffuse;
+    Out.vDiffuse = color;
+    vector vNormalDesc = NormalTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    Out.vNormal = float4(vNormal * 0.5f + 0.5f, 1.0f);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0, 1);
+    return Out;
+}
+
+
+PS_OUT PS_SAND(PS_IN In)
+{
+    PS_OUT Out;
+    vector Diffuse = DiffuseTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
+    vector AlbOry = AlbedoOryTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
+    
+    Out.vDiffuse = Diffuse + AlbOry * 0.4f;
+    vector vNormalDesc = NormalTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    Out.vNormal = float4(vNormal * 0.5f + 0.5f, 1.0f);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0, 1);
     return Out;
 }
 
@@ -241,13 +294,14 @@ struct VS_OUT_SHADOW
     float4 vPosition : SV_POSITION;
     float4 vProjPos : TEXCOORD0;
 };
+
 VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
     
     float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
     float3 toObj = worldPos - vCamPosition.xyz;
-      float dist = dot(toObj, CameraForward);
+    float dist = dot(toObj, CameraForward);
     float curve = (dist * dist) / PlanetRadius * CurveStrength;
     worldPos.y -= curve;
     
@@ -332,10 +386,37 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_WAVE();
+    }
+    pass SeaWave
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SEA_WAVE();
+    }
+    pass Beach
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BEACH();
+    }
+    pass Sand
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SAND();
     }
     pass Shadow
     {

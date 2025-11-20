@@ -397,6 +397,12 @@
     <Filter Include="02. GameObjects\04. Tools\FishSub">
       <UniqueIdentifier>{60e19cd8-7bd2-4dfe-8ba9-eb8beda31a8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\13. Env">
+      <UniqueIdentifier>{d02d4b7f-50eb-4776-b97f-c6eb3fb4abc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\13. Env\SkyBox">
+      <UniqueIdentifier>{656525ce-c2e5-4a06-b7ec-7cfe2bbe034a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -777,6 +783,9 @@
     <ClInclude Include="..\Public\FishSub_Tool.h">
       <Filter>02. GameObjects\04. Tools\FishSub</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SkyBox.h">
+      <Filter>02. GameObjects\13. Env\SkyBox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1138,6 +1147,9 @@
     <ClCompile Include="..\Private\FishSub_Tool.cpp">
       <Filter>02. GameObjects\04. Tools\FishSub</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\SkyBox.cpp">
+      <Filter>02. GameObjects\13. Env\SkyBox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
@@ -1148,10 +1160,10 @@
     <FxCompile Include="..\Bin\ShaderFiles\PlayerShader.hlsl">
       <Filter>97. Client_Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\FieldOutShader.hlsl">
+    <FxCompile Include="..\Bin\ShaderFiles\UI_PartsShader.hlsl">
       <Filter>97. Client_Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\UI_PartsShader.hlsl">
+    <FxCompile Include="..\Bin\ShaderFiles\Sky_Shader.hlsl">
       <Filter>97. Client_Shader</Filter>
     </FxCompile>
   </ItemGroup>

@@ -17,6 +17,7 @@ public:
 	virtual void Submit_Shadow(const OPAQUE_PACKET& packet) override { m_pShadowPass->Submit(packet); };
 	virtual void Submit_Shadow(const INSTANCE_PACKET& packet) override { m_pShadowPass->SubmitInstance(packet); };
 	virtual void Submit_Instance(const INSTANCE_PACKET& packet) override { m_pInstancePass->Submit(packet); };
+	virtual void Submit_Priority(const OPAQUE_PACKET& packet) override { m_pPriorityPass->Submit(packet); };
 	virtual void Submit_UI(const UI_PACKET& packet) override {m_pUIPass->Submit(packet);};
 	virtual void Submit_Debug(const DEBUG_PACKET& packet) override { m_pDebugPass->Submit(packet); };
 	virtual HRESULT Add_Palette(const string& ConstantName, class CTexture* pTexture) override;
@@ -64,6 +65,7 @@ private:
 	_float4x4				m_WorldMatrix;
 
 	/*Pass*/
+	PriorityPass* m_pPriorityPass = { nullptr};
 	OpaquePass* m_pOpaquePass = { nullptr};
 	ShadowPass* m_pShadowPass = { nullptr};
 	InstancePass* m_pInstancePass = { nullptr};

@@ -128,8 +128,9 @@ HRESULT CFishSpawner::Read_FishData(string filePath)
 			pRcsMgr->Add_ResourcePath(data.modelName, modelPath + ".model");		// model
 			pRcsMgr->Add_ResourcePath(data.materialName, materialPath + ".mat"); // material
 
-			pRcsMgr->Add_ResourcePath("Swim.anim_" + data.FishFileName, modelPath + "/Animation/Get.anim");
-			pRcsMgr->Add_ResourcePath("Swim.anim_" + data.FishFileName, modelPath + "/Animation/Swim.anim");
+			string directory = filesystem::path(modelPath).parent_path().string();
+			pRcsMgr->Add_ResourcePath("Get.anim_" + data.FishFileName, directory + "/Animation/Get.anim");
+			pRcsMgr->Add_ResourcePath("Swim.anim_" + data.FishFileName, directory + "/Animation/Swim.anim");
 
 			m_FishDataTable[data.FishFileName] = data;
 			_uint index = m_NameTable.size();
@@ -159,6 +160,9 @@ void CFishSpawner::Notice_River(TILE_INDEX index)
 
 void CFishSpawner::Spawn_Fish()
 {
+	if (m_RiverTile.empty())
+		return;
+
 	_uint RandIndex = Helper::Get_Random_Int(0, m_NameTable.size() - 1);
 	string FishName = m_NameTable[RandIndex];
 	auto iter = m_FishDataTable.find(FishName);
@@ -171,6 +175,9 @@ void CFishSpawner::Spawn_Fish()
 
 	ObjDesc->FishDataDesc = iter->second;
 	ObjDesc->itemDataDesc = m_pItemSpawner->Get_ItemData(ObjDesc->FishDataDesc.ItemFile);
+	ObjDesc->itemDataDesc.IconName = iter->second.IconName;
+	ObjDesc->itemDataDesc.ItemName = iter->second.FishName;
+	ObjDesc->itemDataDesc.Additionaldata = iter->second.FishFileName;
 
 	CGameObject* pInsect =
 		Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Fish" })
@@ -184,11 +191,39 @@ void CFishSpawner::Spawn_Fish()
 
 _float3 CFishSpawner::CheckRandPositon()
 {
+
 	_int Max = m_RiverTile.size() - 1;
 	_int Index = Helper::Get_Random_Int(0, Max);
 	_float4 pos = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(m_RiverTile[Index],ANCHOR::Center);
 
 	return { pos.x,pos.y,pos.z };
+}
+
+FISH_DATA_DESC CFishSpawner::Get_Data(const string& insectName)
+{
+	auto iter = m_FishDataTable.find(insectName);
+
+	if (iter == m_FishDataTable.end())
+		return FISH_DATA_DESC();
+
+	return iter->second;
+}
+
+
+ITEM_DATA_DESC CFishSpawner::Get_ItemData(const string& insectName)
+{
+	auto iter = m_FishDataTable.find(insectName);
+
+	if (iter == m_FishDataTable.end())
+		return ITEM_DATA_DESC();
+
+	ITEM_DATA_DESC itemDesc = {  };
+	itemDesc = m_pItemSpawner->Get_ItemData(iter->second.ItemFile);
+	itemDesc.IconName = iter->second.IconName;
+	itemDesc.ItemName = iter->second.FishName;
+	itemDesc.Additionaldata = iter->second.FishFileName;
+
+	return itemDesc;
 }
 
 CGameObject* CFishSpawner::Clone(INIT_DESC* pArg)

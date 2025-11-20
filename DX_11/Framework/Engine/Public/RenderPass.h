@@ -45,6 +45,24 @@ public:
 };
 #pragma endregion
 
+#pragma region PRIORITY_PASS
+class PriorityPass final : public RenderPass {
+private:
+	PriorityPass(class CRenderSystem* pRenderSystem) :RenderPass{ pRenderSystem } {};
+	virtual ~PriorityPass() DEFAULT;
+public:
+	void Execute(ID3D11DeviceContext* pContext) override;
+	void Submit(OPAQUE_PACKET packet);
+
+private:
+	vector<OPAQUE_PACKET> m_Packets;
+	vector<OPAQUE_PACKET> m_VisiblePackets;
+public:
+	static PriorityPass* Create(class CRenderSystem* pRenderSystem) { return new PriorityPass(pRenderSystem); }
+	virtual void Free() override { __super::Free(); m_Packets.clear(); };
+};
+#pragma endregion
+
 #pragma region OPAQUE_PASS
 class OpaquePass final : public RenderPass {
 private:

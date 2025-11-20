@@ -10,7 +10,8 @@
 #include "Level.h"
 #include "InsectSpawner.h"
 #include "Insect_Object.h"
-
+#include "Fish_Object.h"
+#include "FishSpawner.h"
 CPlayerState_Get::CPlayerState_Get()
 {
 }
@@ -33,8 +34,12 @@ HRESULT CPlayerState_Get::OnEnter()
 		Animator->Change_Animation("ToolNet_Get.anim", true);
 		m_ePhase = Phase::Priority;
 		break;
-	default:
+	case itemType::FishingRod:
+		Animator->Change_Animation("ToolPole_Get.anim", true);
+		m_ePhase = Phase::Priority;
 		break;
+		default:
+			break;
 	}
 
 	return S_OK;
@@ -78,8 +83,9 @@ void CPlayerState_Get::OnUpdate(_float dt)
 
 		break;
 	case Client::CPlayerState_Get::PutIn: {
-
-		if (Animator->isCurrentAnimEnd()) {
+		m_pPlayer->Get_InfoPack().pObjectOnLeftHand->Get_Component<CTransform>()->AddScale({ -dt,-dt,-dt });
+		if (Animator->isOverAnimTiming(0.5)) {
+			m_pPlayer->Get_InfoPack().pObjectOnLeftHand->Get_Component<CModel>()->Set_CompActive(false);
 			Add_Inventory(m_pPlayer->Get_InfoPack().pObjectOnLeftHand);
 			m_ePhase = End;
 		}
@@ -137,6 +143,12 @@ EventMsgDesc CPlayerState_Get::Make_Sequence(CGameObject* pObject)
 		wstring CapturedMsg = data.InsectName + L"를 잡았다!";
 		desc.textSequence = { L"응? 이건...", CapturedMsg + L"\n" + data.Comment };
 	}
+	else if (pObject->Has_Tag("Fish")) {
+		auto spawner = m_pPlayer->Get_NowLevel()->Get_LevelObject<CFishSpawner>();
+		FISH_DATA_DESC data = spawner->Get_Data(pObject->Get_InstanceName());
+		wstring CapturedMsg = data.FishName + L"를 잡았다!";
+		desc.textSequence = { L"응? 이건...", CapturedMsg + L"\n" + data.Comment };
+	}
 
 	desc.OnClose = [&]() {
 		auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
@@ -155,6 +167,9 @@ void CPlayerState_Get::Add_Inventory(CGameObject* pObject)
 	}
 	else if (pObject->Has_Tag("Insect")) {
 		m_pPlayer->Add_ITEM(dynamic_cast<CInsect_Object*>(pObject)->Get_ItemData());
+	}
+	else if (pObject->Has_Tag("Fish")) {
+		m_pPlayer->Add_ITEM(dynamic_cast<CFish_Object*>(pObject)->Get_ItemData());
 	}
 
 }

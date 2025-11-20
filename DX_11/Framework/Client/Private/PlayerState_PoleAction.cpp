@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "Level.h"
 #include "EventSystem.h"
+#include "Fish_Object.h"
 
 CPlayerState_PoleAction::CPlayerState_PoleAction()
 {
@@ -39,6 +40,14 @@ void CPlayerState_PoleAction::OnUpdate(_float dt)
 	m_LeftHand = m_pPlayer->Get_InfoPack().pLeftHand->Get_Position();
 	if (m_eState== PULLBACK && m_pPlayer->Get_InfoPack().isFishBitted) {
 		m_eState = HIT;
+		Animator->Change_Animation("ToolPole_Hit.anim");
+		Animator->Change_Animation("ToolPoleAnim_Hit.anim");
+	}
+	if (m_eState == CATCH && m_pPlayer->Get_InfoPack().pObjectOnLeftHand) {
+		m_eState = GET;
+		Animator->Change_Animation("ToolPole_CatchKeep.anim");
+		Animator->Change_Animation("ToolPoleAnim_CatchKee.anim");
+		isCatch = true;
 	}
 
 	switch (m_eState)
@@ -76,8 +85,6 @@ void CPlayerState_PoleAction::OnUpdate(_float dt)
 		break;
 
 	case Client::CPlayerState_PoleAction::HIT:
-		Animator->Change_Animation("ToolPole_Hit.anim");
-		Animator->Change_Animation("ToolPoleAnim_Hit.anim");
 		m_HitTime += dt;
 
 		if (m_HitTime > 2.5f) {
@@ -85,11 +92,11 @@ void CPlayerState_PoleAction::OnUpdate(_float dt)
 			m_pPlayer->BroadCast_Event(POLE_BEY_RECIEVE{ EVENT_TYPE::FishBeyReceive, &m_LeftHand });
 			Animator->Change_Animation("ToolPole_Catch.anim");
 			Animator->Change_Animation("ToolPoleAnim_Catch.anim"); 
+			m_HitTime = 0.f;
 		}
 		break;
 
 	case Client::CPlayerState_PoleAction::PULLBACK:
-	
 		if (Animator->isCurrentAnimEnd()) {
 			m_eState = END;
 		}
@@ -98,6 +105,18 @@ void CPlayerState_PoleAction::OnUpdate(_float dt)
 	case Client::CPlayerState_PoleAction::CATCH:
 		break;
 	case Client::CPlayerState_PoleAction::GET:
+		m_HitTime += dt;
+		 
+		if (m_HitTime > .5f) {
+			m_pPlayer->Change_Tool_Anim("ToolPoleAnim_CompleteKeep.anim");
+			m_eState = END;
+		}
+
+		dynamic_cast<CFish_Object*>(m_pPlayer->Get_InfoPack().pObjectOnLeftHand)->Get();
+		m_pPlayer->Get_InfoPack()
+			.pObjectOnLeftHand->Get_Component<CTransform>()->TranslateMatrix(
+				XMLoadFloat4x4(m_pPlayer->Get_InfoPack().pLeftHand->Get_Component<CTransform>()->Get_WorldMatrix_Ptr())
+			);
 		break;
 	case Client::CPlayerState_PoleAction::END:
 		break;
@@ -110,16 +129,20 @@ HRESULT CPlayerState_PoleAction::OnExit()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
-	m_pPlayer->Change_Tool_Anim("ToolPoleAnim_Apose.anim");
+	m_pPlayer->Change_Tool_Anim("ToolPoleAnim_APose.anim");
 	m_eState = BEGIN;
-
+	m_HitTime = 0.f;
+	isCatch = true;
 	return S_OK;
 }
 
 CState* CPlayerState_PoleAction::HandleTransition()
 {
-	if (m_eState == END) {
+	if (m_eState == END&&!isCatch) {
 		return m_pLayer->Get_State("Movement_Idle_State");
+	}
+	if (m_eState == END && isCatch) {
+		return m_pLayer->Get_State("Action_Get_State");
 	}
 	return nullptr;
 }

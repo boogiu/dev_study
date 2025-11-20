@@ -6,6 +6,8 @@
 #include "EventSystem.h"
 #include "Level.h"
 #include "Helper_Func.h"
+#include "ObjectContainer.h"
+
 CTarget_Camera::CTarget_Camera()
 {
 }
@@ -20,6 +22,7 @@ HRESULT CTarget_Camera::Initialize_Prototype()
 	__super::Initialize_Prototype();
 	Add_Component<CCamera>();
 	Add_Component<CLight>();
+	Add_Component<CObjectContainer>();
 	return S_OK;
 }
 
@@ -31,10 +34,10 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 	m_pTarget = pDesc->pTarget;
 	_float4 TagetPos = m_pTarget->Get_Position();
 
-	m_pTransform->Set_Pos({ TagetPos.x, 30,	TagetPos.z + 50 });
-	m_pTransform->LookAt({ TagetPos.x, 0,	TagetPos.z + 10 });
-	m_vOffset = pDesc->vOffset;
+	m_pTransform->Set_Pos({ TagetPos.x, 50,	TagetPos.z + 50 });
+	m_pTransform->LookAt({ TagetPos.x, 0,	TagetPos.z - 10 });
 
+	m_vOffset = {0,50,50,1.f};
 	m_vZoomInOffset = { 0,15,50,0 };
 	m_fCurrentLookY = 0;
 
@@ -45,9 +48,12 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 	desc.vLightDirection = _float4(-1.f, -1.f, -1.f, 0.f);
 	desc.vLightDiffuse = _float4(.8f, .8f, .8f, 1.f);
 	desc.vLightAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-	desc.vLightSpecular = _float4(0.f, 1.f, 0.f, 1.f);
+	desc.vLightSpecular = _float4(0.6f, 0.6f, 0.6f, 1.f);
 
 	Get_Component<CLight>()->Set_Desc(desc, LIGHT_TYPE::DIRECTIONAL);
+
+
+	//Get_Component<CObjectContainer>()->Add_Child(pObj,true);
 	return S_OK;
 }
 
@@ -84,16 +90,18 @@ void CTarget_Camera::Priority_Update(_float dt)
 	default:
 		break;
 	}
-
+	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
 void CTarget_Camera::Update(_float dt)
 {
 	_float4 targetPos = m_pTarget->Get_Position();
+	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
 void CTarget_Camera::Late_Update(_float dt)
 {
+	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
 }
 
 void CTarget_Camera::Event_Listen(const BaseEvent& event)
@@ -248,8 +256,9 @@ void CTarget_Camera::Follow_Target(_float dt)
 
 	m_pTransform->Set_Pos(DstPos);
 	XMStoreFloat4(&m_vBasePos, target_Pos + Offset);
-	XMStoreFloat4(&m_vBaseLookPos, XMVectorSet(XMVectorGetX(target_Pos), 0.f, XMVectorGetZ(target_Pos) + 10.f, 0.f));
+	XMStoreFloat4(&m_vBaseLookPos, XMVectorSet(XMVectorGetX(target_Pos), 0.f, XMVectorGetZ(target_Pos)+10, 0.f));
 }
+
 void CTarget_Camera::Shake_Cam(_float dt)
 {
 	_float duration = 0.9f;				// 흔들림 지속시간

@@ -62,6 +62,7 @@
 #include "NpcSpawner.h"
 #include "DialogueManager.h"
 
+#include "SkyBox.h"
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 	:CLevel{ LevelKey },
 	m_pGameInstance(CGameInstance::GetInstance())
@@ -93,11 +94,11 @@ HRESULT CGamePlayLevel::Initialize()
 
 HRESULT CGamePlayLevel::Awake()
 {
-	CGameObject* pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 550,0,550 }).Build("Player");
+	m_pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 550,0,550 }).Build("Player");
 	Add_LevelObject<CUI_Responcer>();
 
 	Get_LevelObject<CInsectSpawner>()->Read_InsectData(L"../../Resources/Data/InsectData.json");
-	Get_LevelObject<CInsectSpawner>()->Set_Target(pPlayer);
+	Get_LevelObject<CInsectSpawner>()->Set_Target(m_pPlayer);
 
 	Get_LevelObject<CDialogueManager>()->Set_FreindSystem(
 		Get_LevelObject<CEventSystem>(), 
@@ -127,7 +128,7 @@ HRESULT CGamePlayLevel::Awake()
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"¿ËΩº", { 570,0,550 },"GamePlay_GameObject_NpcNrm");
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"KK", { 590,0,550 },"GamePlay_GameObject_NpcNrm");
 
-	m_pObjectManager->Add_Object(pPlayer, { "GamePlay_Level", "Player_Layer" });
+	m_pObjectManager->Add_Object(m_pPlayer, { "GamePlay_Level", "Player_Layer" });
 	m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 	m_pObjectManager->Add_Object(pSunCamera, { "GamePlay_Level", "Camera_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CInsectSpawner>(), { "GamePlay_Level", "Level_Layer" });
@@ -143,12 +144,15 @@ HRESULT CGamePlayLevel::Awake()
 
 	CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(pSunCamera->Get_Component<CCamera>());
+	m_pSky = Builder::Create_Object({ "GamePlay_Level", "GamePlay_GameObject_SkyBox" }).Scale({ .5f,.5f,.5f }).Build("Sky");
+	m_pObjectManager->Add_Object(m_pSky, { "GamePlay_Level", "Env_Layer" });
 
 	return S_OK;
 }
 
 void CGamePlayLevel::Update()
 {
+	m_pSky->Get_Component<CTransform>()->Set_Pos(m_pPlayer->Get_Position());
 }
 
 HRESULT CGamePlayLevel::Render()
@@ -169,6 +173,7 @@ void CGamePlayLevel::PreLoad_Level()
 	auto pRenderSys = CGameInstance::GetInstance()->Get_RenderSystem();
 	/*PlayerShader*/
 	pRcsMgr->Add_ResourcePath("PlayerShader.hlsl", "../Bin/ShaderFiles/PlayerShader.hlsl");
+	pRcsMgr->Add_ResourcePath("Sky_Shader.hlsl", "../Bin/ShaderFiles/Sky_Shader.hlsl");
 
 	/*Add Palette*/
 	pRcsMgr->Add_ResourcePath("mGrass_Grd.dds", "../../Resources/Palette/mGrass_Grd.dds");
@@ -181,6 +186,7 @@ void CGamePlayLevel::PreLoad_Level()
 	pRenderSys->Add_Palette("g_MaskTexture", pRcsMgr->Load_Texture(G_GlobalLevelKey, "mGrass_Mix.dds"));
 
 	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Palette");
+	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Models/Waves");
 
 	/*Player Model Path*/
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Player");
@@ -211,6 +217,10 @@ void CGamePlayLevel::PreLoad_Level()
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpRcm/Animation", "NpcSpRcm");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpTkk/Animation", "NpcSpTkk");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/NpcNmlCat23/Animation", "NpcNmlCat23");
+
+	/*Env*/
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Env");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Env");
 
 	/*Field  Path*/
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/FieldModel");
@@ -293,6 +303,7 @@ void CGamePlayLevel::PreLoad_Level()
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcTkk", CNpcTkk::Create());
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Fish", CFish_Object::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_SkyBox", CSkyBox::Create());
 }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)

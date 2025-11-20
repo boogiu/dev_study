@@ -75,6 +75,7 @@ HRESULT CRenderSystem::Initialize()
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 1.f));
 
 	/*RenderPass*/
+	m_pPriorityPass = PriorityPass::Create(this);
 	m_pOpaquePass = OpaquePass::Create(this);
 	m_pShadowPass = ShadowPass::Create(this);
 	m_pInstancePass = InstancePass::Create(this);
@@ -91,6 +92,7 @@ HRESULT CRenderSystem::Render()
 {
 	m_pPipeLine->Update_FrameBuffer(m_pContext);
 	m_pPipeLine->Update_Frustum();
+	m_pPriorityPass->Execute(m_pContext);
 	Render_Shadow();
 
 	if (FAILED(m_pTargetManager->Begin_MRT("MRT_Deferred"))) return E_FAIL;
@@ -369,6 +371,7 @@ void CRenderSystem::Free()
 	Safe_Release(m_pContext);
 	Safe_Release(m_pPipeLine);
 
+	Safe_Release(m_pPriorityPass);
 	Safe_Release(m_pOpaquePass);
 	Safe_Release(m_pInstancePass);
 	Safe_Release(m_pUIPass);

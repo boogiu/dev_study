@@ -252,5 +252,6 @@ CComponent* CSkeletalModel::Clone()
 void CSkeletalModel::Free()
 {
 	__super::Free();
+	if(m_pData)
 	Safe_Release(m_pData);
 }

@@ -31,7 +31,8 @@ HRESULT CModelLevel::Initialize()
 	pProtoMgr->Add_ProtoType(m_LevelKey, "Proto_GameObject_OptionUI", COptionUI::Create());
 	pProtoMgr->Add_ProtoType(m_LevelKey, "Proto_GameObject_MaterialAdjust", CMaterialAdjust::Create());
 	
-	CGameObject* BaseModel = Builder::Create_Object({ m_LevelKey ,"Proto_GameObject_Model" })
+	CGameObject* BaseModel = Builder::Create_Object({ m_LevelKey ,"Proto_GameObject_Model" })\
+		.Scale({0.001f,0.001f,0.001f})
 		.Build("Model");
 
 	CGameObject* Camera = Builder::Create_Object({ m_LevelKey ,"Proto_GameObject_Camera" })

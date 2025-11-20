@@ -48,7 +48,6 @@ HRESULT CFish_Object::Initialize(INIT_DESC* pArg)
 	Get_Component<CAnimator3D>()->Change_Animation("Swim.anim");
 	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-2,-2,-2},{2,5,2,} });
 
-
 	auto& Instances = Get_Component<CMaterial>()->Get_Material_Instance();
 	for (auto instance : Instances )
 	{
@@ -139,13 +138,13 @@ void CFish_Object::Catch()
 	HRESULT hr = Add_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", m_FishDesc.modelName);
 	hr = Add_Component<CMaterial>()->Link_Material("GamePlay_Level", m_FishDesc.materialName);
 	Add_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", m_FishDesc.modelName);
-	/*애니메이션 추가 필요*/
-	Get_Component<CAnimator3D>()->Change_Animation("GamePlay_Level", "Get.anim");
 }
 
 void CFish_Object::Get()
 {
 	m_eState = GETTED;
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Get.anim", m_FishDesc.FishFileName,true);
+	Get_Component<CAnimator3D>()->Change_Animation("GamePlay_Level", "Get.anim");
 }
 
 void CFish_Object::OnCollisionEnter(COLLISION_CONTEXT context)
@@ -256,6 +255,7 @@ void CFish_Object::Move_BITE(_float dt)
 {
 	m_fDetectTime += dt*10;
 	m_fBiteTime += dt;
+
 	_float4 pos = m_pTarget->Get_Position();
 
 	_vector targetPos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
@@ -266,14 +266,15 @@ void CFish_Object::Move_BITE(_float dt)
 	m_vAxis.y = XMVectorGetZ(dir);
 
 	_float4 CirclePos = {
-		pos.x+cosf(m_fDetectTime) * 2.f,
+		pos.x+cosf(m_fDetectTime) * 2.5f,
 		0.f,
-		pos.z+sinf(m_fDetectTime) * 2.f,
+		pos.z+sinf(m_fDetectTime) * 2.5f,
 		1.f
 	};
 
-	Check_Rotation(dt);
+	//Check_Rotation(dt);
 	m_pTransform->Set_Pos(CirclePos);
+	m_pTransform->LookAt(targetPos);
 }
 
 void CFish_Object::Move_CATCHED(_float dt)
@@ -281,7 +282,7 @@ void CFish_Object::Move_CATCHED(_float dt)
 	_vector targetPos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
 	_vector myPos = m_pTransform->Get_Pos();
 
-	_vector pos = XMVectorLerp(myPos, targetPos, dt*5);
+	_vector pos = XMVectorLerp(myPos, targetPos, dt*4);
 	m_pTransform->Set_PosVector(pos);
 	m_pTransform->LookAt(pos);
 }

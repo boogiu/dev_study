@@ -257,6 +257,7 @@
     <ClInclude Include="..\Public\PlayerState_Walk.h" />
     <ClInclude Include="..\Public\Player_Inventory.h" />
     <ClInclude Include="..\Public\SelectPanel.h" />
+    <ClInclude Include="..\Public\SkyBox.h" />
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\Public\SunCam.h" />
@@ -379,6 +380,7 @@
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
     <ClCompile Include="..\Private\Player_Inventory.cpp" />
     <ClCompile Include="..\Private\SelectPanel.cpp" />
+    <ClCompile Include="..\Private\SkyBox.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\Private\SunCam.cpp" />
@@ -408,8 +410,8 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Bin\ShaderFiles\FieldOutShader.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\PlayerShader.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Sky_Shader.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\UI_PartsShader.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

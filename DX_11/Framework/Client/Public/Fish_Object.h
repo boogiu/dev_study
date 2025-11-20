@@ -30,12 +30,14 @@ public:
 public:
     virtual virtual void Set_OwnMatrix(_float4x4* OwnMat) { m_pOwnerMatrix = OwnMat; };
     ITEM_DATA_DESC Get_ItemData() { return m_ItemDesc; }
+    FISH_DATA_DESC Get_Data() { return m_FishDesc; }
     virtual void Set_TargetBey(CGameObject* pTarget);
     _bool Hit();
     void Missed();
     void Catch();
     void Get();
 
+public:
 public:
     void OnCollisionEnter(COLLISION_CONTEXT context) override;
     void OnCollisionStay(COLLISION_CONTEXT context)override;

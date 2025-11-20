@@ -68,7 +68,8 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     PS_OUT_LIGHT Out;
     
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+    float3 n = normalize(vNormalDesc.xyz * 2.f - 1.f); // ²À normalize
+    vector vNormal = float4(n, 0.f);
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     
     float fViewZ = vDepthDesc.y * zFar;
@@ -98,7 +99,8 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     PS_OUT_LIGHT Out;
     
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+    float3 n = normalize(vNormalDesc.xyz * 2.f - 1.f); // ²À normalize
+    vector vNormal = float4(n, 0.f);
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     
     float fViewZ = vDepthDesc.y * zFar;

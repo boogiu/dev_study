@@ -93,24 +93,32 @@ void CField_Out::Override_Pass()
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
 		instance->Override_Pass("Base");
 	}
-	if (auto instance = pMaterial->Get_MaterialInstanceByName("mBeach")) {
-		instance->Override_Pass("Water");
-		SHADER_PARAM param = { pRcsMgr->Load_Texture("GamePlay_Level","Palette_mWater_Alb.png")->Get_SRV(),"Texture2D",0 };
-		SHADER_PARAM WaveParam = { &m_fWaveTime,"float",sizeof(_float) };
-		SHADER_PARAM fadeParam = { &m_fFade,"float",sizeof(_float) };
-		instance->Set_Param("DiffuseTexture", param);
-		instance->Set_Param("fWaveTime", WaveParam);
-		instance->Set_Param("fFade", fadeParam);
-		instance->Override_Pass("Water");
-	}
+	SHADER_PARAM param = { pRcsMgr->Load_Texture("GamePlay_Level","Palette_mWater_Alb.png")->Get_SRV(),"Texture2D",0 };
+	SHADER_PARAM Normal = { pRcsMgr->Load_Texture("GamePlay_Level","Waves_mSeaWater_Nrm.png")->Get_SRV(),"Texture2D",0 };
+	SHADER_PARAM Sand = { pRcsMgr->Load_Texture("GamePlay_Level","Waves_mSand_Alb.dds")->Get_SRV(),"Texture2D",0 };
+	SHADER_PARAM WaveParam = { &m_fWaveTime,"float",sizeof(_float) };
+	SHADER_PARAM fadeParam = { &m_fFade,"float",sizeof(_float) };
+
+	
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaveFoam")) {
-		SHADER_PARAM param = { pRcsMgr->Load_Texture("GamePlay_Level","Palette_mWater_Alb.png")->Get_SRV(),"Texture2D",0 };
-		SHADER_PARAM WaveParam = { &m_fWaveTime,"float",sizeof(_float)};
-		SHADER_PARAM fadeParam = { &m_fFade,"float",sizeof(_float)};
 		instance->Set_Param("DiffuseTexture", param);
+		instance->Set_Param("NormalTexture", Normal);
 		instance->Set_Param("fWaveTime", WaveParam);
 		instance->Set_Param("fFade", fadeParam);
 		instance->Override_Pass("Wave");
+	}
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mSeaWave")) {
+		instance->Set_Param("fWaveTime", WaveParam);
+		instance->Override_Pass("SeaWave");
+	}
+
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mBeach")) {
+		instance->Set_Param("DiffuseTexture", Sand);
+		instance->Override_Pass("Beach");
+	}
+
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mSand")) {
+		instance->Override_Pass("Sand");
 	}
 }
 

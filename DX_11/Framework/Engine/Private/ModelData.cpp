@@ -206,7 +206,8 @@ CModelData* CModelData::Create(const string& filePath, ID3D11Device* pDevice)
 void CModelData::Free()
 {
 	__super::Free();
-	Safe_Release(m_pSkeleton);
+	if(m_pSkeleton)
+		Safe_Release(m_pSkeleton);
 	for (auto& mesh : m_Meshes)
 		Safe_Release(mesh);
 }

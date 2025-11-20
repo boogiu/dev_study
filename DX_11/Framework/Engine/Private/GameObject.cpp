@@ -21,7 +21,7 @@ CGameObject::CGameObject()
 }
 
 CGameObject::CGameObject(const CGameObject& rhs)
-	:m_ObjectID(s_NextID++), m_InstanceTag(rhs.m_InstanceTag),m_eRenderLayer{rhs.m_eRenderLayer}
+	:m_ObjectID(s_NextID++), m_InstanceTag(rhs.m_InstanceTag), m_eRenderLayer{ rhs.m_eRenderLayer }
 {
 	/*트랜스폼은 가장 먼저.*/
 	type_index transform = type_index(typeid(CTransform));
@@ -128,28 +128,28 @@ void CGameObject::Post_EngineUpdate(_float dt)
 		int i = 0;
 	/*패킷은 용도별로 따로 만든다.*/
 	if (m_eRenderLayer != RENDER_LAYER::CustomOnly) {
-		
-	if (Get_Component<CInstanceModel>()) {
-		Make_InstancePacket();
-	}
-	else {
-		Make_OpaquePacket();
-	}
+
+		if (Get_Component<CInstanceModel>()) {
+			Make_InstancePacket();
+		}
+		else {
+			Make_OpaquePacket();
+		}
 
 
 #ifdef _DEBUG
-	DEBUG_PACKET debugPacket = {};
-	debugPacket.pModel = Get_Component<CModel>();
-	debugPacket.pDebug = Get_Component<CDebugRender>();
-	debugPacket.pWorldMatrix = m_pTransform->Get_WorldMatrix_Ptr();
-	if (debugPacket.pDebug) {
-		for (size_t i = 0; i < debugPacket.pDebug->Get_DebugBoxCount(); i++)
-		{
-			if (!debugPacket.pModel->isDrawable(i)) continue;
-			debugPacket.DrawIndex = i;
-			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Debug(debugPacket);
+		DEBUG_PACKET debugPacket = {};
+		debugPacket.pModel = Get_Component<CModel>();
+		debugPacket.pDebug = Get_Component<CDebugRender>();
+		debugPacket.pWorldMatrix = m_pTransform->Get_WorldMatrix_Ptr();
+		if (debugPacket.pDebug) {
+			for (size_t i = 0; i < debugPacket.pDebug->Get_DebugBoxCount(); i++)
+			{
+				if (!debugPacket.pModel->isDrawable(i)) continue;
+				debugPacket.DrawIndex = i;
+				CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Debug(debugPacket);
+			}
 		}
-	}
 
 #endif // _DEBUG
 	}
@@ -254,35 +254,38 @@ HRESULT CGameObject::Make_OpaquePacket()
 
 	packet.pModel = Get_Component<CModel>();
 	if (!packet.pModel || !packet.pModel->isReadyToDraw()) return E_FAIL;
-	if (packet.pModel->Get_RenderType() == RENDER_PASS_TYPE::RENDER_OPAQUE) {
-		if (!packet.pModel->Get_CompActive()) return E_FAIL;
 
-		packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel);
 
-		if (auto Animator = Get_Component<CAnimator3D>()) {
-			if(Animator->Get_CompActive())
-				packet.pPayLoad = Animator;
-		}
-		else if (auto Follower = Get_Component<CSkeletonFollower>()) {
-			packet.pPayLoad = Follower;
-		}
-		else {
-			packet.pPayLoad = monostate{};
-		}
+	if (!packet.pModel->Get_CompActive()) return E_FAIL;
 
-		if (packet.pModel == nullptr) {
-			return E_FAIL;
-		}
+	packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel);
 
-		for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
-		{
-			if (!packet.pModel->isDrawable(i)) continue;
-			packet.DrawIndex = i;
-			packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
+	if (auto Animator = Get_Component<CAnimator3D>()) {
+		if (Animator->Get_CompActive())
+			packet.pPayLoad = Animator;
+	}
+	else if (auto Follower = Get_Component<CSkeletonFollower>()) {
+		packet.pPayLoad = Follower;
+	}
+	else {
+		packet.pPayLoad = monostate{};
+	}
+
+	if (packet.pModel == nullptr) {
+		return E_FAIL;
+	}
+
+	for (size_t i = 0; i < packet.pModel->Get_MeshCount(); i++)
+	{
+		if (!packet.pModel->isDrawable(i)) continue;
+		packet.DrawIndex = i;
+		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
+		if (packet.pModel->Get_RenderType() == RENDER_PASS_TYPE::RENDER_OPAQUE)
 			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
-			if (packet.pModel->doShadowCast()) {
-				CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Shadow(packet);
-			}
+		else if (packet.pModel->Get_RenderType() == RENDER_PASS_TYPE::PRIORITY)
+			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Priority(packet);
+		if (packet.pModel->doShadowCast()) {
+			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Shadow(packet);
 		}
 	}
 	return S_OK;
