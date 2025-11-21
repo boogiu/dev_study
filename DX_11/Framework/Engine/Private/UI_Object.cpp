@@ -75,7 +75,7 @@ void CUI_Object::Post_EngineUpdate(_float dt)
 {
     Update_UITransform();
     if (m_eRenderLayer != RENDER_LAYER::CustomOnly) {
-    UI_PACKET packet;
+    SPRITE_PACKET packet;
     packet.pSprite2D = Get_Component<CSprite2D>();
     packet.pWorldMatrix = m_pTransform->Get_WorldMatrix_Ptr();
 

@@ -295,7 +295,7 @@ void UIPass::Execute(ID3D11DeviceContext* pContext)
 	m_Packets.clear();
 }
 
-void UIPass::Submit(UI_PACKET packet)
+void UIPass::Submit(SPRITE_PACKET packet)
 {
 	if (packet.pSprite2D == nullptr ) return;
 	m_Packets.push_back(packet);

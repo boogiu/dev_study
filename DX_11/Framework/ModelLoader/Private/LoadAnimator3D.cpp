@@ -197,6 +197,5 @@ CComponent* CLoadAnimator3D::Clone()
 void CLoadAnimator3D::Free()
 {
 	__super::Free();
-	Safe_Release(m_pData);
 	m_Importer.FreeScene();
 }

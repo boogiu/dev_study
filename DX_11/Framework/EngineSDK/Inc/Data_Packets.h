@@ -59,7 +59,7 @@ namespace Engine {
 
 	typedef struct DrawUIPacket : BASE_PACKET {
 		class CSprite2D* pSprite2D = { nullptr };
-	}UI_PACKET;
+	}SPRITE_PACKET;
 
 	typedef struct DrawDebugPacket : BASE_PACKET {
 		class CModel* pModel = { nullptr };

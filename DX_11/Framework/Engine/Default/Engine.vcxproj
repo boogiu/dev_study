@@ -194,6 +194,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\OBB_Collider.h" />
     <ClInclude Include="..\Public\RayReceiver.h" />
     <ClInclude Include="..\Public\RaySystem.h" />
+    <ClInclude Include="..\Public\RectModel.h" />
     <ClInclude Include="..\Public\RenderTarget.h" />
     <ClInclude Include="..\Public\SkeletalModel.h" />
     <ClInclude Include="..\Public\AnimationClip.h" />
@@ -310,6 +311,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\OBB_Collider.cpp" />
     <ClCompile Include="..\Private\RayReceiver.cpp" />
     <ClCompile Include="..\Private\RaySystem.cpp" />
+    <ClCompile Include="..\Private\RectModel.cpp" />
     <ClCompile Include="..\Private\RenderTarget.cpp" />
     <ClCompile Include="..\Private\SkeletalModel.cpp" />
     <ClCompile Include="..\Private\AnimationClip.cpp" />

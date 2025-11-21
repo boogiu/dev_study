@@ -169,6 +169,7 @@
     <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imstb_truetype.h" />
     <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\ImZoomSlider.h" />
     <ClInclude Include="..\Public\AutoTile.h" />
+    <ClInclude Include="..\Public\DustEffect.h" />
     <ClInclude Include="..\Public\ClientHelper.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Client_Enum.h" />
@@ -296,6 +297,7 @@
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_widgets.cpp" />
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\ImSequencer.cpp" />
     <ClCompile Include="..\Private\AutoTile.cpp" />
+    <ClCompile Include="..\Private\DustEffect.cpp" />
     <ClCompile Include="..\Private\ClientHelper.cpp" />
     <ClCompile Include="..\Private\ClothParts.cpp" />
     <ClCompile Include="..\Private\CraftCard.cpp" />
@@ -413,6 +415,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\PlayerShader.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Sky_Shader.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\UI_PartsShader.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\VTX_NorTexEffect.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

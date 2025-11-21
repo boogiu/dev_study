@@ -403,6 +403,12 @@
     <Filter Include="02. GameObjects\13. Env\SkyBox">
       <UniqueIdentifier>{656525ce-c2e5-4a06-b7ec-7cfe2bbe034a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\14. Effect">
+      <UniqueIdentifier>{8c08cbc5-c6a5-4a38-9c83-0358dd37006a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\14. Effect\DustEffect">
+      <UniqueIdentifier>{bd3c63b3-91ea-4cc7-ba4c-88278811683a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -786,6 +792,9 @@
     <ClInclude Include="..\Public\SkyBox.h">
       <Filter>02. GameObjects\13. Env\SkyBox</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\DustEffect.h">
+      <Filter>02. GameObjects\14. Effect\DustEffect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1150,6 +1159,9 @@
     <ClCompile Include="..\Private\SkyBox.cpp">
       <Filter>02. GameObjects\13. Env\SkyBox</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\DustEffect.cpp">
+      <Filter>02. GameObjects\14. Effect\DustEffect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
@@ -1164,6 +1176,9 @@
       <Filter>97. Client_Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Sky_Shader.hlsl">
+      <Filter>97. Client_Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\VTX_NorTexEffect.hlsl">
       <Filter>97. Client_Shader</Filter>
     </FxCompile>
   </ItemGroup>

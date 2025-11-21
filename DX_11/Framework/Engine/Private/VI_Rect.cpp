@@ -16,12 +16,12 @@ CVI_Rect::~CVI_Rect()
 
 HRESULT CVI_Rect::Initialize(ID3D11Device* pDevice)
 {
-	m_ElementCount = VTXPOSTEX::iElementCount;
-	m_ElementKey = VTXPOSTEX::Key;
-	m_ElementDesc = VTXPOSTEX::Elements;
+	m_ElementCount = VTXNORMTEX::iElementCount;
+	m_ElementKey = VTXNORMTEX::Key;
+	m_ElementDesc = VTXNORMTEX::Elements;
 	m_iVertexBufferCount = 1;
 	m_iVerticesCount = 4;
-	m_iVertexStride = sizeof(VTXPOSTEX);
+	m_iVertexStride = sizeof(VTXNORMTEX);
 	m_iIndicesCount = 6;
 	m_iIndexStride = 2; //byte
 	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
@@ -46,7 +46,7 @@ HRESULT CVI_Rect::Create_Vertex(ID3D11Device* pDevice)
 	VBDesc.MiscFlags = 0;
 	VBDesc.StructureByteStride = m_iVertexStride;
 
-	VTXPOSTEX* m_VBContainer = new VTXPOSTEX[m_iVerticesCount];
+	VTXNORMTEX* m_VBContainer = new VTXNORMTEX[m_iVerticesCount];
 	ZeroMemory(m_VBContainer, m_iVertexStride * m_iVerticesCount);
 
 	_float s = 0.5;
@@ -62,6 +62,13 @@ HRESULT CVI_Rect::Create_Vertex(ID3D11Device* pDevice)
 
 	m_VBContainer[3].vPosition = _float3(-s, -s, 0.f);
 	m_VBContainer[3].vTexcoord = _float2(0.f, 1.f);
+
+	_float3 normal = _float3(0.f, 0.f, 1.f);
+
+	m_VBContainer[0].vNormal = normal;
+	m_VBContainer[1].vNormal = normal;
+	m_VBContainer[2].vNormal = normal;
+	m_VBContainer[3].vNormal = normal;
 
 	D3D11_SUBRESOURCE_DATA subData;
 	subData.pSysMem = m_VBContainer;

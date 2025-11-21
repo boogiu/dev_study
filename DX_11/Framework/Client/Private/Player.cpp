@@ -774,6 +774,9 @@ void CPlayer::Add_PartObjects()
 	Get_Component<CObjectContainer>()->Add_Child(pTop, true);
 	Get_Component<CObjectContainer>()->Add_Child(pBottom, true);
 	Get_Component<CObjectContainer>()->Add_Child(pGlass, false);
+
+	CGameObject* pEffect = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_BaseEffect" }).Scale({ 10,10,10 }).Position({ 0,0,5 }).Build("Effect_Test");
+	Get_Component<CObjectContainer>()->Add_Child(pEffect, true);
 }
 
 void CPlayer::Add_Inventory()

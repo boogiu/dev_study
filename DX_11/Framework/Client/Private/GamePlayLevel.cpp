@@ -63,6 +63,8 @@
 #include "DialogueManager.h"
 
 #include "SkyBox.h"
+#include "DustEffect.h"
+
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 	:CLevel{ LevelKey },
 	m_pGameInstance(CGameInstance::GetInstance())
@@ -120,9 +122,10 @@ HRESULT CGamePlayLevel::Awake()
 
 	CGameObject* pSunCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Sun" })
 		.Camera(desc)
-		.Position({ 750,150,750 })
+		
 		.Build("Sun");
 
+	
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"너굴", { 560,0,550 },"GamePlay_GameObject_NpcRco");
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"밤톨", { 590,0,560 },"GamePlay_GameObject_NpcRcm");
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"잭슨", { 570,0,550 },"GamePlay_GameObject_NpcNrm");
@@ -142,7 +145,7 @@ HRESULT CGamePlayLevel::Awake()
 	/*레이어에 넣었으니, 애드레프 +1*/CUI_Responcer* pUI_Responcer = Get_LevelObject<CUI_Responcer>();
 	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pUI_Responcer);
 
-	CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
+	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(pSunCamera->Get_Component<CCamera>());
 	m_pSky = Builder::Create_Object({ "GamePlay_Level", "GamePlay_GameObject_SkyBox" }).Scale({ .5f,.5f,.5f }).Build("Sky");
 	m_pObjectManager->Add_Object(m_pSky, { "GamePlay_Level", "Env_Layer" });
@@ -304,6 +307,8 @@ void CGamePlayLevel::PreLoad_Level()
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Fish", CFish_Object::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_SkyBox", CSkyBox::Create());
+
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_BaseEffect", CDustEffect::Create());
 }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)

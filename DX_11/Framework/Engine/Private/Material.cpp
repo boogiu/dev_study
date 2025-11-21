@@ -43,8 +43,8 @@ HRESULT CMaterial::Insert_MaterialInstance(CMaterialInstance* pInstance, _uint* 
 
 	m_MaterialInstances.push_back(pInstance);
 	//Safe_AddRef(pInstance);
-
-	*outIndex = m_MaterialInstances.size() - 1;
+	if(outIndex)
+		*outIndex = m_MaterialInstances.size() - 1;
 
 	return S_OK;
 }

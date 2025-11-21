@@ -15,6 +15,9 @@
     <ContentFile>
       <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\UI_PartsShader.cso</FullPath>
     </ContentFile>
+    <ContentFile>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\VTX_NorTexEffect.cso</FullPath>
+    </ContentFile>
   </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />

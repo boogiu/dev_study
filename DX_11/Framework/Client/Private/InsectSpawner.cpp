@@ -45,8 +45,8 @@ void CInsectSpawner::Update(_float dt)
 
 void CInsectSpawner::Late_Update(_float dt)
 {
-	m_fElapsedTime += dt;
-	Update_Spawner(dt);
+	//m_fElapsedTime += dt;
+	//Update_Spawner(dt);
 }
 
 HRESULT CInsectSpawner::Link_ItemSpawner(CItemSpawner* pItemSpawner)

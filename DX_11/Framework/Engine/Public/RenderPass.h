@@ -76,6 +76,7 @@ private:
 	vector<OPAQUE_PACKET> m_Packets;
 	vector<OPAQUE_PACKET> m_VisiblePackets;
 
+
 public:
 	static OpaquePass* Create(class CRenderSystem* pRenderSystem) { return new OpaquePass(pRenderSystem); }
 	virtual void Free() override {__super::Free(); m_Packets.clear();};
@@ -107,9 +108,9 @@ private:
 	virtual ~UIPass() DEFAULT;
 public:
 	void Execute(ID3D11DeviceContext* pContext) override;
-	void Submit(UI_PACKET packet);
+	void Submit(SPRITE_PACKET packet);
 private:
-	vector<UI_PACKET> m_Packets;
+	vector<SPRITE_PACKET> m_Packets;
 public:
 	static UIPass* Create(class CRenderSystem* pRenderSystem) { return new UIPass(pRenderSystem); }
 	virtual void Free() override { __super::Free(); m_Packets.clear(); };

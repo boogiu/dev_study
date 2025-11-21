@@ -361,6 +361,9 @@
     <Filter Include="01. Utility\04. Components\StaticComponent\14. TextSlot">
       <UniqueIdentifier>{07906aac-ac19-47de-8815-7e6edee479ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Components\StaticComponent\03. Model\RectModel">
+      <UniqueIdentifier>{8f14ef35-2da8-44b0-9e86-22925d6e2596}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -638,6 +641,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\TextSlot.cpp">
       <Filter>01. Utility\04. Components\StaticComponent\14. TextSlot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RectModel.cpp">
+      <Filter>01. Utility\04. Components\StaticComponent\03. Model\RectModel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -997,6 +1003,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\TextSlot.h">
       <Filter>01. Utility\04. Components\StaticComponent\14. TextSlot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RectModel.h">
+      <Filter>01. Utility\04. Components\StaticComponent\03. Model\RectModel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
