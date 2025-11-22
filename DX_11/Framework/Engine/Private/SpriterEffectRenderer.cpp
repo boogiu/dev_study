@@ -134,7 +134,8 @@ size_t CSpriterEffectRenderer::DrawBatch(ID3D11DeviceContext* pContext, vector<E
 	ID3D11ShaderResourceView* srv = pTex->Get_SRV());
 	if (!srv) return;
 
-	pContext->PSSetShaderResources(0, 1, &srv);
+
+	m_SpriteEffectShader->Bind_Value("SpriteTexture", { srv,"Texture2D",0 });
 
 	pContext->DrawIndexedInstanced(
 		m_VBQuad->Get_IndexCount(),       

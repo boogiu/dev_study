@@ -7,7 +7,7 @@ class CSpriterEffectRenderer :
     {
         _float4x4 WorldMatrix;
         _float4  vColor;
-        _float4   TexInfo;
+        _float4   TexInfo; // (Frame, Cols, Rows, 0)
     };
 
 private:
@@ -17,7 +17,9 @@ private:
 public:
     HRESULT Initialize(ID3D11Device* pDevice);
     void Queue(const EffectSpriteDrawDesc& desc);
-    void RenderAll();  // Pass 분리 + Instancing + Draw
+    void RenderAll(ID3D11DeviceContext* pContext);  // Pass 분리 + Instancing + Draw
+    void RenderPass(ID3D11DeviceContext* pContext, const string& passName, vector<EffectSpriteDrawDesc>& list);
+    size_t DrawBatch(ID3D11DeviceContext* pContext, vector<EffectSpriteDrawDesc>& list, size_t startIndex);
 
 private:
     vector<EffectSpriteDrawDesc> m_DrawCmds;
