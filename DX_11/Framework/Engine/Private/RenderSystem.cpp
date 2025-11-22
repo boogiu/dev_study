@@ -26,53 +26,11 @@ HRESULT CRenderSystem::Initialize()
 {
 	/*pipeLine*/
 	m_pPipeLine = CPipeLine::Create(m_pDevice, this);
+	/*Render Target*/
 	m_pTargetManager = CTarget_Manager::Create(m_pDevice, m_pContext);
-
-	_uint				iNumViewports = { 1 };
-	D3D11_VIEWPORT		ViewportDesc{};
-	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
-	
-	RenderTargetDesc DiffuseDesc = { "Target_Diffuse" , DXGI_FORMAT_R8G8B8A8_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
-	m_pTargetManager->Create_Target(DiffuseDesc);
-
-	RenderTargetDesc NormalDesc = { "Target_Normal" , DXGI_FORMAT_R16G16B16A16_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
-	m_pTargetManager->Create_Target(NormalDesc);
-
-	RenderTargetDesc DepthlDesc = { "Target_Depth" , DXGI_FORMAT_R32G32B32A32_FLOAT , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
-	m_pTargetManager->Create_Target(DepthlDesc);
-
-	RenderTargetDesc ShadowDesc = { "Target_Shadow" , DXGI_FORMAT_R32G32B32A32_FLOAT , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(1.f, 1.f, 1.f, 1.f) ,g_iMaxWidth, g_iMaxHeight };
-	m_pTargetManager->Create_Target(ShadowDesc);
-
-	RenderTargetDesc ShadeDesc = { "Target_Shade" , DXGI_FORMAT_R16G16B16A16_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
-	m_pTargetManager->Create_Target(ShadeDesc);
-
-	RenderTargetDesc SpecularDesc = { "Target_Specular" , DXGI_FORMAT_R16G16B16A16_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
-	m_pTargetManager->Create_Target(SpecularDesc);
-
-
-	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Diffuse")))
+	if (FAILED(Ready_GBuffer())) {
 		return E_FAIL;
-	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Normal")))
-		return E_FAIL;
-	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Depth")))
-		return E_FAIL;
-	if (FAILED(m_pTargetManager->Add_MRT("MRT_LightAcc", "Target_Shade")))
-		return E_FAIL;
-	if (FAILED(m_pTargetManager->Add_MRT("MRT_LightAcc", "Target_Specular")))
-		return E_FAIL;
-	if (FAILED(m_pTargetManager->Add_MRT("MRT_Shadow", "Target_Shadow")))
-		return E_FAIL;
-
-	m_pShader = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Shader(G_GlobalLevelKey, "Shader_Deferred.hlsl");
-	if (nullptr == m_pShader)
-		return E_FAIL;
-
-	m_pVIBuffer = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_VIBuffer(G_GlobalLevelKey, "Engine_Default_Rect", BUFFER_TYPE::BASIC_RECT);
-	if (nullptr == m_pVIBuffer)
-		return E_FAIL;
-
-	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 1.f));
+	}
 
 	/*RenderPass*/
 	m_pPriorityPass = PriorityPass::Create(this);
@@ -90,11 +48,17 @@ HRESULT CRenderSystem::Initialize()
 
 HRESULT CRenderSystem::Render()
 {
+	/*FrameBuffer*/
 	m_pPipeLine->Update_FrameBuffer(m_pContext);
 	m_pPipeLine->Update_Frustum();
+
+	/*Priority*/
 	m_pPriorityPass->Execute(m_pContext);
+
+	/*Shadow*/
 	Render_Shadow();
 
+	/*ForWard Rendering*/
 	if (FAILED(m_pTargetManager->Begin_MRT("MRT_Deferred"))) return E_FAIL;
 	m_pOpaquePass->Execute(m_pContext);
 	m_pInstancePass->Execute(m_pContext);
@@ -102,14 +66,21 @@ HRESULT CRenderSystem::Render()
 	Render_LightAcc();
 	Render_Combined();
 
+	/*TransParent Rendering -> Not Proceed*/
+
+	/*Effect Rendering - > with Transparent*/
+	CGameInstance::GetInstance()->Get_EffectSystem()->Render();
+
+	/*Debug Rendering*/
 #ifdef _DEBUG
 	m_pDebugPass->Execute(m_pContext);
 #endif // _DEBUG
 
+	/*Custrom Rendering*/
 	Process_RenderCommand();
 
+	/*UI Rendering*/
 	m_pUIPass->Execute(m_pContext);
-
 
 	return S_OK;
 }
@@ -220,6 +191,57 @@ ID3D11ShaderResourceView* CRenderSystem::Get_TargetSRV(const string strTag)
 	return pTarget->Get_SRV();
 }
 
+HRESULT CRenderSystem::Ready_GBuffer()
+{
+	_uint				iNumViewports = { 1 };
+	D3D11_VIEWPORT		ViewportDesc{};
+	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
+
+	RenderTargetDesc DiffuseDesc = { "Target_Diffuse" , DXGI_FORMAT_R8G8B8A8_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(DiffuseDesc);
+
+	RenderTargetDesc NormalDesc = { "Target_Normal" , DXGI_FORMAT_R16G16B16A16_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(NormalDesc);
+
+	RenderTargetDesc DepthlDesc = { "Target_Depth" , DXGI_FORMAT_R32G32B32A32_FLOAT , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(DepthlDesc);
+
+	RenderTargetDesc ShadowDesc = { "Target_Shadow" , DXGI_FORMAT_R32G32B32A32_FLOAT , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(1.f, 1.f, 1.f, 1.f) ,g_iMaxWidth, g_iMaxHeight };
+	m_pTargetManager->Create_Target(ShadowDesc);
+
+	RenderTargetDesc ShadeDesc = { "Target_Shade" , DXGI_FORMAT_R16G16B16A16_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(ShadeDesc);
+
+	RenderTargetDesc SpecularDesc = { "Target_Specular" , DXGI_FORMAT_R16G16B16A16_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(SpecularDesc);
+
+
+	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Diffuse")))
+		return E_FAIL;
+	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Normal")))
+		return E_FAIL;
+	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Depth")))
+		return E_FAIL;
+	if (FAILED(m_pTargetManager->Add_MRT("MRT_LightAcc", "Target_Shade")))
+		return E_FAIL;
+	if (FAILED(m_pTargetManager->Add_MRT("MRT_LightAcc", "Target_Specular")))
+		return E_FAIL;
+	if (FAILED(m_pTargetManager->Add_MRT("MRT_Shadow", "Target_Shadow")))
+		return E_FAIL;
+
+	m_pShader = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Shader(G_GlobalLevelKey, "Shader_Deferred.hlsl");
+	if (nullptr == m_pShader)
+		return E_FAIL;
+
+	m_pVIBuffer = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_VIBuffer(G_GlobalLevelKey, "Engine_Default_Rect", BUFFER_TYPE::BASIC_RECT);
+	if (nullptr == m_pVIBuffer)
+		return E_FAIL;
+
+	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 1.f));
+
+	return S_OK;
+}
+
 void CRenderSystem::Process_RenderCommand()
 {
 	for (auto& cmd : m_RenderCommands)
@@ -322,7 +344,6 @@ HRESULT CRenderSystem::Get_BufferInputLayout(class CVIBuffer* pBuffer, CShader* 
 	return S_OK;
 }
 
-
 void CRenderSystem::Render_Shadow()
 {
 	m_pPipeLine->Update_ShadowBuffer(m_pContext);
@@ -342,7 +363,6 @@ void CRenderSystem::Render_Shadow()
 
 HRESULT CRenderSystem::Change_Viewport(_uint iWidth, _uint iHeight)
 {
-
 	D3D11_VIEWPORT			ViewPortDesc;
 	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
 	ViewPortDesc.TopLeftX = 0;

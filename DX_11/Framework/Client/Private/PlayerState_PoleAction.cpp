@@ -132,7 +132,8 @@ HRESULT CPlayerState_PoleAction::OnExit()
 	m_pPlayer->Change_Tool_Anim("ToolPoleAnim_APose.anim");
 	m_eState = BEGIN;
 	m_HitTime = 0.f;
-	isCatch = true;
+	isCatch = false;
+	m_pPlayer->Get_InfoPack().isFishBitted = false;
 	return S_OK;
 }
 

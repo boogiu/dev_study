@@ -25,7 +25,8 @@ void CPlayerState_Talking::OnUpdate(_float dt)
 
 HRESULT CPlayerState_Talking::OnExit()
 {
-
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	Animator->Restart_AnimationBlend();
 	return S_OK;
 }
 

@@ -131,6 +131,10 @@ void CToolItem::Set_Item(TOOL_DATA_DESC data)
 
 	if (data.TypeTag == itemType::None) {
 		Get_Component<CModel>()->Set_CompActive(false);
+
+		Get_Component<CAnimator3D>()->Set_CompActive(false);
+		m_pSubTool->Get_Component<CModel>()->Set_CompActive(false);
+		m_pSubTool->Sync_Bont_To_Rod(nullptr);
 		return;
 	}
 	else {

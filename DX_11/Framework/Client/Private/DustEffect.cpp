@@ -14,7 +14,7 @@ CDustEffect::CDustEffect()
 }
 
 CDustEffect::CDustEffect(const CDustEffect& rhs)
-	: CGameObject(rhs)
+	: CBaseEffect(rhs)
 {
 }
 
@@ -47,8 +47,8 @@ HRESULT CDustEffect::Initialize(INIT_DESC* pArg)
 
 	customInstance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "Effect_smoke05.png", TEXTURE_TYPE::ALBEDO);
 	customInstance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "Effect_smoke06_albgry.png", TEXTURE_TYPE::ALBEDO_GRAY);
-	customInstance->Set_Param("fElapsedTime", { &m_ElapsedTime,"float",sizeof(float) });
-	m_pInstance = customInstance;
+	customInstance->Set_Param("fElapsedTime", { &m_fLifeTime,"float",sizeof(float) });
+	m_pMaterial_Instance = customInstance;
 
 	return S_OK;
 }
@@ -59,11 +59,11 @@ void CDustEffect::Priority_Update(_float dt)
 
 void CDustEffect::Update(_float dt)
 {
-	m_ElapsedTime += dt *2;
-	if (m_ElapsedTime > 1.f)
-		m_ElapsedTime = 0.f;
-	m_pTransform->Scale({ m_ElapsedTime*5,m_ElapsedTime * 5 ,m_ElapsedTime * 5 });
-	m_pTransform->Rotate({ 0,0,m_ElapsedTime*2 });
+	m_fLifeTime += dt *2;
+	if (m_fLifeTime > 1.f)
+		m_fLifeTime = 0.f;
+	m_pTransform->Scale({ m_fLifeTime *5,m_fLifeTime * 5 ,m_fLifeTime * 5 });
+	m_pTransform->Rotate({ 0,0,m_fLifeTime *2 });
 }
 
 void CDustEffect::Late_Update(_float dt)
@@ -73,10 +73,10 @@ void CDustEffect::Late_Update(_float dt)
 void CDustEffect::Render_GUI()
 {
 	if (ImGui::Button("Reset")) {
-		m_ElapsedTime = 0.f;
+		m_fLifeTime = 0.f;
 	}
 
-	ImGui::DragFloat("time", &m_ElapsedTime, 0.05);
+	ImGui::DragFloat("time", &m_fLifeTime, 0.05);
 	__super::Render_GUI();
 }
 

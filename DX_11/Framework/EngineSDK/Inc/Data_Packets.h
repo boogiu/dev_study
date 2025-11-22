@@ -94,4 +94,5 @@ namespace Engine {
 		string TargetKey;                    
 		function<void(ID3D11DeviceContext*)> DrawCallback;  
 	}RENDER_COMMAND;
+
 }

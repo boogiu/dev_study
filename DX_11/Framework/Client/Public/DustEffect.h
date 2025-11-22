@@ -1,12 +1,8 @@
 #pragma once
-#include "GameObject.h"
-NS_BEGIN(Engine)
-class CMaterialInstance;
-NS_END
+#include "BaseEffect.h"
 NS_BEGIN(Client)
-
 class CDustEffect :
-    public CGameObject
+    public CBaseEffect
 {
 private:
     CDustEffect();
@@ -20,10 +16,6 @@ public:
     void Update(_float dt) override;
     void Late_Update(_float dt) override;
     virtual void Render_GUI()override;
-
-private:
-    _float m_ElapsedTime = {};
-     CMaterialInstance* m_pInstance = { nullptr };
 
 public:
     static CDustEffect* Create();

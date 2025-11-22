@@ -183,9 +183,15 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\CustomFont.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
     <ClInclude Include="..\Public\DebugRender.h" />
+    <ClInclude Include="..\Public\EffectData.h" />
+    <ClInclude Include="..\Public\EffectInstance.h" />
+    <ClInclude Include="..\Public\EffectSystem.h" />
+    <ClInclude Include="..\Public\Emitter.h" />
     <ClInclude Include="..\Public\Engine_Layouts.h" />
     <ClInclude Include="..\Public\FontSystem.h" />
     <ClInclude Include="..\Public\ICollisionService.h" />
+    <ClInclude Include="..\Public\IEffectRenderer.h" />
+    <ClInclude Include="..\Public\IEffectService.h" />
     <ClInclude Include="..\Public\IFontService.h" />
     <ClInclude Include="..\Public\InstanceModel.h" />
     <ClInclude Include="..\Public\IRayService.h" />
@@ -272,6 +278,8 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\AudioDevice.h" />
     <ClInclude Include="..\Public\Sphere_Collider.h" />
     <ClInclude Include="..\Public\Sprite2D.h" />
+    <ClInclude Include="..\Public\SpriteEmitter.h" />
+    <ClInclude Include="..\Public\SpriterEffectRenderer.h" />
     <ClInclude Include="..\Public\StaticModel.h" />
     <ClInclude Include="..\Public\Target_Manager.h" />
     <ClInclude Include="..\Public\TextSlot.h" />
@@ -305,6 +313,10 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\CustomFont.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
     <ClCompile Include="..\Private\DebugRender.cpp" />
+    <ClCompile Include="..\Private\EffectData.cpp" />
+    <ClCompile Include="..\Private\EffectInstance.cpp" />
+    <ClCompile Include="..\Private\EffectSystem.cpp" />
+    <ClCompile Include="..\Private\Emitter.cpp" />
     <ClCompile Include="..\Private\FontSystem.cpp" />
     <ClCompile Include="..\Private\InstanceModel.cpp" />
     <ClCompile Include="..\Private\LevelObject.cpp" />
@@ -364,6 +376,8 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\InputMgr.cpp" />
     <ClCompile Include="..\Private\Sphere_Collider.cpp" />
     <ClCompile Include="..\Private\Sprite2D.cpp" />
+    <ClCompile Include="..\Private\SpriteEmitter.cpp" />
+    <ClCompile Include="..\Private\SpriterEffectRenderer.cpp" />
     <ClCompile Include="..\Private\StaticModel.cpp" />
     <ClCompile Include="..\Private\Target_Manager.cpp" />
     <ClCompile Include="..\Private\TextSlot.cpp" />
@@ -382,6 +396,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\VI_Point.cpp" />
     <ClCompile Include="..\Private\VI_Rect.cpp" />
     <ClCompile Include="..\Private\VI_Terrain.cpp" />
+    <ClCompile Include="..\Public\Engine_Struct.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Public\GUI_Inc\imgui.cpp" />

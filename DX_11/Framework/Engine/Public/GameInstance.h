@@ -51,6 +51,7 @@ public:
 	class ITileService* Get_TileSystem() { return m_pTileSystem; }
 	class ICollisionService* Get_CollisionSystem () { return m_pCollisionSystem; }
 	class IFontService* Get_FontSystem () { return m_pFontSystem; }
+	class IEffectService* Get_EffectSystem () { return m_pEffectSystem; }
 
 private:
 	class IGraphicService* m_pGraphicDevice = { nullptr };
@@ -70,6 +71,7 @@ private:
 	class ITileService* m_pTileSystem = { nullptr };
 	class ICollisionService* m_pCollisionSystem = { nullptr };
 	class IFontService* m_pFontSystem = { nullptr };
+	class IEffectService* m_pEffectSystem = { nullptr };
 #pragma endregion
 
 private:

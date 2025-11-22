@@ -12,8 +12,6 @@ typedef struct tagItemDataDesc {
 	string Additionaldata = {};
 }ITEM_DATA_DESC, TOOL_DATA_DESC;
 
-
-
 typedef struct tagInsectDataDesc{
 	_int InsectIndex = {};
 	string InsectFileName = {};

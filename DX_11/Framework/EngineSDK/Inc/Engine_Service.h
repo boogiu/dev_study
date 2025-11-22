@@ -17,3 +17,4 @@
 #include "ITileService.h"
 #include "ICollisionService.h"
 #include "IFontService.h"
+#include "IEffectService.h"

@@ -18,7 +18,7 @@
 #include "TileSystem.h"
 #include "CollisionSystem.h"
 #include "FontSystem.h"
-
+#include "EffectSystem.h"
 #include "Level.h"
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -51,6 +51,8 @@ _bool CGameInstance::Init_Engine(const ENGINE_DESC& engine)
 	m_pRenderSystem = CRenderSystem::Create(m_pDevice, m_pDeviceContext);
 	m_pCollisionSystem = CCollisionSystem::Create(m_pDevice, m_pDeviceContext);
 	m_pFontSystem = CFontSystem::Create(m_pDevice, m_pDeviceContext);
+	m_pEffectSystem = CEffectSystem::Create();
+
 #if defined _USING_GUI
 	m_pGuiSystem = CGUISystem::Create(engine, m_pDevice, m_pDeviceContext);
 #endif
@@ -93,6 +95,7 @@ void CGameInstance::Update_Engine(_float dt)
 	m_pObjectManager->Update(dt);
 	m_pUIManager->Update(dt);
 	m_pRaySystem->Update(dt);
+	m_pEffectSystem->Update(dt);
 	m_pSoundDevice->Update();
 
 #if defined _USING_GUI
@@ -133,6 +136,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pTileSystem);
 	Safe_Release(m_pCollisionSystem);
 	Safe_Release(m_pFontSystem);
+	Safe_Release(m_pEffectSystem);
 
 	DestroyInstance();
 }

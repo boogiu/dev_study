@@ -169,6 +169,7 @@
     <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\imstb_truetype.h" />
     <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\ImZoomSlider.h" />
     <ClInclude Include="..\Public\AutoTile.h" />
+    <ClInclude Include="..\Public\BaseEffect.h" />
     <ClInclude Include="..\Public\DustEffect.h" />
     <ClInclude Include="..\Public\ClientHelper.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
@@ -297,6 +298,7 @@
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\imgui_widgets.cpp" />
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\ImSequencer.cpp" />
     <ClCompile Include="..\Private\AutoTile.cpp" />
+    <ClCompile Include="..\Private\BaseEffect.cpp" />
     <ClCompile Include="..\Private\DustEffect.cpp" />
     <ClCompile Include="..\Private\ClientHelper.cpp" />
     <ClCompile Include="..\Private\ClothParts.cpp" />

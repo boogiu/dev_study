@@ -364,6 +364,36 @@
     <Filter Include="01. Utility\04. Components\StaticComponent\03. Model\RectModel">
       <UniqueIdentifier>{8f14ef35-2da8-44b0-9e86-22925d6e2596}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\13. EffectSystem">
+      <UniqueIdentifier>{439f1c4f-4976-4c11-b6d7-4feb1b881cc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\13. EffectSystem\Instance">
+      <UniqueIdentifier>{4df0395f-7e1c-4e82-9590-38503e75222b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\13. EffectSystem\Data">
+      <UniqueIdentifier>{2bc97ec1-0c35-493e-ae83-3ac80c458d9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\13. EffectSystem\Emmiter">
+      <UniqueIdentifier>{19db3335-68d8-4bef-b978-9f101768aa09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\13. EffectSystem\Emmiter\SpriteEmitter">
+      <UniqueIdentifier>{42208758-8bed-4f62-930a-61a2cbbede3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\13. EffectSystem\Emmiter\Emitter_Super">
+      <UniqueIdentifier>{bfd47b8e-1309-409b-ae6e-4556c116accc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. Services\18. IEffectService">
+      <UniqueIdentifier>{0e79a0ca-8ef4-406e-9ea3-5fa00caea621}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\06. RenderSystem\SubRenderer">
+      <UniqueIdentifier>{926eff0a-3cb7-4a1d-9f24-729f473e2649}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\06. RenderSystem\SubRenderer\EffectRenderer">
+      <UniqueIdentifier>{50155776-2044-44ed-9a50-1eee6e9affb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\06. RenderSystem\SubRenderer\EffectRenderer\SpriteEffectRenderer">
+      <UniqueIdentifier>{e282906e-e411-4a86-8a0c-b1a9b70dba1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -644,6 +674,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\RectModel.cpp">
       <Filter>01. Utility\04. Components\StaticComponent\03. Model\RectModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EffectSystem.cpp">
+      <Filter>01. Utility\13. EffectSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EffectData.cpp">
+      <Filter>01. Utility\13. EffectSystem\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EffectInstance.cpp">
+      <Filter>01. Utility\13. EffectSystem\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Emitter.cpp">
+      <Filter>01. Utility\13. EffectSystem\Emmiter\Emitter_Super</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SpriteEmitter.cpp">
+      <Filter>01. Utility\13. EffectSystem\Emmiter\SpriteEmitter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\Engine_Struct.cpp">
+      <Filter>99. Defines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SpriterEffectRenderer.cpp">
+      <Filter>01. Utility\06. RenderSystem\SubRenderer\EffectRenderer\SpriteEffectRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -995,9 +1046,6 @@
     <ClInclude Include="..\Public\CustomFont.h">
       <Filter>01. Utility\12. FontSystem\Font</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\IFontService.h">
-      <Filter>01. Utility\98. Services\17. IFontService</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\FontSystem.h">
       <Filter>01. Utility\12. FontSystem</Filter>
     </ClInclude>
@@ -1006,6 +1054,33 @@
     </ClInclude>
     <ClInclude Include="..\Public\RectModel.h">
       <Filter>01. Utility\04. Components\StaticComponent\03. Model\RectModel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EffectData.h">
+      <Filter>01. Utility\13. EffectSystem\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EffectInstance.h">
+      <Filter>01. Utility\13. EffectSystem\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Emitter.h">
+      <Filter>01. Utility\13. EffectSystem\Emmiter\Emitter_Super</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SpriteEmitter.h">
+      <Filter>01. Utility\13. EffectSystem\Emmiter\SpriteEmitter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EffectSystem.h">
+      <Filter>01. Utility\13. EffectSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IEffectService.h">
+      <Filter>01. Utility\98. Services\18. IEffectService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IFontService.h">
+      <Filter>01. Utility\98. Services\17. IFontService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IEffectRenderer.h">
+      <Filter>01. Utility\06. RenderSystem\SubRenderer\EffectRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SpriterEffectRenderer.h">
+      <Filter>01. Utility\06. RenderSystem\SubRenderer\EffectRenderer\SpriteEffectRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

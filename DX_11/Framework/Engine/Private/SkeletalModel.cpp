@@ -156,6 +156,15 @@ MINMAX_BOX CSkeletalModel::Get_LocalBoundingBox()
 	 }
 }
 
+ _float4x4* CSkeletalModel::Get_BoneMatrixPtr(const string& boneName)
+ {
+	 _int Index = m_pData->Find_BoneIndexByName(boneName);
+	 if (Index == -1)  return nullptr;
+	 else {
+		 return &m_FinalMatices[Index];
+	 }
+ }
+
 MINMAX_BOX CSkeletalModel::Get_WorldBoundingBox()
 {
 	MINMAX_BOX wordlBox = m_pData->Get_LocalBoundingBox();

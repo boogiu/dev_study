@@ -35,6 +35,8 @@ public:
 	virtual vector<MINMAX_BOX> Get_MeshBoundingBox()	override;
 	virtual MINMAX_BOX Get_MeshBoundingBox(_uint index)	override;
 	const vector<_float4x4>& Get_BoneMatrices();
+	_float4x4* Get_BoneMatrixPtr(const string& boneName);
+
 	_bool isReadyToDraw()	override;
 
 public:

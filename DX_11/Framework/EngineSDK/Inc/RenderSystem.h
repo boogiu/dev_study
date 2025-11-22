@@ -35,7 +35,9 @@ public:
 	virtual void Add_RenderCommand(const RENDER_COMMAND& command) override;
 	virtual void DrawTo(const string& targetKey, function<void(ID3D11DeviceContext*)> drawCall) override;
 	virtual ID3D11ShaderResourceView* Get_TargetSRV(const string strTag) override;
+
 private:
+	HRESULT Ready_GBuffer();
 	void Process_RenderCommand();
 #pragma endregion
 

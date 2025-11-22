@@ -10,7 +10,7 @@ CPlayerState_OpenInven::CPlayerState_OpenInven()
 HRESULT CPlayerState_OpenInven::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Release_AnimationBlend();
+	Animator->Stop_AnimationBlend();
 	m_pPlayer->Adjust_To_WorldFoward();
 	m_pPlayer->Camera_Zoom_In();
 	m_pPlayer->Open_Inventory();
@@ -28,6 +28,9 @@ HRESULT CPlayerState_OpenInven::OnExit()
 	m_pPlayer->Close_Inventory();
 	m_pPlayer->Get_ControlPack().MsgBag = false;
 	m_pPlayer->Camera_Zoom_Out();
+
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	Animator->Restart_AnimationBlend();
 	return S_OK;
 }
 

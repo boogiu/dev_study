@@ -403,11 +403,17 @@
     <Filter Include="02. GameObjects\13. Env\SkyBox">
       <UniqueIdentifier>{656525ce-c2e5-4a06-b7ec-7cfe2bbe034a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\14. Effect">
+    <Filter Include="04. ClientManager">
+      <UniqueIdentifier>{3745cc6c-2a4a-4bd9-948d-f3262d3a9fe1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. ClientManager\Effect">
       <UniqueIdentifier>{8c08cbc5-c6a5-4a38-9c83-0358dd37006a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\14. Effect\DustEffect">
+    <Filter Include="04. ClientManager\Effect\DustEffect">
       <UniqueIdentifier>{bd3c63b3-91ea-4cc7-ba4c-88278811683a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. ClientManager\Effect\BaseEffect">
+      <UniqueIdentifier>{7622acde-e721-4b57-99c1-29eee793ffb9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -793,7 +799,10 @@
       <Filter>02. GameObjects\13. Env\SkyBox</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\DustEffect.h">
-      <Filter>02. GameObjects\14. Effect\DustEffect</Filter>
+      <Filter>04. ClientManager\Effect\DustEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BaseEffect.h">
+      <Filter>04. ClientManager\Effect\BaseEffect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -982,9 +991,6 @@
     <ClCompile Include="..\Private\ItemSpawner.cpp">
       <Filter>02. GameObjects\07. LevelObject\ItemSpawner</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\EventSystem.cpp">
-      <Filter>02. GameObjects\07. LevelObject\EventListner</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\UI_ItemIcon.cpp">
       <Filter>02. GameObjects\00. Player\Inventory\InvenSlot\ItemIcon</Filter>
     </ClCompile>
@@ -1160,7 +1166,13 @@
       <Filter>02. GameObjects\13. Env\SkyBox</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\DustEffect.cpp">
-      <Filter>02. GameObjects\14. Effect\DustEffect</Filter>
+      <Filter>04. ClientManager\Effect\DustEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BaseEffect.cpp">
+      <Filter>04. ClientManager\Effect\BaseEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EventSystem.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EventListner</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -57,7 +57,7 @@ namespace Engine
 		_uint BoneCount = {};
 	}MESH_INFO_HEADER;
 
-	typedef struct ENGINE_DLL tagSkeletonFileHeader{
+	typedef struct ENGINE_DLL tagSkeletonFileHeader {
 		_uint BoneCount = {};
 	}SKELETON_FILE_HEADER;
 
@@ -102,8 +102,8 @@ namespace Engine
 	/*Animation*/
 	typedef struct ENGINE_DLL tagAnimationClipHeader {
 		_bool					bLoop = { };
-		_float					fDuration = {}; 
-		_float					fTickPerSecond = {}; 
+		_float					fDuration = {};
+		_float					fTickPerSecond = {};
 		_uint					iNumChannels = {};
 		char					ClipName[MAX_PATH];
 	}ANIMATION_CLIP_HEADER;
@@ -124,7 +124,7 @@ namespace Engine
 	typedef struct ENGINE_DLL tagKeyFrame
 	{
 		_float3			vScale;
-		_float4			vRotation = {0,0,0,1};
+		_float4			vRotation = { 0,0,0,1 };
 		_float3			vTranslation;
 		_float				fTrackPosition;
 
@@ -137,11 +137,11 @@ namespace Engine
 			_float fRatio = (nowTrackPosition - fTrackPosition) / (nextFrame.fTrackPosition - fTrackPosition);
 			_float4 nextRot = nextFrame.vRotation;
 
-			_vector nextRotation =XMLoadFloat4(&nextRot);
-			_vector nowRotation =XMLoadFloat4(&vRotation);
+			_vector nextRotation = XMLoadFloat4(&nextRot);
+			_vector nowRotation = XMLoadFloat4(&vRotation);
 
 			if (XMVector4Equal(nextRotation, XMVectorZero()))
-						nextRotation = XMQuaternionIdentity();
+				nextRotation = XMQuaternionIdentity();
 			if (XMVector4Equal(nowRotation, XMVectorZero()))
 				nowRotation = XMQuaternionIdentity();
 
@@ -246,17 +246,17 @@ namespace Engine
 	public:
 		_float3 SizePerTile() {
 			return _float3{
-				(vWorldMax.x - vWorldMin.x)/ iTileCountX,
-				vWorldMax.y-vWorldMin.y,
-				(vWorldMax.z - vWorldMin.z)/ iTileCountZ
+				(vWorldMax.x - vWorldMin.x) / iTileCountX,
+				vWorldMax.y - vWorldMin.y,
+				(vWorldMax.z - vWorldMin.z) / iTileCountZ
 			};
 		};
 
 		_float3 HalfPoint() {
 			return _float3{
-				(vWorldMax.x + vWorldMin.x)*0.5f,
-				(vWorldMax.y + vWorldMin.y)*0.5f,
-				(vWorldMax.z + vWorldMin.z)*0.5f
+				(vWorldMax.x + vWorldMin.x) * 0.5f,
+				(vWorldMax.y + vWorldMin.y) * 0.5f,
+				(vWorldMax.z + vWorldMin.z) * 0.5f
 			};
 		};
 
@@ -264,7 +264,7 @@ namespace Engine
 			return _float3{
 				(vWorldMax.x - vWorldMin.x) ,
 				(vWorldMax.y - vWorldMin.y) ,
-				(vWorldMax.z - vWorldMin.z) 
+				(vWorldMax.z - vWorldMin.z)
 			};
 		};
 		_bool Check_ValidIndex(TILE_INDEX index) {
@@ -329,8 +329,8 @@ namespace Engine
 
 	typedef struct tagAutoTileDesc {
 		_float rotation;
-		NEIGHBOR_INDEX Connectable;         
-		NEIGHBOR_INDEX NeverConnectable;     
+		NEIGHBOR_INDEX Connectable;
+		NEIGHBOR_INDEX NeverConnectable;
 	}AUTO_TILE_DESC;
 
 	typedef struct tagAutoTile {
@@ -375,7 +375,7 @@ namespace Engine
 
 	typedef struct tagCollisionInfoContext {
 		string EventTag = {};
-		class CGameObject* Owner = {nullptr};
+		class CGameObject* Owner = { nullptr };
 	}COLLISION_CONTEXT;
 
 	typedef struct tagUITextInfo {
@@ -383,8 +383,8 @@ namespace Engine
 		_float2		TextPos = {};
 		_float4		TextColor = {};
 		string FontTag;
-		_float Scale = 1.f;     
-		_float Rotation = 0.f;  
+		_float Scale = 1.f;
+		_float Rotation = 0.f;
 		_float2 Origin = { 0.f, 0.f }; // 회전읮 중점
 
 		_bool OutLined = { false };
@@ -419,6 +419,79 @@ namespace Engine
 	};
 
 #pragma pack(pop)
+	enum class EffectPosType { WorldSpace, LocalSpace, BoneSpace };
+	struct EffectRequestPacket {
+		_float3 vStartPosition = {};
+		_float3 vStartScale = { 1,1,1 };
+		_float4 qStartRotation = { 0,0,0,1 };
+
+		_float3 vLocalOffset = { 0,0,0 };
+		_float4 qLocalRotation = { 0,0,0,1 };
+
+		EffectPosType ePosType = { EffectPosType::WorldSpace };
+
+		string levelTag;					// 오브젝트가 있는 레이어
+		string layerTag;					// 오브젝트가 있는 레이어
+		_uint  objectID = 0;							// 오브젝트 고유 id
+		variant<class CSkeletalModel*, class CAnimator3D*> pPayLoad; /*추가적으로 넣고 싶은 것 있다면*/
+		string boneName = "";					// 선택사항
+	};
+
+	struct EffectTransform
+	{
+		_float3 vStartPos = { 0,0,0 };
+		_float3 vStartScale = { 1,1,1 };
+		_float4 qStartRot = { 0,0,0,1 };
+
+		_float3 vLocalOffset = { 0,0,0 };
+		_float4 qLocalRot = { 0,0,0,1 };
+
+		_float3 vWorldPos = { 0,0,0 };
+		_float3 vWorldScale = { 1,1,1 };
+		_float4 qWorldRot = { 0,0,0,1 };
+
+		const _float4x4* pParentMatrix = {};
+		_float4x4 WorldMatrix = {};
+
+		void Apply_Request(EffectRequestPacket packet) {
+			vStartPos = packet.vStartPosition;
+			vStartScale = packet.vStartScale;
+			qStartRot = packet.qStartRotation;
+			vLocalOffset = packet.vLocalOffset;
+			qLocalRot = packet.qLocalRotation;
+		}
+	};
+
+
+	enum class EmitterType { Sprite, Mesh, Particle, };
+	struct EmitterTemplate {
+		EmitterType eType = { EmitterType::Sprite };
+	};
+
+	struct SpriteEmitterData : public EmitterTemplate
+	{
+		string textureName;				// 사용할 텍스처 (스프라이트 시트)
+		_int frameCount = 1;				// 총 프레임
+		_float frameTime = 0.1f;			// 프레임 당 지속 시간
+		_bool loop = false;					// 반복 여부
+		_float lifetime = 1.0f;				// 이펙트 수명
+	};
+
+	struct EffectSpriteDrawDesc
+	{
+		_float4x4 World;
+		string TextureKey;
+		_uint Frame;
+		string PassName;   
+	};
+
+	struct Particle
+	{
+		_float3 vPosition;
+		_float3 vVelocity;
+		_float  fLifeTime;
+		_float  fMaxLifeTime;
+	};
 
 }
 
