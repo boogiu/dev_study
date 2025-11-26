@@ -20,11 +20,15 @@ public:
 	virtual void Submit_Priority(const OPAQUE_PACKET& packet) override { m_pPriorityPass->Submit(packet); };
 	virtual void Submit_UI(const SPRITE_PACKET& packet) override {m_pUIPass->Submit(packet);};
 	virtual void Submit_Debug(const DEBUG_PACKET& packet) override { m_pDebugPass->Submit(packet); };
+	virtual void Submit_Blend(const BLENDED_PACKET& packet)override { m_pBlendedPass->Submit(packet); }; ;
 	virtual HRESULT Add_Palette(const string& ConstantName, class CTexture* pTexture) override;
 
 public:
 	HRESULT Render_LightAcc();
 	HRESULT Render_Combined();
+	HRESULT Render_Blended();
+	void Render_Shadow();
+	HRESULT Render_Final();
 #ifdef _USING_GUI
 	void Render_GUI();
 #endif // _USING_GUI
@@ -32,13 +36,16 @@ public:
 #pragma region RenderTarget
 public:
 	virtual HRESULT Create_RenderTarget(const RenderTargetDesc& desc) override;
-	virtual void Add_RenderCommand(const RENDER_COMMAND& command) override;
+	virtual void Add_RenderCommand(const RENDER_CUSTOM_COMMAND& command) override;
+	virtual void Add_PostProcessCommand(const POST_PROCESS_COMMAND& command)override;
 	virtual void DrawTo(const string& targetKey, function<void(ID3D11DeviceContext*)> drawCall) override;
-	virtual ID3D11ShaderResourceView* Get_TargetSRV(const string strTag) override;
+	virtual ID3D11ShaderResourceView* Get_CustomTargetSRV(const string strTag) override;
+	virtual ID3D11ShaderResourceView* Get_EngineTargetSRV(const string strTag) override;
 
 private:
 	HRESULT Ready_GBuffer();
 	void Process_RenderCommand();
+	void Process_PostProcessQueue();
 #pragma endregion
 
 public:
@@ -49,7 +56,7 @@ public:
 	class CPipeLine* Get_Pipeline() { return m_pPipeLine; }
 
 private:
-	void Render_Shadow();
+
 	HRESULT Change_Viewport(_uint iWidth, _uint iHeight);
 
 private:
@@ -71,10 +78,12 @@ private:
 	OpaquePass* m_pOpaquePass = { nullptr};
 	ShadowPass* m_pShadowPass = { nullptr};
 	InstancePass* m_pInstancePass = { nullptr};
+	BlendedPass* m_pBlendedPass = { nullptr};
 	UIPass* m_pUIPass = { nullptr };
 	DebugPass* m_pDebugPass = { nullptr };
 
-	vector<RENDER_COMMAND> m_RenderCommands;
+	vector<RENDER_CUSTOM_COMMAND> m_RenderCommands;
+	vector<POST_PROCESS_COMMAND> m_PostCommands;
 public:
 	static CRenderSystem* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

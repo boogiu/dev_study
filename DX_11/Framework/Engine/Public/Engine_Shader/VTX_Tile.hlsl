@@ -346,33 +346,29 @@ PS_OUT PS_TILE_INSTANCE(PS_INSTATNCE_IN In)
     
      return Out;
 }
+
 PS_OUT PS_TILE_INSTANCE_DBUG(PS_INSTATNCE_IN In)
 {
     PS_OUT Out;
-   
-    vector Diffuse;
-    float2 worldSize = vMax - vMin;
-    float2 WorldUV = (In.vWorldPos.xz - vMin) / worldSize;
-
-    float2 uv = frac(WorldUV * repeatCount);
-    vector Mask = g_MaskTexture.Sample(LinearSampler, uv);
-    vector Mask2 = g_MaskTexture.Sample(LinearSampler, WorldUV);
-    vector Palette = g_PaletteTexture.Sample(DefaultSampler, float2(PalettePixel.x, PalettePixel.y));
-    vector Palette2 = g_PaletteTexture.Sample(LinearSampler,
-    float2(PalettePixel.x + (1 - Mask2.r) * Mask2.b, PalettePixel.y));
-    vector Grd = (Palette * (1 - Mask.a) + (Palette2) * (Mask.a));
-    Diffuse = Grd;
-    if (Diffuse.a < 0.2f)
-        discard;
-    Out.vDiffuse = float4(In.iMtlType.xyz, .4);
-    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+       vector Diffuse;
     
-    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
- 
-    vNormal = mul(vNormal, WorldMatrix);
+    //if (In.iMtlType.y == -1.f)
+    //{
+    //    Diffuse = float4(0.6, 0.6, 0.2, 0.8);
+    //}
+    //    
+    //else if(In.iMtlType.y == -2.f)
+    //{
+    //    Diffuse = float4(0.f, 0.6, 0.6, 0.8);
+    //}
+    //else if (In.iMtlType.x == 1.f)
+    //{
+    //    Diffuse = float4(1.6, 0.6, 0.2, 0.8);
+    //}
+    //else
+    //    discard;
     
-    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDiffuse = Diffuse;
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
     
     return Out;

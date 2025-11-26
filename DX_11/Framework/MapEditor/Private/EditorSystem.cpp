@@ -185,7 +185,7 @@ void CEditorSystem::ConvertMaterial(string brushType, TILE_INDEX Index)
 {
 	_float4 vPos = m_pTileSystem->Get_PositionByIndex(Index, ANCHOR::Center); {
 		if (brushType == "Base_0") {
-			m_pTileSystem->Set_Material_ID(Index, { 1.f,1.f,0.f,0.f });
+			m_pTileSystem->Set_Material_ID(Index, { 1.f,0.f,0.f,0.f });
 			m_pTileSystem->Change_CornerHeight(Index, m_EditorContext.ObjHeight, m_EditorContext.ObjHeight, m_EditorContext.ObjHeight, m_EditorContext.ObjHeight);
 		}
 
@@ -275,7 +275,7 @@ void CEditorSystem::Editing_TileInfo()
 			//m_pTileSystem.
 			DebugIndex tile{ index,m_pTileSystem->Get_InstanceInfoByIndex(index).vMaterialType };
 			m_selectedIndex.push_back(tile);
-			m_pTileSystem->Set_Material_ID(index, { 0,-1,0,0 });
+			m_pTileSystem->Set_Material_ID(index, { 0,-2,0,0 });
 		}
 
 	}
@@ -285,7 +285,7 @@ void CEditorSystem::Editing_TileInfo()
 
 void CEditorSystem::Clear_Index()
 {
-	for (auto info : m_selectedIndex) {
+	for (auto& info : m_selectedIndex) {
 		m_pTileSystem->Set_Material_ID(info.index, info.saveMtl);
 	}
 	m_selectedIndex.clear();
@@ -293,7 +293,7 @@ void CEditorSystem::Clear_Index()
 
 void CEditorSystem::Adjust_Height()
 {
-	for (auto index : m_selectedIndex) {
+	for (auto& index : m_selectedIndex) {
 		_float4 cornerHeight = m_EditorContext.m_fConerHeight;
 		m_pTileSystem->Change_CornerHeight(index.index, cornerHeight.x, cornerHeight.y, cornerHeight.z, cornerHeight.w);
 	}
@@ -453,5 +453,4 @@ void CEditorSystem::Free()
 {
 	__super::Free();
 	Safe_Release(m_pGrid);
-	Safe_Release(m_pDirectoryPanel);
 }

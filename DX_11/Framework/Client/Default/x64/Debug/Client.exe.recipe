@@ -2,21 +2,27 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\dev_study\DX_11\Framework\Client\Bin\Client.exe</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\Client.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Client\Bin\ShaderFiles\PlayerShader.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\PlayerShader.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Client\Bin\ShaderFiles\Sky_Shader.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\PostProcess.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Client\Bin\ShaderFiles\UI_PartsShader.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\Sky_Shader.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\dev_study\DX_11\Framework\Client\Bin\ShaderFiles\VTX_NorTexEffect.cso</FullPath>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\UI_PartsShader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\VTX_EffectMesh.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\DevStudy\DX_11\Framework\Client\Bin\ShaderFiles\VTX_NorTexEffect.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />

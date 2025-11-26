@@ -89,7 +89,7 @@ HRESULT CAIMaterial::Initialize(const aiMaterial* pAIMaterial, const string& fil
 		Link_Texture(G_GlobalLevelKey, to_string(m_MaterialDataID) + fileName, textureType);
 	}
 
-	m_passConstant = "Opaque";
+	m_passConstant = "ForceSee";
 
 	for (size_t i = 0; i < MAX_TEXTURE_TYPE_VALUE; i++)
 	{
@@ -135,7 +135,6 @@ void CAIMaterial::Save_MaterialData(ID3D11DeviceContext* pContext, ofstream& ofs
 		}
 	}
 }
-
 void CAIMaterial::Render_GUI()
 {
 	vector<string> passes = m_pShader->Get_PassList();
@@ -144,7 +143,6 @@ void CAIMaterial::Render_GUI()
 
 	float childWidth = ImGui::GetContentRegionAvail().x;//->이건 넓이 설정
 	ImGui::SetNextItemWidth(childWidth);
-
 	if (ImGui::BeginCombo(string("##shaderPass").c_str(), passes[m_currentPassIndex].c_str())) {
 		for (int i = 0; i < passes.size(); ++i) {
 			bool isSelected = (i == m_currentPassIndex);

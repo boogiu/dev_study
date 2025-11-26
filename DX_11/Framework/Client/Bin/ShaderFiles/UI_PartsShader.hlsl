@@ -106,6 +106,8 @@ PS_OUT PS_MAIN(PS_IN In)
     
     vDiffuse.rgb *= vDiffuse.a; // premultiply º¸Á¤
     Out.vColor = vDiffuse;
+    if (Out.vColor.a < 0.1f)
+        discard;
     return Out;
 }
 
@@ -127,6 +129,8 @@ PS_OUT PS_MASKING_UI(PS_IN In)
         discard;
     
     Out.vColor = vDiffuse - vDiffuse * (vMasking.r) * 0.3;
+    if (Out.vColor.a < 0.1f)
+        discard;
     return Out;
 }
 
@@ -142,6 +146,8 @@ PS_OUT PS_MASKING_INSIDE_UI(PS_IN In)
     vector vMasking = UI_MaskTexture.Sample(PointClampSampler, In.vTexcoord);
 
     Out.vColor = vDiffuse - vDiffuse * (vMasking.a);
+    if (Out.vColor.a < 0.1f)
+        discard;
     return Out;
 }
 
@@ -162,7 +168,8 @@ PS_OUT PS_MASKING_FlOW(PS_IN In)
         discard;
     
     Out.vColor = vDiffuse + vDiffuse * (vMasking.r) * 0.4;
-    
+    if (Out.vColor.a < 0.1f)
+        discard;
     return Out;
 }
 

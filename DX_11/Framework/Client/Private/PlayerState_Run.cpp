@@ -65,11 +65,19 @@ void CPlayerState_Run::OnUpdate(_float dt)
 			m_fDuration = 0;
 		}
 	}
+
+	m_fRunTime += dt;
+
+	if (m_fRunTime > 0.7f) {
+		Request_Dust();
+		m_fRunTime = 0.f;
+	}
 }
 
 HRESULT CPlayerState_Run::OnExit()
 {
 	m_bFliping = false;
+	m_fRunTime = 0.f;
 	return S_OK;
 }
 
@@ -97,6 +105,14 @@ CState* CPlayerState_Run::HandleTransition()
 void CPlayerState_Run::Render_State()
 {
 	ImGui::Text("Last Axis : X : %.1f, Z : %.1f", m_vLastAxis.x, m_vLastAxis.y);
+}
+
+void CPlayerState_Run::Request_Dust()
+{
+	EffectData data;
+	data.ReqPosition = m_pPlayer->Get_Position();
+	data.FxPosition = m_pPlayer->Get_Position();
+	m_pPlayer->Request_Effect("Effect_Dust", data);
 }
 
 _uint CPlayerState_Run::Get_InputMask() const

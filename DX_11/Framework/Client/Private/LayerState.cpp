@@ -14,20 +14,26 @@ void CLayerState::Excute(CState* rootState)
 	m_pCurrent = rootState;
 	m_pCurrent->OnEnter();
 }
+
 void CLayerState::Update(_float dt)
 {
+	if (!m_pCurrent)
+		return; 
+
 	CState* next = nullptr;
 	CState* state = m_pCurrent;
 
 	next = state->HandleTransition();
 
-	if (next && next != m_pCurrent)
+	if (next != nullptr && next != m_pCurrent)
 	{
-		HRESULT exit = m_pCurrent->OnExit();
+		if(m_pCurrent)
+			HRESULT exit = m_pCurrent->OnExit();
 
 		m_pCurrent = next;
 
-		HRESULT enter = m_pCurrent->OnEnter();
+		if (m_pCurrent)
+			HRESULT enter = m_pCurrent->OnEnter();
 	}
 
 	m_pCurrent->OnUpdate(dt);
@@ -96,10 +102,10 @@ CLayerState* CLayerState::Create()
 
 void CLayerState::Free()
 {
-	__super::Free();
 
 	for (auto& States : m_States) {
 		Safe_Release(States.second);
 	}
 	m_States.clear();
+	__super::Free();
 }

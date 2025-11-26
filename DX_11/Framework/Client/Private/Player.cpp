@@ -39,6 +39,8 @@
 #include "InsectSpawner.h"
 #include "EventSystem.h"
 #include "NonPlayer.h"
+#include "EffectSpawner.h"
+
 CPlayer::CPlayer()
 {
 }
@@ -93,6 +95,10 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 
 	CMaterialInstance* CheekInstance = Get_Component<CMaterial>()->Find_MaterialByName("mCheek");
 	CheekInstance->Override_Pass("CheekShader");
+
+	CMaterialInstance* SocksInstance = Get_Component<CMaterial>()->Find_MaterialByName("mSocks");
+	SocksInstance->Override_Pass("SkinShader");
+
 
 	for (auto& instance : Get_Component<CMaterial>()->Get_Material_Instance()) {
 		instance->Get_MaterialData()->Link_Shader("GamePlay_Level", "PlayerShader.hlsl");
@@ -234,7 +240,7 @@ void CPlayer::Update_Movement(_float dt)
 	if (fabs(DeltaDegree) > 150.f)
 		m_MovementPack.bFliping = true;
 
-	if (fabs(DeltaDegree) > 6.f) {
+	if (fabs(DeltaDegree) > 7.f) {
 		if (m_MovementPack.bFliping)
 			m_MovementPack.fCurrentDegree -= RotSpeed;
 		else
@@ -248,7 +254,6 @@ void CPlayer::Update_Movement(_float dt)
 	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
 	m_MovementPack.fPlayerHeight = (TileSys->Get_TileHeightByPosition(Get_Position()) - Get_Position().y);
 	m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(m_MovementPack.fCurrentDegree));
-
 }
 
 void CPlayer::Update_TileInfo(_float dt)
@@ -738,6 +743,10 @@ void CPlayer::Add_PartObjects()
 	pBottomDesc->pPlayer = this;
 	pBottomDesc->ClothType = "PlayerBottomsPantsNormal";
 
+	CClothParts::CLOTHES_DESC* pSandleDesc = new CClothParts::CLOTHES_DESC;
+	pSandleDesc->pPlayer = this;
+	pSandleDesc->ClothType = "ShoesSandalZori7";
+
 	m_InfoPack.pRightHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
 		.Add_ObjDesc(pRHandDesc)
 		.Build("Right_Hand");
@@ -757,11 +766,15 @@ void CPlayer::Add_PartObjects()
 		.Add_ObjDesc(pTopDesc)
 		.Build("Top");
 
-	Adjust_Cloth_Material(pTop, "Work_mTops", "mTops");
+	Adjust_Cloth_Material(pTop, "Jersey_mTops", "mTops");
 	CGameObject* pBottom = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ClothParts" })
 		.Add_ObjDesc(pBottomDesc)
 		.Build("Bottom");
-	Adjust_Cloth_Material(pBottom, "Sweat_mBottoms", "mBottoms");
+	Adjust_Cloth_Material(pBottom, "JerseyPants_mBottoms", "mBottoms");
+
+	CGameObject* pSandle = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ClothParts" })
+		.Add_ObjDesc(pSandleDesc)
+		.Build("Bottom");
 
 	CGameObject* pGlass = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_GlassParts" })
 		.Add_ObjDesc(pGlassDesc)
@@ -773,10 +786,9 @@ void CPlayer::Add_PartObjects()
 	Get_Component<CObjectContainer>()->Add_Child(pHairCap, false);
 	Get_Component<CObjectContainer>()->Add_Child(pTop, true);
 	Get_Component<CObjectContainer>()->Add_Child(pBottom, true);
+	Get_Component<CObjectContainer>()->Add_Child(pSandle, true);
 	Get_Component<CObjectContainer>()->Add_Child(pGlass, false);
 
-	CGameObject* pEffect = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_BaseEffect" }).Scale({ 10,10,10 }).Position({ 0,0,5 }).Build("Effect_Test");
-	Get_Component<CObjectContainer>()->Add_Child(pEffect, true);
 }
 
 void CPlayer::Add_Inventory()
@@ -882,6 +894,15 @@ void CPlayer::OnEventAction(const BaseEvent& event)
 			m_InfoPack.pObjectOnLeftHand = evt.pCapturedFish;
 		}
 	}
+}
+
+void CPlayer::Request_Effect(const string& tag, const EffectData& data) 
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	if (!nowLevel)
+		return;
+	auto effectSys = nowLevel->Get_LevelObject<CEffectSpawner>();
+	effectSys->Request_Effect(tag, data);
 }
 
 void CPlayer::Open_Craft()

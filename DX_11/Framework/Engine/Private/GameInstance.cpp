@@ -229,7 +229,6 @@ HRESULT CGameInstance::Draw()
 {
 	m_pRenderSystem->Render();
 	m_pLevelManager->Render(m_pDeviceContext);
-	m_pFontSystem->Render_Font();
 #if defined _DEBUG
 	m_pCollisionSystem->Render_Debug();
 #endif

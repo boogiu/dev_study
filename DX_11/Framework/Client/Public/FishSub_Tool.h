@@ -36,6 +36,7 @@ public:
 public:
     void Sync_Bont_To_Rod(_float4x4* pOwnerMatrix);
     void Missed();
+    void Pong(_float4 Pos);
 
 private:
     void FollowBone(_float dt);
@@ -53,7 +54,11 @@ private:
     _float4 m_vVelocity= {};
 
     /*Flow*/
+    _float m_vFlowY= {};
+    _float4 m_vBasePos= {};
+    _float m_ExternFlow = {};
     _float m_fFloatingTime = {};
+    _float m_fFloatingElapseTime = {};
     _float m_fReturnTime = {};
 
     class CFish_Object* m_pTarget = { nullptr };

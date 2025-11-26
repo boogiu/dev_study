@@ -15,6 +15,8 @@ CEffectInstance::CEffectInstance()
 
 void CEffectInstance::Play(CEffectData* data, const EffectRequestPacket& req)
 {
+	Reset();
+
 	/*인스턴스 초기화 단계*/
 	m_Data = data;
 	m_fLifeTime = 0.f;
@@ -23,27 +25,36 @@ void CEffectInstance::Play(CEffectData* data, const EffectRequestPacket& req)
 
 	m_Transform.Apply_Request(req);
 	m_Emitters.clear();
-	auto& EmitterDatas = data->Get_EmitterData();
-	m_Emitters.resize(EmitterDatas.size());
 
-	for (auto& data : EmitterDatas)
+	auto& SpriteEmitterDatas = m_Data->Get_SpriteEmitterData();
+
+	for (size_t i = 0; i < SpriteEmitterDatas.size(); ++i)
 	{
-		CEmitter* pEmitter = { nullptr };
-		switch (data->eType)
-		{
-		case Engine::EmitterType::Sprite:
-			pEmitter =  CSpriteEmitter::Create(data);
-			break;
-		case Engine::EmitterType::Mesh:
-			break;
-		case Engine::EmitterType::Particle:
-			break;
-		default:
-			break;
-		}
+		CEmitter* pEmitter = nullptr;
+		pEmitter = CSpriteEmitter::Create(SpriteEmitterDatas[i]);
+		m_Emitters.push_back(pEmitter);
+	}
+}
 
-		if (pEmitter)
-			m_Emitters.push_back(pEmitter);
+void CEffectInstance::MakePreset(const EffectDataPreset& preset, const EffectRequestPacket& req)
+{
+	Reset();
+
+	m_Data = CEffectData::Create(preset);
+	m_fLifeTime = 0.f;
+	m_fDuration = m_Data->Get_Durate();
+	m_bAlive = true;
+
+	m_Transform.Apply_Request(req);
+	m_Emitters.clear();
+
+	auto& SpriteEmitterDatas = m_Data->Get_SpriteEmitterData();
+
+	for (size_t i = 0; i < SpriteEmitterDatas.size(); ++i)
+	{
+		CEmitter* pEmitter = nullptr;
+		pEmitter = CSpriteEmitter::Create(SpriteEmitterDatas[i]);
+		m_Emitters.push_back(pEmitter);
 	}
 }
 
@@ -77,6 +88,23 @@ void CEffectInstance::Render()
 _bool CEffectInstance::IsAlive()
 {
 	return m_bAlive && (m_fLifeTime < m_fDuration);
+}
+
+void CEffectInstance::Reset()
+{
+	Safe_Release(m_Data);
+
+	m_Request = {};
+	m_fLifeTime = {};
+	m_fDuration = {};
+	m_bAlive = false;
+
+	for (auto Emitter : m_Emitters)
+	{
+		Safe_Release(Emitter);
+	}
+
+	m_Transform = {};
 }
 
 void CEffectInstance::Update_Transform()
@@ -119,7 +147,7 @@ void CEffectInstance::Update_Transform()
 						m_Transform.vLocalOffset.y,
 						m_Transform.vLocalOffset.z);
 
-				finalMatrix = LocalMatrix * parentMat * offset;
+				finalMatrix = LocalMatrix* offset * parentMat;
 			}
 		}
 	}
@@ -127,6 +155,8 @@ void CEffectInstance::Update_Transform()
 	{
 		finalMatrix = LocalMatrix;
 	}
+
+	XMStoreFloat4x4(&m_Transform.WorldMatrix, finalMatrix);
 }
 
 CEffectInstance* CEffectInstance::Create()
@@ -137,4 +167,11 @@ CEffectInstance* CEffectInstance::Create()
 void CEffectInstance::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_Data);
+
+	for (auto Emitter : m_Emitters)
+	{
+		Safe_Release(Emitter);
+	}
 }

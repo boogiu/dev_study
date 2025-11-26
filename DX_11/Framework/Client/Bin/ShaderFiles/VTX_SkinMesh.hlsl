@@ -2,6 +2,7 @@
 float2 leafPalette = { 0.25,0.3};
 float4x4 fWind_Matrix ;
 float fFishAlpha ;
+float2 PaletteIndex;
 
 struct VS_IN
 {
@@ -159,6 +160,7 @@ struct PS_OUT
     vector vDiffuse : SV_TARGET0;
     vector vNormal : SV_TARGET1;
     vector vDepth : SV_TARGET2;
+    vector vEmission : SV_TARGET3;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -181,6 +183,7 @@ PS_OUT PS_MAIN(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz*0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
 
     return Out;
 }
@@ -206,6 +209,7 @@ PS_OUT PS_SKIN(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
 
     return Out;
 }
@@ -233,6 +237,7 @@ PS_OUT PS_TREE(PS_IN In)
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
  Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
 
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
 
     return Out;
 }
@@ -261,11 +266,12 @@ PS_OUT PS_LEAF(PS_IN In)
     }
     else
         discard;
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
 
     return Out;
 }
 
-PS_OUT PS_FLOWER(PS_IN In)
+PS_OUT PS_GRASS(PS_IN In)
 {
     PS_OUT Out;
     
@@ -288,9 +294,11 @@ PS_OUT PS_FLOWER(PS_IN In)
     }
     else
         discard;
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
 
     return Out;
 }
+
 PS_OUT PS_FORCE(PS_IN In)
 {
     PS_OUT Out;
@@ -299,18 +307,59 @@ PS_OUT PS_FORCE(PS_IN In)
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDiffuse = (1.f,1.f,1.f,1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     return Out;
 }
 
+
+PS_OUT PS_GRAD(PS_IN In)
+{
+    PS_OUT Out;
+    vector vMtrlDiffuse = GradationTexture.Sample(DefaultSampler, PaletteIndex);
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
+    return Out;
+}
 
 PS_OUT PS_FISH(PS_IN In)
 {
     PS_OUT Out;
     Out.vDiffuse = float4(0.f, 0.f, 0.f, fFishAlpha);
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     return Out;
 }
 
+
+PS_OUT PS_FLOWER(PS_IN In)
+{
+    PS_OUT Out;
+
+    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMixture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vGrdDiffuse = GradationTexture.Sample(DefaultSampler, float2(vMixture.r, vMixture.b));
+    vector vOpacity = OpacityTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (vOpacity.a > 0)
+    {
+        Out.vDiffuse = vMtrlDiffuse + vGrdDiffuse;
+        vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+        float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+
+        vNormal = mul(vNormal, WorldMatrix);
+    
+        Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+        Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    }
+    else
+        discard;
+    
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
+    return Out;
+}
 
 struct VS_OUT_SHADOW
 {
@@ -407,6 +456,15 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_LEAF();
     }
+    pass Grass
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_GRASS();
+    }
     pass Flower
     {
         SetRasterizerState(RS_Default);
@@ -416,7 +474,6 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_FLOWER();
     }
-
     pass Fish
     {
         SetRasterizerState(RS_Default);
@@ -435,6 +492,15 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_NOCURVE_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_FORCE();
+    }
+    pass Gradation
+    {
+        SetRasterizerState(RS_NoCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_NOCURVE_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_GRAD();
     }
     pass Shadow
     {

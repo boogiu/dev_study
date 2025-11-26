@@ -123,6 +123,7 @@ HRESULT CPlayerStateMachine::Initialize()
 void CPlayerStateMachine::Update(_float dt)
 {
 	for (auto& LayerState : m_LayerStates) {
+		if(LayerState.second)
 		LayerState.second->Update(dt);
 	}
 	auto Animator = m_pOwner->Get_Component<CAnimator3D>();

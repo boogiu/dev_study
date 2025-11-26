@@ -73,14 +73,20 @@ cbuffer ShadowBuffer : register(b8)
 
 cbuffer CurvedWorldBuffer : register(b10)
 {
-    float CurveStrength = { 0.45};
-    float PlanetRadius = { 900};
+    //float CurveStrength = { 0.65};
+    //float PlanetRadius = { 900};
+    
+    float CurveStrength = { 0.f };
+    float PlanetRadius = {1000 };
 };
 
 struct BoneMatrix
 {
     matrix BoneMat;
 };
+
+float3 ShallowColor = float3(0.38, 0.60, 0.85); // ¹à°í ¿Á»ö ¡æ ¾èÀº ¹Ù´Ù
+float3 DeepColor = float3(0.35, 0.55, 0.75); // ´õ ¾îµÎ¿î ÆÄ¶û ¡æ ±íÀº ¹Ù´Ù
 
 struct TileIndex
 {

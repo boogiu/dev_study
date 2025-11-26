@@ -24,6 +24,7 @@ public:
 
 private:
     _float m_fIdleTime = {} ;
+    _float m_fIdleDuration = {} ;
 public:
     static CNpcStateHub_Idle* Create();
     virtual void Free();

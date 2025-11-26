@@ -14,6 +14,13 @@ HRESULT CPlayerState_CraftAction::OnEnter()
 	Animator->Change_Animation("Etc_DiyCreating.anim");
 	m_eState = Start;
 	m_pPlayer->Adjust_To_Foward();
+
+	auto transform = 	m_pPlayer->Get_Component<CTransform>();
+
+	_float4 forward = m_pPlayer->Get_InfoPack().pEncounter->Get_Position();
+	forward.y += 10.f;
+	
+	m_pPlayer->Request_Effect("Effect_Craft", { forward,forward });
 	return S_OK;
 }
 
@@ -29,7 +36,7 @@ void CPlayerState_CraftAction::OnUpdate(_float dt)
 	case Client::CPlayerState_CraftAction::Start:
 		m_ElapsedTime += dt;
 		pItem->Attach_Hand(m_pPlayer->Get_InfoPack().pLeftHand->Get_Component<CTransform>()->Get_WorldMatrix_Ptr());
-		if (m_ElapsedTime > 2.5f) {
+		if (m_ElapsedTime > 3.5f) {
 			m_eState = Finished;
 			Animator->Change_Animation("Etc_DiyFinish.anim");
 			m_ElapsedTime = 0;

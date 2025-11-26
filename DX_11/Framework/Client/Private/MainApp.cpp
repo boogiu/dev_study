@@ -4,10 +4,15 @@
 
 #include "MainApp.h"
 #include "GameInstance.h"
+#include "IResourceService.h"
 
 #include "LoadingLevel.h"
 #include "LogoLevel.h"
 #include "GamePlayLevel.h"
+
+#include "Loading_Background.h"
+#include "Loading_Island.h"
+#include "Loading_Icon.h"
 
 CMainApp::CMainApp()
 {
@@ -35,7 +40,7 @@ HRESULT CMainApp::Initialize()
 	}
 	
 	Set_Levels();
-
+	Add_Neccesary();
 	m_pGameInstance->Get_LevelMgr()->Request_ChangeLevel("Logo_Level"); //로고 레벨로 시작!
 
 #ifdef  _USING_GUI
@@ -62,7 +67,7 @@ HRESULT CMainApp::Render()
 
 void CMainApp::Set_Levels() //레벨 등록 함수 ->등록 끝내면
 {
-	m_pGameInstance->Get_LevelMgr()->Register_Level("Loading_Level", []()->CLevel* {return CLoadingLevel::Create("Loading_Level"); });
+ 	m_pGameInstance->Get_LevelMgr()->Register_Level("Loading_Level", []()->CLevel* {return CLoadingLevel::Create("Loading_Level"); });
 	m_pGameInstance->Get_LevelMgr()->Register_Level("Logo_Level", []()->CLevel* {return CLogoLevel::Create("Logo_Level"); });
 	m_pGameInstance->Get_LevelMgr()->Register_Level("GamePlay_Level", []()->CLevel* {return CGamePlayLevel::Create("GamePlay_Level"); });
 	/*이후로 계속*/
@@ -70,7 +75,21 @@ void CMainApp::Set_Levels() //레벨 등록 함수 ->등록 끝내면
 	m_pGameInstance->Get_LevelMgr()->Set_LoadingLevel("Loading_Level"); //로딩 레벨을 설정함
 	m_pGameInstance->Notify_LevelSet(); //레벨 세팅 끝났음을 알림 (게임 인스턴스에게)
 } //게임 진행되기 전에 레벨 모두 등록시켜두고. 로딩 레벨 있으면 설정해두고. 그다음에 레벨 설정 끝났다고 인스탄스한테 알려주면
+
 //얘가 레벨과 관련된 시스템 설정을 함께 돌리는거지.  난 로딩도 이렇게 해./ 노티파이는 클라이언트 단에서. 싱크 투는 엔진 단에서.
+
+void CMainApp::Add_Neccesary()
+{
+	auto pProtoMgr = CGameInstance::GetInstance()->Get_PrototypeMgr();
+	pProtoMgr = m_pGameInstance->Get_PrototypeMgr();
+	pProtoMgr->Add_ProtoType(G_GlobalLevelKey, "GamePlay_UI_Loading", CLoading_Background::Create());
+	pProtoMgr->Add_ProtoType(G_GlobalLevelKey, "GamePlay_UI_Loading_Island", CLoading_Island::Create());
+	pProtoMgr->Add_ProtoType(G_GlobalLevelKey, "GamePlay_UI_Loading_Icon", CLoading_Icon::Create());
+
+	CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath("UI_BackGround.png", "../../Resources/UI/BackGround.png");
+	CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath("UI_LoadingIsland.png", "../../Resources/UI/LoadingIsland.png");
+	CGameInstance::GetInstance()->Get_ResourceMgr()->Add_ResourcePath("UI_ScreenMaskUp.png", "../../Resources/UI/ScreenMaskUp.png");
+}
 
 CMainApp* CMainApp::Create()
 {

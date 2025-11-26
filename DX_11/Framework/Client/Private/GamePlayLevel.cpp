@@ -59,9 +59,10 @@
 #include "InsectSpawner.h"
 #include "UI_Responcer.h"
 #include "EventSystem.h"
+#include "UI_Transition.h"
 #include "NpcSpawner.h"
 #include "DialogueManager.h"
-
+#include "EffectSpawner.h"
 #include "SkyBox.h"
 #include "DustEffect.h"
 
@@ -89,25 +90,29 @@ HRESULT CGamePlayLevel::Initialize()
 	Add_LevelObject<CEventSystem>();
 	Add_LevelObject<CFishSpawner>()->Link_ItemSpawner(Get_LevelObject<CItemSpawner>());
 	Add_LevelObject<CFishSpawner>()->Read_FishData("../../Resources/Data/FishData.json");
+	Add_LevelObject<CEffectSpawner>();
+	Add_LevelObject<CUI_Transition>();
 
 	CMapLoader::Load_ModelData();
+	m_pLoader = CMapLoader::Create();
 	return S_OK;
 }
 
 HRESULT CGamePlayLevel::Awake()
 {
-	m_pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 550,0,550 }).Build("Player");
+	m_pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 850,0,850 }).Build("Player");
 	Add_LevelObject<CUI_Responcer>();
 
 	Get_LevelObject<CInsectSpawner>()->Read_InsectData(L"../../Resources/Data/InsectData.json");
 	Get_LevelObject<CInsectSpawner>()->Set_Target(m_pPlayer);
 
 	Get_LevelObject<CDialogueManager>()->Set_FreindSystem(
-		Get_LevelObject<CEventSystem>(), 
+		Get_LevelObject<CEventSystem>(),
 		Get_LevelObject<CUI_Responcer>(),
 		Get_LevelObject<CNpcSpawner>());
 
-	CMapLoader::Load_MapData("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });
+	//CMapLoader::Load_MapData("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });
+	m_pLoader->Reserved_Load("../../Resources/Data/MapData.dat", { "GamePlay_Level", "Field_Layer" });
 
 	CGameObject* pFreeCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_FreeCamera" })
 		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
@@ -116,20 +121,19 @@ HRESULT CGamePlayLevel::Awake()
 
 	CAMERA_DESC desc;
 	desc.fAspect = (float)Client::g_iWinSizeX / Client::g_iWinSizeY;
-	desc.fFar =1500;
+	desc.fFar = 1500;
 	desc.fNear = 1.f;
 	desc.fFov = 90.f;
 
 	CGameObject* pSunCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Sun" })
 		.Camera(desc)
-		
 		.Build("Sun");
 
-	
-	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"너굴", { 560,0,550 },"GamePlay_GameObject_NpcRco");
-	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"밤톨", { 590,0,560 },"GamePlay_GameObject_NpcRcm");
-	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"잭슨", { 570,0,550 },"GamePlay_GameObject_NpcNrm");
-	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"KK", { 590,0,550 },"GamePlay_GameObject_NpcNrm");
+
+	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"너굴", { 560,0,550 }, "GamePlay_GameObject_NpcRco");
+	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"밤톨", { 590,0,560 }, "GamePlay_GameObject_NpcRcm");
+	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"잭슨", { 570,0,550 }, "GamePlay_GameObject_NpcNrm");
+	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"KK", { 590,0,550 }, "GamePlay_GameObject_NpcNrm");
 
 	m_pObjectManager->Add_Object(m_pPlayer, { "GamePlay_Level", "Player_Layer" });
 	m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
@@ -137,6 +141,8 @@ HRESULT CGamePlayLevel::Awake()
 	m_pObjectManager->Add_Object(Get_LevelObject<CInsectSpawner>(), { "GamePlay_Level", "Level_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CFishSpawner>(), { "GamePlay_Level", "Level_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CUI_Responcer>(), { "GamePlay_Level", "Level_Layer" });
+	m_pObjectManager->Add_Object(Get_LevelObject<CEffectSpawner>(), { "GamePlay_Level", "Level_Layer" });
+	m_pObjectManager->Add_Object(Get_LevelObject<CUI_Transition>(), { "GamePlay_Level", "Level_Layer" });
 
 	/*레이어에 넣었으니, 애드레프 +1*/CInsectSpawner* pSpawner = Get_LevelObject<CInsectSpawner>();
 	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pSpawner);
@@ -144,6 +150,10 @@ HRESULT CGamePlayLevel::Awake()
 	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pFishSpawner);
 	/*레이어에 넣었으니, 애드레프 +1*/CUI_Responcer* pUI_Responcer = Get_LevelObject<CUI_Responcer>();
 	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pUI_Responcer);
+	/*레이어에 넣었으니, 애드레프 +1*/CEffectSpawner* pEffectSpawner = Get_LevelObject<CEffectSpawner>();
+	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pEffectSpawner);
+	/*레이어에 넣었으니, 애드레프 +1*/CUI_Transition* pCUI_Transition = Get_LevelObject<CUI_Transition>();
+	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pCUI_Transition);
 
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(pSunCamera->Get_Component<CCamera>());
@@ -155,7 +165,15 @@ HRESULT CGamePlayLevel::Awake()
 
 void CGamePlayLevel::Update()
 {
+	m_pLoader->Load_Sequential({ "GamePlay_Level", "Field_Layer" });
+	m_pLoader->Load_Sequential({ "GamePlay_Level", "Field_Layer" });
+
 	m_pSky->Get_Component<CTransform>()->Set_Pos(m_pPlayer->Get_Position());
+
+	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_F4)) {
+		//Get_LevelObject<CEffectSpawner>()->Request_Effect("Effect_WaterSplash", { m_pPlayer->Get_Position(),m_pPlayer->Get_Position() });
+		Get_LevelObject<CUI_Transition>()->Set_Active();
+	}
 }
 
 HRESULT CGamePlayLevel::Render()
@@ -177,6 +195,8 @@ void CGamePlayLevel::PreLoad_Level()
 	/*PlayerShader*/
 	pRcsMgr->Add_ResourcePath("PlayerShader.hlsl", "../Bin/ShaderFiles/PlayerShader.hlsl");
 	pRcsMgr->Add_ResourcePath("Sky_Shader.hlsl", "../Bin/ShaderFiles/Sky_Shader.hlsl");
+	pRcsMgr->Add_ResourcePath("VTX_EffectMesh.hlsl", "../Bin/ShaderFiles/VTX_EffectMesh.hlsl");
+	pRcsMgr->Add_ResourcePath("PostProcess.hlsl", "../Bin/ShaderFiles/PostProcess.hlsl");
 
 	/*Add Palette*/
 	pRcsMgr->Add_ResourcePath("mGrass_Grd.dds", "../../Resources/Palette/mGrass_Grd.dds");
@@ -197,11 +217,10 @@ void CGamePlayLevel::PreLoad_Level()
 
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Item/Tool/FishingRod/Sub");
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Item/Tool/FishingRod/Sub");
-
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Item/Tool/FishingRod/Animation","FishingRod");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Item/Tool/FishingRod/Animation", "FishingRod");
 
 	/*Player Anim Path*/
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Movement","Player");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Movement", "Player");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Interaction", "Player");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Base", "Player");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Player/Animations/Transfer", "Player");
@@ -221,6 +240,10 @@ void CGamePlayLevel::PreLoad_Level()
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/NpcSpTkk/Animation", "NpcSpTkk");
 	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/NonPlayer/NpcNmlCat23/Animation", "NpcNmlCat23");
 
+	/*Effect*/
+	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Effect");
+	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Effect");
+
 	/*Env*/
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Env");
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Env");
@@ -239,8 +262,8 @@ void CGamePlayLevel::PreLoad_Level()
 	/*Insect  Path*/
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Insect");
 	ClientHelper::Add_MaterialPathFromDirectory("../../Resources/Models/Insect");
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Insect/ButterFly","InsectAgehacho");
-	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Insect/DragonFly","InsectAkiakane");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Insect/ButterFly", "InsectAgehacho");
+	ClientHelper::Add_AnimPathFromDirectory("../../Resources/Models/Insect/DragonFly", "InsectAkiakane");
 
 	/*Fish*/
 	ClientHelper::Add_ModelPathFromDirectory("../../Resources/Models/Fish");
@@ -251,8 +274,8 @@ void CGamePlayLevel::PreLoad_Level()
 	/*Texture Path*/
 	ClientHelper::Add_TexturePathFromDirectory("../../Resources/UI");
 	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Models/MenuLayout");
-	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Models/Player/Top/YShirsL/Work");
-	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Models/Player/Bottom/Normal/Sweat");
+	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Models/Player/Top/YShirsL/Jersey");
+	ClientHelper::Add_TexturePathFromDirectory("../../Resources/Models/Player/Bottom/Normal/JerseyPants");
 
 	/*Object_Prototype*/
 	auto pProtoMgr = CGameInstance::GetInstance()->Get_PrototypeMgr();
@@ -307,8 +330,7 @@ void CGamePlayLevel::PreLoad_Level()
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Fish", CFish_Object::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_SkyBox", CSkyBox::Create());
-
-	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_BaseEffect", CDustEffect::Create());
+	
 }
 
 CGamePlayLevel* CGamePlayLevel::Create(const string& LevelKey)
@@ -325,4 +347,5 @@ void CGamePlayLevel::Free()
 {
 	__super::Free();
 	Safe_Release(m_pGameInstance);
+	Safe_Release(m_pLoader);
 }

@@ -118,6 +118,11 @@ HRESULT CMaterialInstance::Reset_Constant()
 	return S_OK;
 }
 
+void CMaterialInstance::ChangeTexture(TEXTURE_TYPE type, _uint index)
+{
+	m_TextureIndexs[static_cast<_uint>(type)]= index;
+}
+
 HRESULT CMaterialInstance::Reset_Pass()
 {
 	override_Pass = m_pMaterialData->Get_PassConstant();

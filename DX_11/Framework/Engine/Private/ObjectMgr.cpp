@@ -20,8 +20,6 @@ HRESULT CObjectMgr::Initialize()
 
 void CObjectMgr::Pre_EngineUpdate(_float dt)
 {
- 
-
 	for (auto& pair : m_Layers)
 		for (auto& layers : pair.second)
 			layers.second->Pre_EngineUpdate(dt);

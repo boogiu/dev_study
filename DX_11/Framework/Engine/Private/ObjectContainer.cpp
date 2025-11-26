@@ -34,19 +34,19 @@ HRESULT CObjectContainer::Initialize(COMPONENT_DESC* pArg)
 void CObjectContainer::Priority_UpdateChild(_float dt)
 {
 	for (auto& child : m_ChildrenObjects)
-		if (child) child->Priority_Update(dt);
+		if (child && child->Is_Alive()) child->Priority_Update(dt);
 }
 
 void CObjectContainer::UpdateChild(_float dt)
 {
 	for (auto& child : m_ChildrenObjects) 
-		if (child) child->Update(dt);
+		if (child && child->Is_Alive()) child->Update(dt);
 }
 
 void CObjectContainer::Late_UpdateChild(_float dt)
 {
 	for (auto& child : m_ChildrenObjects)
-		if (child) child->Late_Update(dt);
+		if (child && child->Is_Alive()) child->Late_Update(dt);
 }
 
 	/*자식 전체 순회 -> 효율 떨어짐*/
@@ -102,6 +102,9 @@ _int CObjectContainer::Find_IndexByID(_uint ObjectID)
 		return static_cast<_int>(iter->second);
 	}
 }
+
+/*IParent-> vector<CGamObject*> m_CHilds*/
+/*UPdate_Child(dt)*/
 
 _int CObjectContainer::Add_Child(CGameObject* pObject, _bool SyncTransform )
 {

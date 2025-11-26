@@ -21,11 +21,23 @@ public:
     void Late_Update(_float dt) override;
     virtual void Render_GUI()override;
 
+public:
+    virtual  _bool isEffectActive() { return false; };
+    virtual  void Set_DeActive();
+    virtual  void Set_ReActive(const EffectData& data);
+
+    virtual  void Reset() {};
+    string Get_Tag() { return m_EffectTag; }
+    void Set_Tag(const string& tag) { m_EffectTag = tag; };
+
 protected:
     _float m_fLifeTime = {};
+    string m_EffectTag = {};
     CMaterialInstance* m_pMaterial_Instance = { nullptr };
 
 public:
+    static CBaseEffect* Create();
+    CGameObject* Clone(INIT_DESC* pArg) override;
     void Free() override;
 };
 

@@ -91,6 +91,17 @@ CMaterialInstance* CMaterial::Get_MaterialInstanceByName(const string& MaterialN
 	return *iter;
 }
 
+CMaterialInstance* CMaterial::Get_MaterialInstance(_uint Index)
+{
+	if (m_MaterialInstances.empty())
+		return nullptr;
+
+	if (Index >= m_MaterialInstances.size())
+		return nullptr;
+
+	return m_MaterialInstances[Index];
+}
+
 const string& CMaterial::GetPassConstant(_uint subsetIndex)
 {
 	return m_MaterialInstances[subsetIndex]->Get_PassConstant();

@@ -60,13 +60,6 @@ HRESULT CAutoTile::Initialize(INIT_DESC* pArg)
 	tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_TILE | TILE_FLAG::FLAG_WALKABLE));
 	tileSys->Remove_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED));
 
-	if (m_BaseTypeName.find("River") != string::npos) {
-		tileSys->Set_Material_ID(m_Index, { 0,0,0,0 });
-		tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_RIVER));
-
-		auto FishSpawner =CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CFishSpawner>();
-		FishSpawner->Notice_River(m_Index);
-	}
 	return S_OK;
 }
 
@@ -117,6 +110,14 @@ HRESULT CAutoTile::Link_Data(const string& folderName)
 		MaterialName = folderName + ".mat";
 	}
 
+	if (m_BaseTypeName.find("River") != string::npos) {
+		auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
+		tileSys->Set_Material_ID(m_Index, { 0,0,0,0 });
+		auto FishSpawner = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CFishSpawner>();
+		FishSpawner->Notice_River(m_Index);
+		tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_RIVER));
+
+	}
 	return hr;
 }
 

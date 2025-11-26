@@ -100,7 +100,7 @@ void CInstanceModel::Link_InstanceMeshAll(_uint InstanceIndex)
 {
 	for (size_t i = 0; i < m_pModelData->Get_MeshCount(); i++)
 	{
-		m_MapMeshWithInstance.emplace(i, InstanceIndex);
+		m_MapMeshWithInstance[i] = InstanceIndex;
 	}
 }
 

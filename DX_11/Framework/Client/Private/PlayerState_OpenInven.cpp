@@ -39,6 +39,7 @@ CState* CPlayerState_OpenInven::HandleTransition()
 	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap('I')) {
 		return m_pLayer->Get_State("Movement_Idle_State");
 	}
+	return nullptr;
 }
 
 void CPlayerState_OpenInven::Render_State()

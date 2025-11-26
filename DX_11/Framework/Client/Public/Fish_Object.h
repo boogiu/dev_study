@@ -72,6 +72,7 @@ private:
     _uint m_BiteCount = {  };
     _uint m_NowBiteCount = {  };
     _float m_fBiteTime = {};
+    _float m_fEffectTime = {};
 
     class CFishSub_Tool* m_pTarget = { nullptr };
     _float4x4* m_pOwnerMatrix = { nullptr };

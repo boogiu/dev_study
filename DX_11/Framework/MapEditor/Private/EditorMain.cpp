@@ -56,7 +56,7 @@ void CEditorMain::Update(_float dt)
 
 HRESULT CEditorMain::Render()
 {
-	_float4 color = { 0.2f,0.2f,0.2f,1.f };
+	_float4 color = { 0.1f,0.3f,0.5f,1.f };
 	m_pGameInstance->Draw_Begin(&color);
 	m_pGameInstance->Draw();
 	m_pGameInstance->Draw_End();

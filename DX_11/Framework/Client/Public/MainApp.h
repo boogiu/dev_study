@@ -20,6 +20,8 @@ public:
 	void Set_Levels();
 	
 private:
+	void Add_Neccesary();
+private:
 	CGameInstance* m_pGameInstance = { nullptr };
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pDeviceContext = {nullptr};

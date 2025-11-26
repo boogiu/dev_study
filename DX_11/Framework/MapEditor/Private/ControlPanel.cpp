@@ -209,5 +209,6 @@ CControlPanel* CControlPanel::Create(GUI_CONTEXT* context)
 }
 void CControlPanel::Free()
 {
+	__super::Free();
 	Safe_Release(m_pGrid);
 }

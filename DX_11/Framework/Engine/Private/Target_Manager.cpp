@@ -45,7 +45,15 @@ HRESULT CTarget_Manager::Begin_MRT(const string& strMRTTag)
 	};
 	m_pContext->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, pSRV);
 
-	m_pContext->OMGetRenderTargets(1, &m_pBackBufferRTV, &m_pDSV);
+	SavedState state;
+	m_pContext->OMGetRenderTargets(
+		1,
+		&state.pPrevRTV,
+		&state.pPrevDSV
+	);
+	m_pContext->RSGetViewports(&state.NumViewports, &state.PrevViewPort);
+	m_SaveEngineStates.push(state);
+
 	ID3D11RenderTargetView* pRenderTargets[8] = {};
 	UINT iNumRenderTargets = 0;
 
@@ -73,12 +81,20 @@ HRESULT CTarget_Manager::Begin_MRT(const string& strMRTTag)
 
 HRESULT CTarget_Manager::End_MRT()
 {
-	ID3D11RenderTargetView* pRTVs[8] = { m_pBackBufferRTV };
+	//ID3D11RenderTargetView* pRTVs[8] = { m_pBackBufferRTV };
+	//m_pContext->OMSetRenderTargets(8, pRTVs, m_pDSV);
+	//
+	//Safe_Release(m_pBackBufferRTV);
+	//Safe_Release(m_pDSV);
 
-	m_pContext->OMSetRenderTargets(8, pRTVs, m_pDSV);
+	SavedState state = m_SaveEngineStates.top();
+	m_SaveEngineStates.pop();
 
-	Safe_Release(m_pBackBufferRTV);
-	Safe_Release(m_pDSV);
+	m_pContext->OMSetRenderTargets(1, &state.pPrevRTV, state.pPrevDSV);
+	m_pContext->RSSetViewports(state.NumViewports, &state.PrevViewPort);
+	Safe_Release(state.pPrevRTV);
+	Safe_Release(state.pPrevDSV);
+
 	return S_OK;
 }
 
@@ -94,6 +110,104 @@ HRESULT CTarget_Manager::Get_TargetParam(const string& strTargetTag, SHADER_PARA
 
 	return S_OK;
 }
+
+ID3D11DepthStencilView* CTarget_Manager::Get_MTR_DSV(const string& strMRTTag)
+{
+	vector<CRenderTarget*>& pMRTList = Find_MRT(strMRTTag);
+
+	if (pMRTList.empty()) {
+		MSG_BOX("There is No Render Target  : CTarget_Manager");
+		return nullptr;
+	}
+
+	if (pMRTList.size() > 8) {
+		MSG_BOX("MRT Size Was Over 8  : CTarget_Manager");
+		return nullptr;
+	}
+	return pMRTList[0]->Get_DSV();
+}
+HRESULT CTarget_Manager::Bind_Targets(const vector<string>& targetNames, bool clearColor, bool clearDepth)
+{
+	if (targetNames.empty())
+		return E_FAIL;
+
+	SavedState saved;
+	m_pContext->OMGetRenderTargets(1, &saved.pPrevRTV, &saved.pPrevDSV);
+	m_pContext->RSGetViewports(&saved.NumViewports, &saved.PrevViewPort);
+	m_SaveEngineStates.push(saved);
+
+	vector<CRenderTarget*> bindTargets;
+	bindTargets.reserve(targetNames.size());
+
+	for (auto& key : targetNames)
+	{
+		auto& mrtList = Find_MRT(key);      
+		if (!mrtList.empty())               
+		{
+			for (auto& pTarget : mrtList)
+				bindTargets.push_back(pTarget);
+			continue;
+		}
+
+		CRenderTarget* pTarget = Get_CustomTarget(key);
+		if (!pTarget)
+			pTarget = Get_EngineTarget(key);
+
+		if (!pTarget)
+		{
+			return E_FAIL;
+		}
+
+		bindTargets.push_back(pTarget);
+	}
+
+	ID3D11RenderTargetView* RTVs[8] = { nullptr };
+	ID3D11DepthStencilView* dsv = nullptr;
+	UINT count = 0;
+
+	for (CRenderTarget* target : bindTargets)
+	{
+		if (count >= 8) break;
+		RTVs[count++] = target->Get_RTV();
+		if (!dsv) dsv = target->Get_DSV();
+	}
+
+	for (auto& target : bindTargets)
+		if (clearColor) target->Clear();
+
+	if (dsv && clearDepth)
+		m_pContext->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+
+	if (count == 0 && dsv)
+	{
+		m_pContext->OMSetRenderTargets(0, nullptr, dsv);
+		return S_OK;
+	}
+
+	m_pContext->OMSetRenderTargets(count, RTVs, dsv);
+	return S_OK;
+}
+
+
+
+HRESULT CTarget_Manager::Restore_Targets()
+{
+	if (m_SaveEngineStates.empty())
+		return E_FAIL;
+
+	SavedState state = m_SaveEngineStates.top();
+	m_SaveEngineStates.pop();
+
+	// 원래 상태 복원
+	m_pContext->OMSetRenderTargets(1, &state.pPrevRTV, state.pPrevDSV);
+	m_pContext->RSSetViewports(state.NumViewports, &state.PrevViewPort);
+
+	Safe_Release(state.pPrevRTV);
+	Safe_Release(state.pPrevDSV);
+
+	return S_OK;
+}
+
 
 #ifdef _USING_GUI
 void CTarget_Manager::Render_GUI()
@@ -129,6 +243,32 @@ void CTarget_Manager::Render_GUI()
 					{
 						ImGui::Image((ImTextureID)pSRV,
 							ImVec2(1280 / 5, 720 / 5));
+
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::BeginTooltip();
+
+							// 원본 렌더타겟 크기 가져오기
+							auto desc = *pRT->Get_ViewPort();
+							float w = (float)desc.Width;
+							float h = (float)desc.Height;
+
+							// 너무 크면 화면 넘치니까 스케일 다운
+							float maxPreview = 600.f;
+							float scale = 1.f;
+
+							if (w > maxPreview || h > maxPreview)
+							{
+								scale = maxPreview / max(w, h);
+							}
+
+							ImVec2 previewSize(w * scale, h * scale);
+
+							// 확대 이미지 출력
+							ImGui::Image((ImTextureID)pSRV, previewSize);
+
+							ImGui::EndTooltip();
+						}
 					}
 					ImGui::TreePop();
 				}
@@ -240,6 +380,16 @@ CRenderTarget* CTarget_Manager::Get_CustomTarget(const string& strTargetTag)
 	return iter->second;
 }
 
+CRenderTarget* CTarget_Manager::Get_EngineTarget(const string& strTargetTag)
+{
+	auto	iter = m_EngineRenderTargets.find(strTargetTag);
+
+	if (iter == m_EngineRenderTargets.end())
+		return nullptr;
+
+	return iter->second;
+}
+
 void CTarget_Manager::Push_Target(const string& key)
 {
 	SavedState state;
@@ -251,7 +401,7 @@ void CTarget_Manager::Push_Target(const string& key)
 	);
 	m_pContext->RSGetViewports(&state.NumViewports, &state.PrevViewPort);
 
-	m_SaveStates.push(state);
+	m_SaveCustomStates.push(state);
 
 	CRenderTarget* target = Get_CustomTarget(key);
 	ID3D11RenderTargetView* rtv = target->Get_RTV();
@@ -266,10 +416,10 @@ void CTarget_Manager::Push_Target(const string& key)
 
 void CTarget_Manager::Pop_Target()
 {
-	if (m_SaveStates.empty()) return;
+	if (m_SaveCustomStates.empty()) return;
 
-	SavedState state = m_SaveStates.top();
-	m_SaveStates.pop();
+	SavedState state = m_SaveCustomStates.top();
+	m_SaveCustomStates.pop();
 
 	m_pContext->OMSetRenderTargets(1, &state.pPrevRTV, state.pPrevDSV);
 	m_pContext->RSSetViewports(state.NumViewports, &state.PrevViewPort);

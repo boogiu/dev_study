@@ -32,7 +32,7 @@ private:
 
 	CGameObject* m_pSky = { nullptr };
 	CGameObject* m_pPlayer = { nullptr };
-
+	class CMapLoader* m_pLoader = { nullptr };
 public:
 	static CGamePlayLevel* Create(const string& LevelKey);
 	virtual void Free() override;

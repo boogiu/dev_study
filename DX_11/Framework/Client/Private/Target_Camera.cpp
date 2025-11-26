@@ -35,20 +35,18 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 	_float4 TagetPos = m_pTarget->Get_Position();
 
 	m_pTransform->Set_Pos({ TagetPos.x, 50,	TagetPos.z + 50 });
-	m_pTransform->LookAt({ TagetPos.x, 0,	TagetPos.z - 10 });
-
+	m_vBaseLookPos = { TagetPos.x, 0,	TagetPos.z - 10 ,1.f };
 	m_vOffset = {0,50,50,1.f};
 	m_vZoomInOffset = { 0,15,50,0 };
 	m_fCurrentLookY = 0;
 
-
 	LIGHT_DESC desc = {};
 	desc.vLightPosition = { 0,20,0,0 };
 	desc.fLightRange = 150.0f;
-	desc.vLightDirection = _float4(-1.f, -1.f, -1.f, 0.f);
-	desc.vLightDiffuse = _float4(.8f, .8f, .8f, 1.f);
-	desc.vLightAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-	desc.vLightSpecular = _float4(0.6f, 0.6f, 0.6f, 1.f);
+	desc.vLightDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	desc.vLightDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	desc.vLightAmbient = _float4(0.9f, 0.9f, 0.9f, 1.f);
+	desc.vLightSpecular = _float4(0.f, 1.f, 0.f, 1.f);
 
 	Get_Component<CLight>()->Set_Desc(desc, LIGHT_TYPE::DIRECTIONAL);
 
@@ -183,18 +181,19 @@ void CTarget_Camera::Zoom_Out(_float dt)
 
 	_float3 LookPos;
 	XMStoreFloat3(&LookPos, target_Pos);
-	// LookY¸¦ 0À¸·Î ÃµÃµÈ÷ º¹±Í
+
 	if (XMVectorGetX(XMVector3Length(Origin_Pos - MoveDir)) < 0.1f)
 	{
 		m_pTransform->Set_Pos(m_vBasePos);
+		m_pTransform->LookAt(XMLoadFloat4(&m_vBaseLookPos));
 		m_fCurrentLookY = 0.f;
 		m_eState = FOLLOW;
-		Get_Component<CCamera>()->Lerp_FOV(60.f, dt * 5);
+		Get_Component<CCamera>()->Set_FOV(60.f);
 		return;
 	}
+	Get_Component<CCamera>()->Lerp_FOV(60.f, dt * 5);
 
 	m_pTransform->LookAt(XMLoadFloat4(&m_vBaseLookPos));
-
 	m_pTransform->Set_Pos(DstPos);
 
 	// FOV º¹±Í
@@ -249,14 +248,15 @@ void CTarget_Camera::Follow_Target(_float dt)
 	_vector cam_Pos = m_pTransform->Get_Pos(); //Now Pso
 
 	//Move Lerp
-	_vector MoveDir = XMVectorLerp(cam_Pos, target_Pos + Offset, dt * 10);
+	_vector MoveDir = XMVectorLerp(cam_Pos, target_Pos + Offset, dt * 15);
 
 	_float3 DstPos;
 	XMStoreFloat3(&DstPos, MoveDir);
 
 	m_pTransform->Set_Pos(DstPos);
-	XMStoreFloat4(&m_vBasePos, target_Pos + Offset);
-	XMStoreFloat4(&m_vBaseLookPos, XMVectorSet(XMVectorGetX(target_Pos), 0.f, XMVectorGetZ(target_Pos)+10, 0.f));
+	XMStoreFloat4(&m_vBasePos, MoveDir);
+	m_pTransform->LookAt({ XMVectorGetX(MoveDir), 5,	XMVectorGetZ(MoveDir)-50});
+	XMStoreFloat4(&m_vBaseLookPos, { XMVectorGetX(MoveDir),5,	XMVectorGetZ(MoveDir) - 50 });
 }
 
 void CTarget_Camera::Shake_Cam(_float dt)
@@ -306,6 +306,7 @@ void CTarget_Camera::Render_GUI()
 {
 	__super::Render_GUI();
 	ImGui::InputFloat3("Offset", reinterpret_cast<_float*>(&m_vOffset));
+	ImGui::InputFloat4("LookAt", reinterpret_cast<_float*>(&m_vBaseLookPos));
 }
 
 CTarget_Camera* CTarget_Camera::Create()

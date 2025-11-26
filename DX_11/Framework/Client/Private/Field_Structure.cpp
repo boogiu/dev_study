@@ -68,7 +68,9 @@ HRESULT CField_Structure::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<s
 	if (FAILED(hr)) {
 		int i = 0;
 	}
-
+	Get_Component<CSkeletalModel>()->Hide_MehsByName("mWinterSnow-mesh");
+	Get_Component<CSkeletalModel>()->Hide_MehsByName("mWinterSnow");
+	Get_Component<CSkeletalModel>()->Hide_MehsByName("Snow");
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	auto Box = Get_Component<CModel>()->Get_WorldBoundingBox();
 	auto Indecies = tileSystem->Get_IndeciesByArea(

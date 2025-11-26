@@ -40,9 +40,11 @@ private:
 private:
     _bool   m_bActive = { false };
     UI_State m_eState = { Closed };
+    CraftData m_SelectedData = {};
 
     _float xCardSize    ={};
     _float yCardSize={};
+    _float m_fDeactiveTime={};
 
     _uint m_CardCount = {13};
     _int m_Col = {5};

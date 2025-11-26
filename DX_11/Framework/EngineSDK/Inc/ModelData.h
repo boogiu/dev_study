@@ -24,6 +24,7 @@ public:
 	const _uint Get_ElementCount(_uint DrawIndex);
 	const string_view Get_ElementKey(_uint DrawIndex);
 	_bool isSkinned() { return (m_pSkeleton != nullptr); }
+	_int Find_MeshIndex(const string& name);
 #pragma endregion 
 
 #pragma region Skeleton

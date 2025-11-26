@@ -1,8 +1,5 @@
 #include "Shader_Define.hlsl"
 
-float3 ShallowColor = float3(0.38, 0.60, 0.85); // ¹à°í ¿Á»ö ¡æ ¾èÀº ¹Ù´Ù
-float3 DeepColor = float3(0.35, 0.55, 0.75); // ´õ ¾îµÎ¿î ÆÄ¶û ¡æ ±íÀº ¹Ù´Ù
-
 float fWaveTime;
 float fFade;
 
@@ -192,7 +189,7 @@ PS_OUT PS_RIVER(PS_IN In)
     vector diffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     vector Mix = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    Out.vDiffuse = Mix.a * diffuse;
+    Out.vDiffuse = float4(Mix.a * diffuse.xyz, diffuse.a);
     Out.vDiffuse += float4((1 - Mix.a) * ShallowColor, 1);
     
     vector vNormalDesc = NormalTexture.Sample(LinearSampler, In.vTexcoord);
@@ -212,7 +209,7 @@ PS_OUT PS_WAVE(PS_IN In)
 {
     PS_OUT Out;
 
-    vector vIdxMap = IndexMap.Sample(LinearSampler, In.vTexcoord);
+    vector vIdxMap = IndexMap.Sample(DefaultSampler, In.vTexcoord);
     float4 waterColor = float4(vIdxMap.b * DeepColor + (1 - vIdxMap.b) * ShallowColor, 1.f);
     
     float u = frac(In.vTexcoord.x); // X ·¡ÇÎ
@@ -241,12 +238,13 @@ PS_OUT PS_WAVE(PS_IN In)
 PS_OUT PS_SEA_WAVE(PS_IN In)
 {
     PS_OUT Out;
-    vector vNormalDesc = NormalTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y + fWaveTime));
+    vector vNormalDesc = NormalTexture.Sample(LinearSampler, float2(In.vTexcoord.x, 
+    In.vTexcoord.y + fWaveTime));
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
     
     float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
-    
+    Out.vDiffuse = float4(ShallowColor,1.f);
     Out.vNormal = float4(vNormal * 0.5f + 0.5f, 1.0f);
     Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0, 1);
     return Out;
@@ -255,7 +253,7 @@ PS_OUT PS_SEA_WAVE(PS_IN In)
 PS_OUT PS_BEACH(PS_IN In)
 {
     PS_OUT Out;
-    vector Index = IndexMap.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
+    vector Index = IndexMap.Sample(DefaultSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
     vector Diffuse = DiffuseTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
     vector AlbGry = AlbedoGrayTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
     
@@ -377,7 +375,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_RIVER();

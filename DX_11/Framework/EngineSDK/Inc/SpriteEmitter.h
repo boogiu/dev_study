@@ -9,7 +9,7 @@ private:
     ~CSpriteEmitter() DEFAULT;
 
 public:
-    HRESULT Initialize(EmitterTemplate* pData);
+    HRESULT Initialize(SpriteEmitterData Data);
     void Update(float dt, const EffectTransform& transform) override;
     void Render() override;
 
@@ -18,10 +18,11 @@ private:
     EffectTransform   m_Transform;
 
     _float m_Time = 0.f;
-    _int m_CurrentFrame = 0;
+    _uint m_CurrentFrame = 0;
     _bool m_Alive = true;
+
 public:
-    static CSpriteEmitter* Create(EmitterTemplate* pData);
+    static CSpriteEmitter* Create(SpriteEmitterData Data);
     void Free() override;
 };
 

@@ -376,23 +376,20 @@
     <Filter Include="01. Utility\13. EffectSystem\Emmiter">
       <UniqueIdentifier>{19db3335-68d8-4bef-b978-9f101768aa09}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\13. EffectSystem\Emmiter\SpriteEmitter">
-      <UniqueIdentifier>{42208758-8bed-4f62-930a-61a2cbbede3b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\13. EffectSystem\Emmiter\Emitter_Super">
       <UniqueIdentifier>{bfd47b8e-1309-409b-ae6e-4556c116accc}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Utility\98. Services\18. IEffectService">
       <UniqueIdentifier>{0e79a0ca-8ef4-406e-9ea3-5fa00caea621}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\06. RenderSystem\SubRenderer">
-      <UniqueIdentifier>{926eff0a-3cb7-4a1d-9f24-729f473e2649}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\06. RenderSystem\SubRenderer\EffectRenderer">
+    <Filter Include="01. Utility\13. EffectSystem\EffectRenderer">
       <UniqueIdentifier>{50155776-2044-44ed-9a50-1eee6e9affb1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\06. RenderSystem\SubRenderer\EffectRenderer\SpriteEffectRenderer">
+    <Filter Include="01. Utility\13. EffectSystem\EffectRenderer\SpriteEffectRenderer">
       <UniqueIdentifier>{e282906e-e411-4a86-8a0c-b1a9b70dba1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\13. EffectSystem\Emmiter\SpriteEmitter">
+      <UniqueIdentifier>{42208758-8bed-4f62-930a-61a2cbbede3b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -693,8 +690,8 @@
     <ClCompile Include="..\Public\Engine_Struct.cpp">
       <Filter>99. Defines</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\SpriterEffectRenderer.cpp">
-      <Filter>01. Utility\06. RenderSystem\SubRenderer\EffectRenderer\SpriteEffectRenderer</Filter>
+    <ClCompile Include="..\Private\SpriteEffectRenderer.cpp">
+      <Filter>01. Utility\13. EffectSystem\EffectRenderer\SpriteEffectRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1077,10 +1074,10 @@
       <Filter>01. Utility\98. Services\17. IFontService</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\IEffectRenderer.h">
-      <Filter>01. Utility\06. RenderSystem\SubRenderer\EffectRenderer</Filter>
+      <Filter>01. Utility\13. EffectSystem\EffectRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\SpriterEffectRenderer.h">
-      <Filter>01. Utility\06. RenderSystem\SubRenderer\EffectRenderer\SpriteEffectRenderer</Filter>
+    <ClInclude Include="..\Public\SpriteEffectRenderer.h">
+      <Filter>01. Utility\13. EffectSystem\EffectRenderer\SpriteEffectRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1115,6 +1112,9 @@
       <Filter>98. Default_HLSL</Filter>
     </FxCompile>
     <FxCompile Include="..\Public\Engine_Shader\VTX_UI.hlsl">
+      <Filter>98. Default_HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Public\Engine_Shader\SpriteEffectShader.hlsl">
       <Filter>98. Default_HLSL</Filter>
     </FxCompile>
   </ItemGroup>

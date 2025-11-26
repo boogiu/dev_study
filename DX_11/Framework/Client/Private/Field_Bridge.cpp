@@ -67,6 +67,7 @@ HRESULT CField_Bridge::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<stri
 	for (auto idx : Indecies)
 	{
 		tileSystem->Add_TileFlagByIndex(idx, static_cast<_uint>(TILE_FLAG::FLAG_BRIDGE));
+		tileSystem->Remove_TileFlagByIndex(idx, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_RIVER));
 	}
 
 	return hr;

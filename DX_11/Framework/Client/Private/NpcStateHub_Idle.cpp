@@ -6,6 +6,7 @@
 #include "NpcState_Idle_Wait.h"
 #include "NpcState_Idle_LookAround.h"
 
+#include "Helper_Func.h"
 CNpcStateHub_Idle::CNpcStateHub_Idle()
 {
 }
@@ -21,6 +22,7 @@ HRESULT CNpcStateHub_Idle::Initialize()
 
 HRESULT CNpcStateHub_Idle::OnEnter()
 {
+	m_fIdleDuration = Helper::Get_Random_Float(3.f, 10.f);
 	auto EvtPack = m_pCharacter->Get_EventPack();
 	return m_pCurrentState->OnEnter();
 }
@@ -48,7 +50,7 @@ CState* CNpcStateHub_Idle::HandleTransition()
 		return m_pLayer->Get_State("State_Hub_Interact");
 	}
 
-	else if (m_fIdleTime > 10.f) {
+	else if (m_fIdleTime > m_fIdleDuration) {
 		return m_pLayer->Get_State("State_Hub_Move");
 	}
 	

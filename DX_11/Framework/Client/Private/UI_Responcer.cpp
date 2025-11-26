@@ -2,6 +2,7 @@
 #include "UI_Responcer.h"
 #include "GameInstance.h"
 #include "UI_Object.h"
+#include "UI_Transition.h"
 CUI_Responcer::CUI_Responcer()
 {
 }
@@ -83,6 +84,7 @@ void CUI_Responcer::DeActive_UI(string uiName, void* pArg)
 	else
 		iter->second->UI_DeActive(pArg);
 }
+
 
 void CUI_Responcer::Render_GUI()
 {

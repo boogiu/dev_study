@@ -33,11 +33,15 @@ public:
 
 public:
 	vector<_uint>& Get_TextureIndex() { return m_TextureIndexs; }
+	void ChangeTexture(TEXTURE_TYPE type, _uint index);
+	void Set_Blended(_bool blend) { m_IsBlended = blend; };
+	_bool IsBlened() { return m_IsBlended; }
 
 public:
 	virtual void Render_GUI();
 
 private:
+	_bool m_IsBlended = { false };
 	vector<_uint> m_TextureIndexs;
 	unordered_map<string, SHADER_PARAM> m_DynamicSlots;
 

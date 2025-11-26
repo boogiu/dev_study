@@ -143,7 +143,9 @@ PS_OUT PS_MAIN(PS_IN In)
     PS_OUT Out;
     
     vector vDiffuse = SpriteTexture.Sample(LinearSampler, In.vTexcoord);
-    
+        
+    if (vDiffuse.a < 0.1f)
+        discard;
     Out.vColor = vDiffuse ;
     return Out;
 }
@@ -154,8 +156,11 @@ PS_OUT PS_MAIN_GRAD(PS_IN In)
     
     vector vDiffuse = SpriteTexture.Sample(LinearSampler, In.vTexcoord);
     vector vGrad = UI_GradationTexture.Sample(LinearSampler, In.vTexcoord);
-    
+
     Out.vColor = vDiffuse + vDiffuse * (vGrad.r) * 0.2f;
+    
+    if (Out.vColor.a < 0.1f)
+        discard;
     return Out;
 }
 
@@ -176,6 +181,8 @@ PS_OUT PS_MASKING_UI(PS_IN In)
         discard;
     
     Out.vColor = vDiffuse - vDiffuse*(vMasking.r)*0.1;
+    if (Out.vColor.a < 0.1f)
+        discard;
     return Out;
 }
 
@@ -189,6 +196,8 @@ PS_OUT PS_MASKING_INSIDE_UI(PS_IN In)
     vector vMasking = UI_MaskTexture.Sample(PointClampSampler, In.vTexcoord);
 
     Out.vColor = vDiffuse - vDiffuse * (vMasking.a);
+    if (Out.vColor.a < 0.1f)
+        discard;
     return Out;
 }
 
@@ -198,6 +207,8 @@ PS_OUT PS_TEXTURE_TILE(PS_IN In)
     vector vDiffuse = SpriteTexture.Sample(PointClampSampler, In.vTexcoord);
     
     Out.vColor = vDiffuse ;
+    if (Out.vColor.a < 0.1f)
+        discard;
     return Out;
 }
 

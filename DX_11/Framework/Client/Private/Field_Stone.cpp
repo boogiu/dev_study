@@ -14,6 +14,7 @@
 #include "ITileService.h"
 #include "Item_Object.h"
 #include "Helper_Func.h"
+#include "EffectSpawner.h"
 CField_Stone::CField_Stone()
 {
 }
@@ -54,6 +55,9 @@ void CField_Stone::Update(_float dt)
 		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
 		auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 		tileSystem->Remove_TileFlagByIndex(m_SyncedIndex, static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_STONE));
+		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+		auto EffectSys = nowLevel->Get_LevelObject<CEffectSpawner>();
+		EffectSys->Request_Effect("Effect_RagDolStone", { Get_Position(), Get_Position() });
 		m_eState = END;
 	}
 }

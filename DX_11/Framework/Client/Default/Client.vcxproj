@@ -133,10 +133,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_REALESEDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../../EngineSDk/Inc/;../Public/;../../EngineSDk/Inc/GUI_Inc/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -170,6 +172,12 @@
     <ClInclude Include="..\..\EngineSDK\Inc\GUI_Inc\ImZoomSlider.h" />
     <ClInclude Include="..\Public\AutoTile.h" />
     <ClInclude Include="..\Public\BaseEffect.h" />
+    <ClInclude Include="..\Public\BurryingGround.h" />
+    <ClInclude Include="..\Public\CraftChildEffect.h" />
+    <ClInclude Include="..\Public\CraftEffect.h" />
+    <ClInclude Include="..\Public\CraftTwinkle.h" />
+    <ClInclude Include="..\Public\DumpParts.h" />
+    <ClInclude Include="..\Public\DumpSmoke.h" />
     <ClInclude Include="..\Public\DustEffect.h" />
     <ClInclude Include="..\Public\ClientHelper.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
@@ -179,6 +187,7 @@
     <ClInclude Include="..\Public\CraftCard.h" />
     <ClInclude Include="..\Public\DialoguePanel.h" />
     <ClInclude Include="..\Public\DialogueManager.h" />
+    <ClInclude Include="..\Public\EffectSpawner.h" />
     <ClInclude Include="..\Public\EventSystem.h" />
     <ClInclude Include="..\Public\Event_Structs.h" />
     <ClInclude Include="..\Public\FieldHole.h" />
@@ -195,6 +204,8 @@
     <ClInclude Include="..\Public\GameModeController.h" />
     <ClInclude Include="..\Public\GamePlayLevel.h" />
     <ClInclude Include="..\Public\Glass_Acc.h" />
+    <ClInclude Include="..\Public\GroundDump.h" />
+    <ClInclude Include="..\Public\GroundPart.h" />
     <ClInclude Include="..\Public\HairCapParts.h" />
     <ClInclude Include="..\Public\HairParts.h" />
     <ClInclude Include="..\Public\HubState.h" />
@@ -205,6 +216,9 @@
     <ClInclude Include="..\Public\LayerState.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\LoadingLevel.h" />
+    <ClInclude Include="..\Public\Loading_Background.h" />
+    <ClInclude Include="..\Public\Loading_Icon.h" />
+    <ClInclude Include="..\Public\Loading_Island.h" />
     <ClInclude Include="..\Public\LogoLevel.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MapLoader.h" />
@@ -258,8 +272,12 @@
     <ClInclude Include="..\Public\PlayerState_TransTool.h" />
     <ClInclude Include="..\Public\PlayerState_Walk.h" />
     <ClInclude Include="..\Public\Player_Inventory.h" />
+    <ClInclude Include="..\Public\RagDolPart.h" />
+    <ClInclude Include="..\Public\RagDolSmoke.h" />
+    <ClInclude Include="..\Public\RagDolStone.h" />
     <ClInclude Include="..\Public\SelectPanel.h" />
     <ClInclude Include="..\Public\SkyBox.h" />
+    <ClInclude Include="..\Public\SmokeEffect.h" />
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\Public\SunCam.h" />
@@ -279,6 +297,11 @@
     <ClInclude Include="..\Public\UI_Responcer.h" />
     <ClInclude Include="..\Public\UI_TalkingMsg.h" />
     <ClInclude Include="..\Public\UI_Text.h" />
+    <ClInclude Include="..\Public\UI_Transition.h" />
+    <ClInclude Include="..\Public\WaterPongEffect.h" />
+    <ClInclude Include="..\Public\WaterRing.h" />
+    <ClInclude Include="..\Public\WaterSplash.h" />
+    <ClInclude Include="..\Public\WaterWaveSplash.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -299,12 +322,19 @@
     <ClCompile Include="..\..\EngineSDK\Inc\GUI_Inc\ImSequencer.cpp" />
     <ClCompile Include="..\Private\AutoTile.cpp" />
     <ClCompile Include="..\Private\BaseEffect.cpp" />
+    <ClCompile Include="..\Private\BurryingGround.cpp" />
+    <ClCompile Include="..\Private\CraftChildEffect.cpp" />
+    <ClCompile Include="..\Private\CraftEffect.cpp" />
+    <ClCompile Include="..\Private\CraftTwinkle.cpp" />
+    <ClCompile Include="..\Private\DumpParts.cpp" />
+    <ClCompile Include="..\Private\DumpSmoke.cpp" />
     <ClCompile Include="..\Private\DustEffect.cpp" />
     <ClCompile Include="..\Private\ClientHelper.cpp" />
     <ClCompile Include="..\Private\ClothParts.cpp" />
     <ClCompile Include="..\Private\CraftCard.cpp" />
     <ClCompile Include="..\Private\DialoguePanel.cpp" />
     <ClCompile Include="..\Private\DialogueManager.cpp" />
+    <ClCompile Include="..\Private\EffectSpawner.cpp" />
     <ClCompile Include="..\Private\EventSystem.cpp" />
     <ClCompile Include="..\Private\FieldHole.cpp" />
     <ClCompile Include="..\Private\FieldObject.cpp" />
@@ -320,6 +350,8 @@
     <ClCompile Include="..\Private\GameModeController.cpp" />
     <ClCompile Include="..\Private\GamePlayLevel.cpp" />
     <ClCompile Include="..\Private\Glass_Acc.cpp" />
+    <ClCompile Include="..\Private\GroundDump.cpp" />
+    <ClCompile Include="..\Private\GroundPart.cpp" />
     <ClCompile Include="..\Private\HairCapParts.cpp" />
     <ClCompile Include="..\Private\HairParts.cpp" />
     <ClCompile Include="..\Private\HubState.cpp" />
@@ -330,6 +362,9 @@
     <ClCompile Include="..\Private\LayerState.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\LoadingLevel.cpp" />
+    <ClCompile Include="..\Private\Loading_Background.cpp" />
+    <ClCompile Include="..\Private\Loading_Icon.cpp" />
+    <ClCompile Include="..\Private\Loading_Island.cpp" />
     <ClCompile Include="..\Private\LogoLevel.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapLoader.cpp" />
@@ -383,8 +418,12 @@
     <ClCompile Include="..\Private\PlayerState_TransTool.cpp" />
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
     <ClCompile Include="..\Private\Player_Inventory.cpp" />
+    <ClCompile Include="..\Private\RagDolPart.cpp" />
+    <ClCompile Include="..\Private\RagDolSmoke.cpp" />
+    <ClCompile Include="..\Private\RagDolStone.cpp" />
     <ClCompile Include="..\Private\SelectPanel.cpp" />
     <ClCompile Include="..\Private\SkyBox.cpp" />
+    <ClCompile Include="..\Private\SmokeEffect.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\Private\SunCam.cpp" />
@@ -404,6 +443,11 @@
     <ClCompile Include="..\Private\UI_Responcer.cpp" />
     <ClCompile Include="..\Private\UI_TalkingMsg.cpp" />
     <ClCompile Include="..\Private\UI_Text.cpp" />
+    <ClCompile Include="..\Private\UI_Transition.cpp" />
+    <ClCompile Include="..\Private\WaterPongEffect.cpp" />
+    <ClCompile Include="..\Private\WaterRing.cpp" />
+    <ClCompile Include="..\Private\WaterSplash.cpp" />
+    <ClCompile Include="..\Private\WaterWaveSplash.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -415,8 +459,10 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\PlayerShader.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\PostProcess.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Sky_Shader.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\UI_PartsShader.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\VTX_EffectMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\VTX_NorTexEffect.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

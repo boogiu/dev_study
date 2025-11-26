@@ -5,13 +5,15 @@
 #include "Material.h"
 #include "MaterialInstance.h"
 #include "GameInstance.h"
+#include "IResourceService.h"
+#include "Texture.h"
 
 CPlant_Grass::CPlant_Grass()
 {
 }
 
 CPlant_Grass::CPlant_Grass(const CPlant_Grass& rhs)
-    :CFieldObject(rhs)
+	:CFieldObject(rhs)
 {
 }
 
@@ -71,8 +73,12 @@ void CPlant_Grass::Render_GUI()
 	ImGui::Text("Type : %d", m_iObjType);
 }
 
+
+
 HRESULT CPlant_Grass::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
+	auto isWeed = [](_uint type)->_bool { return 200 <= type && type < 300; };
+	auto isFlower = [](_uint type) ->_bool { return 300 <= type && type < 400; };
 
 	HRESULT hr = Get_Component<CModel>()->Link_Model("GamePlay_Level", modelMapTable[1]);
 	Get_Component<CModel>()->ShadowCast(true);
@@ -87,8 +93,18 @@ HRESULT CPlant_Grass::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<strin
 	tileSystem->Set_Material_ID(objHeader.Index, { 1,1,0,0 });
 
 	auto instance = Get_Component<CMaterial>()->Get_Material_Instance();
-	for (auto& inst : instance)
-		inst->Override_Pass("Flower");
+
+	for (auto& inst : instance) {
+		if (isWeed(objHeader.Object_type))
+			inst->Override_Pass("Grass");
+		else {
+			string mtl = inst->Get_MaterialName();
+			CTexture* grd =CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", "Palette_" + mtl + "Grd_Grd.png");
+			if(grd)
+ 				inst->Set_Param("GradationTexture", { grd->Get_SRV(), "Texture2D", 0 });
+			inst->Override_Pass("Flower");
+		}
+	}
 	return hr;
 }
 

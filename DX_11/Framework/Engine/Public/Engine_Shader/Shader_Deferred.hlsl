@@ -8,6 +8,8 @@ Texture2D g_ShadeTexture;
 texture2D g_SpecularTexture;
 texture2D g_DepthTexture;
 texture2D g_ShadowTexture;
+texture2D g_FinalTexture;
+texture2D g_UITexture;
 
 vector g_vLightDir;
 vector g_vLightPos;
@@ -15,7 +17,7 @@ float      g_fLightRange;
 vector g_vLightDiffuse;
 vector g_vLightAmbient;
 vector g_vLightSpecular;
-vector g_vMtrlAmbient = 1.f;
+vector g_vMtrlAmbient = .6f;
 vector g_vMtrlSpecular = 1.f;
 
 struct VS_IN
@@ -69,6 +71,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 n = normalize(vNormalDesc.xyz * 2.f - 1.f); // ²À normalize
+    //n.y = -n.y;
     vector vNormal = float4(n, 0.f);
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     
@@ -100,6 +103,7 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 n = normalize(vNormalDesc.xyz * 2.f - 1.f); // ²À normalize
+    n.y = -n.y;
     vector vNormal = float4(n, 0.f);
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     
@@ -189,6 +193,17 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     return Out;
 }
 
+PS_OUT_BACKBUFFER PS_MAIN_FINAL(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out;
+    
+    vector finalColor = g_FinalTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector uiColor = g_UITexture.Sample(DefaultSampler, In.vTexcoord);
+ 
+    Out.vBackBuffer = (1 - uiColor.a) * finalColor + (uiColor.a) * uiColor;
+    return Out;
+}
+
 
 technique11 DefaultTechnique
 {
@@ -222,5 +237,14 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_COMBINED();
     }
 
+    pass Final
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_FINAL();
+    }
 }
 

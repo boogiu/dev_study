@@ -97,6 +97,7 @@ void CField_Out::Override_Pass()
 	SHADER_PARAM Normal = { pRcsMgr->Load_Texture("GamePlay_Level","Waves_mSeaWater_Nrm.png")->Get_SRV(),"Texture2D",0 };
 	SHADER_PARAM Sand = { pRcsMgr->Load_Texture("GamePlay_Level","Waves_mSand_Alb.dds")->Get_SRV(),"Texture2D",0 };
 	SHADER_PARAM WaveParam = { &m_fWaveTime,"float",sizeof(_float) };
+	SHADER_PARAM TimeParam = { &m_fElpaseTime,"float",sizeof(_float) };
 	SHADER_PARAM fadeParam = { &m_fFade,"float",sizeof(_float) };
 
 	
@@ -106,9 +107,10 @@ void CField_Out::Override_Pass()
 		instance->Set_Param("fWaveTime", WaveParam);
 		instance->Set_Param("fFade", fadeParam);
 		instance->Override_Pass("Wave");
+		instance->Set_Blended(true);
 	}
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mSeaWave")) {
-		instance->Set_Param("fWaveTime", WaveParam);
+		instance->Set_Param("fWaveTime", TimeParam);
 		instance->Override_Pass("SeaWave");
 	}
 

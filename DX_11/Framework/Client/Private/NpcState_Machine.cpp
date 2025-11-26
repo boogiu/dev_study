@@ -36,7 +36,8 @@ HRESULT CNpcState_Machine::Initialize()
 void CNpcState_Machine::Update(_float dt)
 {
 	for (auto& LayerState : m_LayerStates) {
-		LayerState.second->Update(dt);
+		if(LayerState.second)
+			LayerState.second->Update(dt);
 	}
 
 	auto Animator = m_pOwner->Get_Component<CAnimator3D>();

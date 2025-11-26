@@ -8,7 +8,6 @@ class CNonPlayer :
 public:
 	typedef struct tagNPCSpawnDataDesc : public GAMEOBJECT_DESC {
 		NPC_DATA_DESC characterDesc = {};
-		CLOTH_DATA_DESC characterClothDesc = {};
 	}NPC_SPAWN_DATA;
 
 public:
@@ -127,6 +126,7 @@ public:
 protected:
 	HRESULT Make_Model(NPC_DATA_DESC desc);
 	void Add_Parts();
+	void Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey);
 	void Add_EventListen();
 	void Add_MatAnimator();
 

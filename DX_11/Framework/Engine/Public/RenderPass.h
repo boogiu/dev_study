@@ -76,7 +76,6 @@ private:
 	vector<OPAQUE_PACKET> m_Packets;
 	vector<OPAQUE_PACKET> m_VisiblePackets;
 
-
 public:
 	static OpaquePass* Create(class CRenderSystem* pRenderSystem) { return new OpaquePass(pRenderSystem); }
 	virtual void Free() override {__super::Free(); m_Packets.clear();};
@@ -100,6 +99,28 @@ public:
 	virtual void Free() override { __super::Free(); m_Packets.clear(); };
 };
 #pragma endregion
+
+
+
+#pragma region BLENDED_PASS
+class BlendedPass final : public RenderPass {
+private:
+	BlendedPass(class CRenderSystem* pRenderSystem) :RenderPass{ pRenderSystem } {};
+	virtual ~BlendedPass() DEFAULT;
+public:
+	void Execute(ID3D11DeviceContext* pContext) override;
+	void Submit(BLENDED_PACKET packet);
+
+private:
+	vector<BLENDED_PACKET> m_Packets;
+	vector<BLENDED_PACKET> m_VisiblePackets;
+
+public:
+	static BlendedPass* Create(class CRenderSystem* pRenderSystem) { return new BlendedPass(pRenderSystem); }
+	virtual void Free() override { __super::Free(); m_Packets.clear(); };
+};
+#pragma endregion
+
 
 #pragma region UI_PASS
 class UIPass final : public RenderPass {

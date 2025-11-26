@@ -152,6 +152,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
       <AdditionalIncludeDirectories>../Public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <Optimization>MinSpace</Optimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -279,7 +280,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClInclude Include="..\Public\Sphere_Collider.h" />
     <ClInclude Include="..\Public\Sprite2D.h" />
     <ClInclude Include="..\Public\SpriteEmitter.h" />
-    <ClInclude Include="..\Public\SpriterEffectRenderer.h" />
+    <ClInclude Include="..\Public\SpriteEffectRenderer.h" />
     <ClInclude Include="..\Public\StaticModel.h" />
     <ClInclude Include="..\Public\Target_Manager.h" />
     <ClInclude Include="..\Public\TextSlot.h" />
@@ -377,7 +378,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <ClCompile Include="..\Private\Sphere_Collider.cpp" />
     <ClCompile Include="..\Private\Sprite2D.cpp" />
     <ClCompile Include="..\Private\SpriteEmitter.cpp" />
-    <ClCompile Include="..\Private\SpriterEffectRenderer.cpp" />
+    <ClCompile Include="..\Private\SpriteEffectRenderer.cpp" />
     <ClCompile Include="..\Private\StaticModel.cpp" />
     <ClCompile Include="..\Private\Target_Manager.cpp" />
     <ClCompile Include="..\Private\TextSlot.cpp" />
@@ -411,6 +412,7 @@ call "$(SolutionDir)UpdateLib.bat"</Command>
     <FxCompile Include="..\Public\Engine_Shader\Shader_Deferred.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\Shader_Define.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\Shader_State.hlsl" />
+    <FxCompile Include="..\Public\Engine_Shader\SpriteEffectShader.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_Debug.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_Field.hlsl" />
     <FxCompile Include="..\Public\Engine_Shader\VTX_Mesh.hlsl" />

@@ -13,6 +13,9 @@
 
 #include "FishSub_Tool.h"
 
+#include "Level.h"
+#include "EffectSpawner.h"
+
 CFish_Object::CFish_Object()
 {
 }
@@ -49,9 +52,9 @@ HRESULT CFish_Object::Initialize(INIT_DESC* pArg)
 	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-2,-2,-2},{2,5,2,} });
 
 	auto& Instances = Get_Component<CMaterial>()->Get_Material_Instance();
-	for (auto instance : Instances )
+	for (auto instance : Instances)
 	{
-		instance->Set_Param("fFishAlpha",{&m_fAlpha, "float", sizeof(float)});
+		instance->Set_Param("fFishAlpha", { &m_fAlpha, "float", sizeof(float) });
 		//fFishAlpha
 	}
 	return S_OK;
@@ -79,13 +82,13 @@ void CFish_Object::Update(_float dt)
 		break;
 	case Client::CFish_Object::HIT:
 		Move_HIT(dt);
-			break;
+		break;
 	case Client::CFish_Object::BITE:
 		Move_BITE(dt);
-			break;
+		break;
 	case Client::CFish_Object::CATCHED:
 		Move_CATCHED(dt);
-			break;
+		break;
 	case Client::CFish_Object::DISAPPEAR:
 		Move_DISAPPEAR(dt);
 		break;
@@ -115,13 +118,13 @@ void CFish_Object::Set_TargetBey(CGameObject* pTarget)
 		return;
 
 	m_eState = FIND_ENTRANCE;
-	m_BiteCount = 1;// Helper::Get_Random_Int(3, 4);
+	m_BiteCount = Helper::Get_Random_Int(2, 4);
 	m_fDetectTime = 0.f;
 }
 
 _bool CFish_Object::Hit()
 {
-	if(m_eState == HIT)
+	if (m_eState == HIT)
 		m_eState = BITE;
 
 	return m_eState == BITE;
@@ -143,13 +146,13 @@ void CFish_Object::Catch()
 void CFish_Object::Get()
 {
 	m_eState = GETTED;
-	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Get.anim", m_FishDesc.FishFileName,true);
+	Get_Component<CAnimator3D>()->Add_AnimClips("GamePlay_Level", "Get.anim", m_FishDesc.FishFileName, true);
 	Get_Component<CAnimator3D>()->Change_Animation("GamePlay_Level", "Get.anim");
 }
 
 void CFish_Object::OnCollisionEnter(COLLISION_CONTEXT context)
 {
-	
+
 }
 
 void CFish_Object::OnCollisionStay(COLLISION_CONTEXT context)
@@ -200,7 +203,7 @@ void CFish_Object::Move_FIND(_float dt)
 	if (inWater)
 		m_pTransform->Translate(Move);
 
-	_vector direction =  XMVector4Normalize(vDistance);
+	_vector direction = XMVector4Normalize(vDistance);
 	m_vAxis = { XMVectorGetX(direction), XMVectorGetZ(direction) };
 
 	Check_Rotation(dt);
@@ -209,9 +212,18 @@ void CFish_Object::Move_FIND(_float dt)
 		m_eState = FIND_BACK;
 		m_NowBiteCount++;
 
+
+
 		if (m_NowBiteCount > m_BiteCount) {
 			m_eState = HIT;
 			m_fDetectTime = 0.f;
+			auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+			auto EffectSys = nowLevel->Get_LevelObject<CEffectSpawner>();
+			EffectSys->Request_Effect("Effect_WaterSplash", { Get_Position(), Get_Position() });
+
+		}
+		else {
+			m_pTarget->Pong(Get_Position());
 		}
 	}
 }
@@ -229,7 +241,7 @@ void CFish_Object::Move_BACK(_float dt)
 	XMStoreFloat4(&NextPos, Move + m_pTransform->Get_Pos());
 	_bool inWater = TileSys->Check_TileFlagByPosition(NextPos, static_cast<_uint>(TILE_FLAG::FLAG_RIVER));
 
-	if(inWater)
+	if (inWater)
 		m_pTransform->Translate(Move);
 
 	_vector TargetPos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
@@ -246,15 +258,16 @@ void CFish_Object::Move_BACK(_float dt)
 void CFish_Object::Move_HIT(_float dt)
 {
 	m_fDetectTime += dt;
-	if (m_fDetectTime > 1.5f) {
+	if (m_fDetectTime > .5f) {
 		m_eState = DISAPPEAR;
 	}
 }
 
 void CFish_Object::Move_BITE(_float dt)
 {
-	m_fDetectTime += dt*10;
+	m_fDetectTime += dt * 15;
 	m_fBiteTime += dt;
+	m_fEffectTime += dt;
 
 	_float4 pos = m_pTarget->Get_Position();
 
@@ -266,15 +279,22 @@ void CFish_Object::Move_BITE(_float dt)
 	m_vAxis.y = XMVectorGetZ(dir);
 
 	_float4 CirclePos = {
-		pos.x+cosf(m_fDetectTime) * 2.5f,
-		0.f,
-		pos.z+sinf(m_fDetectTime) * 2.5f,
+		pos.x + cosf(m_fDetectTime) * 2.5f,
+		pos.y,
+		pos.z + sinf(m_fDetectTime) * 2.5f,
 		1.f
 	};
 
-	//Check_Rotation(dt);
+
 	m_pTransform->Set_Pos(CirclePos);
 	m_pTransform->LookAt(targetPos);
+
+	if (m_fEffectTime > 0.15f) {
+		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+		auto EffectSys = nowLevel->Get_LevelObject<CEffectSpawner>();
+		EffectSys->Request_Effect("Effect_WaterWaveSplash", { Get_Position(), Get_Position() });
+		m_fEffectTime = 0.f;
+	}
 }
 
 void CFish_Object::Move_CATCHED(_float dt)
@@ -282,9 +302,10 @@ void CFish_Object::Move_CATCHED(_float dt)
 	_vector targetPos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
 	_vector myPos = m_pTransform->Get_Pos();
 
-	_vector pos = XMVectorLerp(myPos, targetPos, dt*4);
+	_vector pos = XMVectorLerp(myPos, targetPos, dt * 4);
 	m_pTransform->Set_PosVector(pos);
 	m_pTransform->LookAt(pos);
+
 }
 
 
@@ -292,7 +313,7 @@ void CFish_Object::Move_DISAPPEAR(_float dt)
 {
 	_vector targetPos = m_pTarget->Get_Component<CTransform>()->Get_Pos();
 	_vector myPos = m_pTransform->Get_Pos();
-	_vector dir = (targetPos - myPos)*-1.f;
+	_vector dir = (targetPos - myPos) * -1.f;
 	_vector direction = XMVector4Normalize(dir);
 
 	m_vAxis.x = XMVectorGetX(direction);
@@ -300,8 +321,8 @@ void CFish_Object::Move_DISAPPEAR(_float dt)
 
 	Check_Rotation(dt);
 
-	m_pTransform->Translate(direction*dt*3);
-	m_fAlpha -= dt*0.5f;
+	m_pTransform->Translate(direction * dt * 3);
+	m_fAlpha -= dt * 0.5f;
 
 	if (m_fAlpha < 0.1f) {
 		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);

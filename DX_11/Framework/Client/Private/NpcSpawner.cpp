@@ -71,7 +71,6 @@ HRESULT CNpcSpawner::Read_CharacterData(const string& filePath)
 		try
 		{
 			NPC_DATA_DESC data = {};
-
 			if (item.contains("Index"))
 			{
 				if (item["Index"].is_number_integer())
@@ -92,6 +91,7 @@ HRESULT CNpcSpawner::Read_CharacterData(const string& filePath)
 			data.MaterialName = item.value("MaterialName", "");
 			data.FolderPath		= item.value("FolderPath", "");
 			data.NpcKey = item.value("NpcKey", "");
+			data.TopName = item.value("Tops", "");
 			wstring key = data.NpcName;
 
 			if (key.empty())

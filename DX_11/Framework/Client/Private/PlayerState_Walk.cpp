@@ -14,6 +14,7 @@ HRESULT CPlayerState_Walk::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	HRESULT hr = Animator->Change_Animation("Move_Run_F.anim");
+
 	return hr;
 }
 
@@ -32,10 +33,18 @@ void CPlayerState_Walk::OnUpdate(_float dt)
 			pTransform->Translate({ myAxis.x ,tMovePacket.fPlayerHeight * tMovePacket.fMoveSpeed * dt,myAxis.y });
 		}
 	}
+
+	m_fWalkTime += dt;
+
+	if (m_fWalkTime > 0.8f) {
+		Request_Dust();
+		m_fWalkTime = 0.f;
+	}
 }
 
 HRESULT CPlayerState_Walk::OnExit()
 {
+	m_fWalkTime = 0.f;
 	return S_OK;
 }
 
@@ -60,6 +69,14 @@ CState* CPlayerState_Walk::HandleTransition()
 _uint CPlayerState_Walk::Get_InputMask() const
 {
 	return FlagForMove;
+}
+
+void CPlayerState_Walk::Request_Dust()
+{
+	EffectData data;
+	data.ReqPosition = m_pPlayer->Get_Position();
+	data.FxPosition = m_pPlayer->Get_Position();
+	m_pPlayer->Request_Effect("Effect_Dust", data);
 }
 
 CPlayerState_Walk* CPlayerState_Walk::Create()

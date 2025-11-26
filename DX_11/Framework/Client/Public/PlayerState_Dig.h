@@ -19,6 +19,8 @@ public:
     virtual _uint Get_InputMask() const override;
 
 private:
+    void Request_Effect();
+    void Request_Cloud();
     void Make_Hole();
     void Burry_Hole();
 
@@ -28,6 +30,8 @@ private:
     _bool m_isDigged = { false };
     _bool m_isDiggable = { false };
     _bool m_DigComplete = { false };
+    _bool m_EffectComplete = { false };
+    _bool m_CloudComplete = { false };
 public:
     static CPlayerState_Dig* Create();
     virtual void Free();

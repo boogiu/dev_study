@@ -5,7 +5,8 @@
 #include "SkeletonFollower.h"
 #include "Material.h"
 #include "Animator3D.h"
-
+#include "MaterialInstance.h"
+#include "MaterialData.h"
 #include "Player.h"
 CClothParts::CClothParts()
 {
@@ -41,6 +42,13 @@ HRESULT CClothParts::Initialize(INIT_DESC* pArg)
 	Get_Component<CSkeletonFollower>()->Link_MyModel(Get_Component<CSkeletalModel>());
 	Get_Component<CSkeletonFollower>()->Link_MasterModel(pDesc->pPlayer->Get_Component<CSkeletalModel>());
 	Get_Component<CSkeletonFollower>()->Set_MasterAnimator(pDesc->pPlayer->Get_Component<CAnimator3D>());
+
+
+	for (auto& instance : Get_Component<CMaterial>()->Get_Material_Instance()) {
+		instance->Get_MaterialData()->Link_Shader("GamePlay_Level", "PlayerShader.hlsl");
+		instance->Override_Pass("ClothShader");
+	}
+
 	return S_OK;
 }
 

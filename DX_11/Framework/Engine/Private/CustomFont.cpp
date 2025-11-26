@@ -33,7 +33,8 @@ void CCustomFont::Draw(SpriteBatch* pBatch,wstring pText,const _float2& vPositio
     //m_pFont->MeasureString()
 }
 
-void CCustomFont::DrawOutlinedText(SpriteBatch* pBatch, wstring text, const _float2& vPosition, _fvector outlineColor, _fvector textColor, _float thickness, _float rotation, const _float2& origin, _float scale)
+void CCustomFont::DrawOutlinedText(
+    SpriteBatch* pBatch, wstring text, const _float2& vPosition, _fvector outlineColor, _fvector textColor, _float thickness, _float rotation, const _float2& origin, _float scale)
 {
     static const XMFLOAT2 offsets[] = {
         {-1, -1}, {0, -1}, {1, -1},

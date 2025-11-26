@@ -49,6 +49,7 @@ protected:
     class CLoadMaterial* m_pMaterial = { nullptr };
 
     string overrideShaderKey = {};
+    string overridePassKey = {};
 public:
     static COptionUI* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

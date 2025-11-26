@@ -39,6 +39,8 @@ HRESULT CFree_Camera::Initialize(INIT_DESC* pArg)
 	desc.vLightSpecular = _float4(0.f, 1.f, 0.f, 1.f);
 
 	Get_Component<CLight>()->Set_Desc(desc, LIGHT_TYPE::DIRECTIONAL);
+
+	Get_Component<CCamera>()->Set_Far(500.f);
 	return S_OK;
 }
 

@@ -34,6 +34,7 @@ private:
 	ID3D11DepthStencilView* m_pDSV = { nullptr };
 	_float4						m_vClearColor = {};
 	D3D11_VIEWPORT m_viewPort = {};
+
 public:
 	static CRenderTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const RenderTargetDesc& targetDesc);
 	virtual void Free() override;

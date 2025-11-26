@@ -12,6 +12,7 @@
 #include "EventSystem.h"
 
 #include "Fish_Object.h"
+#include "EffectSpawner.h"
 
 CFishSub_Tool::CFishSub_Tool()
 {
@@ -122,10 +123,12 @@ void CFishSub_Tool::Get_Event(const BaseEvent& event)
 				_bool CanHit = m_pTarget->Hit();
 				if (CanHit) {
 					auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+
 					if (nowLevel) {
 						auto eventSys = nowLevel->Get_LevelObject<CEventSystem>();
 						eventSys->OnBroadCast<BaseEvent>(POLE_BITE_RESULT{ EVENT_TYPE::FishBeyResult, POLE_BITE_RESULT::BITE ,nullptr });
 						m_eState = Hit;
+						
 					}
 				}
 				else {
@@ -145,20 +148,18 @@ void CFishSub_Tool::Get_Event(const BaseEvent& event)
 
 	if (m_pTarget) {
 		if (event.eType == EVENT_TYPE::FishBeyReceive) {
-		const auto& evt = static_cast<const POLE_BEY_RECIEVE&>(event);
-		m_eState = ReAttached;
-		m_vLeftHand = evt.pDestPos;
-		m_pTarget->Catch();
+			const auto& evt = static_cast<const POLE_BEY_RECIEVE&>(event);
+			m_eState = ReAttached;
+			m_vLeftHand = evt.pDestPos;
+			m_pTarget->Catch();
+			/*여기서 속도 값 구해서-> 더해줌.(1초 동안 움직일 거리)*/
+			/*Y값을 원래 올라가야하는 값보다 2배로 더해서. 2배로 더 빠르게 내리면 된다.*/
+			/*그런데 중요한건 손은 실시간으로 위치가 변하기 때문에 x와 z는 그대로 따라서 움직이고.
+			Y는 가상의 점을 두고 그 점을 목표로 가다가. 시간의 절반이 되면 원래 목표로 돌아가는 형태로 움직인다?
+			그러면 꺾이는 형태가 될 것 같은데.
 
-		/*여기서 속도 값 구해서-> 더해줌.(1초 동안 움직일 거리)*/
-		/*Y값을 원래 올라가야하는 값보다 2배로 더해서. 2배로 더 빠르게 내리면 된다.*/
-		/*그런데 중요한건 손은 실시간으로 위치가 변하기 때문에 x와 z는 그대로 따라서 움직이고. 
-		Y는 가상의 점을 두고 그 점을 목표로 가다가. 시간의 절반이 되면 원래 목표로 돌아가는 형태로 움직인다?
-		그러면 꺾이는 형태가 될 것 같은데.
-		
-		그래서 내가 위치 벡터 포인터를 받아서 함수 내에서 계산을 해줄 것임.*/
-
-	}
+			그래서 내가 위치 벡터 포인터를 받아서 함수 내에서 계산을 해줄 것임.*/
+		}
 	}
 }
 
@@ -201,7 +202,7 @@ void CFishSub_Tool::FollowBone(_float dt)
 
 	//_vector movePos = XMVectorLerp(myPos, T, dt);
 	_vector movePos = T - myPos;
-	m_pTransform->Translate(movePos * dt * 8);
+	m_pTransform->Translate(movePos * dt * 4);
 }
 
 void CFishSub_Tool::ThrowBey(_float dt)
@@ -213,9 +214,10 @@ void CFishSub_Tool::ThrowBey(_float dt)
 	pos.z = m_vStartPos.z + m_vVelocity.z * m_fThrowingTime;
 	pos.y = m_vStartPos.y + m_vVelocity.y * m_fThrowingTime + (-9.8f * m_fThrowingTime * m_fThrowingTime * 2.f);
 
-	if (pos.y <= -1.5f)
+	if (pos.y <= -5.f)
 	{
-		pos.y = -1.5f;
+		pos.y = -5.f;
+		m_vBasePos = Get_Position();
 		m_fThrowingTime = 0.f;
 		m_fFloatingTime = 0.f;
 		Get_Component<CAABB_Collider>()->Set_ColliderActive(true);
@@ -227,11 +229,15 @@ void CFishSub_Tool::ThrowBey(_float dt)
 	m_pTransform->Set_Pos(pos);
 }
 
-void CFishSub_Tool::FlowBey(_float dt)
+void CFishSub_Tool::FlowBey(float dt)
 {
-	m_fFloatingTime += dt * 3;
-	_float y = sinf(m_fFloatingTime) * 3;
-	m_pTransform->Translate({ 0, y * dt, 0 });
+	m_fFloatingElapseTime += dt * 5.f;
+
+	_vector flowDst = XMLoadFloat4(&m_vBasePos) + _vector{ 0, sinf(m_fFloatingElapseTime),0 } + _vector{ 0, m_ExternFlow,0 };
+	m_ExternFlow *= 0.95f;
+
+	m_pTransform->Set_PosVector(XMVectorLerp(m_pTransform->Get_Pos(), flowDst, dt));
+
 }
 
 void CFishSub_Tool::ReturnToBone(_float dt)
@@ -242,7 +248,7 @@ void CFishSub_Tool::ReturnToBone(_float dt)
 	_vector dir = dstPos - myPos;
 	_float dist = XMVectorGetX(XMVector3Length(dir));
 
-	_float maxSpeed = 6.0f;      
+	_float maxSpeed = 6.0f;
 	_float speed = max(dist * 2.f, 1.f);
 	speed = min(speed, maxSpeed);
 
@@ -258,7 +264,7 @@ void CFishSub_Tool::ReturnToBone(_float dt)
 		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 		if (nowLevel) {
 			auto eventSys = nowLevel->Get_LevelObject<CEventSystem>();
-			eventSys->OnBroadCast<BaseEvent>(POLE_BITE_RESULT{EVENT_TYPE::FishBeyResult,POLE_BITE_RESULT ::CATCHED,m_pTarget});
+			eventSys->OnBroadCast<BaseEvent>(POLE_BITE_RESULT{ EVENT_TYPE::FishBeyResult,POLE_BITE_RESULT::CATCHED,m_pTarget });
 			m_pTarget = nullptr;
 			m_eState = Attach;
 		}
@@ -268,6 +274,16 @@ void CFishSub_Tool::ReturnToBone(_float dt)
 void CFishSub_Tool::Missed()
 {
 	m_pTarget == nullptr;
+}
+
+void CFishSub_Tool::Pong(_float4 Pos)
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	auto EffectSys = nowLevel->Get_LevelObject<CEffectSpawner>();
+
+	EffectSys->Request_Effect("Effect_WaterPong", { Get_Position(), Get_Position() });
+	m_fFloatingTime = 0.f;
+	m_ExternFlow = -10.f;
 }
 
 CFishSub_Tool* CFishSub_Tool::Create()

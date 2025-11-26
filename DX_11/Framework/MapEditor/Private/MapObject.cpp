@@ -16,7 +16,7 @@
 #include "ITileService.h"
 #include "IResourceService.h"
 #include "Layer.h"
-
+#include "DebugRender.h"
 CMapObject::CMapObject()
 {
 }
@@ -32,6 +32,7 @@ HRESULT CMapObject::Initialize_Prototype()
 	__super::Initialize_Prototype();
 	Add_Component<CMaterial>();
 	Add_Component<CTileBlock>();
+	Add_Component<CDebugRender>();
 	return S_OK;
 }
 
@@ -95,6 +96,34 @@ HRESULT CMapObject::Link_Data(const string& folderName)
 		for (auto& instance : pMaterial->Get_Material_Instance()) {
 			instance->Override_Pass("Force_See");
 		};
+		if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassXlu")) {
+			instance->Override_Pass("Edge");
+		}
+		if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrassRiverXlu")) {
+			instance->Override_Pass("Edge");
+		}
+		if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaterfall")) {
+			instance->Override_Pass("Water");
+		}
+		if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
+			instance->Override_Pass("Base");
+		}
+
+		if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaveFoam")) {
+			instance->Override_Pass("Wave");
+			instance->Set_Blended(true);
+		}
+		if (auto instance = pMaterial->Get_MaterialInstanceByName("mSeaWave")) {
+			instance->Override_Pass("SeaWave");
+		}
+
+		if (auto instance = pMaterial->Get_MaterialInstanceByName("mBeach")) {
+			instance->Override_Pass("Beach");
+		}
+
+		if (auto instance = pMaterial->Get_MaterialInstanceByName("mSand")) {
+			instance->Override_Pass("Sand");
+		}
 	}
 
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
@@ -120,6 +149,9 @@ HRESULT CMapObject::Link_Data(const string& folderName)
 	if (iter != ModelMapTable.end()) {
 		m_ObjeType = stoi(iter->second[0]);
 	}
+
+	Get_Component<CDebugRender>()->Add_DebugBounding(Get_Component<CModel>()->Get_LocalBoundingBox());
+
 	return hr;
 }
 

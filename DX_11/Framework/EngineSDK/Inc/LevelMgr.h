@@ -34,10 +34,12 @@ public :
 #pragma endregion
 private:
     void ClearResource();
+
 private:
     string m_LoadingLevelKey = { }; // 로딩 레벨이 있다면 그 로딩 레벨의 태그(키)
 
     class CLevel* m_pCurrentLevel = { nullptr }; //현재 레벨 포인터
+    class CLevel* m_pReadyLevel = { nullptr };      //대기중 레벨 포인터
     LEVEL_STATE m_eState = {}; //현재 레벨 전환 과정 상태
     string m_NextLevelTag = { }; //전환될 레벨 태그(키)
     

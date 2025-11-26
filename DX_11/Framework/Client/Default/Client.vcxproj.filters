@@ -406,14 +406,83 @@
     <Filter Include="04. ClientManager">
       <UniqueIdentifier>{3745cc6c-2a4a-4bd9-948d-f3262d3a9fe1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. ClientManager\Effect">
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem">
+      <UniqueIdentifier>{521f3117-3dc6-4603-b2a0-c9957e1757ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect">
       <UniqueIdentifier>{8c08cbc5-c6a5-4a38-9c83-0358dd37006a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. ClientManager\Effect\DustEffect">
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\DustEffect">
       <UniqueIdentifier>{bd3c63b3-91ea-4cc7-ba4c-88278811683a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. ClientManager\Effect\BaseEffect">
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\BaseEffect">
       <UniqueIdentifier>{7622acde-e721-4b57-99c1-29eee793ffb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\CraftEffect">
+      <UniqueIdentifier>{e0a8e14f-a8dc-4e43-818d-22cce3b350a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\CraftEffect\ChildParticle">
+      <UniqueIdentifier>{18a6a1ea-3822-457b-ac2d-dc30857d4926}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\CraftEffect\CraftTwinkle">
+      <UniqueIdentifier>{2448d0db-5b76-4f18-a740-f304829fcf91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterPongEffect">
+      <UniqueIdentifier>{50868bd1-27ac-46c9-b7a0-7da99b02f44c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterPongEffect\WaterRing">
+      <UniqueIdentifier>{5c27bcf1-221c-41c8-b2e3-9dda599094c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterSplash">
+      <UniqueIdentifier>{15861c2e-9acc-4740-b6ff-4368ea43e67c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterWaveSplash">
+      <UniqueIdentifier>{b35facdd-e045-41f2-8dc3-fb6435bf72bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\LeafEffect">
+      <UniqueIdentifier>{7eca8022-67d6-458b-8cf7-7e83347c0595}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\RagdolStone">
+      <UniqueIdentifier>{3113a271-776c-424c-a002-edab39703f15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\RagdolStone\RagDolPart">
+      <UniqueIdentifier>{3e18cbe2-7f07-4047-951a-9b215f176714}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\RagdolStone\RagDolSmoke">
+      <UniqueIdentifier>{f52f8f8b-f6f3-451e-94a8-3201e87ad229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\14. LoadingObject">
+      <UniqueIdentifier>{9c5a9375-2f9d-4dd0-99ea-fbd85a474766}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\14. LoadingObject\LoadingIsland">
+      <UniqueIdentifier>{e8ecc764-bf43-4cfc-808a-7f2829a3998a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\14. LoadingObject\LoadingIcon">
+      <UniqueIdentifier>{d57d9333-ac28-40ca-9e86-1a60997e9f86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\UI_Transition">
+      <UniqueIdentifier>{5bad402c-b6c6-42be-aae9-27a4803f53fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\GroundDump">
+      <UniqueIdentifier>{a1bf2514-7b0f-41e8-8045-36dba984935b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\GroundDump\DumpParts">
+      <UniqueIdentifier>{cf1ec6ca-1832-48a9-b79a-5c0b863fa51e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\GroundDump\GroundSmoke">
+      <UniqueIdentifier>{a7360ce3-55c0-4242-a177-6d45a69eb6a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\BurryingGround">
+      <UniqueIdentifier>{98d859b8-15ac-4eeb-8b7f-b5f591901ccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\BurryingGround\GroundPart">
+      <UniqueIdentifier>{e7d768b5-e7b5-475b-b1b6-829ff602c5e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\SmokeEffect">
+      <UniqueIdentifier>{01192417-8709-4900-aa26-14cfa53e45ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\02. Field\Plant_Flower">
+      <UniqueIdentifier>{eceee5b4-fee4-4a58-8fb6-e05ae22ce9e8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -799,10 +868,73 @@
       <Filter>02. GameObjects\13. Env\SkyBox</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\DustEffect.h">
-      <Filter>04. ClientManager\Effect\DustEffect</Filter>
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\DustEffect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BaseEffect.h">
-      <Filter>04. ClientManager\Effect\BaseEffect</Filter>
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\BaseEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EffectSpawner.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CraftEffect.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\CraftEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CraftChildEffect.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\CraftEffect\ChildParticle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CraftTwinkle.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\CraftEffect\CraftTwinkle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\WaterPongEffect.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterPongEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\WaterRing.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterPongEffect\WaterRing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\WaterSplash.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterSplash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\WaterWaveSplash.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterWaveSplash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RagDolStone.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\RagdolStone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RagDolPart.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\RagdolStone\RagDolPart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RagDolSmoke.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\RagdolStone\RagDolSmoke</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Loading_Background.h">
+      <Filter>02. GameObjects\14. LoadingObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Loading_Island.h">
+      <Filter>02. GameObjects\14. LoadingObject\LoadingIsland</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Loading_Icon.h">
+      <Filter>02. GameObjects\14. LoadingObject\LoadingIcon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Transition.h">
+      <Filter>02. GameObjects\07. LevelObject\UI_Transition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GroundDump.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\GroundDump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DumpParts.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\GroundDump\DumpParts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DumpSmoke.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\GroundDump\GroundSmoke</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BurryingGround.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\BurryingGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GroundPart.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\BurryingGround\GroundPart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SmokeEffect.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\SmokeEffect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1166,13 +1298,76 @@
       <Filter>02. GameObjects\13. Env\SkyBox</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\DustEffect.cpp">
-      <Filter>04. ClientManager\Effect\DustEffect</Filter>
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\DustEffect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BaseEffect.cpp">
-      <Filter>04. ClientManager\Effect\BaseEffect</Filter>
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\BaseEffect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\EventSystem.cpp">
       <Filter>02. GameObjects\07. LevelObject\EventListner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EffectSpawner.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CraftEffect.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\CraftEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CraftChildEffect.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\CraftEffect\ChildParticle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CraftTwinkle.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\CraftEffect\CraftTwinkle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\WaterPongEffect.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterPongEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\WaterRing.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterPongEffect\WaterRing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\WaterSplash.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterSplash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\WaterWaveSplash.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterWaveSplash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RagDolStone.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\RagdolStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RagDolPart.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\RagdolStone\RagDolPart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RagDolSmoke.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\RagdolStone\RagDolSmoke</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Loading_Background.cpp">
+      <Filter>02. GameObjects\14. LoadingObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Loading_Island.cpp">
+      <Filter>02. GameObjects\14. LoadingObject\LoadingIsland</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Loading_Icon.cpp">
+      <Filter>02. GameObjects\14. LoadingObject\LoadingIcon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Transition.cpp">
+      <Filter>02. GameObjects\07. LevelObject\UI_Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GroundDump.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\GroundDump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DumpParts.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\GroundDump\DumpParts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DumpSmoke.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\GroundDump\GroundSmoke</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BurryingGround.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\BurryingGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GroundPart.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\BurryingGround\GroundPart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SmokeEffect.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\SmokeEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1191,6 +1386,12 @@
       <Filter>97. Client_Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\VTX_NorTexEffect.hlsl">
+      <Filter>97. Client_Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\VTX_EffectMesh.hlsl">
+      <Filter>97. Client_Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\PostProcess.hlsl">
       <Filter>97. Client_Shader</Filter>
     </FxCompile>
   </ItemGroup>

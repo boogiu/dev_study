@@ -9,3 +9,12 @@ RENDERKEY Engine::DrawOpaquePacket::GetKey() const
 			pMaterial->Get_MaterialDataID(DrawIndex)
 		};
 }
+
+BLENDRENDERKEY Engine::DrawBlendedPacket::GetKey() const
+{
+	return {
+		pMaterial->Get_ShaderID(MaterialIndex),
+		pMaterial->Get_MaterialDataID(DrawIndex),
+		DistanceToCamera
+	};
+}

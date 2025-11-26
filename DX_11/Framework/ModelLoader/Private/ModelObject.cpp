@@ -17,6 +17,8 @@
 
 #include "LoadMaterial.h"
 #include "AIMaterial.h"
+#include "MaterialInstance.h"
+static _float2 index = {};
 
 CModelObject::CModelObject()
 {
@@ -50,7 +52,6 @@ void CModelObject::Priority_Update(_float dt)
 void CModelObject::Update(_float dt)
 {
 	if (m_pAnimator) {
-		
 		dynamic_cast<CLoadAnimator3D*>(m_pAnimator)->Update_Load();
 		m_pAnimator->Update_Animation(dt);
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Down(VK_LEFT))
@@ -98,6 +99,10 @@ void CModelObject::Render_GUI()
 	if (ImGui::Button("Add Part")) {
 		Add_Part();
 	}
+
+	ImGui::SeparatorText("Gradation");
+	ImGui::InputFloat2("Index", &index.x);
+
 	__super::Render_GUI();
 }
 
@@ -129,6 +134,9 @@ HRESULT CModelObject::Load_AIScene(const string& filePath)
 		_uint NumMaterial = m_pAIScene->mNumMaterials;
 		pMaterial->Load_Material(NumMaterial, m_pAIScene->mMaterials, filePath);
 		pMaterial->LinkShader("VTX_Mesh.hlsl");
+
+		for (auto instance : pMaterial->Get_Material_Instance())
+			instance->Set_Param("PaletteIndex", { &index, "float2",sizeof(_float2) });
 	}
 
 	return S_OK;

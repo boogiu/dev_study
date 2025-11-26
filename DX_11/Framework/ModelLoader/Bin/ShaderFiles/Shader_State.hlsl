@@ -56,6 +56,12 @@ DepthStencilState DSS_None
     DepthWriteMask = zero;
 };
 
+DepthStencilState DSS_ReadOnly
+{
+    DepthEnable = true;
+    DepthWriteMask = zero;
+};
+
 BlendState BS_Default
 {
     BlendEnable[0] = false;
@@ -88,6 +94,7 @@ BlendState BS_Blend
     DestBlend = one;
     BlendOp = Add;
 };
+
 BlendState BS_UI_AlphaBlend
 {
     BlendEnable[0] = true;

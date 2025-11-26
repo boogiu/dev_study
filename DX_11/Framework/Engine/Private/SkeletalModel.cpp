@@ -216,6 +216,17 @@ void CSkeletalModel::Control_BoneByIndex(_uint Index, _fmatrix BoneMatrix)
 	m_bDirty = true;
 }
 
+void CSkeletalModel::Hide_MehsByName(const string& name)
+{
+	_int index = m_pData->Find_MeshIndex(name);
+
+	if (index == -1)
+		return;
+
+	else
+		m_DrawableMeshes[index] = false;
+}
+
 void CSkeletalModel::Render_GUI()
 {
 	ImGui::SeparatorText("Animate Model");

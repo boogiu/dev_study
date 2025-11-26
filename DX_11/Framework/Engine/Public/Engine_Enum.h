@@ -24,7 +24,7 @@ namespace Engine
 	
 	enum class SOUND_GROUP { BGM, SFX, UI, TALK, END };
 
-	enum class RENDER_PASS_TYPE { PRIORITY, RENDER_OPAQUE, NONLIGHT_OPAQUE };
+	enum class RENDER_PASS_TYPE { PRIORITY, RENDER_OPAQUE, NONLIGHT_OPAQUE};
 	enum class RENDER_LAYER { Default, CustomOnly, Both };
 
 	enum class ANCHOR : unsigned int {

@@ -142,6 +142,7 @@ private:
 
 public:
     void OnEventAction(const BaseEvent& event);
+    void Request_Effect(const string& effectTag, const EffectData& data);
 private:
     class CPlayerStateMachine* m_pStateMachine= { nullptr };
  

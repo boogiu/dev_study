@@ -94,34 +94,67 @@ HRESULT CMaterialAnimator::Change_Animation(const string& subsetKey, const strin
 
 void CMaterialAnimator::Update_KeyFrame(const string& subsetKey, MAT_KEYFRAME& KeyFrame, _float dt)
 {
-	if (KeyFrame.fCurrentTime > KeyFrame.Cilp.fDuration) {
-		if (KeyFrame.Cilp.isLoop) {
-			KeyFrame.fCurrentTime = 0;
-		}
-		else {
-			return;
-		}
-	}
-	KeyFrame.fCurrentTime += dt * KeyFrame.Cilp.TickperSecond;
+    MATERIAL_CLIP& clip = KeyFrame.Cilp;
 
-	/*전체 사이즈*/
-	_uint FrameCount = KeyFrame.Cilp.AnimationKeyFrame.size();
-	/*그중 도달 지점*/
-	_uint nowIndex = static_cast<_uint>(KeyFrame.fCurrentTime);
-	if (nowIndex >= FrameCount) {
-	
-		nowIndex = FrameCount-1;
-	}
+    KeyFrame.fCurrentTime += dt * clip.TickperSecond;
 
-	auto matInstance = m_pMasterMaterial->Find_MaterialByName(subsetKey);
+    if (clip.fDuration > 0.f)
+    {
+        if (clip.isLoop)
+        {
+            while (KeyFrame.fCurrentTime >= clip.fDuration)
+                KeyFrame.fCurrentTime -= clip.fDuration;
+        }
+        else
+        {
+            if (KeyFrame.fCurrentTime >= clip.fDuration)
+            {
+                KeyFrame.fCurrentTime = clip.fDuration;
+            }
+        }
+    }
 
-	vector<_uint>& OriginState = matInstance->Get_TextureIndex();
+    const _uint frameCount = static_cast<_uint>(clip.AnimationKeyFrame.size());
+    if (frameCount == 0)
+        return;
 
-	for (_uint i = 0; i < OriginState.size(); i++)
-	{
-		OriginState[i] = KeyFrame.Cilp.AnimationKeyFrame[nowIndex];
-	}
+    _float proceed = 0.f;
+    if (clip.fDuration > 0.f)
+		proceed = KeyFrame.fCurrentTime / clip.fDuration;  
+	proceed = clamp(proceed, 0.f, 1.f);
+
+    _uint nowIndex = frameCount - 1;
+
+    if (clip.FramePercent.size() == frameCount)
+    {
+        for (_uint i = 0; i < frameCount; ++i)
+        {
+            if (proceed <= clip.FramePercent[i])
+            {
+                nowIndex = i;
+                break;
+            }
+        }
+    }
+    else
+    {
+        nowIndex = static_cast<_uint>(proceed * frameCount);
+        if (nowIndex >= frameCount)
+            nowIndex = frameCount - 1;
+    }
+
+    auto matInstance = m_pMasterMaterial->Find_MaterialByName(subsetKey);
+    if (!matInstance)
+        return;
+
+    vector<_uint>& originState = matInstance->Get_TextureIndex();
+
+    const _uint texIndex = clip.AnimationKeyFrame[nowIndex];
+
+    for (_uint i = 0; i < originState.size(); ++i)
+        originState[i] = texIndex;
 }
+
 
 CMaterialAnimator* CMaterialAnimator::Create()
 {

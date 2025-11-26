@@ -15,6 +15,7 @@ public:
     virtual void Submit_UI(const SPRITE_PACKET& packet) PURE;
     virtual void Submit_Debug(const DEBUG_PACKET& packet) PURE;
     virtual void Submit_Priority(const OPAQUE_PACKET& packet) PURE;
+    virtual void Submit_Blend(const BLENDED_PACKET& packet) PURE;
     virtual HRESULT Add_Palette(const string& ConstantName, class CTexture* pTexture) PURE;
 
     virtual HRESULT Get_InputLayout(class CModel* pModel, class CShader* pShader, _uint DrawIndex,
@@ -23,9 +24,11 @@ public:
         const string& passConstant, ID3D11InputLayout** ppInputLayout)PURE;
 public:
     virtual HRESULT Create_RenderTarget(const RenderTargetDesc& desc) PURE;
-    virtual void Add_RenderCommand(const RENDER_COMMAND& command) PURE;
+    virtual void Add_RenderCommand(const RENDER_CUSTOM_COMMAND& command) PURE;
+    virtual void Add_PostProcessCommand(const POST_PROCESS_COMMAND& command)PURE;
     virtual void DrawTo(const string& targetKey, function<void(ID3D11DeviceContext*)> drawCall) PURE;
-    virtual ID3D11ShaderResourceView* Get_TargetSRV(const string strTag) PURE;
+    virtual ID3D11ShaderResourceView* Get_CustomTargetSRV(const string strTag) PURE;
+    virtual ID3D11ShaderResourceView* Get_EngineTargetSRV(const string strTag) PURE;
 #ifdef _USING_GUI
     virtual void Render_GUI() PURE;
 #endif // _USING_GUI

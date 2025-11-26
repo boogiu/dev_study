@@ -18,7 +18,6 @@ class CCraftCard :
         void DeActive();
         void Active();
     };
-
     struct BaseTemplete {
         class CTarget_Texture* pBaseBackGround = { nullptr };
         class CTarget_Texture* pImageBackGround = { nullptr };
@@ -31,6 +30,7 @@ class CCraftCard :
 
         void Render(ID3D11DeviceContext* pContext);
     };
+
 private:
     CCraftCard();
     CCraftCard(const CCraftCard& rhs);

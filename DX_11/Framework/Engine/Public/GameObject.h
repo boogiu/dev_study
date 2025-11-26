@@ -60,22 +60,28 @@ public:
 	const vector<CGameObject*> Get_Children();
 
 public:
+	_bool Is_Alive() { return m_isAlive; };
+	void Set_Alive(_bool alive) { m_isAlive = alive; };
+
+public:
 	void SetRenderLayer(RENDER_LAYER layer) { m_eRenderLayer = layer; };
 	RENDER_LAYER GetRenderLayer() const {return m_eRenderLayer; };
 
 private:
 	HRESULT Make_OpaquePacket();
+	HRESULT Make_BlendedPacket(OPAQUE_PACKET packet);
 	HRESULT Make_InstancePacket();
 
 protected:
 	_bool m_isRootObject = { true };
 	_uint m_ObjectID = {};
-	CTransform* m_pTransform = { nullptr };
 
+	CTransform* m_pTransform = { nullptr };
 	class CLayer* m_pLayer = { nullptr };
 
 	string m_InstanceName = {};
 	string m_InstanceTag = {};
+	_bool m_isAlive = { true };
 
 	map<type_index,class CComponent*> m_Components;
 

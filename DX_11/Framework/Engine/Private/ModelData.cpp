@@ -106,6 +106,17 @@ const string_view CModelData::Get_ElementKey(_uint DrawIndex)
 	return m_Meshes[DrawIndex]->Get_ElementKey();
 }
 
+_int CModelData::Find_MeshIndex(const string& name)
+{
+	for (size_t i = 0; i < m_Meshes.size(); i++)
+	{
+		if (m_Meshes[i]->Get_Key().find(name) !=string::npos) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 void CModelData::Render_GUI()
 {
 	string meshCount = "Mesh : " + to_string(m_Meshes.size());

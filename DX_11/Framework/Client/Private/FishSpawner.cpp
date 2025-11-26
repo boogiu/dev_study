@@ -196,7 +196,7 @@ _float3 CFishSpawner::CheckRandPositon()
 	_int Index = Helper::Get_Random_Int(0, Max);
 	_float4 pos = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(m_RiverTile[Index],ANCHOR::Center);
 
-	return { pos.x,pos.y,pos.z };
+	return { pos.x,pos.y-5.f,pos.z };
 }
 
 FISH_DATA_DESC CFishSpawner::Get_Data(const string& insectName)

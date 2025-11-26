@@ -43,7 +43,7 @@ void CUI_ItemCard::Awake()
 {
 
 	auto RenderSys = CGameInstance::GetInstance()->Get_RenderSystem();
-	SHADER_PARAM textureParam{ RenderSys->Get_TargetSRV("CardTexture"), "Texture2D",0 };
+	SHADER_PARAM textureParam{ RenderSys->Get_CustomTargetSRV("CardTexture"), "Texture2D",0 };
 	Get_Component<CSprite2D>()->Set_Param("SpriteTexture", textureParam);
 }
 

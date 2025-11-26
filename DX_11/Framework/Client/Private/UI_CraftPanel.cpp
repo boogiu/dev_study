@@ -22,6 +22,7 @@
 #include "Level.h"
 #include "ItemSpawner.h"
 #include "EventSystem.h"
+#include "UI_Transition.h"
 
 CUI_CraftPanel::CUI_CraftPanel()
 {
@@ -111,7 +112,8 @@ void CUI_CraftPanel::Priority_Update(_float dt)
 		}
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SHIFT)) {
 			m_eState = Closed;
-			UI_DeActive(nullptr);
+			auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+			nowLevel->Get_LevelObject<CUI_Transition>()->Set_DeActive();
 		}
 	}
 	else if (m_eState == Selected) {
@@ -120,6 +122,15 @@ void CUI_CraftPanel::Priority_Update(_float dt)
 			m_pCraftCard->UI_DeActive(nullptr);
 		}
 	}
+
+	if (m_eState == Closed)
+		m_fDeactiveTime += dt*3;
+
+	if (m_fDeactiveTime > 1.5f) {
+		m_bActive = false;
+		UI_DeActive(nullptr);
+	}
+
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
@@ -146,6 +157,11 @@ void CUI_CraftPanel::Render_GUI()
 
 void CUI_CraftPanel::UI_Active(void* pArg)
 {
+	m_fDeactiveTime = 0.f;
+	if (m_eState == Closed) {
+		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+		nowLevel->Get_LevelObject<CUI_Transition>()->Set_Active();
+	}
 	CRAFT_DATA_DESC* pDesc = static_cast<CRAFT_DATA_DESC*>(pArg);
 	m_OnClose = pDesc->OnClose;
 	m_InvenData = pDesc->InvenData;
@@ -167,27 +183,27 @@ void CUI_CraftPanel::UI_Active(void* pArg)
 
 void CUI_CraftPanel::UI_DeActive(void* pArg)
 {
-	m_bActive = false;
-
+	m_fDeactiveTime = 0.f;
 	m_pText->Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
 	Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
 	m_pCraftCard->UI_DeActive(pArg);
 
-		CRAFT_RESULT result = {};
-	if(pArg != nullptr){
-		CraftData* data = static_cast<CraftData*>(pArg);
-		result.Make_Result(*data);
-	}
+	CRAFT_RESULT result = {};
+		result.Make_Result(m_SelectedData);
+
 	if (m_OnClose)
 		m_OnClose(result);
 	m_InvenData.clear();
+	m_SelectedData = {};
 }
 
 void CUI_CraftPanel::Craft_Selected(CraftData result)
 {
-	CraftData SelectedData = result;
+	m_SelectedData = result;
 	m_pCraftCard->UI_DeActive(nullptr);
-	UI_DeActive(&SelectedData);
+	m_eState = Closed;
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	nowLevel->Get_LevelObject<CUI_Transition>()->Set_DeActive();
 }
 
 void CUI_CraftPanel::Ready_Cards()
@@ -279,7 +295,7 @@ void CUI_CraftPanel::Ready_Cards()
 void CUI_CraftPanel::Render_Cards()
 {
 	auto RenderSys = CGameInstance::GetInstance()->Get_RenderSystem();
-	RENDER_COMMAND cmd = {
+	RENDER_CUSTOM_COMMAND cmd = {
 	"CardTexture",
 	[this](ID3D11DeviceContext* pContext)
 	{

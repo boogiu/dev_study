@@ -109,11 +109,10 @@ void CSkeletonFollower::Sync_Bones(_float dt)
 			_int parentIdx = m_pMyData->Get_BoneParentIndex(i);
 			_int masterParentIdx = -1;
 
-			if (parentIdx != -1)
-				masterParentIdx = m_ReflectedIndices[parentIdx];//내 행렬의 부모와 매칭되는 마스터의 행렬 인덱스
-
-			string name = m_pMasterData->Find_BoneNameByIndex(masterParentIdx);
-
+			if (parentIdx != -1){
+			masterParentIdx = m_ReflectedIndices[parentIdx];//내 행렬의 부모와 매칭되는 마스터의 행렬 인덱스
+			if(masterParentIdx != -1)string name = m_pMasterData->Find_BoneNameByIndex(masterParentIdx);
+			}
 			_matrix matParent = (masterParentIdx != -1)
 				? XMLoadFloat4x4(&masterCombinedVec[masterParentIdx])
 				: XMMatrixIdentity();

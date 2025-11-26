@@ -1,24 +1,13 @@
 #include "SpriteEmitter.h"
+#include "GameInstance.h"
 
 CSpriteEmitter::CSpriteEmitter()
 {
 }
 
-HRESULT CSpriteEmitter::Initialize(EmitterTemplate* pData)
+HRESULT CSpriteEmitter::Initialize(SpriteEmitterData Data)
 {
-	if (pData->eType != EmitterType::Sprite)
-		return E_FAIL;
-
-	SpriteEmitterData* pSpriteEmitterData = static_cast<SpriteEmitterData*>(pData);
-	m_Data.eType = pSpriteEmitterData->eType;
-	m_Data.frameCount = pSpriteEmitterData->frameCount;
-	m_Data.frameTime = pSpriteEmitterData->frameTime;
-	m_Data.lifetime = pSpriteEmitterData->lifetime;
-	m_Data.loop = pSpriteEmitterData->loop;
-	m_Data.textureName = pSpriteEmitterData->textureName;
-
-	Safe_Delete(pData);
-
+	m_Data = Data;
 	m_Time = 0.f;
 	m_CurrentFrame = 0.f;
 	m_Alive = true;
@@ -31,36 +20,43 @@ void CSpriteEmitter::Update(float dt, const EffectTransform& transform)
 	if (!m_Alive) return;
 
 	m_Transform = transform;
-
 	m_Time += dt;
 
-	m_CurrentFrame = static_cast<int>(m_Time / m_Data.frameTime);
+	// Index 계산
+	_uint maxFrame = m_Data.totalFrames;
+	m_CurrentFrame = static_cast<_uint>(m_Time / m_Data.frameTime); /*지금 프레임 타임*/
 
-	if (m_CurrentFrame >= m_Data.frameCount)
+	if (m_CurrentFrame >= maxFrame)
 	{
 		if (m_Data.loop)
-			m_CurrentFrame %= m_Data.frameCount; // 다시 0부터
+			m_CurrentFrame %= maxFrame;
 		else
-			m_Alive = false; // 소멸
+			m_Alive = false;
 	}
 }
+
 
 void CSpriteEmitter::Render()
 {
 	if (!m_Alive) return;
+	auto pFxSystem = CGameInstance::GetInstance()->Get_EffectSystem();
+	pFxSystem->QueingSpriteEffect({
+		 m_CurrentFrame,
+		 m_Data.cols,
+		 m_Data.rows,
+		_float4{1.f,1.f,1.f,1.f},
+		m_Transform.WorldMatrix,
+		m_Data.textureName,
+		 m_Data.passName,
+		});
 
-	//		RenderingAPI->DrawSpriteFrame(
-	//			m_Data.textureName,
-	//			m_CurrentFrame,
-	//			m_Data.frameCount,
-	//			m_Transform.Get_WorldMatrix()
-	//		);
 }
 
-CSpriteEmitter* CSpriteEmitter::Create(EmitterTemplate* pData)
+CSpriteEmitter* CSpriteEmitter::Create(SpriteEmitterData Data)
 {
-	CSpriteEmitter* instance = new CSpriteEmitter();
-	if (FAILED(instance->Initialize(pData))) {
+	CSpriteEmitter* instance = new CSpriteEmitter;
+
+	if (FAILED(instance->Initialize(Data))) {
 		Safe_Release(instance);
 	}
 

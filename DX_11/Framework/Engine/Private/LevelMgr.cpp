@@ -45,6 +45,7 @@ void CLevelMgr::Update(_float dt)
         if (!m_LoadingLevelKey.empty() && m_LevelCreators.count(m_LoadingLevelKey)) {
             ClearResource();
             m_pCurrentLevel = m_LevelCreators[m_LoadingLevelKey]();
+            m_pCurrentLevel->Awake(); //확정 후 초기화
             m_eState = LEVEL_STATE::LOADING; //로딩 레벨 설정이 되어 있으면 로딩을 진행함.
         }
         else {
@@ -128,7 +129,7 @@ const string& CLevelMgr::Get_NowLevelKey()
     if (m_pCurrentLevel)
         return m_pCurrentLevel->Get_Key();
     else
-        return string();
+        return m_LoadingLevelKey;
 }
 
 #pragma endregion

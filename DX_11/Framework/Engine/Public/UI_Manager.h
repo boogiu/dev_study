@@ -30,7 +30,7 @@ private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	unordered_map<string, UIobjects> m_UIObjects;
 	vector<CUI_Object*> DeleteUIs;
-
+	string m_nowLevelKey = {};
 public:
 	static CUI_Manager* Create();
 	virtual void Free() override;

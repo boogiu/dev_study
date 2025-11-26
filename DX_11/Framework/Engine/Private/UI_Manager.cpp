@@ -2,7 +2,7 @@
 #include "UI_Object.h"
 #include "GameInstance.h"
 #include "ILevelService.h"
-
+#include "Level.h"
 CUI_Manager::CUI_Manager()
 	:m_pGameInstance(CGameInstance::GetInstance())
 {
@@ -15,6 +15,7 @@ CUI_Manager::~CUI_Manager()
 
 void CUI_Manager::Pre_EngineUpdate(_float dt)
 {
+
 	for (auto pObject : DeleteUIs)
 	{
 		_uint ObjectID = pObject->Get_ObjectID();
@@ -23,46 +24,43 @@ void CUI_Manager::Pre_EngineUpdate(_float dt)
 	}
 
 	DeleteUIs.clear();
-
-	for (auto& pair : m_UIObjects)
-		for (auto& UI : pair.second)
-			if (UI && UI->Is_Root())
-				UI->Pre_EngineUpdate(dt);
+	
+	m_nowLevelKey = CGameInstance::GetInstance()->Get_LevelMgr()->Get_NowLevelKey();
+	for (auto& UI : m_UIObjects[m_nowLevelKey])
+		if (UI && UI->Is_Root())
+			UI->Pre_EngineUpdate(dt);
 }
 
 void CUI_Manager::Post_EngineUpdate(_float dt)
 {
 	Sort_UI();
 
-	for (auto& pair : m_UIObjects) {
-		for (auto& UI : pair.second)
-			if (UI && UI->Is_Root())
-				UI->Post_EngineUpdate(dt);
+	for (auto& UI : m_UIObjects[m_nowLevelKey]) {
+		if (UI && UI->Is_Root())
+			UI->Post_EngineUpdate(dt);
 	}
 }
 
 void CUI_Manager::Priority_Update(_float dt)
 {
-	for (auto& pair : m_UIObjects)
-		for (auto& UI : pair.second)
-			if (UI && UI->Is_Root())
-				UI->Priority_Update(dt);
+	for (auto& UI : m_UIObjects[m_nowLevelKey]) {
+		if (UI && UI->Is_Root())
+			UI->Priority_Update(dt);
+	}
 }
 
 void CUI_Manager::Update(_float dt)
 {
-	for (auto& pair : m_UIObjects)
-		for (auto& UI : pair.second)
-			if (UI && UI->Is_Root())
-				UI->Update(dt);
+	for (auto& UI : m_UIObjects[m_nowLevelKey])
+		if (UI && UI->Is_Root())
+			UI->Update(dt);
 }
 
 void CUI_Manager::Late_Update(_float dt)
 {
-	for (auto& pair : m_UIObjects)
-		for (auto& UI : pair.second)
-			if (UI && UI->Is_Root())
-				UI->Late_Update(dt);
+	for (auto& UI : m_UIObjects[m_nowLevelKey])
+		if (UI && UI->Is_Root())
+			UI->Late_Update(dt);
 }
 
 void CUI_Manager::Clear(const string& LevelTag)
@@ -135,7 +133,7 @@ void CUI_Manager::Add_Object_Recursive(const string& LevelTag, CUI_Object* objec
 
 	for (auto& pChild : object->Get_Children()) {
 		CUI_Object* CastChild = dynamic_cast<CUI_Object*>(pChild);
-		if(CastChild)
+		if (CastChild)
 			Add_Object_Recursive(LevelTag, CastChild);
 	}
 }
@@ -149,7 +147,7 @@ void CUI_Manager::Remove_UIObject(CUI_Object* object)
 	if (systemIndex == -1)
 		return;
 	auto& map = m_UIObjects.at(object->Get_SystemLevel());
-	
+
 	if (map.empty())
 		return;
 	if (systemIndex >= map.size())
@@ -165,7 +163,7 @@ void CUI_Manager::Sort_UI()
 {
 	for (auto& pair : m_UIObjects) {
 		sort(pair.second.begin(), pair.second.end(),
-			[&]( CUI_Object* a,  CUI_Object* b) {
+			[&](CUI_Object* a, CUI_Object* b) {
 				return a->Get_Priority() < b->Get_Priority();
 			});
 	}

@@ -15,6 +15,11 @@ public:
     virtual CState* HandleTransition();
     virtual _uint Get_InputMask() const override;
 
+private:
+    void Request_Dust();
+private:
+    _float m_fWalkTime = {  };
+
 public:
     static CPlayerState_Walk* Create();
     virtual void Free();

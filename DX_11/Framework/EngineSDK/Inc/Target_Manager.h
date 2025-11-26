@@ -24,6 +24,11 @@ public:
 	HRESULT Begin_MRT(const string& strMRTTag);
 	HRESULT End_MRT();
 	HRESULT Get_TargetParam(const string& strTargetTag, SHADER_PARAM& param);
+	ID3D11DepthStencilView* Get_MTR_DSV(const string& strMRTTag);
+
+public:
+	HRESULT Bind_Targets(const vector<string>& targetNames, bool clearColor, bool clearDepth);
+	HRESULT Restore_Targets();
 
 #ifdef _USING_GUI
 	void Render_GUI();
@@ -31,6 +36,7 @@ public:
 
 public:
 	class CRenderTarget* Get_CustomTarget(const string& strTargetTag);
+	class CRenderTarget* Get_EngineTarget(const string& strTargetTag);
 	void Push_Target(const string& key);
 	void Pop_Target();
 
@@ -44,6 +50,7 @@ private:
 
 	unordered_map<string, class CRenderTarget*>							m_EngineRenderTargets;
 	unordered_map<string, vector<class CRenderTarget*>>			m_MRTs;
+	stack<SavedState> m_SaveEngineStates;
 
 	ID3D11RenderTargetView* m_pBackBufferRTV = { nullptr };
 	ID3D11DepthStencilView* m_pDSV = { nullptr };
@@ -54,7 +61,7 @@ private:
 
 	/*Client Target*/
 	unordered_map<string, class CRenderTarget*> m_CustomTargets;
-	stack<SavedState> m_SaveStates;
+	stack<SavedState> m_SaveCustomStates;
 
 public:
 	static CTarget_Manager* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -4,15 +4,15 @@
 #include "Material.h"
 #include "Animator3D.h"
 #include "ObjectContainer.h"
-
+#include "IResourceService.h"
 #include "MaterialInstance.h"
 #include "MaterialData.h"
 #include "MaterialAnimator.h"
-
+#include "Texture.h"
+#include "GameInstance.h"
 
 #include "NpcState_Machine.h"
 
-#include "GameInstance.h"
 #include "Level.h"
 #include "Helper_Func.h"
 
@@ -23,6 +23,9 @@
 #include "Player.h"
 #include "ClientHelper.h"
 #include "AABB_Collider.h"
+
+#include "ClothParts.h"
+#include "PlayerPart_Hand.h"
 
 CNonPlayer::CNonPlayer()
 {
@@ -83,6 +86,7 @@ void CNonPlayer::Awake()
 void CNonPlayer::Priority_Update(_float dt)
 {
 	m_EventPack.m_InteractCoolDown += dt;
+	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
 void CNonPlayer::Update(_float dt)
@@ -91,11 +95,12 @@ void CNonPlayer::Update(_float dt)
 	Update_TileInfo(dt);
 	m_pMachine->Update(dt);
 	Get_Component<CMaterialAnimator>()->Update_Animation(dt);
+	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
 void CNonPlayer::Late_Update(_float dt)
 {
-
+	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
 }
 
 void CNonPlayer::Update_Movement(_float dt)
@@ -187,6 +192,50 @@ void CNonPlayer::Add_Parts()
 	if (CMaterialInstance* EyeInstance = Get_Component<CMaterial>()->Find_MaterialByName("mEye")) {
 		EyeInstance->Override_Pass("EyeShader");
 	}
+	if (!m_CharacterDesc.TopName.empty()) {
+		CClothParts::CLOTHES_DESC* pTopDesc = new CClothParts::CLOTHES_DESC;
+		pTopDesc->ClothType = m_CharacterDesc.TopName;
+		pTopDesc->pPlayer = this;
+		CGameObject* pTop = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_ClothParts" })
+			.Add_ObjDesc(pTopDesc)
+			.Build("Top");
+		Get_Component<CObjectContainer>()->Add_Child(pTop, true);
+	}
+
+	//		CPlayerPart_Hand::CHARACTER_PARTS_DESC* pRHandDesc = new CPlayerPart_Hand::CHARACTER_PARTS_DESC;
+	//		pRHandDesc->pOwner = this;
+	//		pRHandDesc->BoneName = "Armature_Hand_R";
+	//		CGameObject* RhHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
+	//			.Add_ObjDesc(pRHandDesc)
+	//			.Build("Right_Hand");
+	//		Get_Component<CObjectContainer>()->Add_Child(RhHand, false);
+}
+
+void CNonPlayer::Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey)
+{
+	auto instance = pObject->Get_Component<CMaterial>()->Find_MaterialByName(subsetKey);
+	if (!instance) return;
+
+	CTexture* pDiffuse = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey + "_Alb.dds");
+	CTexture* pMixture = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey + "_Mix.dds");
+	CTexture* pNormal = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey + "_Nrm.dds");
+	CTexture* pOpcity = CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", TextureKey + "_OP.dds");
+
+	SHADER_PARAM param = {};
+	param.iSize = 0;
+	param.typeName = "Texture2D";
+
+	param.pData = pDiffuse->Get_SRV();
+	instance->Set_Param("DiffuseTexture", param);
+
+	param.pData = pMixture->Get_SRV();
+	instance->Set_Param("MixtureTexture", param);
+
+	param.pData = pNormal->Get_SRV();
+	instance->Set_Param("NormalTexture", param);
+
+	param.pData = pOpcity->Get_SRV();
+	instance->Set_Param("OpacityTexture", param);
 }
 
 void CNonPlayer::Add_EventListen()
@@ -202,15 +251,22 @@ void CNonPlayer::Add_EventListen()
 void CNonPlayer::Add_MatAnimator()
 {
 	MATERIAL_CLIP clip = {};
-	clip.AnimationKeyFrame = { 10,10,10,11,11,11,11,11,11,11 ,11,11 ,11,11 ,11,11 ,};
+	clip.AnimationKeyFrame = { 6,7, 11,7,6 };
+	clip.FramePercent = { 0.2, 0.22,0.87, 0.89, 1.0 };
 	clip.fDuration = 50.f;
 	clip.TickperSecond = 15.f;
-	clip.isLoop = false;
+	clip.isLoop = true;
 	Get_Component<CMaterialAnimator>()->RegisterKeyFrame("mEye", "Smile", clip);
 
-	clip.AnimationKeyFrame = {6,6,6,6,6,6,6,7,7,8,8,8,8,8,7,7, 6,6,6,6,6,};
+	clip.AnimationKeyFrame = { 6,7,8,7,6 };
+	clip.FramePercent = { 0.4, 0.42,0.47, 0.49, 1.0 };
 	clip.isLoop = true;
 	Get_Component<CMaterialAnimator>()->RegisterKeyFrame("mEye", "IDLE", clip);
+
+	clip.AnimationKeyFrame = { 6,12,6 };
+	clip.FramePercent = { 0.2, 0.8, 1.0 };
+	clip.isLoop = true;
+	Get_Component<CMaterialAnimator>()->RegisterKeyFrame("mEye", "Surprise", clip);
 
 	Get_Component<CMaterialAnimator>()->Change_Animation("mEye", "IDLE");
 }
@@ -248,7 +304,6 @@ void CNonPlayer::LookToPlayer(_float dt)
 			trace.traceBone_Radian = Lerp(trace.traceBone_Radian, 0, dt);
 			Animator->Control_Bone("Armature_Neck", XMMatrixRotationX(trace.traceBone_Radian));
 		}
-		
 	}
 	else {
 		trace.traceBone_Radian = Lerp(trace.traceBone_Radian, 0, dt);

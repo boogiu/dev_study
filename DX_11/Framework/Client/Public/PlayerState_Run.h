@@ -19,9 +19,12 @@ public:
     virtual _uint Get_InputMask() const override;
 
 private:
+    void Request_Dust();
+private:
     _bool m_bFliping = { false };
     _float2 m_vLastAxis = {};
     _float m_fDuration = {};
+    _float m_fRunTime = {};
 public:
     static CPlayerState_Run* Create();
     virtual void Free();

@@ -52,6 +52,7 @@ HRESULT CTileObject::Initialize(INIT_DESC* pArg)
 		Link_Data(m_BaseTypeName);
 		index = Get_Component<CTileBlock>()->On_Grid(tileDesc->index, m_BaseTypeName, true);
 	}
+
 	else {
 		Link_Data(m_BaseTypeName + "0A_0");
 		index = Get_Component<CTileBlock>()->On_Grid(tileDesc->index, m_BaseTypeName, true);
@@ -66,6 +67,9 @@ HRESULT CTileObject::Initialize(INIT_DESC* pArg)
 		return E_FAIL;
 	}
 
+	if (m_BaseTypeName.find("Cliff") == string::npos) {
+		m_pTransform->Set_Y(0.01f);
+	}
 	return S_OK;
 }
 

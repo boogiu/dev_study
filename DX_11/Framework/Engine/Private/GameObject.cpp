@@ -13,6 +13,8 @@
 #include "IMeshProvider.h"
 #include "DebugRender.h"
 #include "InstanceModel.h"
+#include "MaterialInstance.h"
+
 _uint CGameObject::s_NextID = 1;
 
 CGameObject::CGameObject()
@@ -117,7 +119,7 @@ void CGameObject::Pre_EngineUpdate(_float dt)
 	}
 
 	for (auto& child : Get_Children()) {
-		if (child)
+		if (child && child->Is_Alive())
 			child->Pre_EngineUpdate(dt);
 	}
 }
@@ -136,7 +138,6 @@ void CGameObject::Post_EngineUpdate(_float dt)
 			Make_OpaquePacket();
 		}
 
-
 #ifdef _DEBUG
 		DEBUG_PACKET debugPacket = {};
 		debugPacket.pModel = Get_Component<CModel>();
@@ -152,10 +153,11 @@ void CGameObject::Post_EngineUpdate(_float dt)
 		}
 
 #endif // _DEBUG
+
 	}
 
 	for (auto& child : Get_Children()) {
-		if (child)
+		if (child && child->Is_Alive())
 			child->Post_EngineUpdate(dt);
 	}
 }
@@ -255,7 +257,6 @@ HRESULT CGameObject::Make_OpaquePacket()
 	packet.pModel = Get_Component<CModel>();
 	if (!packet.pModel || !packet.pModel->isReadyToDraw()) return E_FAIL;
 
-
 	if (!packet.pModel->Get_CompActive()) return E_FAIL;
 
 	packet.bSkinning = dynamic_cast<CSkeletalModel*>(packet.pModel);
@@ -280,14 +281,47 @@ HRESULT CGameObject::Make_OpaquePacket()
 		if (!packet.pModel->isDrawable(i)) continue;
 		packet.DrawIndex = i;
 		packet.MaterialIndex = packet.pModel->Get_MaterialIndex(i);
-		if (packet.pModel->Get_RenderType() == RENDER_PASS_TYPE::RENDER_OPAQUE)
+
+		if (packet.pMaterial->Get_MaterialInstance(packet.MaterialIndex)->IsBlened()) {
+			Make_BlendedPacket(packet);
+		}
+		else if (packet.pModel->Get_RenderType() == RENDER_PASS_TYPE::RENDER_OPAQUE)
 			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Opaque(packet);
 		else if (packet.pModel->Get_RenderType() == RENDER_PASS_TYPE::PRIORITY)
 			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Priority(packet);
+
 		if (packet.pModel->doShadowCast()) {
 			CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Shadow(packet);
 		}
 	}
+	return S_OK;
+}
+
+HRESULT CGameObject::Make_BlendedPacket(OPAQUE_PACKET packet)
+{
+	BLENDED_PACKET newPacket = {};
+	newPacket.bSkinning = packet.bSkinning;
+	newPacket.DrawIndex = packet.DrawIndex;
+	newPacket.MaterialIndex = packet.MaterialIndex;
+	newPacket.SkinningOffset = packet.SkinningOffset;
+	newPacket.pModel = packet.pModel;
+	newPacket.pMaterial = packet.pMaterial;
+	newPacket.pPayLoad = packet.pPayLoad;
+	newPacket.pWorldMatrix = packet.pWorldMatrix;
+	//float3 toObj = objWorldPos - cameraPos;
+	//float dist = dot(toObj, cameraForward);
+
+	const _float4x4* viewInverseMat = CGameInstance::GetInstance()->Get_CameraMgr()->Get_InversedViewMatrix();
+	_matrix viewInverse = XMLoadFloat4x4(viewInverseMat);
+
+	_float4 camPos = CGameInstance::GetInstance()->Get_CameraMgr()->Get_CameraPos();
+
+	_vector CamDist = m_pTransform->Get_Pos() - XMLoadFloat4(&camPos);
+	_vector CamForward = XMVector4Normalize(viewInverse.r[2]);
+
+	newPacket.DistanceToCamera = XMVectorGetX(XMVector4Dot(CamDist, CamForward));
+
+	CGameInstance::GetInstance()->Get_RenderSystem()->Submit_Blend(newPacket);
 	return S_OK;
 }
 

@@ -28,6 +28,7 @@ public:
 	const MaterialConstants& Get_DefaultMaterialConstant() { return m_DefaultMaterialConstant; }
 	_uint  Get_MaterialDataID() { return m_MaterialDataID; }
 	const string& Get_MaterialName() { return m_MaterialKey; }
+	void Change_DataPass(const string& pass) { m_passConstant = pass; }
 
 public:
 	_bool Has_Texture(TEXTURE_TYPE eType);

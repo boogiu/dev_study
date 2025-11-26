@@ -55,7 +55,7 @@ void CCraftCard::Awake()
 
 	RenderSys->Create_RenderTarget(CardDesc);
 
-	SHADER_PARAM textureParam{ RenderSys->Get_TargetSRV("CraftCard"), "Texture2D",0 };
+	SHADER_PARAM textureParam{ RenderSys->Get_CustomTargetSRV("CraftCard"), "Texture2D",0 };
 	Get_Component<CSprite2D>()->Set_Param("SpriteTexture", textureParam);
 }
 
@@ -112,7 +112,7 @@ void CCraftCard::Late_Update(_float dt)
 	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
 
 	auto RenderSys = CGameInstance::GetInstance()->Get_RenderSystem();
-	RENDER_COMMAND cmd = { "CraftCard" ,
+	RENDER_CUSTOM_COMMAND cmd = { "CraftCard" ,
 		[this](ID3D11DeviceContext* pContext)
 		{Render_CraftCard(pContext); } };
 

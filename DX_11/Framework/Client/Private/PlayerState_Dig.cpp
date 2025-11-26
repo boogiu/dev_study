@@ -24,6 +24,11 @@ HRESULT CPlayerState_Dig::OnEnter()
 
 	if ((TILE_FLAG::FLAG_DIGGED & Flag) != 0) {
 		hr=Animator->Change_Animation("ToolScoop_BuryHole.anim");
+		TILE_INDEX forward = m_pPlayer->Get_FowardIndex();
+		_float4 pos = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(forward, ANCHOR::Center);
+		pos.y += 0.5f;
+		m_pPlayer->Request_Effect("Effect_BurryingGround", { pos, pos });
+
 		m_isDigged = true;
 	}
 	else if ((TILE_FLAG::FLAG_TREE & Flag) != 0) {
@@ -68,7 +73,11 @@ void CPlayerState_Dig::OnUpdate(_float dt)
 	}
 
 	if (m_isTree || m_isDiggable) {
-		if (Animator->isOverAnimTiming(0.6f)&& !m_DigComplete) {
+		if (Animator->isOverAnimTiming(0.2f) && !m_EffectComplete) {
+			m_EffectComplete = true;
+			Request_Effect();
+		}
+		if (Animator->isOverAnimTiming(0.5f)&& !m_DigComplete) {
 			m_DigComplete = true;
 			Make_Hole();
 		}
@@ -87,8 +96,11 @@ HRESULT CPlayerState_Dig::OnExit()
 	m_isDigged = false;
 	m_DigComplete = false;
 	m_isStone = false;
+	m_EffectComplete = false;
+	m_CloudComplete = false;
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
+	
 	return S_OK;
 }
 
@@ -112,12 +124,32 @@ _uint CPlayerState_Dig::Get_InputMask() const
 	return 0xffffffff;
 }
 
+void CPlayerState_Dig::Request_Effect()
+{
+	if (!m_EffectComplete)
+		return;
+	TILE_INDEX forward = m_pPlayer->Get_FowardIndex();
+	_float4 pos = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(forward, ANCHOR::Center);
+	pos.y += 0.5f;
+	m_pPlayer->Request_Effect("Effect_GroundDump", { pos, pos });
+
+}
+
+void CPlayerState_Dig::Request_Cloud()
+{/*
+	if (m_CloudComplete)
+		return;
+	TILE_INDEX forward = m_pPlayer->Get_FowardIndex();
+	_float4 pos = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(forward, ANCHOR::Center);
+	pos.y += 0.5f;
+	m_pPlayer->Request_Effect("Effect_Smoke", { pos, pos });*/
+}
+
 void CPlayerState_Dig::Make_Hole()
 {
 	if (!m_DigComplete)
 		return;
 
-	//GamePlay_GameObject_FieldHole
 	TILE_INDEX forward = m_pPlayer->Get_FowardIndex();
 	_float4 pos = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(forward,ANCHOR::Center);
 
@@ -134,6 +166,10 @@ void CPlayerState_Dig::Burry_Hole()
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	if (Animator->isOverAnimTiming(0.5f)) {
 		m_pPlayer->ActiveCollider_Tool(true, "BurryHole");
+	}
+	if (Animator->isOverAnimTiming(0.75f)) {
+		//Request_Cloud();
+
 	}
 }
 

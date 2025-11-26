@@ -5,6 +5,8 @@
 #include "AABB_Collider.h"
 
 #include "GameInstance.h"
+#include "Level.h"
+#include "EffectSpawner.h"
 
 CFieldHole::CFieldHole()
 {
@@ -51,12 +53,15 @@ void CFieldHole::Update(_float dt)
 	}
 
 	if (m_eState == Ready_Delete) {
+	
 		m_fLifeTime += dt;
 
 		if (m_fLifeTime > 0.5f) {
 			auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 			TileSystem->Remove_TileFlagByIndex(m_SyncedIndex, static_cast<_uint>(TILE_FLAG::FLAG_DIGGED | TILE_FLAG::FLAG_BLOCKED));
 			CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
+			auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+			nowLevel->Get_LevelObject<CEffectSpawner>()->Request_Effect("Effect_Smoke", { Get_Position(), Get_Position() });
 			m_eState = IDLE;
 		}
 	}

@@ -7,6 +7,7 @@
 #include "LoadStaticModel.h"
 #include	"LoadSkeletalModel.h"
 
+#include "MaterialInstance.h"
 COptionUI::COptionUI()
 {
 }
@@ -139,6 +140,30 @@ void COptionUI::Render_ImporterTab()
 		overrideShaderKey = OverrideKey;
 	}
 
+	static string OverridePass;
+
+	if (OverridePass.capacity() < 256)
+		OverridePass.reserve(256);
+
+	if (ImGui::InputText("Override Pass Key",
+		OverridePass.data(),
+		OverridePass.capacity() + 1,
+		ImGuiInputTextFlags_CallbackResize,
+		[](ImGuiInputTextCallbackData* data)
+		{
+			if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
+			{
+				auto str = reinterpret_cast<std::string*>(data->UserData);
+				str->resize(data->BufTextLen);
+				data->Buf = str->data();
+			}
+			return 0;
+		},
+		& OverridePass))
+	{
+		overridePassKey = OverridePass;
+	}
+
 	/*옵션 3 저장할 폴더 */
 	ImGui::SeparatorText("Save Folder");
 	if (ImGui::Button("Select Folder##Save")) {
@@ -216,6 +241,11 @@ HRESULT COptionUI::LookUp_Folder()
 		if (bSaveMaterial) {
 			Load = m_pMaterial->Load_Material(m_pAIScene->mNumMaterials, m_pAIScene->mMaterials, filePath);
 			m_pMaterial->Override_ShaderKey(overrideShaderKey);
+
+			for (auto Instance : m_pMaterial->Get_Material_Instance())
+			{
+				Instance->Get_MaterialData()->Change_DataPass(overridePassKey);
+			}
 		}
 		
 

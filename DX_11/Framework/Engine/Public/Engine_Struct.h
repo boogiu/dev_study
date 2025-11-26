@@ -397,7 +397,8 @@ namespace Engine
 		_bool isLoop;
 		_float fDuration;
 		_float TickperSecond;
-		vector<_uint> AnimationKeyFrame;
+		vector<_uint> AnimationKeyFrame; 
+		vector<_float> FramePercent;
 	}MATERIAL_CLIP;
 
 	typedef struct MaterialAnimationKeyFrame {
@@ -419,7 +420,6 @@ namespace Engine
 	};
 
 #pragma pack(pop)
-	enum class EffectPosType { WorldSpace, LocalSpace, BoneSpace };
 	struct EffectRequestPacket {
 		_float3 vStartPosition = {};
 		_float3 vStartScale = { 1,1,1 };
@@ -427,9 +427,6 @@ namespace Engine
 
 		_float3 vLocalOffset = { 0,0,0 };
 		_float4 qLocalRotation = { 0,0,0,1 };
-
-		EffectPosType ePosType = { EffectPosType::WorldSpace };
-
 		string levelTag;					// 오브젝트가 있는 레이어
 		string layerTag;					// 오브젝트가 있는 레이어
 		_uint  objectID = 0;							// 오브젝트 고유 id
@@ -470,11 +467,17 @@ namespace Engine
 
 	struct SpriteEmitterData : public EmitterTemplate
 	{
-		string textureName;				// 사용할 텍스처 (스프라이트 시트)
-		_int frameCount = 1;				// 총 프레임
-		_float frameTime = 0.1f;			// 프레임 당 지속 시간
-		_bool loop = false;					// 반복 여부
-		_float lifetime = 1.0f;				// 이펙트 수명
+		string textureName;
+
+		_uint totalFrames = 1;     // 전체 프레임 수
+		_uint cols = 1;            // 시트 가로
+		_uint rows = 1;            // 시트 세로
+
+		_float frameTime = 0.1f;   // 프레임당 시간
+		_bool loop = false;
+		_float lifetime = 1.0f;
+
+		string passName = "Opaque"; 
 	};
 
 	struct EffectSpriteDrawDesc
@@ -496,6 +499,14 @@ namespace Engine
 		_float3 vVelocity;
 		_float  fLifeTime;
 		_float  fMaxLifeTime;
+	};
+
+	struct EffectDataPreset
+	{
+		string EffectName = {};
+		_float fDuration = {};
+		_bool bLoop = {};
+		vector<SpriteEmitterData> SpriteEmitterDatas;
 	};
 
 }

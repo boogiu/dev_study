@@ -1,7 +1,7 @@
 #pragma once
 #include "IEffectService.h"
 NS_BEGIN(Engine)
-class CEffectSystem :
+class  CEffectSystem :
     public IEffectService
 {
 private:
@@ -11,16 +11,22 @@ private:
 public:
     HRESULT Initialize();
     void Update(_float dt);
-    void Render();
+    void Render(ID3D11DeviceContext* pContext);
 
 public:
     void Spawn(class CEffectData* data, const EffectRequestPacket& desc);
+    void Spawn_Preset(const EffectDataPreset& preset, const EffectRequestPacket& desc);
+
+public:
+    void QueingSpriteEffect(const EffectSpriteDrawDesc& desc);
 
 private:
     vector<class CEffectInstance*> m_ActiveEffects;
     vector<class CEffectInstance*>  m_EffectPool;
-
     unordered_map<string, class CEffectData*> m_EffectDatas;
+
+private: /*subRenderer*/
+    class CSpriteEffectRenderer* m_pSpriteRenderer = { nullptr };
 
 public:
     static CEffectSystem* Create();

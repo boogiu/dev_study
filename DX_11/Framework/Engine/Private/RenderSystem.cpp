@@ -37,11 +37,14 @@ HRESULT CRenderSystem::Initialize()
 	m_pOpaquePass = OpaquePass::Create(this);
 	m_pShadowPass = ShadowPass::Create(this);
 	m_pInstancePass = InstancePass::Create(this);
+	m_pBlendedPass = BlendedPass::Create(this);
 	m_pUIPass = UIPass::Create(this);
 
 #ifdef _DEBUG
 	m_pDebugPass = DebugPass::Create(this);
 #endif // _DEBUG
+
+
 
 	return S_OK;
 }
@@ -52,36 +55,37 @@ HRESULT CRenderSystem::Render()
 	m_pPipeLine->Update_FrameBuffer(m_pContext);
 	m_pPipeLine->Update_Frustum();
 
+	if (FAILED(m_pTargetManager->Begin_MRT("MRT_Final"))) return E_FAIL;
 	/*Priority*/
 	m_pPriorityPass->Execute(m_pContext);
-
 	/*Shadow*/
 	Render_Shadow();
-
 	/*ForWard Rendering*/
 	if (FAILED(m_pTargetManager->Begin_MRT("MRT_Deferred"))) return E_FAIL;
 	m_pOpaquePass->Execute(m_pContext);
 	m_pInstancePass->Execute(m_pContext);
 	if (FAILED(m_pTargetManager->End_MRT()))return E_FAIL;
+
 	Render_LightAcc();
 	Render_Combined();
-
-	/*TransParent Rendering -> Not Proceed*/
-
-	/*Effect Rendering - > with Transparent*/
-	CGameInstance::GetInstance()->Get_EffectSystem()->Render();
-
+	Render_Blended();
 	/*Debug Rendering*/
 #ifdef _DEBUG
 	m_pDebugPass->Execute(m_pContext);
 #endif // _DEBUG
+	if (FAILED(m_pTargetManager->End_MRT()))return E_FAIL;
 
 	/*Custrom Rendering*/
-	Process_RenderCommand();
-
+	if (FAILED(m_pTargetManager->Begin_MRT("MRT_UI"))) return E_FAIL;
 	/*UI Rendering*/
 	m_pUIPass->Execute(m_pContext);
+	CGameInstance::GetInstance()->Get_FontSystem()->Render_Font();
+	if (FAILED(m_pTargetManager->End_MRT()))return E_FAIL;
+	Process_RenderCommand();
 
+	Process_PostProcessQueue();
+
+	Render_Final();
 	return S_OK;
 }
 
@@ -153,6 +157,26 @@ HRESULT CRenderSystem::Render_Combined()
 	return S_OK;
 }
 
+HRESULT CRenderSystem::Render_Blended()
+{
+	ID3D11DepthStencilView* pDeferredDSV =
+		m_pTargetManager->Get_MTR_DSV("MRT_Deferred");
+
+	ID3D11RenderTargetView* pPrevRTV = { nullptr };
+	ID3D11DepthStencilView* pPrevDSV = { nullptr };
+	m_pContext->OMGetRenderTargets(1, &pPrevRTV, &pPrevDSV);
+	m_pContext->OMSetRenderTargets(1, &pPrevRTV, pDeferredDSV);
+	m_pBlendedPass->Execute(m_pContext);
+	ID3D11RenderTargetView* pRTVs[8] = { pPrevRTV };
+	m_pContext->OMSetRenderTargets(8, pRTVs, pPrevDSV);
+
+	Safe_Release(pPrevRTV);
+	Safe_Release(pPrevDSV);
+
+	return S_OK;
+}
+
+
 #ifdef _USING_GUI
 void CRenderSystem::Render_GUI()
 {
@@ -167,23 +191,38 @@ HRESULT CRenderSystem::Create_RenderTarget(const RenderTargetDesc& desc)
 	return 	m_pTargetManager->Create_Target(desc, false);
 }
 
-void CRenderSystem::Add_RenderCommand(const RENDER_COMMAND& command)
+void CRenderSystem::Add_RenderCommand(const RENDER_CUSTOM_COMMAND& command)
 {
 	m_RenderCommands.push_back(command);
 }
 
+void CRenderSystem::Add_PostProcessCommand(const POST_PROCESS_COMMAND& command)
+{
+	m_PostCommands.push_back(command);
+}
+
 void CRenderSystem::DrawTo(const string& targetKey, function<void(ID3D11DeviceContext*)> drawCall)
 {
-	RENDER_COMMAND cmd;
+	RENDER_CUSTOM_COMMAND cmd;
 	cmd.TargetKey = targetKey;
 	cmd.DrawCallback = drawCall;
 
 	m_RenderCommands.push_back(cmd);
 }
 
-ID3D11ShaderResourceView* CRenderSystem::Get_TargetSRV(const string strTag)
+ID3D11ShaderResourceView* CRenderSystem::Get_CustomTargetSRV(const string strTag)
 {
 	CRenderTarget* pTarget = m_pTargetManager->Get_CustomTarget(strTag);
+	if (!pTarget)
+	{
+		return nullptr;
+	}
+	return pTarget->Get_SRV();
+}
+
+ID3D11ShaderResourceView* CRenderSystem::Get_EngineTargetSRV(const string strTag)
+{
+	CRenderTarget* pTarget = m_pTargetManager->Get_EngineTarget(strTag);
 	if (!pTarget)
 	{
 		return nullptr;
@@ -206,6 +245,9 @@ HRESULT CRenderSystem::Ready_GBuffer()
 	RenderTargetDesc DepthlDesc = { "Target_Depth" , DXGI_FORMAT_R32G32B32A32_FLOAT , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
 	m_pTargetManager->Create_Target(DepthlDesc);
 
+	RenderTargetDesc EmiDesc = { "Target_Emission" , DXGI_FORMAT_R16G16B16A16_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,ViewportDesc.Width, ViewportDesc.Height };
+	m_pTargetManager->Create_Target(EmiDesc);
+
 	RenderTargetDesc ShadowDesc = { "Target_Shadow" , DXGI_FORMAT_R32G32B32A32_FLOAT , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(1.f, 1.f, 1.f, 1.f) ,g_iMaxWidth, g_iMaxHeight };
 	m_pTargetManager->Create_Target(ShadowDesc);
 
@@ -221,6 +263,8 @@ HRESULT CRenderSystem::Ready_GBuffer()
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Normal")))
 		return E_FAIL;
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Depth")))
+		return E_FAIL;
+	if (FAILED(m_pTargetManager->Add_MRT("MRT_Deferred", "Target_Emission")))
 		return E_FAIL;
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_LightAcc", "Target_Shade")))
 		return E_FAIL;
@@ -238,6 +282,21 @@ HRESULT CRenderSystem::Ready_GBuffer()
 		return E_FAIL;
 
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 1.f));
+
+
+	RenderTargetDesc UI_Desc = { "Target_UI" , DXGI_FORMAT_R8G8B8A8_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,
+	ViewportDesc.Width, ViewportDesc.Height };
+
+	m_pTargetManager->Create_Target(UI_Desc);
+	if (FAILED(m_pTargetManager->Add_MRT("MRT_UI", "Target_UI")))
+		return E_FAIL;
+
+	RenderTargetDesc FianlDesc = { "Target_Final" , DXGI_FORMAT_R8G8B8A8_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,
+		ViewportDesc.Width, ViewportDesc.Height };
+
+	m_pTargetManager->Create_Target(FianlDesc);
+	if (FAILED(m_pTargetManager->Add_MRT("MRT_Final", "Target_Final")))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -257,9 +316,9 @@ void CRenderSystem::Process_RenderCommand()
 		m_pTargetManager->Push_Target(cmd.TargetKey);
 
 		if (pTarget->Get_RTV())
-			pTarget->Clear(); 
+			pTarget->Clear();
 		if (pTarget->Get_DSV())
-			m_pContext->ClearDepthStencilView(pTarget->Get_DSV(),	D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,1.f, 0);
+			m_pContext->ClearDepthStencilView(pTarget->Get_DSV(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 
 		cmd.DrawCallback(m_pContext);
 
@@ -267,6 +326,20 @@ void CRenderSystem::Process_RenderCommand()
 	}
 
 	m_RenderCommands.clear();
+}
+
+void CRenderSystem::Process_PostProcessQueue()
+{
+	for (auto& cmd : m_PostCommands)
+	{
+		m_pTargetManager->Bind_Targets(cmd.TargetNames, cmd.bClearColor, cmd.bClearDepth);
+
+		cmd.DrawCall(m_pContext);
+
+		m_pTargetManager->Restore_Targets();
+	}
+
+	m_PostCommands.clear();
 }
 
 #pragma endregion
@@ -361,6 +434,33 @@ void CRenderSystem::Render_Shadow()
 	Change_Viewport(ViewportDesc.Width, ViewportDesc.Height);
 }
 
+HRESULT CRenderSystem::Render_Final()
+{
+	ID3D11InputLayout* pLayout;
+	Get_BufferInputLayout(m_pVIBuffer, m_pShader, "Combined", &pLayout);
+	m_pContext->IASetInputLayout(pLayout);
+
+	SHADER_PARAM finalParam = {};
+	m_pTargetManager->Get_TargetParam("Target_Final", finalParam);
+	m_pShader->Bind_Value("g_FinalTexture", finalParam);
+
+	SHADER_PARAM uiParam = {};
+	m_pTargetManager->Get_TargetParam("Target_UI", uiParam);
+	m_pShader->Bind_Value("g_UITexture", uiParam);
+
+	SHADER_PARAM WorldMat = {};
+	WorldMat.iSize = sizeof(_float4x4);
+	WorldMat.typeName = "float4x4";
+	WorldMat.pData = &m_WorldMatrix;
+	m_pShader->Bind_Value("g_WorldMatrix", WorldMat);
+
+	m_pShader->Apply("Final", m_pContext);
+	m_pVIBuffer->Bind_Buffer(m_pContext);
+	m_pVIBuffer->Render(m_pContext);
+
+	return S_OK;
+}
+
 HRESULT CRenderSystem::Change_Viewport(_uint iWidth, _uint iHeight)
 {
 	D3D11_VIEWPORT			ViewPortDesc;
@@ -397,6 +497,7 @@ void CRenderSystem::Free()
 	Safe_Release(m_pUIPass);
 	Safe_Release(m_pDebugPass);
 	Safe_Release(m_pShadowPass);
+	Safe_Release(m_pBlendedPass);
 	Safe_Release(m_pTargetManager);
 
 	for (auto& pair : m_InputLayouts)

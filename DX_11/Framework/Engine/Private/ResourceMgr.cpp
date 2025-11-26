@@ -334,6 +334,7 @@ void CResourceMgr::Load_InitialResource()
 	Add_ResourcePath("VTX_Debug.hlsl", "../Bin/ShaderFiles/VTX_Debug.hlsl");
 	Add_ResourcePath("VTX_Tile.hlsl", "../Bin/ShaderFiles/VTX_Tile.hlsl");
 	Add_ResourcePath("VTX_Field.hlsl", "../Bin/ShaderFiles/VTX_Field.hlsl");
+	Add_ResourcePath("SpriteEffectShader.hlsl", "../Bin/ShaderFiles/SpriteEffectShader.hlsl");
 
 	Add_ResourcePath("Anim.dat", "../../Anim.dat");
 
@@ -349,6 +350,7 @@ void CResourceMgr::Load_InitialResource()
 	m_Resources[0].m_Shaders.emplace("VTX_Field.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/VTX_Field.hlsl", "VTX_Field.hlsl"));
 	m_Resources[0].m_Shaders.emplace("VTX_UI.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/VTX_UI.hlsl", "VTX_UI.hlsl"));
 	m_Resources[0].m_Shaders.emplace("Shader_Deferred.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/Shader_Deferred.hlsl", "Shader_Deferred.hlsl"));
+	m_Resources[0].m_Shaders.emplace("SpriteEffectShader.hlsl", CShader::Create(m_pDevice, "../Bin/ShaderFiles/SpriteEffectShader.hlsl", "SpriteEffectShader.hlsl"));
 }
 
 
