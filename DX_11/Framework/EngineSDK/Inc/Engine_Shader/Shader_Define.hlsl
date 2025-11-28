@@ -75,11 +75,11 @@ cbuffer ShadowBuffer : register(b8)
 
 cbuffer CurvedWorldBuffer : register(b10)
 {
-  float CurveStrength = { 0.65};
-  float PlanetRadius = { 900};
+  //float CurveStrength = { 0.65};
+  //float PlanetRadius = { 900};
     
-    //float CurveStrength = { 0.f };
-    //float PlanetRadius = {1000 };
+   float CurveStrength = { 0.f };
+   float PlanetRadius = {1000 };
 };
 
 struct BoneMatrix{matrix BoneMat;};

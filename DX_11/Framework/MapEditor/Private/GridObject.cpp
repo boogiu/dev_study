@@ -43,7 +43,6 @@ HRESULT CGridObject::Initialize_Prototype()
 HRESULT CGridObject::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
-
 	CMaterial* pMaterial = Get_Component<CMaterial>();
 	CMaterialInstance* customInstance = CMaterialInstance::Create_Handle("Grid_Material", "Opaque", m_pDevice);
 
@@ -54,6 +53,7 @@ HRESULT CGridObject::Initialize(INIT_DESC* pArg)
 	if(MaterialDat)
 	MaterialDat->Link_Shader(G_GlobalLevelKey, "VTX_PlaneGrid.hlsl");
 	customInstance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "TileCell.png", TEXTURE_TYPE::ALBEDO);
+	customInstance->Set_Blended(true);
 	SHADER_PARAM ScaleXParam = {};
 	ScaleXParam.iSize = sizeof(_uint);
 	ScaleXParam.pData = &m_iScaleX;
@@ -66,7 +66,6 @@ HRESULT CGridObject::Initialize(INIT_DESC* pArg)
 
 	customInstance->Set_Param("XScale", ScaleXParam);
 	customInstance->Set_Param("ZScale", ScaleZParam);
-
 
 	SHADER_PARAM vMinParam = {};
 	vMinParam.iSize = sizeof(_float4);

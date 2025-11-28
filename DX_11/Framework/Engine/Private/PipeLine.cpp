@@ -187,8 +187,8 @@ _bool CPipeLine::isVisible(MINMAX_BOX minMax, _fmatrix worldTransform)
 	_vector toObj = XMVectorSubtract(sphereCenter, camPos);
 	_float dist = XMVectorGetX(XMVector3Dot(toObj, camForward));
 
-	_float curve = (dist * dist) / 900 * 0.65;
-	//_float curve = (dist * dist) / 1000 * 0;
+	//_float curve = (dist * dist) / 900 * 0.65;
+	_float curve = (dist * dist) / 1000 * 0;
 
 	worldSphere.Center.y -= curve;
 	_float maxExtent = max(extents.x, max(extents.y, extents.z));
