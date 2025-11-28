@@ -32,6 +32,13 @@ void CSunCam::Priority_Update(_float dt)
 
 void CSunCam::Update(_float dt)
 {
+	if (m_pTarget) {
+		_float4 pos = m_pTarget->Get_Position();
+		pos.z += 70;
+		pos.y += m_InitialHeight;
+		m_pTransform->Set_Pos(pos);
+		m_pTransform->LookAt(m_pTarget->Get_Component<CTransform>()->Get_Pos());
+	}
 }
 
 void CSunCam::Late_Update(_float dt)

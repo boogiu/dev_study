@@ -29,7 +29,7 @@ VS_OUT VS_MAIN(VS_IN In)
     
     matrix matWV, matWVP;
     
-    float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
+    float3 worldPos = mul(float4(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform).xyz;
     float3 toObj = worldPos - vCamPosition.xyz;
     float dist = dot(toObj, CameraForward);
     float curve = (dist * dist) / PlanetRadius * CurveStrength;
@@ -41,9 +41,9 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vPosition = projPos;
     Out.vWorldPos = float4(worldPos, 1.f);
     Out.vTexcoord = In.vTexcoord;
-    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
+    Out.vNormal = mul(vector(In.vNormal, 0.f), ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;
-    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), matWorld[TransformIndex])).xyz;
+    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), ObjectBufferArray[TransformIndex].Transform)).xyz;
     Out.vTangent *= -1;
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
    
@@ -169,7 +169,7 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
     
-    float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
+    float3 worldPos = mul(float4(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform).xyz;
     float3 toObj = worldPos - vCamPosition.xyz; 
     float dist = dot(toObj, CameraForward);
     float curve = (dist * dist) / PlanetRadius * CurveStrength;

@@ -32,7 +32,7 @@ VS_OUT VS_NOCURVE_MAIN(VS_IN In)
     
     matrix matWV, matWVP;
     
-    matWV = mul(matWorld[TransformIndex], matView);
+    matWV = mul(ObjectBufferArray[TransformIndex].Transform, matView);
     matWVP = mul(matWV, matProjection);
     
     float fWeightW = 1.0 - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
@@ -46,14 +46,14 @@ VS_OUT VS_NOCURVE_MAIN(VS_IN In)
     vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
     vector vNormal = mul(float4(In.vNormal, 0.f), BoneMatrix);
     
-    float3 worldPos = mul(vPosition, matWorld[TransformIndex]).xyz;
+    float3 worldPos = mul(vPosition, ObjectBufferArray[TransformIndex].Transform).xyz;
     float4 viewPos = mul(float4(worldPos, 1.f), matView);
     float4 projPos = mul(viewPos, matProjection);
 
     Out.vPosition = projPos;
     
     Out.vTexcoord = In.vTexcoord;
-    Out.vNormal  = mul(vNormal, matWorld[TransformIndex]);
+    Out.vNormal = mul(vNormal, ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;
 
     Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), BoneMatrix)).xyz;
@@ -69,7 +69,7 @@ VS_OUT VS_MAIN(VS_IN In)
     
     matrix matWV, matWVP;
     
-    matWV = mul(matWorld[TransformIndex], matView);
+    matWV = mul(ObjectBufferArray[TransformIndex].Transform, matView);
     matWVP = mul(matWV, matProjection);
     
     float fWeightW = 1.0 - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
@@ -83,7 +83,7 @@ VS_OUT VS_MAIN(VS_IN In)
     vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
     vector vNormal = mul(float4(In.vNormal, 0.f), BoneMatrix);
     
-    float3 worldPos = mul(vPosition, matWorld[TransformIndex]).xyz;
+    float3 worldPos = mul(vPosition, ObjectBufferArray[TransformIndex].Transform).xyz;
     float3 toObj = worldPos - vCamPosition.xyz;
      float dist = dot(toObj, CameraForward);
     float curve = (dist * dist) / PlanetRadius * CurveStrength;
@@ -95,7 +95,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vPosition = projPos;
     
     Out.vTexcoord = In.vTexcoord;
-    Out.vNormal  = mul(vNormal, matWorld[TransformIndex]);
+    Out.vNormal = mul(vNormal, ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;
 
     Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), BoneMatrix)).xyz;
@@ -110,7 +110,7 @@ VS_OUT VS_LEAF(VS_IN In)
     
     matrix matWV, matWVP;
     
-    matWV = mul(matWorld[TransformIndex], matView);
+    matWV = mul(ObjectBufferArray[TransformIndex].Transform, matView);
     matWVP = mul(matWV, matProjection);
     
     float fWeightW = 1.0 - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
@@ -124,7 +124,7 @@ VS_OUT VS_LEAF(VS_IN In)
     
     vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
     vector vNormal = mul(float4(In.vNormal, 0.f), BoneMatrix);
-    float3 worldPos = mul(vPosition, matWorld[TransformIndex]).xyz;
+    float3 worldPos = mul(vPosition, ObjectBufferArray[TransformIndex].Transform).xyz;
     float3 toObj = worldPos - vCamPosition.xyz;
      float dist = dot(toObj, CameraForward);
     float curve = (dist * dist) / PlanetRadius * CurveStrength;
@@ -136,7 +136,7 @@ VS_OUT VS_LEAF(VS_IN In)
 
 
     Out.vTexcoord = In.vTexcoord;
-    Out.vNormal = mul(vNormal, matWorld[TransformIndex]);
+    Out.vNormal = mul(vNormal, ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;
 
     Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), BoneMatrix)).xyz;
@@ -335,15 +335,19 @@ PS_OUT PS_FISH(PS_IN In)
 PS_OUT PS_FLOWER(PS_IN In)
 {
     PS_OUT Out;
-
-    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vMixture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector vGrdDiffuse = GradationTexture.Sample(DefaultSampler, float2(vMixture.r, vMixture.b));
+    vector vAlbGry = AlbedoGrayTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vOpacity = OpacityTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vGrdDiffuse = GradationTexture.Sample(DefaultSampler, float2(1 - vMixture.g, 1 - vMixture.r));
     
     if (vOpacity.a > 0)
     {
-        Out.vDiffuse = vMtrlDiffuse + vGrdDiffuse;
+        if (vGrdDiffuse.a > 0)
+            Out.vDiffuse = vGrdDiffuse +vAlbGry.r * 0.3f;
+        else
+            Out.vDiffuse = vMtrlDiffuse + vAlbGry.r * 0.3f;
+        
         vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
         float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
     
@@ -357,7 +361,6 @@ PS_OUT PS_FLOWER(PS_IN In)
     else
         discard;
     
-    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     return Out;
 }
 
@@ -381,7 +384,7 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
     
     vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
     
-    float3 worldPos = mul(vPosition, matWorld[TransformIndex]).xyz;
+    float3 worldPos = mul(vPosition, ObjectBufferArray[TransformIndex].Transform).xyz;
     float3 toObj = worldPos - vCamPosition.xyz;
     float dist = dot(toObj, CameraForward);
     float curve = (dist * dist) / PlanetRadius * CurveStrength;
@@ -474,6 +477,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_FLOWER();
     }
+
     pass Fish
     {
         SetRasterizerState(RS_Default);

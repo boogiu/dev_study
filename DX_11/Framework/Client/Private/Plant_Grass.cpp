@@ -99,9 +99,15 @@ HRESULT CPlant_Grass::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<strin
 			inst->Override_Pass("Grass");
 		else {
 			string mtl = inst->Get_MaterialName();
+			if (mtl == "mLilyFlower")
+				continue;
+
 			CTexture* grd =CGameInstance::GetInstance()->Get_ResourceMgr()->Load_Texture("GamePlay_Level", "Palette_" + mtl + "Grd_Grd.png");
 			if(grd)
  				inst->Set_Param("GradationTexture", { grd->Get_SRV(), "Texture2D", 0 });
+			else {
+				int i =0;
+			}
 			inst->Override_Pass("Flower");
 		}
 	}

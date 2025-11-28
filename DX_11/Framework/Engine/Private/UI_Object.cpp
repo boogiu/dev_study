@@ -184,8 +184,6 @@ void CUI_Object::Render_GUI()
 
 void CUI_Object::Update_UITransform()
 {
- 
-
     m_pTransform->Scale({ m_fSizeX, m_fSizeY, 1.f });
     m_pTransform->Rotate({ 0, 0, m_fRadian });
 

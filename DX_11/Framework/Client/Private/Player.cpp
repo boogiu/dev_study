@@ -817,19 +817,6 @@ void CPlayer::Set_TargetCamera()
 	Safe_AddRef(m_pCamera);
 	Get_Component<CObjectContainer>()->Add_Child(pCamera, false);
 	CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pCamera->Get_Component<CCamera>());
-
-		CTarget_Camera::TARGET_CAM_DESC* psCamDesc = new CTarget_Camera::TARGET_CAM_DESC;
-		psCamDesc->pTarget = this;
-		psCamDesc->vOffset = { 0,100,150,0 };
-
-		/*햇빛으로 사용해야하는데 나중에 고치자.*/
-		CGameObject* psunCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_TargetCamera" })
-			.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
-			.Add_ObjDesc(psCamDesc)
-			.Build("Target_Cam");
-		Get_Component<CObjectContainer>()->Add_Child(psunCamera, false);
-		
-		CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(psunCamera->Get_Component<CCamera>());
 }
 
 void CPlayer::Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey)

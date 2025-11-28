@@ -34,10 +34,10 @@ cbuffer TransformPerDraw : register(b2)
     uint TransformIndex;
 };
 
-cbuffer ObjectBufferArray : register(b3)
-{
-    float4x4 matWorld[1024];
-};
+//  cbuffer ObjectBufferArray : register(b3)
+//  {
+//      float4x4 matWorld[1024];
+//  };
 
 cbuffer SkinningPerDraw : register(b4)
 {
@@ -66,6 +66,8 @@ cbuffer ShadowBuffer : register(b8)
 {
     matrix matShadowView;
     matrix matShadowProjection;
+    matrix matShadowViewInverse;
+    matrix matShadowProjectionInverse;
     float4 vShadowPosition;
     float zShadowFar;
     float3 ShadowPadding;
@@ -73,17 +75,15 @@ cbuffer ShadowBuffer : register(b8)
 
 cbuffer CurvedWorldBuffer : register(b10)
 {
-    //float CurveStrength = { 0.65};
-    //float PlanetRadius = { 900};
+  float CurveStrength = { 0.65};
+  float PlanetRadius = { 900};
     
-    float CurveStrength = { 0.f };
-    float PlanetRadius = {1000 };
+    //float CurveStrength = { 0.f };
+    //float PlanetRadius = {1000 };
 };
 
-struct BoneMatrix
-{
-    matrix BoneMat;
-};
+struct BoneMatrix{matrix BoneMat;};
+struct TransfomMatrix{matrix Transform;};
 
 float3 ShallowColor = float3(0.38, 0.60, 0.85); // 嫩堅 螟儀 ⊥ 曇擎 夥棻
 float3 DeepColor = float3(0.35, 0.55, 0.75); // 渦 橫舒遴 だ嫌 ⊥ 桶擎 夥棻
@@ -128,6 +128,7 @@ Texture2D g_MaskTexture : register(t19);
 // 式式式式式式式式式式式式式  SRV 式式式式式式式式式式式式式
 StructuredBuffer<BoneMatrix> g_BoneMatrices : register(t0);
 StructuredBuffer<TileIndex> g_TileIndecies : register(t20);
+StructuredBuffer<TransfomMatrix> ObjectBufferArray : register(t28);
 
 
 // 式式式式式式式式式式式式式  Instancing 式式式式式式式式式式式式式

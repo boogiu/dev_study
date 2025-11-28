@@ -86,6 +86,13 @@ BlendState BS_Premultiplied
     DestBlendAlpha = Inv_Src_Alpha;
     BlendOpAlpha = Add;
 };
+BlendState BS_Additive
+{
+    BlendEnable[0] = true;
+    SrcBlend = One;
+    DestBlend = One;
+    BlendOp = Add;
+};
 
 BlendState BS_Blend
 {
@@ -93,6 +100,21 @@ BlendState BS_Blend
     SrcBlend = one;
     DestBlend = one;
     BlendOp = Add;
+};
+BlendState BS_Blend_CloudShadow
+{
+    BlendEnable[0] = TRUE;
+
+    // color: src * srcAlpha + dest * (1 - srcAlpha)
+    SrcBlend = SRC_ALPHA;
+    DestBlend = INV_SRC_ALPHA;
+    BlendOp = ADD;
+
+    SrcBlendAlpha = ZERO;
+    DestBlendAlpha = ONE;
+    BlendOpAlpha = ADD;
+
+    RenderTargetWriteMask[0] = 0x0F;
 };
 
 BlendState BS_UI_AlphaBlend

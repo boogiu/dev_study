@@ -173,6 +173,8 @@
     <ClInclude Include="..\Public\AutoTile.h" />
     <ClInclude Include="..\Public\BaseEffect.h" />
     <ClInclude Include="..\Public\BurryingGround.h" />
+    <ClInclude Include="..\Public\Cloud_Env.h" />
+    <ClInclude Include="..\Public\Cloud_Space.h" />
     <ClInclude Include="..\Public\CraftChildEffect.h" />
     <ClInclude Include="..\Public\CraftEffect.h" />
     <ClInclude Include="..\Public\CraftTwinkle.h" />
@@ -323,6 +325,8 @@
     <ClCompile Include="..\Private\AutoTile.cpp" />
     <ClCompile Include="..\Private\BaseEffect.cpp" />
     <ClCompile Include="..\Private\BurryingGround.cpp" />
+    <ClCompile Include="..\Private\Cloud_Env.cpp" />
+    <ClCompile Include="..\Private\Cloud_Space.cpp" />
     <ClCompile Include="..\Private\CraftChildEffect.cpp" />
     <ClCompile Include="..\Private\CraftEffect.cpp" />
     <ClCompile Include="..\Private\CraftTwinkle.cpp" />

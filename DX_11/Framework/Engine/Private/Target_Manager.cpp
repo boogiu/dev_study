@@ -126,6 +126,7 @@ ID3D11DepthStencilView* CTarget_Manager::Get_MTR_DSV(const string& strMRTTag)
 	}
 	return pMRTList[0]->Get_DSV();
 }
+
 HRESULT CTarget_Manager::Bind_Targets(const vector<string>& targetNames, bool clearColor, bool clearDepth)
 {
 	if (targetNames.empty())

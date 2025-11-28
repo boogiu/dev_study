@@ -28,10 +28,6 @@ HRESULT CPipeLine::Initialize(ID3D11Device* pDevice, class CRenderSystem* pSyste
 	desc.ByteWidth = sizeof(ShadowBuffer);
 	pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceShadowBuffer);
 
-	/*프레임 시작 시 한번에 모든 트랜스폼 바인딩*/
-	desc.ByteWidth = sizeof(ObjectBufferArray);
-	pDevice->CreateBuffer(&desc, nullptr, &m_pDeviceObjectBuffer);
-	
 	/*---------------------------------------------------------------------------------------------------- - */
 	/*스키닝 본 버퍼 - > 이건 셰이더 리소스 뷰도 같이 만들어버림*/
 	vector<_float4x4> BoneMatrices;
@@ -53,6 +49,25 @@ HRESULT CPipeLine::Initialize(ID3D11Device* pDevice, class CRenderSystem* pSyste
 	SkinningResourceDesc.Format = DXGI_FORMAT_UNKNOWN;										/*픽셀 아님*/
 
 	pDevice->CreateShaderResourceView(m_pDeviceSkinningBuffer, &SkinningResourceDesc, &m_pSkinningResource);
+
+	/*트랜스폼 버퍼 - > 이건 셰이더 리소스 뷰도 같이 만들어버림*/
+	vector<_float4x4> TransformMatrix;
+	BoneMatrices.resize(g_iMaxTransform);
+
+	D3D11_BUFFER_DESC TransformBufferDesc = {};
+	TransformBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	TransformBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	TransformBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	TransformBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	TransformBufferDesc.StructureByteStride = sizeof(_float4x4);
+	TransformBufferDesc.ByteWidth = sizeof(_float4x4) * g_iMaxTransform;
+	pDevice->CreateBuffer(&TransformBufferDesc, nullptr, &m_pDeviceObjectBuffer);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC TransformResourceDesc = {};
+	TransformResourceDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX; /*텍스처가 아니다! */
+	TransformResourceDesc.BufferEx.NumElements = g_iMaxTransform;
+	TransformResourceDesc.Format = DXGI_FORMAT_UNKNOWN;										/*픽셀 아님*/
+	pDevice->CreateShaderResourceView(m_pDeviceObjectBuffer, &TransformResourceDesc, &m_pObjectResource);
 
 	m_pSystem = pSystem;
 
@@ -104,6 +119,8 @@ HRESULT CPipeLine::Update_ShadowBuffer(ID3D11DeviceContext* pContext)
 
 	shadowBuffer.matShadowProjection = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_ShadowProjMatrix();
 	shadowBuffer.matShadowView = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_ShadowViewMatrix();
+	shadowBuffer.matShadowViewInverse = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_InversedShadowViewMatrix();
+	shadowBuffer.matShadowProjectionInverse = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_InversedShadowProjMatrix();
 	shadowBuffer.vShadowPosition = CGameInstance::GetInstance()->Get_CameraMgr()->Get_ShadowCameraPos();
 	shadowBuffer.zShadowFar = CGameInstance::GetInstance()->Get_CameraMgr()->Get_ShadowFar();
 
@@ -170,8 +187,8 @@ _bool CPipeLine::isVisible(MINMAX_BOX minMax, _fmatrix worldTransform)
 	_vector toObj = XMVectorSubtract(sphereCenter, camPos);
 	_float dist = XMVectorGetX(XMVector3Dot(toObj, camForward));
 
-	//_float curve = (dist * dist) / 900 * 0.65;
-	_float curve = (dist * dist) / 1000 * 0;
+	_float curve = (dist * dist) / 900 * 0.65;
+	//_float curve = (dist * dist) / 1000 * 0;
 
 	worldSphere.Center.y -= curve;
 	_float maxExtent = max(extents.x, max(extents.y, extents.z));
@@ -183,13 +200,19 @@ _bool CPipeLine::isVisible(MINMAX_BOX minMax, _fmatrix worldTransform)
 
 _uint CPipeLine::Write_ObjectData(const _float4x4& worldMatrix)
 {
-	if (!m_pObjectBufferArray)
-		return UINT_MAX; // Begin_ObjectBuffer 안 했을 경우
+	if (!m_pObjectArray) return UINT_MAX;
 
-	_uint index = m_ObjectBufferCount++;
-	m_pObjectBufferArray->Objects[index].matWorld = worldMatrix;
+	const _uint offsetCount = 1;
 
-	return index; // 인덱스를 반환해서 셰이더에서 사용
+	if (m_ObjectOffset + offsetCount > g_iMaxTransform) {
+		MSG_BOX("To Many Transform");
+		return UINT_MAX; // 초과
+	}
+
+	memcpy(&m_pObjectArray[m_ObjectOffset], &worldMatrix, sizeof(_float4x4));
+	_uint LastOffset = m_ObjectOffset;
+	m_ObjectOffset += offsetCount;
+	return LastOffset;
 }
 
 HRESULT CPipeLine::Begin_ObjectBuffer(ID3D11DeviceContext* pContext)
@@ -205,18 +228,16 @@ HRESULT CPipeLine::Begin_ObjectBuffer(ID3D11DeviceContext* pContext)
 	if (FAILED(hr))
 		return hr;
 
-	m_pObjectBufferArray = reinterpret_cast<ObjectBufferArray*>(m_mappedObjectBuffer.pData);
-	m_ObjectBufferCount = 0;
-
+	m_pObjectArray = reinterpret_cast<_float4x4*>(m_mappedObjectBuffer.pData);
+	m_ObjectOffset = 0;
 	return S_OK;
 }
 
 HRESULT CPipeLine::End_ObjectBuffer(ID3D11DeviceContext* pContext)
 {
 	pContext->Unmap(m_pDeviceObjectBuffer, 0);
-	m_pObjectBufferArray = nullptr;
-	m_ObjectBufferCount = 0;
-
+	m_pObjectArray = nullptr;
+	m_ObjectOffset = 0;
 	return S_OK;
 }
 

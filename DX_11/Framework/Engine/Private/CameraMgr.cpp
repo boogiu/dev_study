@@ -47,6 +47,8 @@ void CCameraMgr::Update(_float dt)
 		XMStoreFloat4x4(&m_ShadowViewMatrix, m_pShadowCam->Get_PureViewMatrix());
 		XMStoreFloat4x4(&m_ShadowProjMatrix, m_pShadowCam->Get_ProjMatrix());
 		XMStoreFloat4(&m_vShadowCamPos, m_pShadowCam->Get_Owner()->Get_Component<CTransform>()->Get_Pos());
+		XMStoreFloat4x4(&m_ShadowInversedViewMatrix, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_ShadowViewMatrix)));
+		XMStoreFloat4x4(&m_ShadowInversedProjMatrix, XMMatrixInverse(nullptr, m_pShadowCam->Get_ProjMatrix()));
 	}
 }
 

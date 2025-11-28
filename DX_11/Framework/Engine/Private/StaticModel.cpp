@@ -5,7 +5,7 @@
 #include "ModelData.h"
 #include"GameObject.h"
 #include "Transform.h"
-
+#include "Mesh.h"
 CStaticModel::CStaticModel()
 {
 }
@@ -80,6 +80,16 @@ void CStaticModel::SetDrawable(_uint Index, _bool isDraw)
     m_DrawableMeshes[Index] = isDraw;
 }
 
+void CStaticModel::Hide_MehsByName(const string& name)
+{
+     _int index = m_pData->Find_MeshIndex(name);
+
+    if (index == -1)
+        return;
+
+    else
+        m_DrawableMeshes[index] = false;
+}
 MINMAX_BOX CStaticModel::Get_LocalBoundingBox()
 {
     return m_pData->Get_LocalBoundingBox();
@@ -122,6 +132,17 @@ void CStaticModel::Render_GUI()
     const float childHeight = (textLineHeight * (m_pData->Get_MeshCount() + 4)) + (ImGui::GetStyle().WindowPadding.y * 2);
 
     ImGui::BeginChild("##Animate ModelChild", ImVec2{ 0, childHeight }, true);
+    for (size_t i = 0; i < m_pData->Get_MeshCount(); i++)
+    {
+        string ID = "HideMesh : "+ m_pData->Get_Mesh(i)->Get_Key();
+
+        if (ImGui::Button(ID.c_str()))
+        {
+            if (m_DrawableMeshes.size() >= 1) {
+                m_DrawableMeshes[i] = !m_DrawableMeshes[i];
+            }
+        }
+    }
     m_pData->Render_GUI();
     ImGui::EndChild();
 }

@@ -46,11 +46,13 @@ void CField_Out::Priority_Update(_float dt)
 
 void CField_Out::Update(_float dt)
 {
-		m_fElpaseTime += dt*.5f;
-		m_fWaveTime = fabs(sinf(m_fElpaseTime));
-		m_fWaveTime = 0.05f + m_fWaveTime * 0.95f;
-		_float t = fmod(m_fWaveTime, 2.0f); // 0~2
-		m_fFade = (t <= 1.0f) ? t : (2.0f - t); // 0->1->0
+	m_fElpaseTime += dt * .1f;
+	m_fWaveTime += dt*.1f;
+	
+	if (m_fWaveTime > 1.f)
+		m_fWaveTime = 0.f;
+	m_fCircularTime = sinf(m_fElpaseTime*2);
+	
 }
 
 void CField_Out::Late_Update(_float dt)
@@ -59,6 +61,7 @@ void CField_Out::Late_Update(_float dt)
 
 void CField_Out::Render_GUI()
 {
+	ImGui::DragFloat("wave", &m_fElpaseTime, 0.05f, 0.0f, 3.f);
 	__super::Render_GUI();
 }
 
@@ -96,16 +99,19 @@ void CField_Out::Override_Pass()
 	SHADER_PARAM param = { pRcsMgr->Load_Texture("GamePlay_Level","Palette_mWater_Alb.png")->Get_SRV(),"Texture2D",0 };
 	SHADER_PARAM Normal = { pRcsMgr->Load_Texture("GamePlay_Level","Waves_mSeaWater_Nrm.png")->Get_SRV(),"Texture2D",0 };
 	SHADER_PARAM Sand = { pRcsMgr->Load_Texture("GamePlay_Level","Waves_mSand_Alb.dds")->Get_SRV(),"Texture2D",0 };
+	SHADER_PARAM WaveScale = { pRcsMgr->Load_Texture("GamePlay_Level","Waves_mWaveFoam_WavSclXY.png")->Get_SRV(),"Texture2D",0 };
 	SHADER_PARAM WaveParam = { &m_fWaveTime,"float",sizeof(_float) };
 	SHADER_PARAM TimeParam = { &m_fElpaseTime,"float",sizeof(_float) };
+	SHADER_PARAM CircularParam = { &m_fCircularTime,"float",sizeof(_float) };
 	SHADER_PARAM fadeParam = { &m_fFade,"float",sizeof(_float) };
 
 	
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaveFoam")) {
 		instance->Set_Param("DiffuseTexture", param);
-		instance->Set_Param("NormalTexture", Normal);
 		instance->Set_Param("fWaveTime", WaveParam);
-		instance->Set_Param("fFade", fadeParam);
+		instance->Set_Param("fElapsedTime", TimeParam);
+		instance->Set_Param("fCircularTime", CircularParam);
+		instance->Set_Param("ScaleXY", WaveScale);
 		instance->Override_Pass("Wave");
 		instance->Set_Blended(true);
 	}
@@ -113,7 +119,10 @@ void CField_Out::Override_Pass()
 		instance->Set_Param("fWaveTime", TimeParam);
 		instance->Override_Pass("SeaWave");
 	}
-
+	if (auto instance = pMaterial->Get_MaterialInstanceByName("mSeabedSand")) {
+		instance->Set_Param("fWaveTime", TimeParam);
+		instance->Override_Pass("SeaBed");
+	}
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mBeach")) {
 		instance->Set_Param("DiffuseTexture", Sand);
 		instance->Override_Pass("Beach");

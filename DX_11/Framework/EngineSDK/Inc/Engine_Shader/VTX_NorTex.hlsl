@@ -23,12 +23,12 @@ VS_OUT VS_MAIN(VS_IN In)
     
     matrix matWV, matWVP;
     
-    matWV = mul(matWorld[TransformIndex], matView);
+    matWV = mul(ObjectBufferArray[TransformIndex].Transform, matView);
     matWVP = mul(matWV, matProjection);
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     Out.vTexcoord = In.vTexcoord;
-    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
+    Out.vNormal = mul(vector(In.vNormal, 0.f), ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;   
     return Out;
 }
@@ -64,10 +64,64 @@ PS_OUT PS_MAIN(PS_IN In)
   return Out;
 }
 
+struct VS_OUT_SHADOW
+{
+    float4 vPosition : SV_POSITION;
+    float4 vProjPos : TEXCOORD0;
+};
+
+VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
+{
+    VS_OUT_SHADOW Out;
+
+    float3 worldPos = mul(float4(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform).xyz;
+    float3 toObj = worldPos - vCamPosition.xyz;
+    float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
+    
+    float4 viewPos = mul(float4(worldPos, 1.f), matShadowView);
+    float4 projPos = mul(viewPos, matShadowProjection);
+    
+    Out.vPosition = projPos;
+    Out.vProjPos = Out.vPosition;
+    
+    return Out;
+}
+
+struct PS_IN_SHDOW
+{
+    float4 vPosition : SV_POSITION;
+    float4 vProjPos : TEXCOORD0;
+};
+
+struct PS_OUT_SHADOW
+{
+    vector vShadow : SV_TARGET0;
+};
+
+PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHDOW In)
+{
+    PS_OUT_SHADOW Out;
+ 
+    Out.vShadow = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zShadowFar, 0.f, 0.f);
+   
+    return Out;
+}
+
 
 technique11 DefaultTechnique
 {
     pass Opaque
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN();
+    }
+    pass Shadow
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);

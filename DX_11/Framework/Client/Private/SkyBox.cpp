@@ -43,6 +43,7 @@ HRESULT CSkyBox::Initialize(INIT_DESC* pArg)
 	pRcsMgr->Add_ResourcePath("Cloud_VRCloudCommon.png","../../Resources/Models/Env/Cloud/VRCloudCommon.png");
 	pRcsMgr->Add_ResourcePath("Cloud_VRCloudCumulonimbus.png","../../Resources/Models/Env/Cloud/VRCloudCumulonimbus.png");
 	pRcsMgr->Add_ResourcePath("Cloud_VRCloudCirrostratus.dds","../../Resources/Models/Env/Cloud/VRCloudCirrostratus.dds");
+	pRcsMgr->Add_ResourcePath("Cloud_m_cloud_seed.png","../../Resources/Models/Env/Cloud/m_cloud_seed.png");
 	//pRcsMgr->Add_ResourcePath("Cloud_003.dds","../../Resources/Models/Env/Cloud/003.dds");
 
 	auto vector = Get_Component<CMaterial>()->Get_Material_Instance();
@@ -51,7 +52,7 @@ HRESULT CSkyBox::Initialize(INIT_DESC* pArg)
 		instance->Set_Param("fWindTime", { &m_ElapsedTime, "float", sizeof(_float)});
 		instance->Set_Param("PatternTexture", { pRcsMgr->Load_Texture("GamePlay_Level","Cloud_VRCloudCirrostratus.dds")->Get_SRV(), "Texture2D", 0 });
 		instance->Set_Param("IndirectTexture", { pRcsMgr->Load_Texture("GamePlay_Level","Cloud_m_cloud_indirect.png")->Get_SRV(), "Texture2D", 0 });
-		instance->Set_Param("CloudTexture", { pRcsMgr->Load_Texture("GamePlay_Level","Cloud_VRCloudCumulonimbus.png")->Get_SRV(), "Texture2D", 0 });
+		instance->Set_Param("CloudTexture", { pRcsMgr->Load_Texture("GamePlay_Level","Cloud_m_cloud_seed.png")->Get_SRV(), "Texture2D", 0 });
 		instance->Set_Param("CommonTexture", { pRcsMgr->Load_Texture("GamePlay_Level","Cloud_VRCloudCommon.png")->Get_SRV(), "Texture2D", 0 });
 	}
 	return S_OK;

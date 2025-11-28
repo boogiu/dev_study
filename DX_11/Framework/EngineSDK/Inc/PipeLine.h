@@ -21,6 +21,8 @@ class CPipeLine :
     {
         _float4x4 matShadowView;
         _float4x4 matShadowProjection;
+        _float4x4 matShadowViewInverse;
+        _float4x4 matShadowProjectionInverse;
         _float4 vShadowPosition;
         _float zShadowFar;
         _float3 ShadowPadding;
@@ -78,7 +80,7 @@ public:
     ID3D11Buffer* Get_FrameBuffer() { return m_pDeviceFrameBuffer; };
     ID3D11Buffer* Get_ShadowBuffer() { return m_pDeviceShadowBuffer; };
 
-    ID3D11Buffer* Get_ObjectArrayBuffer() { return m_pDeviceObjectBuffer; };
+    ID3D11ShaderResourceView* Get_ObjectResource() { return m_pObjectResource; };
     ID3D11ShaderResourceView* Get_SkinningResource() { return m_pSkinningResource; };
    
     HRESULT Bind_Light(class CShader* pShader, class CVIBuffer* pBuffer, ID3D11DeviceContext* pContext);
@@ -87,11 +89,15 @@ private:
     ID3D11Buffer* m_pDeviceFrameBuffer = {nullptr};
     ID3D11Buffer* m_pDeviceShadowBuffer = {nullptr};
     
-    _int m_ObjectBufferCount = {};
-    ObjectBufferArray* m_pObjectBufferArray = { nullptr };
-    ID3D11Buffer* m_pDeviceObjectBuffer = { nullptr };
-    D3D11_MAPPED_SUBRESOURCE m_mappedObjectBuffer = {};
+    /*Transform*/
+    _uint m_ObjectOffset = {};
+    _float4x4* m_pObjectArray = nullptr;
 
+    ID3D11Buffer* m_pDeviceObjectBuffer = { nullptr };
+    ID3D11ShaderResourceView* m_pObjectResource = { nullptr };
+    D3D11_MAPPED_SUBRESOURCE m_mappedObjectBuffer = {};
+  
+    /*Matrix*/
     _uint m_SkinningOffset = {};
     _float4x4* m_pSkinningArray = nullptr;
     ID3D11Buffer* m_pDeviceSkinningBuffer = { nullptr };

@@ -22,6 +22,8 @@ public:
 
    virtual const _float4x4* Get_ShadowViewMatrix() override { return &m_ShadowViewMatrix; };
    virtual const _float4x4* Get_ShadowProjMatrix() override { return &m_ShadowProjMatrix; };
+   virtual const _float4x4* Get_InversedShadowViewMatrix() override { return &m_ShadowInversedViewMatrix; };
+   virtual const _float4x4* Get_InversedShadowProjMatrix() override { return &m_ShadowInversedProjMatrix; };
    virtual const _float4 Get_ShadowCameraPos() override;
    virtual const _float Get_ShadowFar() override;
 
@@ -43,6 +45,8 @@ private:
     _float4 m_vShadowCamPos = {};
     _float4x4 m_ShadowViewMatrix = {};
     _float4x4 m_ShadowProjMatrix = {};
+    _float4x4 m_ShadowInversedViewMatrix = {};
+    _float4x4 m_ShadowInversedProjMatrix = {};
 };
 
 NS_END

@@ -45,6 +45,7 @@ namespace Engine
 	using LEVEL_CREATOR = function<class CLevel* ()>;
 	static const string G_GlobalLevelKey = "Global_Level";
 	static constexpr _uint g_iMaxNumBones = 4096;
+	static constexpr _uint g_iMaxTransform = 4096;
 	static constexpr _uint g_iMaxLightss = 46;
 	static constexpr _uint MAX_TEXTURE_TYPE_VALUE = static_cast<_uint>(TEXTURE_TYPE::END);
 	const unsigned int g_iMaxWidth = 8192;

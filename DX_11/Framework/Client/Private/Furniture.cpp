@@ -66,6 +66,12 @@ HRESULT CFurniture::Make_FurnitureByMapData(NEW_MAP_OBJECT_HEADER objHeader, vec
 	hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);
 	m_pTransform->TranslateMatrix(XMLoadFloat4x4(&objHeader.vWorldMatrix));
 
+	 if (CStaticModel* pSkel = Get_Component<CStaticModel>()) {
+		Get_Component<CStaticModel>()->Hide_MehsByName("mWinterSnow-mesh");
+		Get_Component<CStaticModel>()->Hide_MehsByName("mWinterSnow");
+		Get_Component<CStaticModel>()->Hide_MehsByName("Snow_1__mWinterSnow");
+		Get_Component<CStaticModel>()->Hide_MehsByName("Snow_1__mWinterSnow-mesh");
+	}
 
 	Add_Component<CAABB_Collider>()->Make_MinMaxCollider(Get_Component<CModel>()->Get_LocalBoundingBox());
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();

@@ -22,6 +22,7 @@ public:
         const string& passConstant, ID3D11InputLayout** ppInputLayout) PURE;
     virtual  HRESULT Get_BufferInputLayout(class CVIBuffer* pBuffer, class CShader* pShader,
         const string& passConstant, ID3D11InputLayout** ppInputLayout)PURE;
+    virtual class CPipeLine* Get_Pipeline()PURE;
 public:
     virtual HRESULT Create_RenderTarget(const RenderTargetDesc& desc) PURE;
     virtual void Add_RenderCommand(const RENDER_CUSTOM_COMMAND& command) PURE;

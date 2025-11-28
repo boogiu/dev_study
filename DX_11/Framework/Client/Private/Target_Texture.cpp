@@ -120,7 +120,6 @@ void CTarget_Texture::Render(ID3D11DeviceContext* pContext)
 
 	_float2 size = { m_fSizeX, m_fSizeY };
 	SHADER_PARAM sizeParam{ &size, "float2", sizeof(_float2) };
-
 	sprite->Set_Param("transformMatrix", worldParam);
 	sprite->Set_Param("matOrtho", orthoParam);
 	sprite->Set_Param("PartSize", sizeParam);

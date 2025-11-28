@@ -32,7 +32,7 @@ VS_OUT VS_MAIN(VS_IN In)
     VS_OUT Out;
     matrix matWV, matWVP;
     
-    float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
+    float3 worldPos = mul(float4(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform).xyz;
     float3 toObj = worldPos - vCamPosition.xyz;
     float dist = dot(toObj, CameraForward);
     float curve = (dist * dist) / PlanetRadius * CurveStrength;
@@ -43,9 +43,9 @@ VS_OUT VS_MAIN(VS_IN In)
 
     Out.vPosition = projPos;
     Out.vTexcoord = In.vTexcoord;
-    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
+    Out.vNormal = mul(vector(In.vNormal, 0.f), ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;
-    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), matWorld[TransformIndex])).xyz;
+    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), ObjectBufferArray[TransformIndex].Transform)).xyz;
     Out.vTangent *= -1;
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
     
@@ -67,18 +67,16 @@ struct PS_IN
 struct PS_OUT
 {
     vector vDiffuse : SV_TARGET0;
-    vector vNormal : SV_TARGET1;
-    vector vDepth : SV_TARGET2;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out;
-    vector Indirect = IndirectTexture.Sample(LinearSampler, In.vTexcoord);
+    vector Indirect = IndirectTexture.Sample(LinearSampler, In.vTexcoord );
     vector Cloud = CloudTexture.Sample(LinearSampler, In.vTexcoord);
-    vector Common = CommonTexture.Sample(DefaultSampler, float2(In.vTexcoord.x + fWindTime, In.vTexcoord.y));
-    vector Pattern = PatternTexture.Sample(LinearSampler, In.vTexcoord + fWindTime);
-    Out.vDiffuse =  (skyColor);
+    vector Common = CommonTexture.Sample(LinearSampler, In.vTexcoord);
+    float grd = ( Cloud.r) * Common;
+    Out.vDiffuse = skyColor + grd*0.1f;
     return Out;
 }
 

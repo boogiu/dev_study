@@ -27,7 +27,13 @@ void RenderPass::BindConstant(ID3D11DeviceContext* pContext, CModel* pModel, CMa
 	pCurShader = pMaterial->Get_Shader(MaterialIndex);
 	pPipeLine->Bind_PaletteTexture(pCurShader);
 	pCurShader->SetConstantBuffer("FrameBuffer", pPipeLine->Get_FrameBuffer());
-	pCurShader->SetConstantBuffer("ObjectBufferArray", pPipeLine->Get_ObjectArrayBuffer());
+	//pCurShader->SetConstantBuffer("ObjectBufferArray", pPipeLine->Get_ObjectArrayBuffer());
+
+	SHADER_PARAM ObjectMaticedParam = {};
+	ObjectMaticedParam.iSize = sizeof(_float4x4) * g_iMaxTransform;
+	ObjectMaticedParam.typeName = "StructuredBuffer";
+	ObjectMaticedParam.pData = pPipeLine->Get_ObjectResource();
+	pCurShader->Bind_Value("ObjectBufferArray", ObjectMaticedParam);
 
 	SHADER_PARAM SkinningMatricedParam = {};
 	SkinningMatricedParam.iSize = sizeof(_float4x4) * g_iMaxNumBones;
@@ -46,7 +52,13 @@ void RenderPass::BindConstant(ID3D11DeviceContext* pContext,  CSprite2D* pSprite
 	pCurShader = pSprite->Get_Shader();
 	pPipeLine->Bind_PaletteTexture(pCurShader);
 	pCurShader->SetConstantBuffer("FrameBuffer", pPipeLine->Get_FrameBuffer());
-	pCurShader->SetConstantBuffer("ObjectBufferArray", pPipeLine->Get_ObjectArrayBuffer());
+
+	SHADER_PARAM ObjectMaticedParam = {};
+	ObjectMaticedParam.iSize = sizeof(_float4x4) * g_iMaxTransform;
+	ObjectMaticedParam.typeName = "StructuredBuffer";
+	ObjectMaticedParam.pData = pPipeLine->Get_ObjectResource();
+
+	pCurShader->Bind_Value("ObjectBufferArray", ObjectMaticedParam);
 
 	ID3D11InputLayout* pLayout;
 	m_pRenderSystem->Get_BufferInputLayout(pSprite->Get_Buffer(), pCurShader, passConstant, &pLayout);
@@ -400,7 +412,11 @@ void DebugPass::Execute(ID3D11DeviceContext* pContext)
 	}
 	pPipeLine->End_ObjectBuffer(pContext);
 
-	pCurShader->SetConstantBuffer("ObjectBufferArray", pPipeLine->Get_ObjectArrayBuffer());
+	SHADER_PARAM ObjectMaticedParam = {};
+	ObjectMaticedParam.iSize = sizeof(_float4x4) * g_iMaxTransform;
+	ObjectMaticedParam.typeName = "StructuredBuffer";
+	ObjectMaticedParam.pData = pPipeLine->Get_ObjectResource();
+	pCurShader->Bind_Value("ObjectBufferArray", ObjectMaticedParam);
 	pCurShader->SetConstantBuffer("FrameBuffer", pPipeLine->Get_FrameBuffer());
 
 	for (auto& packet : m_Packets)
@@ -420,7 +436,6 @@ void DebugPass::Execute(ID3D11DeviceContext* pContext)
 	}
 
 	m_Packets.clear();
-
 }
 
 void DebugPass::Submit(DEBUG_PACKET packet)
@@ -500,7 +515,11 @@ void ShadowPass::Execute_Opaque(ID3D11DeviceContext* pContext)
 		if (packet.pMaterial->Get_Shader(packet.MaterialIndex) != pCurShader) {
 			CPipeLine* pPipeLine = m_pRenderSystem->Get_Pipeline();
 			pCurShader = packet.pMaterial->Get_Shader(packet.MaterialIndex);
-			pCurShader->SetConstantBuffer("ObjectBufferArray", pPipeLine->Get_ObjectArrayBuffer());
+			SHADER_PARAM ObjectMaticedParam = {};
+			ObjectMaticedParam.iSize = sizeof(_float4x4) * g_iMaxTransform;
+			ObjectMaticedParam.typeName = "StructuredBuffer";
+			ObjectMaticedParam.pData = pPipeLine->Get_ObjectResource();
+			pCurShader->Bind_Value("ObjectBufferArray", ObjectMaticedParam);
 			pCurShader->SetConstantBuffer("ShadowBuffer", pPipeLine->Get_ShadowBuffer());
 
 			SHADER_PARAM SkinningMatricedParam = {};

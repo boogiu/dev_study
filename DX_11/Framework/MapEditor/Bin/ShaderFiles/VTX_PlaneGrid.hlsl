@@ -22,11 +22,11 @@ struct VS_OUT
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
-    float4x4 matWV = mul(matWorld[TransformIndex], matView);
+    float4x4 matWV = mul(ObjectBufferArray[TransformIndex].Transform, matView);
     float4x4 matWVP = mul(matWV, matProjection);
      
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
-    Out.vWorldPosition = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]);
+    Out.vWorldPosition = mul(float4(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform);
     Out.vTexcoord = In.vTexcoord;
    
     return Out;
@@ -58,8 +58,7 @@ PS_OUT PS_MAIN(PS_IN In)
     
     float inside = insideX * insideZ;
     Out.vColor = lerp(GridCol, float4(0.2f, 0.2f, 0.2f, 1), inside);
-    Out.vColor.a = 0.1f;
-    
+    Out.vColor.a = 0.2f;
     return Out;
 }
 

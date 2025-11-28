@@ -21,7 +21,7 @@ struct VS_OUT
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out;
-    Out.vWorldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]);
+    Out.vWorldPos = mul(float4(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform);
    
     return Out;
 }
@@ -44,10 +44,10 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> triStream)
 
     float3 worldPos = In[0].vWorldPos.xyz;
     
-    float3 right = normalize(matWorld[TransformIndex][0].xyz);
-    float3 up = normalize(matWorld[TransformIndex][1].xyz);
-    float scaleX = length(matWorld[TransformIndex][0].xyz);
-    float scaleY = length(matWorld[TransformIndex][1].xyz);
+    float3 right = normalize(ObjectBufferArray[TransformIndex].Transform[0].xyz);
+    float3 up = normalize(ObjectBufferArray[TransformIndex].Transform[1].xyz);
+    float scaleX = length(ObjectBufferArray[TransformIndex].Transform[0].xyz);
+    float scaleY = length(ObjectBufferArray[TransformIndex].Transform[1].xyz);
 
     float3 offsetRight = right * ( scaleX*0.5f);
     float3 offsetUp = up * (scaleY * 0.5f);
@@ -89,10 +89,10 @@ void GS_TILE(point GS_IN In[1], inout TriangleStream<GS_OUT> triStream)
 
     float3 worldPos = In[0].vWorldPos.xyz;
     
-    float3 right = normalize(matWorld[TransformIndex][0].xyz);
-    float3 up = normalize(matWorld[TransformIndex][1].xyz);
-    float scaleX = length(matWorld[TransformIndex][0].xyz);
-    float scaleY = length(matWorld[TransformIndex][1].xyz);
+    float3 right = normalize(ObjectBufferArray[TransformIndex].Transform[0].xyz);
+    float3 up = normalize(ObjectBufferArray[TransformIndex].Transform[1].xyz);
+    float scaleX = length(ObjectBufferArray[TransformIndex].Transform[0].xyz);
+    float scaleY = length(ObjectBufferArray[TransformIndex].Transform[1].xyz);
 
     float3 offsetRight = right * (scaleX * 0.5f);
     float3 offsetUp = up * (scaleY * 0.5f);

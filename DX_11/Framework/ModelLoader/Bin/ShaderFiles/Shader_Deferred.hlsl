@@ -10,6 +10,7 @@ texture2D g_DepthTexture;
 texture2D g_ShadowTexture;
 texture2D g_FinalTexture;
 texture2D g_UITexture;
+texture2D g_PostProcessTexture;
 
 vector g_vLightDir;
 vector g_vLightPos;
@@ -17,7 +18,7 @@ float      g_fLightRange;
 vector g_vLightDiffuse;
 vector g_vLightAmbient;
 vector g_vLightSpecular;
-vector g_vMtrlAmbient = .6f;
+vector g_vMtrlAmbient = 1.f;
 vector g_vMtrlSpecular = 1.f;
 
 struct VS_IN
@@ -71,15 +72,15 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 n = normalize(vNormalDesc.xyz * 2.f - 1.f); // ²À normalize
-    //n.y = -n.y;
+    
     vector vNormal = float4(n, 0.f);
+    
+    Out.vShade = g_vLightDiffuse *
+    saturate((dot(normalize(g_vLightDir) * -1.f, vNormal)))
+    + (g_vLightAmbient * g_vMtrlAmbient);
+    
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
     float fViewZ = vDepthDesc.y * zFar;
-    
-    Out.vShade = g_vLightDiffuse * saturate(dot(normalize(g_vLightDir) * -1.f, vNormal)) +
-        (g_vLightAmbient * g_vMtrlAmbient);
-    
     vector vWorldPos;
     vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
     vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
@@ -94,6 +95,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     vector vReflect = normalize(reflect(normalize(g_vLightDir), vNormal));
     
     Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 50.f);
+    
     return Out;
 }
 
@@ -103,7 +105,6 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 n = normalize(vNormalDesc.xyz * 2.f - 1.f); // ²À normalize
-    n.y = -n.y;
     vector vNormal = float4(n, 0.f);
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     
@@ -192,18 +193,14 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     
     return Out;
 }
-
-PS_OUT_BACKBUFFER PS_MAIN_FINAL(PS_IN In)
+float4 PS_MAIN_FINAL(PS_IN In) : SV_Target
 {
-    PS_OUT_BACKBUFFER Out;
+    float4 scene = g_FinalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float4 ui = g_UITexture.Sample(DefaultSampler, In.vTexcoord);
+    float4 postProcess = g_PostProcessTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    vector finalColor = g_FinalTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector uiColor = g_UITexture.Sample(DefaultSampler, In.vTexcoord);
- 
-    Out.vBackBuffer = (1 - uiColor.a) * finalColor + (uiColor.a) * uiColor;
-    return Out;
+    return float4((1 - ui.a) * scene.xyz + (ui.a * ui.rgb), 1.f);
 }
-
 
 technique11 DefaultTechnique
 {

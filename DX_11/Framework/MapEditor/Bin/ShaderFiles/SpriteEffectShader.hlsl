@@ -30,12 +30,12 @@ VS_OUT VS_MAIN(VS_IN In)
     
     matrix matWV, matWVP;
     
-    matWV = mul(matWorld[TransformIndex], matView);
+    matWV = mul(ObjectBufferArray[TransformIndex].Transform, matView);
     matWVP = mul(matWV, matProjection);
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     Out.vTexcoord = In.vTexcoord;
-    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
+    Out.vNormal = mul(vector(In.vNormal, 0.f), ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;   
     return Out;
 }

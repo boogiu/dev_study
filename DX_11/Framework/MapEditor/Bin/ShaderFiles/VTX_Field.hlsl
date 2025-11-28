@@ -1,6 +1,8 @@
 #include "Shader_Define.hlsl"
 
 float fWaveTime;
+float fElapsedTime;
+float fCircularTime;
 float fFade;
 
 struct VS_IN
@@ -27,7 +29,7 @@ VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out;
     
-    float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
+    float3 worldPos = mul(float4(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform).xyz;
     float3 toObj = worldPos - vCamPosition.xyz;
     float dist = dot(toObj, CameraForward);
     float curve = (dist * dist) / PlanetRadius * CurveStrength;
@@ -40,11 +42,11 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vTexcoord = In.vTexcoord;
     
     //노멀 벡터를 월드 변환해줌
-    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
-    Out.vWorldPos = mul(vector(In.vPosition, 1.f), matWorld[TransformIndex]);
+    Out.vNormal = mul(vector(In.vNormal, 0.f), ObjectBufferArray[TransformIndex].Transform);
+    Out.vWorldPos = mul(vector(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;
    
-    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), matWorld[TransformIndex])).xyz;
+    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), ObjectBufferArray[TransformIndex].Transform)).xyz;
     Out.vTangent *= -1;
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
     return Out;
@@ -54,7 +56,7 @@ VS_OUT VS_NOCURVE_MAIN(VS_IN In)
 {
     VS_OUT Out;
     
-    float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
+    float3 worldPos = mul(float4(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform).xyz;
 
     float4 viewPos = mul(float4(worldPos, 1.f), matView);
     float4 projPos = mul(viewPos, matProjection);
@@ -63,11 +65,11 @@ VS_OUT VS_NOCURVE_MAIN(VS_IN In)
     Out.vTexcoord = In.vTexcoord;
     
     //노멀 벡터를 월드 변환해줌
-    Out.vNormal = mul(vector(In.vNormal, 0.f), matWorld[TransformIndex]);
-    Out.vWorldPos = mul(vector(In.vPosition, 1.f), matWorld[TransformIndex]);
+    Out.vNormal = mul(vector(In.vNormal, 0.f), ObjectBufferArray[TransformIndex].Transform);
+    Out.vWorldPos = mul(vector(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;
    
-    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), matWorld[TransformIndex])).xyz;
+    Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), ObjectBufferArray[TransformIndex].Transform)).xyz;
     Out.vTangent *= -1;
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
     return Out;
@@ -209,24 +211,19 @@ PS_OUT PS_WAVE(PS_IN In)
 {
     PS_OUT Out;
 
-    vector vIdxMap = IndexMap.Sample(DefaultSampler, In.vTexcoord);
-    float4 waterColor = float4(vIdxMap.b * DeepColor + (1 - vIdxMap.b) * ShallowColor, 1.f);
+    vector vScaleMap = ScaleXY.Sample(LinearSampler, float2(In.vTexcoord.x + fElapsedTime, (In.vTexcoord.y + fElapsedTime)));
+    vector vIdxMap = IndexMap.Sample(LinearSampler, float2(In.vTexcoord.x + fElapsedTime, (In.vTexcoord.y + fElapsedTime) * vScaleMap.y));
+    vector vAlbGry = AlbedoGrayTexture.Sample(LinearSampler, float2(In.vTexcoord.x +vIdxMap.r, In.vTexcoord.y + fElapsedTime));
+    vector vAlbOry = AlbedoOryTexture.Sample(LinearSampler, float2(In.vTexcoord.x + vIdxMap.b, In.vTexcoord.y + fElapsedTime));
     
-    float u = frac(In.vTexcoord.x); // X 래핑
-    float v = clamp(In.vTexcoord.y + fWaveTime, 0, 1); // Y 클램프
-    vector vAlbGry = AlbedoGrayTexture.Sample(PointClampSampler, float2(u, In.vTexcoord.y + fWaveTime*2));
-    vector vAlbOry = AlbedoOryTexture.Sample(PointClampSampler, float2(In.vTexcoord.x,  fWaveTime));
-
-    waterColor += vAlbGry;
+    float wave = frac(In.vTexcoord.y + fElapsedTime);
+    float fade = smoothstep(0.0, 0.25, wave); // 0~0.25 구간만 서서히 증가
+    Out.vDiffuse = (vAlbGry + vIdxMap.a*vAlbOry) * fade;
     
-    if (vAlbGry.a < 0.2f)
+    if (Out.vDiffuse.a < 0.5)
         discard;
     
-    waterColor.a = fWaveTime;
-    Out.vDiffuse = waterColor;
-    
-    vector vNormalDesc = NormalTexture.Sample(LinearSampler, float2( In.vTexcoord.x + fWaveTime,v));
-    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    float3 vNormal = In.vNormal.xyz * 2.f - 1.f;
     
     float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
@@ -238,13 +235,12 @@ PS_OUT PS_WAVE(PS_IN In)
 PS_OUT PS_SEA_WAVE(PS_IN In)
 {
     PS_OUT Out;
-    vector vNormalDesc = NormalTexture.Sample(LinearSampler, float2(In.vTexcoord.x, 
-    In.vTexcoord.y + fWaveTime));
+    vector vNormalDesc = NormalTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y + fWaveTime));
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
-    
+ 
     float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
-    Out.vDiffuse = float4(ShallowColor,1.f);
+    Out.vDiffuse = float4(ShallowColor, 1.f);
     Out.vNormal = float4(vNormal * 0.5f + 0.5f, 1.0f);
     Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0, 1);
     return Out;
@@ -258,6 +254,7 @@ PS_OUT PS_BEACH(PS_IN In)
     vector AlbGry = AlbedoGrayTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
     
     vector color = Diffuse;
+    color.a = (1-AlbGry.r);
     Out.vDiffuse = color;
     vector vNormalDesc = NormalTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
@@ -287,6 +284,16 @@ PS_OUT PS_SAND(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_SEABED(PS_IN In)
+{
+    PS_OUT Out;
+    vector Diffuse = DiffuseTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
+    vector AlbOry = AlbedoOryTexture.Sample(LinearSampler, float2(In.vTexcoord.x, In.vTexcoord.y));
+    
+    Out.vDiffuse = AlbOry * float4(ShallowColor,1.f);
+    return Out;
+}
+
 struct VS_OUT_SHADOW
 {
     float4 vPosition : SV_POSITION;
@@ -297,7 +304,7 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
     
-    float3 worldPos = mul(float4(In.vPosition, 1.f), matWorld[TransformIndex]).xyz;
+    float3 worldPos = mul(float4(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform).xyz;
     float3 toObj = worldPos - vCamPosition.xyz;
     float dist = dot(toObj, CameraForward);
     float curve = (dist * dist) / PlanetRadius * CurveStrength;
@@ -384,7 +391,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Additive, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_WAVE();
@@ -415,6 +422,15 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_SAND();
+    }
+    pass SeaBed
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SEABED();
     }
     pass Shadow
     {

@@ -65,7 +65,8 @@
 #include "EffectSpawner.h"
 #include "SkyBox.h"
 #include "DustEffect.h"
-
+#include "Cloud_Env.h"
+#include "Cloud_Space.h"
 CGamePlayLevel::CGamePlayLevel(const string& LevelKey)
 	:CLevel{ LevelKey },
 	m_pGameInstance(CGameInstance::GetInstance())
@@ -100,7 +101,7 @@ HRESULT CGamePlayLevel::Initialize()
 
 HRESULT CGamePlayLevel::Awake()
 {
-	m_pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 850,0,850 }).Build("Player");
+	m_pPlayer = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Player" }).Position({ 1323,0,860 }).Build("Player");
 	Add_LevelObject<CUI_Responcer>();
 
 	Get_LevelObject<CInsectSpawner>()->Read_InsectData(L"../../Resources/Data/InsectData.json");
@@ -116,49 +117,62 @@ HRESULT CGamePlayLevel::Awake()
 
 	CGameObject* pFreeCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_FreeCamera" })
 		.Camera({ (float)Client::g_iWinSizeX / Client::g_iWinSizeY })
-		.Position({ 550,10,550 })
+		.Position({ 1323,10,860 })
 		.Build("Free_Cam");
+	m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
 
 	CAMERA_DESC desc;
 	desc.fAspect = (float)Client::g_iWinSizeX / Client::g_iWinSizeY;
-	desc.fFar = 1500;
+	desc.fFar = 500;
 	desc.fNear = 1.f;
 	desc.fFov = 90.f;
 
-	CGameObject* pSunCamera = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Sun" })
+	m_pSun = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_Sun" })
+		.Position({ 1323,50,860 })
 		.Camera(desc)
 		.Build("Sun");
 
+	m_pObjectManager->Add_Object(m_pPlayer, { "GamePlay_Level", "Player_Layer" });
+	m_pObjectManager->Add_Object(m_pSun, { "GamePlay_Level", "Camera_Layer" });
+	dynamic_cast<CSunCam*>(m_pSun)->Set_Target(m_pPlayer);
 
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"너굴", { 560,0,550 }, "GamePlay_GameObject_NpcRco");
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"밤톨", { 590,0,560 }, "GamePlay_GameObject_NpcRcm");
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"잭슨", { 570,0,550 }, "GamePlay_GameObject_NpcNrm");
 	Get_LevelObject<CNpcSpawner>()->Spawn_Npc(L"KK", { 590,0,550 }, "GamePlay_GameObject_NpcNrm");
 
-	m_pObjectManager->Add_Object(m_pPlayer, { "GamePlay_Level", "Player_Layer" });
-	m_pObjectManager->Add_Object(pFreeCamera, { "GamePlay_Level", "Camera_Layer" });
-	m_pObjectManager->Add_Object(pSunCamera, { "GamePlay_Level", "Camera_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CInsectSpawner>(), { "GamePlay_Level", "Level_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CFishSpawner>(), { "GamePlay_Level", "Level_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CUI_Responcer>(), { "GamePlay_Level", "Level_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CEffectSpawner>(), { "GamePlay_Level", "Level_Layer" });
 	m_pObjectManager->Add_Object(Get_LevelObject<CUI_Transition>(), { "GamePlay_Level", "Level_Layer" });
 
-	/*레이어에 넣었으니, 애드레프 +1*/CInsectSpawner* pSpawner = Get_LevelObject<CInsectSpawner>();
-	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pSpawner);
-	/*레이어에 넣었으니, 애드레프 +1*/CFishSpawner* pFishSpawner = Get_LevelObject<CFishSpawner>();
-	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pFishSpawner);
-	/*레이어에 넣었으니, 애드레프 +1*/CUI_Responcer* pUI_Responcer = Get_LevelObject<CUI_Responcer>();
-	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pUI_Responcer);
-	/*레이어에 넣었으니, 애드레프 +1*/CEffectSpawner* pEffectSpawner = Get_LevelObject<CEffectSpawner>();
-	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pEffectSpawner);
-	/*레이어에 넣었으니, 애드레프 +1*/CUI_Transition* pCUI_Transition = Get_LevelObject<CUI_Transition>();
-	/*레이어에 넣었으니, 애드레프 +1*/Safe_AddRef(pCUI_Transition);
+	/*레이어에 넣었으니, 애드레프 +1*/
+	CInsectSpawner* pSpawner = Get_LevelObject<CInsectSpawner>();
+	Safe_AddRef(pSpawner);
+	CFishSpawner* pFishSpawner = Get_LevelObject<CFishSpawner>();
+	Safe_AddRef(pFishSpawner);
+	CUI_Responcer* pUI_Responcer = Get_LevelObject<CUI_Responcer>();
+	Safe_AddRef(pUI_Responcer);
+	CEffectSpawner* pEffectSpawner = Get_LevelObject<CEffectSpawner>();
+	Safe_AddRef(pEffectSpawner);
+	CUI_Transition* pCUI_Transition = Get_LevelObject<CUI_Transition>();
+	Safe_AddRef(pCUI_Transition);
 
+	CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(m_pSun->Get_Component<CCamera>());
 	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_MainCam(pFreeCamera->Get_Component<CCamera>());
-	//CGameInstance::GetInstance()->Get_CameraMgr()->Set_ShadowCam(pSunCamera->Get_Component<CCamera>());
-	m_pSky = Builder::Create_Object({ "GamePlay_Level", "GamePlay_GameObject_SkyBox" }).Scale({ .5f,.5f,.5f }).Build("Sky");
+
+	m_pSky = Builder::Create_Object({ "GamePlay_Level", "GamePlay_Env_SkyBox" })
+		.Scale({ .5f,.5f,.5f }).Build("Sky");
+
+	_float3 Half = CGameInstance::GetInstance()->Get_TileSystem()->Get_TileSystemInfo().HalfPoint();
+	m_pCloud = Builder::Create_Object({ "GamePlay_Level", "GamePlay_Env_Cloud" })
+		.Camera({ (float)Client::g_iWinSizeX / (float)Client::g_iWinSizeY })
+		.Position({ Half.x,550,Half.z })
+		.Build("Cloud");
+
 	m_pObjectManager->Add_Object(m_pSky, { "GamePlay_Level", "Env_Layer" });
+	m_pObjectManager->Add_Object(m_pCloud, { "GamePlay_Level", "Env_Layer" });
 
 	return S_OK;
 }
@@ -167,11 +181,9 @@ void CGamePlayLevel::Update()
 {
 	m_pLoader->Load_Sequential({ "GamePlay_Level", "Field_Layer" });
 	m_pLoader->Load_Sequential({ "GamePlay_Level", "Field_Layer" });
-
 	m_pSky->Get_Component<CTransform>()->Set_Pos(m_pPlayer->Get_Position());
 
 	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_F4)) {
-		//Get_LevelObject<CEffectSpawner>()->Request_Effect("Effect_WaterSplash", { m_pPlayer->Get_Position(),m_pPlayer->Get_Position() });
 		Get_LevelObject<CUI_Transition>()->Set_Active();
 	}
 }
@@ -329,7 +341,9 @@ void CGamePlayLevel::PreLoad_Level()
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_NpcTkk", CNpcTkk::Create());
 
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_Fish", CFish_Object::Create());
-	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_GameObject_SkyBox", CSkyBox::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_Env_SkyBox", CSkyBox::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_Env_Cloud", CCloud_Env::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_Env_Cloud_Space", CCloud_Space::Create());
 	
 }
 

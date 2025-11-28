@@ -54,22 +54,23 @@ HRESULT CRenderSystem::Render()
 	/*FrameBuffer*/
 	m_pPipeLine->Update_FrameBuffer(m_pContext);
 	m_pPipeLine->Update_Frustum();
-
 	if (FAILED(m_pTargetManager->Begin_MRT("MRT_Final"))) return E_FAIL;
+
 	/*Priority*/
 	m_pPriorityPass->Execute(m_pContext);
 	/*Shadow*/
 	Render_Shadow();
+
 	/*ForWard Rendering*/
 	if (FAILED(m_pTargetManager->Begin_MRT("MRT_Deferred"))) return E_FAIL;
 	m_pOpaquePass->Execute(m_pContext);
 	m_pInstancePass->Execute(m_pContext);
 	if (FAILED(m_pTargetManager->End_MRT()))return E_FAIL;
-
 	Render_LightAcc();
 	Render_Combined();
 	Render_Blended();
 	/*Debug Rendering*/
+
 #ifdef _DEBUG
 	m_pDebugPass->Execute(m_pContext);
 #endif // _DEBUG
@@ -81,11 +82,15 @@ HRESULT CRenderSystem::Render()
 	m_pUIPass->Execute(m_pContext);
 	CGameInstance::GetInstance()->Get_FontSystem()->Render_Font();
 	if (FAILED(m_pTargetManager->End_MRT()))return E_FAIL;
+
 	Process_RenderCommand();
 
+	if (FAILED(m_pTargetManager->Begin_MRT("MRT_PostProcess"))) return E_FAIL;
 	Process_PostProcessQueue();
+	if (FAILED(m_pTargetManager->End_MRT()))return E_FAIL;
 
 	Render_Final();
+
 	return S_OK;
 }
 
@@ -284,18 +289,30 @@ HRESULT CRenderSystem::Ready_GBuffer()
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 1.f));
 
 
-	RenderTargetDesc UI_Desc = { "Target_UI" , DXGI_FORMAT_R8G8B8A8_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,
+	RenderTargetDesc UI_Desc = { "Target_UI" ,
+		DXGI_FORMAT_R8G8B8A8_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,
 	ViewportDesc.Width, ViewportDesc.Height };
 
 	m_pTargetManager->Create_Target(UI_Desc);
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_UI", "Target_UI")))
 		return E_FAIL;
 
-	RenderTargetDesc FianlDesc = { "Target_Final" , DXGI_FORMAT_R8G8B8A8_UNORM , DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,
+	RenderTargetDesc FianlDesc = { "Target_Final" , DXGI_FORMAT_R8G8B8A8_UNORM ,
+			DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,
 		ViewportDesc.Width, ViewportDesc.Height };
 
 	m_pTargetManager->Create_Target(FianlDesc);
+
 	if (FAILED(m_pTargetManager->Add_MRT("MRT_Final", "Target_Final")))
+		return E_FAIL;
+
+	RenderTargetDesc postProcessDesc = { "Target_PostProcess" , DXGI_FORMAT_R8G8B8A8_UNORM ,
+		DXGI_FORMAT_D24_UNORM_S8_UINT,_float4(0.0f, 0.f, 0.f, 0.f) ,
+	ViewportDesc.Width, ViewportDesc.Height };
+
+	m_pTargetManager->Create_Target(postProcessDesc);
+
+	if (FAILED(m_pTargetManager->Add_MRT("MRT_PostProcess", "Target_PostProcess")))
 		return E_FAIL;
 
 	return S_OK;
@@ -437,7 +454,7 @@ void CRenderSystem::Render_Shadow()
 HRESULT CRenderSystem::Render_Final()
 {
 	ID3D11InputLayout* pLayout;
-	Get_BufferInputLayout(m_pVIBuffer, m_pShader, "Combined", &pLayout);
+	Get_BufferInputLayout(m_pVIBuffer, m_pShader, "Final", &pLayout);
 	m_pContext->IASetInputLayout(pLayout);
 
 	SHADER_PARAM finalParam = {};
@@ -447,6 +464,10 @@ HRESULT CRenderSystem::Render_Final()
 	SHADER_PARAM uiParam = {};
 	m_pTargetManager->Get_TargetParam("Target_UI", uiParam);
 	m_pShader->Bind_Value("g_UITexture", uiParam);
+
+	SHADER_PARAM postProcessParam = {};
+	m_pTargetManager->Get_TargetParam("Target_PostProcess", postProcessParam);
+	m_pShader->Bind_Value("g_PostProcessTexture", postProcessParam);
 
 	SHADER_PARAM WorldMat = {};
 	WorldMat.iSize = sizeof(_float4x4);

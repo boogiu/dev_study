@@ -17,7 +17,14 @@ public:
 
 public:
     void Render_GUI() override;
+
+public:
+    void Set_Target(CGameObject* pObj) { m_pTarget = pObj; };
+
 private:
+    _float m_InitialHeight = { 120 };
+    CGameObject* m_pTarget = { nullptr };
+
 public:
     static CSunCam* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

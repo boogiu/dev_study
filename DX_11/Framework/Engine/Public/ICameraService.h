@@ -21,5 +21,7 @@ public:
     virtual const _float4x4* Get_ShadowProjMatrix()PURE;
     virtual const _float4 Get_ShadowCameraPos()PURE;
     virtual const _float Get_ShadowFar() PURE;
+    virtual const _float4x4* Get_InversedShadowViewMatrix()PURE;
+    virtual const _float4x4* Get_InversedShadowProjMatrix()PURE;
 };
 NS_END

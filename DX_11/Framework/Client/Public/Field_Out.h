@@ -26,6 +26,7 @@ private:
 private:
     _float m_fElpaseTime = {0.f};
     _float m_fWaveTime = {0.f};
+    _float m_fCircularTime = {0.f};
     _float m_fFade = {0.f};
 public:
     static CField_Out* Create();

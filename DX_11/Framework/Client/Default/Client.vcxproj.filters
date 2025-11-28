@@ -262,9 +262,6 @@
     <Filter Include="02. GameObjects\10. NonPlayer\NpcState\01. MOVE\Move\Walk">
       <UniqueIdentifier>{0c3df354-aaa7-4f79-9caf-3e0a5ea3800a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\01. Camera\SunCam">
-      <UniqueIdentifier>{281eb752-5d74-4ce9-9c4f-2388e36e6516}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\10. NonPlayer\NpcState\02. INTERACT">
       <UniqueIdentifier>{5401dd0d-3e1e-45e3-bd4c-fca5b73c5703}</UniqueIdentifier>
     </Filter>
@@ -379,9 +376,6 @@
     <Filter Include="02. GameObjects\07. LevelObject\ItemSpawner">
       <UniqueIdentifier>{4ae5044e-a38c-489f-9b15-b55b342f9b9f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\12. Fish">
-      <UniqueIdentifier>{6caa4d74-d544-4a3d-807a-c3d108ff39b7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Levels\00. Loading">
       <UniqueIdentifier>{6b063c59-ba3e-44d5-9c62-456de7fa6450}</UniqueIdentifier>
     </Filter>
@@ -483,6 +477,18 @@
     </Filter>
     <Filter Include="02. GameObjects\02. Field\Plant_Flower">
       <UniqueIdentifier>{eceee5b4-fee4-4a58-8fb6-e05ae22ce9e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\12. Fish">
+      <UniqueIdentifier>{6caa4d74-d544-4a3d-807a-c3d108ff39b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\13. Env\Cloud">
+      <UniqueIdentifier>{d417b1e6-9872-4576-b829-0ebf728b7b1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\13. Env\Cloud\CloudSpace">
+      <UniqueIdentifier>{f21e4d2b-3ae0-4b21-afaf-7064fe97eb38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\13. Env\SunCam">
+      <UniqueIdentifier>{281eb752-5d74-4ce9-9c4f-2388e36e6516}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -772,7 +778,7 @@
       <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\WalkToPlayer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SunCam.h">
-      <Filter>02. GameObjects\01. Camera\SunCam</Filter>
+      <Filter>02. GameObjects\13. Env\SunCam</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NpcStateHub_Interact.h">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT</Filter>
@@ -935,6 +941,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\SmokeEffect.h">
       <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\SmokeEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Cloud_Env.h">
+      <Filter>02. GameObjects\13. Env\Cloud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Cloud_Space.h">
+      <Filter>02. GameObjects\13. Env\Cloud\CloudSpace</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1199,7 +1211,7 @@
       <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\WalkToPlayer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SunCam.cpp">
-      <Filter>02. GameObjects\01. Camera\SunCam</Filter>
+      <Filter>02. GameObjects\13. Env\SunCam</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\NpcStateHub_Interact.cpp">
       <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT</Filter>
@@ -1368,6 +1380,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\SmokeEffect.cpp">
       <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\SmokeEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Cloud_Space.cpp">
+      <Filter>02. GameObjects\13. Env\Cloud\CloudSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Cloud_Env.cpp">
+      <Filter>02. GameObjects\13. Env\Cloud</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -15,7 +15,7 @@ VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
     matrix matWV,matWVP;
-    matWV = mul(matWorld[TransformIndex], matView);
+    matWV = mul(ObjectBufferArray[TransformIndex].Transform, matView);
     matWVP = mul(matWV, matProjection);
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     return Out;

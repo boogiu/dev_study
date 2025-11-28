@@ -31,6 +31,8 @@ private:
 	IObjectService* m_pObjectManager = { nullptr };
 
 	CGameObject* m_pSky = { nullptr };
+	CGameObject* m_pSun = { nullptr };
+	CGameObject* m_pCloud = { nullptr };
 	CGameObject* m_pPlayer = { nullptr };
 	class CMapLoader* m_pLoader = { nullptr };
 public:
