@@ -71,6 +71,11 @@ void CNpcState_Move_Trace::Request_Path()
 
     const TILE_INDEX playerIdx = tileSys->Get_IndexByPosition(PlayerPack.Player_Pos);
     m_PathIndex = tileSys->Request_Path_To(TilePack.NowIndex, playerIdx, static_cast<_uint>(CANT_WALK));
+    
+    EffectData data;
+    data.ReqPosition = m_pCharacter->Get_Position();
+    data.FxPosition = m_pCharacter->Get_Position();
+    m_pCharacter->Request_Effect("Effect_Dust", data);
 
     if (m_PathIndex.empty()) return;
 

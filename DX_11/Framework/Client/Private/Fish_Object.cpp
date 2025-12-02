@@ -15,6 +15,7 @@
 
 #include "Level.h"
 #include "EffectSpawner.h"
+#include "AudioSource.h"
 
 CFish_Object::CFish_Object()
 {
@@ -29,6 +30,9 @@ HRESULT CFish_Object::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
 	Add_Component<CAABB_Collider>();
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Fish_Captured.wav", "Captured", false, SOUND_GROUP::SFX, 1.f);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Fish_Pick.wav", "Pick", false, SOUND_GROUP::SFX, 1.f);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Fish_Struggle_M.wav", "Struggle", true, SOUND_GROUP::SFX, 1.f);
 	return S_OK;
 }
 
@@ -116,7 +120,6 @@ void CFish_Object::Set_TargetBey(CGameObject* pTarget)
 	m_pTarget = dynamic_cast<CFishSub_Tool*>(pTarget);
 	if (!m_pTarget)
 		return;
-
 	m_eState = FIND_ENTRANCE;
 	m_BiteCount = Helper::Get_Random_Int(2, 4);
 	m_fDetectTime = 0.f;
@@ -124,8 +127,10 @@ void CFish_Object::Set_TargetBey(CGameObject* pTarget)
 
 _bool CFish_Object::Hit()
 {
-	if (m_eState == HIT)
+	if (m_eState == HIT) {
 		m_eState = BITE;
+		Get_Component<CAudioSource>()->Play("Struggle");
+	}
 
 	return m_eState == BITE;
 }
@@ -138,6 +143,7 @@ void CFish_Object::Missed()
 void CFish_Object::Catch()
 {
 	m_eState = CATCHED;
+	Get_Component<CAudioSource>()->Set_SlotPuase("Struggle",true);
 	HRESULT hr = Add_Component<CSkeletalModel>()->Link_Model("GamePlay_Level", m_FishDesc.modelName);
 	hr = Add_Component<CMaterial>()->Link_Material("GamePlay_Level", m_FishDesc.materialName);
 	Add_Component<CAnimator3D>()->LinkAnimate_Model("GamePlay_Level", m_FishDesc.modelName);
@@ -213,17 +219,17 @@ void CFish_Object::Move_FIND(_float dt)
 		m_NowBiteCount++;
 
 
-
 		if (m_NowBiteCount > m_BiteCount) {
 			m_eState = HIT;
 			m_fDetectTime = 0.f;
 			auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 			auto EffectSys = nowLevel->Get_LevelObject<CEffectSpawner>();
 			EffectSys->Request_Effect("Effect_WaterSplash", { Get_Position(), Get_Position() });
-
+			Get_Component<CAudioSource>()->Play("Captured");
 		}
 		else {
 			m_pTarget->Pong(Get_Position());
+			Get_Component<CAudioSource>()->Play("Pick");
 		}
 	}
 }
@@ -258,7 +264,7 @@ void CFish_Object::Move_BACK(_float dt)
 void CFish_Object::Move_HIT(_float dt)
 {
 	m_fDetectTime += dt;
-	if (m_fDetectTime > .5f) {
+	if (m_fDetectTime > .8f) {
 		m_eState = DISAPPEAR;
 	}
 }
@@ -305,7 +311,6 @@ void CFish_Object::Move_CATCHED(_float dt)
 	_vector pos = XMVectorLerp(myPos, targetPos, dt * 4);
 	m_pTransform->Set_PosVector(pos);
 	m_pTransform->LookAt(pos);
-
 }
 
 
@@ -348,8 +353,7 @@ void CFish_Object::Check_Axis()
 		XMStoreFloat2(&NewAxis, XMVector2Normalize(XMLoadFloat2(&NewAxis)));
 
 		_float4 nowPos = Get_Position();
-		_float4 nextPos = { nowPos.x + NewAxis.x ,nowPos.y,nowPos.z + NewAxis.y,1.f };
-
+		_float4 nextPos = { nowPos.x + NewAxis.x*8 ,nowPos.y,nowPos.z + NewAxis.y * 8,1.f };
 
 		_bool inWater = TileSys->Check_TileFlagByPosition(nextPos, static_cast<_uint>(TILE_FLAG::FLAG_RIVER));
 
@@ -379,6 +383,11 @@ void CFish_Object::Check_Rotation(_float dt)
 	else
 		m_fCurrentRadian = m_fDestRadian;
 	m_pTransform->Override_Rotation({ 0,1,0,0 }, m_fCurrentRadian);
+}
+
+_bool CFish_Object::InWater()
+{
+	return _bool();
 }
 
 CFish_Object* CFish_Object::Create()

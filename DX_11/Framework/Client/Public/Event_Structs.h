@@ -12,6 +12,7 @@ enum class EVENT_TYPE {
 	Talking_MsgUI,
 	TransItem,
 	TransItem_Response,
+	TransItem_Request,
 	Npc_To_Npc,
 	Craft_Result,
 	Craft_MsgUI,
@@ -21,10 +22,12 @@ enum class EVENT_TYPE {
 	FishBeyThrow,
 	FishBeyReceive,
 	FishBeyResult,
+	Ending
 };
 
 struct BaseEvent {
 	EVENT_TYPE eType = { EVENT_TYPE::None };
+
 };
 
 struct OnStartDialogue : public BaseEvent {
@@ -73,9 +76,16 @@ typedef struct tagEventUITalkingMsg : public BaseEvent {
 	function<void(OnEndDialogue)> OnClose;
 }TalkingMsgDesc;
 
+typedef struct tagEventRequestTransferItem : public BaseEvent {
+	itemType eType = {};
+	string specific_Item = {};
+	CGameObject* pRequester = {nullptr};
+}TRANS_ITEM_REQUEST;
+
 typedef struct tagEventTransferItem : public BaseEvent {
 	class CItem_Object* pObject = { nullptr }; 
-	_uint pSenderID = {  }; 
+	_uint Sender_InstanceID = {  }; 
+	_uint Reciever_InstanceID = {  }; 
 }TRANS_ITEM;
 
 typedef struct tagEventTransferItemResponse : public BaseEvent {
@@ -142,3 +152,7 @@ typedef struct tagFishBeyBiteEvent : public BaseEvent {
 	state evtState = {};
 	CGameObject* pCapturedFish = { nullptr };
 }POLE_BITE_RESULT;
+
+typedef struct tagGameEndingEvent : public BaseEvent {
+	_bool isEnded = true;
+}ENDING_EVENT;

@@ -17,12 +17,14 @@
 #include "Helper_Func.h"
 
 #include "EventSystem.h"
+#include "EffectSpawner.h"
 #include "NpcSpawner.h"
 #include "ItemSpawner.h"
 #include "UI_Responcer.h"
 #include "Player.h"
 #include "ClientHelper.h"
 #include "AABB_Collider.h"
+#include "AudioSource.h"
 
 #include "ClothParts.h"
 #include "PlayerPart_Hand.h"
@@ -45,6 +47,7 @@ HRESULT CNonPlayer::Initialize_Prototype()
 	Add_Component<CObjectContainer>();
 	Add_Component<CMaterialAnimator>();
 	Add_Component<CAABB_Collider>();
+	Add_Component<CAudioSource>();
 
 	return S_OK;
 }
@@ -66,20 +69,18 @@ void CNonPlayer::Awake()
 {
 	Make_Model(m_CharacterDesc);
 	/*경로 실수 .Model 들어감*/
-	ClientHelper::Add_AllClipsByFile("../../Resources/Data/CharacterAnim.json","GamePlay_Level", m_CharacterDesc.NpcKey,
-	Get_Component<CAnimator3D>());
+	ClientHelper::Add_AllClipsByFile("../../Resources/Data/CharacterAnim.json", "GamePlay_Level", m_CharacterDesc.NpcKey,
+		Get_Component<CAnimator3D>());
 
 	Get_Component<CMaterialAnimator>()->LinkAnimate_Material(Get_Component<CMaterial>());
 
-	Get_Component<CAnimator3D>()->Change_Animation("Base_Wait.anim",false);
+	Get_Component<CAnimator3D>()->Change_Animation("Base_Wait.anim", false);
 	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-5,0,-5}, {5,5,5} });
-
-	Add_Parts();
 	
+	Add_Parts();
 	Add_EventListen();
-
 	Add_MatAnimator();
-
+	Add_AudioSource();
 	m_EventPack.eventSystem = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
 }
 
@@ -93,7 +94,10 @@ void CNonPlayer::Update(_float dt)
 {
 	Update_Movement(dt);
 	Update_TileInfo(dt);
-	m_pMachine->Update(dt);
+	if(!m_isLooseControl)
+		m_pMachine->Update(dt);
+
+	Get_Component<CAnimator3D>()->Update_Animation(dt);
 	Get_Component<CMaterialAnimator>()->Update_Animation(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
@@ -109,28 +113,28 @@ void CNonPlayer::Update_Movement(_float dt)
 
 	if (fabs(moveAxis.x) > 0.01f || fabs(moveAxis.y) > 0.01f)
 		m_MovementPack.fTargetDegree = XMConvertToDegrees(atan2(moveAxis.x, moveAxis.y));
-	
+
 	_float DeltaDegree = m_MovementPack.fTargetDegree - m_MovementPack.fCurrentDegree;
-	
+
 	// -180~180 범위로 정규화
 	while (DeltaDegree > 180.f) DeltaDegree -= 360.f;
 	while (DeltaDegree < -180.f) DeltaDegree += 360.f;
-	
+
 	_float RotSpeed = dt * 350;
-	
+
 	if (fabs(DeltaDegree) > 6.f) {
 		m_MovementPack.fCurrentDegree += (DeltaDegree > 0 ? RotSpeed : -RotSpeed);
 	}
 	else {
 		m_MovementPack.fCurrentDegree = m_MovementPack.fTargetDegree;
 	}
-	
+
 	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
 	m_MovementPack.fCharacterHeight = (TileSys->Get_TileHeightByPosition(Get_Position()) - Get_Position().y);
 	m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(m_MovementPack.fCurrentDegree));
 }
 
-void CNonPlayer::Update_TileInfo(_float dt){
+void CNonPlayer::Update_TileInfo(_float dt) {
 
 	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
 	TileSys->Get_NeighborInfoByIndex(m_TileInfoPack.NowIndex, m_TileInfoPack.infos);
@@ -155,9 +159,9 @@ void CNonPlayer::Update_TileInfo(_float dt){
 		}
 	}
 
-	TILE_INDEX currIndex =TileSys->Get_IndexByPosition(Get_Position());
+	TILE_INDEX currIndex = TileSys->Get_IndexByPosition(Get_Position());
 
-	if (false==m_TileInfoPack.NowIndex.isSame(currIndex)) {
+	if (false == m_TileInfoPack.NowIndex.isSame(currIndex)) {
 		prevIndex = m_TileInfoPack.NowIndex;
 		m_TileInfoPack.NowIndex = currIndex;
 		TileSys->Add_TileFlagByIndex(m_TileInfoPack.NowIndex, static_cast<_uint>(TILE_FLAG::ONCHARACTER));
@@ -168,7 +172,7 @@ void CNonPlayer::Update_TileInfo(_float dt){
 void CNonPlayer::Render_GUI()
 {
 	__super::Render_GUI();
-	
+
 	m_pMachine->Render_State(this);
 }
 
@@ -201,14 +205,6 @@ void CNonPlayer::Add_Parts()
 			.Build("Top");
 		Get_Component<CObjectContainer>()->Add_Child(pTop, true);
 	}
-
-	//		CPlayerPart_Hand::CHARACTER_PARTS_DESC* pRHandDesc = new CPlayerPart_Hand::CHARACTER_PARTS_DESC;
-	//		pRHandDesc->pOwner = this;
-	//		pRHandDesc->BoneName = "Armature_Hand_R";
-	//		CGameObject* RhHand = Builder::Create_Object({ "GamePlay_Level","GamePlay_GameObject_PlayerPart_Hand" })
-	//			.Add_ObjDesc(pRHandDesc)
-	//			.Build("Right_Hand");
-	//		Get_Component<CObjectContainer>()->Add_Child(RhHand, false);
 }
 
 void CNonPlayer::Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey)
@@ -271,13 +267,18 @@ void CNonPlayer::Add_MatAnimator()
 	Get_Component<CMaterialAnimator>()->Change_Animation("mEye", "IDLE");
 }
 
+void CNonPlayer::Add_AudioSource()
+{
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Pl_Net_Swing00.wav", "NetSwing", true);
+}
+
 void CNonPlayer::LookToPlayer(_float dt)
 {
 	auto& trace = m_TracePack;
 	auto Animator = Get_Component<CAnimator3D>();
 
-	auto Lerp = [&](_float a, _float b,_float t) ->_float{
-			return a + (b - a) * t;
+	auto Lerp = [&](_float a, _float b, _float t) ->_float {
+		return a + (b - a) * t;
 		};
 
 	if (trace.Player_distance < 50)
@@ -289,15 +290,15 @@ void CNonPlayer::LookToPlayer(_float dt)
 
 		_float dot = XMVectorGetX(XMVector3Dot(MyLook, playerLook));
 
-		if(dot >0.3f){
-		_float target_Radian = 
-			atan2(XMVectorGetX(playerLook), XMVectorGetZ(playerLook)) -
-			atan2(XMVectorGetX(MyLook), XMVectorGetZ(MyLook));
-		if (target_Radian > XM_PI)
-			target_Radian -= XM_2PI;
-		else if (target_Radian < -XM_PI)
-			target_Radian += XM_2PI;
-			trace.traceBone_Radian = Lerp(trace.traceBone_Radian, target_Radian,dt*5);
+		if (dot > 0.3f) {
+			_float target_Radian =
+				atan2(XMVectorGetX(playerLook), XMVectorGetZ(playerLook)) -
+				atan2(XMVectorGetX(MyLook), XMVectorGetZ(MyLook));
+			if (target_Radian > XM_PI)
+				target_Radian -= XM_2PI;
+			else if (target_Radian < -XM_PI)
+				target_Radian += XM_2PI;
+			trace.traceBone_Radian = Lerp(trace.traceBone_Radian, target_Radian, dt * 5);
 			Animator->Control_Bone("Armature_Neck", XMMatrixRotationX(trace.traceBone_Radian));
 		}
 		else {
@@ -310,37 +311,30 @@ void CNonPlayer::LookToPlayer(_float dt)
 		Animator->Control_Bone("Armature_Neck", XMMatrixRotationX(trace.traceBone_Radian));
 	}
 }
-
 void CNonPlayer::LookTo(_fvector pos)
 {
-	_vector vLook = m_pTransform->Dir(STATE::LOOK);
-	vLook = XMVector3Normalize(vLook);
+	_float4 nowPos4 = Get_Position();
+	XMVECTOR myPos = XMLoadFloat4(&nowPos4);
 
-	// 현재 위치
-	_float4 vNowPos = Get_Position();
+	XMVECTOR dir = pos - myPos;
 
-	_vector vTargetDir = pos - XMLoadFloat4(&vNowPos);
-	vTargetDir = XMVector3Normalize(vTargetDir);
-	vLook = XMVectorSetY(vLook, 0.f);
-	vTargetDir = XMVectorSetY(vTargetDir, 0.f);
+	dir = XMVectorSetY(dir, 0.f);
 
-	// 방향 각도 계산 (Y축 기준 평면 상)
-	_float angle =
-		atan2(
-			XMVectorGetX(vTargetDir),  // x 성분
-			XMVectorGetZ(vTargetDir)   // z 성분
-		) -
-		atan2(
+	if (XMVector3LengthSq(dir).m128_f32[0] < 1e-6f)
+		return;
 
-			XMVectorGetX(vLook),
-			XMVectorGetZ(vLook)
-		);
+	dir = XMVector3Normalize(dir);
 
-	if (angle > XM_PI) angle -= XM_2PI;
-	if (angle < -XM_PI) angle += XM_2PI;
+	float targetRad = atan2(
+		XMVectorGetX(dir),
+		XMVectorGetZ(dir)
+	);
+	float targetDeg = XMConvertToDegrees(targetRad);
 
-	m_MovementPack.fTargetDegree = m_MovementPack.fCurrentDegree + XMConvertToDegrees(angle);
+	m_MovementPack.fTargetDegree = targetDeg;
+	m_MovementPack.vMoveAxis = { 0,0 };
 }
+
 
 
 CItem_Object* CNonPlayer::Spawn_Item(const string tag, _float3 pos)
@@ -353,17 +347,22 @@ CItem_Object* CNonPlayer::Spawn_Item(const string tag, _float3 pos)
 void CNonPlayer::Set_Animation(const string tag)
 {
 	HRESULT hr = Get_Component<CAnimator3D>()->Change_Animation(tag);
-	//if (FAILED(hr))
-	//	Get_Component<CAnimator3D>()->Change_Animation("Base_Wait.anim");
 }
 
 void CNonPlayer::Set_Emotion(const string tag)
 {
 	Get_Component<CMaterialAnimator>()->Change_Animation("mEye", tag);
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	EffectData data;
+	data.Additional = tag;
+	data.ReqPosition = Get_Position();
+	XMStoreFloat4(&data.FxPosition, Get_Component<CTransform>()->Dir(STATE::LOOK));
+	nowLevel->Get_LevelObject<CEffectSpawner>()->Request_Effect("Effect_Emotion", data);
 }
 
 void CNonPlayer::Set_Voice(const string tag)
 {
+
 }
 
 void CNonPlayer::Set_Camera(const string tag)
@@ -372,7 +371,7 @@ void CNonPlayer::Set_Camera(const string tag)
 		return;
 
 	CAM_MOVE move; move.
-	eType = EVENT_TYPE::CameraMove;
+		eType = EVENT_TYPE::CameraMove;
 	move.moveTag = tag;
 	m_EventPack.eventSystem->OnBroadCast<BaseEvent>(move);
 }
@@ -386,14 +385,51 @@ void CNonPlayer::Set_Closed(OnEndDialogue endMsg)
 	m_EventPack.reservedMsg = endMsg.msg;
 	m_EventPack.nextSequenceID = endMsg.msg.NextSequenceID;
 
-	if (endMsg.NextSequenceID >=0)
+	if (endMsg.NextSequenceID >= 0)
 		m_EventPack.nextSequenceID = endMsg.NextSequenceID;
 
 	m_EventPack.externalCondition = endMsg.NextCondition;
+
+	string postType = endMsg.msg.Type;
+
+	if (postType.find("Order_") != string::npos) {
+		string key = "Order_";
+		string npcID = postType.substr(key.size(), postType.size());
+		EVNET_NPC_TO_NPC evt = { EVENT_TYPE::Npc_To_Npc,m_CharacterDesc.NpcID, stoi(npcID), endMsg.msg.Param1 };
+		m_EventPack.eventSystem->OnBroadCast<BaseEvent>(evt);
+		m_EventPack.Reset();
+	}
+
+	if (postType.find("Request_Item") != string::npos) {
+		TRANS_ITEM_REQUEST evt = {
+			EVENT_TYPE::TransItem_Request,
+			ClientHelper::Get_Type(endMsg.msg.Param1),
+			endMsg.msg.Param2,
+			this
+		};
+		m_EventPack.eventSystem->OnBroadCast<BaseEvent>(evt);
+		m_EventPack.Reset();
+	}
 }
 
 void CNonPlayer::Serve_Order(const string& order, _uint orderer)
 {
+	if (order.find("ChangeSequence_") != string::npos) {
+		string key = "ChangeSequence_";
+		string seqID = order.substr(key.size(), order.size());
+		m_EventPack.nextSequenceID = stoi(seqID);
+		m_EventPack.externalCondition = "QuestTalking";
+	}
+
+}
+
+void CNonPlayer::Request_Effect(const string& tag, const EffectData& data)
+{
+	auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+	if (!nowLevel)
+		return;
+	auto effectSys = nowLevel->Get_LevelObject<CEffectSpawner>();
+	effectSys->Request_Effect(tag, data);
 }
 
 void CNonPlayer::EventAction(const BaseEvent& event)
@@ -429,6 +465,13 @@ void CNonPlayer::EventAction(const BaseEvent& event)
 		Set_Closed(evt); //끝
 	}
 
+	if (event.eType == EVENT_TYPE::TransItem) {
+		const auto& evt = static_cast<const TRANS_ITEM&>(event);
+		if (evt.Reciever_InstanceID == m_ObjectID && evt.pObject) {
+			m_EventPack.reservedMsg.Type = "Receive";
+			m_ItemPacket.pItem = evt.pObject;
+		}
+	}
 	if (event.eType == EVENT_TYPE::TransItem_Response) {
 		const auto& evt = static_cast<const RESPONSE_TRANS_ITEM&>(event);
 		if (evt.pSenderID != this->m_ObjectID) return;

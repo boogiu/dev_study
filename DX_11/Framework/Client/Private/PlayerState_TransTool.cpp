@@ -37,7 +37,8 @@ void CPlayerState_TransTool::OnUpdate(_float dt)
 	auto& Pack = m_pPlayer->Get_ItemPacket();
 
 	if (!m_bTransed) {
-		if (Animator->isOverAnimTiming(0.5f)) {
+		if (Animator->isOverAnimTiming(0.45f)) {
+			m_pPlayer->Play_Sound(Pack.DstItem.TypeTag == itemType::None ? "TransTool_Off" : "TransTool_On");
 			m_pPlayer->Set_CurItemData(Pack.DstItem);
 			m_bTransed = true;
 		}

@@ -26,6 +26,7 @@ HRESULT CNpcRco::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 
 	m_InstanceName = "Racoon";
+	m_VoiceInt = 60;
 	return S_OK;
 }
 
@@ -58,19 +59,13 @@ void CNpcRco::Set_Closed(OnEndDialogue endMsg)
 {
 	__super::Set_Closed(endMsg);
 
-	string postType = endMsg.msg.Type;
-
-	if (postType.find("Order_") != string::npos) {
-		string key = "Order_";
-		string npcID = postType.substr(key.size(), postType.size());
-		EVNET_NPC_TO_NPC evt = { EVENT_TYPE::Npc_To_Npc,m_CharacterDesc.NpcID, stoi(npcID), endMsg.msg.Param1 };
-		m_EventPack.eventSystem->OnBroadCast<BaseEvent>(evt);
-		m_EventPack.Reset();
-	}
+	
+	
 }
 
 void CNpcRco::Serve_Order(const string& order, _uint orderer)
 {
+	__super::Serve_Order(order, orderer);
 	if (order == "GivePlayerAxe_Complete") {
 		m_EventPack.Reset();
 		m_EventPack.nextSequenceID = 5;
@@ -81,6 +76,12 @@ void CNpcRco::Serve_Order(const string& order, _uint orderer)
 		m_EventPack.Reset();
 		m_EventPack.nextSequenceID = 6;
 		m_EventPack.externalCondition = "NormalTalking";
+	}
+
+	if (order == "Talk_Complete") {
+		m_EventPack.Reset();
+		m_EventPack.nextSequenceID = 9;
+		m_EventPack.externalCondition = "QuestTalking";
 	}
 
 }

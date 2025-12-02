@@ -17,9 +17,12 @@ enum class TILE_FLAG : unsigned int {
     FLAG_STRUCTURE = 1 << 9,
     FLAG_GRASS = 1 << 10,
     FLAG_BRIDGE = 1 << 11,
+    FLAG_FLOWER = 1 << 12,
 
-    FLAG_RIVER = 1 << 12,
-    FLAG_SEA = 1 << 13,
+    FLAG_RIVER = 1 << 13,
+    FLAG_SEA = 1 << 14,
+    FLAG_SAND = 1 << 15,
+    FLAG_CLIFF = 1 << 16,
 
     /*ON*/
     FLAG_ONFURNITURE = 1 << 27,
@@ -62,7 +65,7 @@ inline _bool operator && (TILE_FLAG a, unsigned int b) {
 }
 
 const TILE_FLAG CANT_WALK =
-TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_SWIMMABLE |
+TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_SWIMMABLE |TILE_FLAG::FLAG_CLIFF |
 TILE_FLAG::FLAG_STONE | TILE_FLAG::FLAG_TREE | TILE_FLAG::FLAG_DIGGED | TILE_FLAG::FLAG_RIVER | TILE_FLAG::FLAG_SEA;
 
 const TILE_FLAG CANT_DIG_REPELL =

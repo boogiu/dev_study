@@ -41,7 +41,9 @@ struct PS_IN
 
 struct PS_OUT
 {
-    float4 vColor : SV_TARGET0;
+    vector vDiffuse : SV_TARGET0;
+    vector vNormal : SV_TARGET1;
+    vector vDepth : SV_TARGET2;
 };
 
 
@@ -51,14 +53,14 @@ PS_OUT PS_MAIN(PS_IN In)
     float2 newTexcoord = float2(In.vTexcoord.x * XScale / 16, In.vTexcoord.y * ZScale / 16);
     vector GridCol = DiffuseTexture.Sample(PointSampler, newTexcoord);
             
-    Out.vColor = GridCol;
+    Out.vDiffuse = GridCol;
     
     float insideX = step(vEdgeMin.x, In.vWorldPosition.x) * step(In.vWorldPosition.x, vEdgeMax.x);  //안에 있음면 1나옴(a보다 b가 작으면 0이됨)
     float insideZ = step(vEdgeMin.z, In.vWorldPosition.z) * step(In.vWorldPosition.z, vEdgeMax.z);
     
     float inside = insideX * insideZ;
-    Out.vColor = lerp(GridCol, float4(0.2f, 0.2f, 0.2f, 1), inside);
-    Out.vColor.a = 0.2f;
+    Out.vDiffuse = lerp(GridCol, float4(0.2f, 0.2f, 0.2f, 1), inside);
+    Out.vDiffuse.a = .2f;
     return Out;
 }
 

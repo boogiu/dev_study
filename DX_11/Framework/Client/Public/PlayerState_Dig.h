@@ -31,7 +31,9 @@ private:
     _bool m_isDiggable = { false };
     _bool m_DigComplete = { false };
     _bool m_EffectComplete = { false };
-    _bool m_CloudComplete = { false };
+    _bool m_SoundComplete = { false };
+    
+    TILE_FLAG m_Flag = {};
 public:
     static CPlayerState_Dig* Create();
     virtual void Free();

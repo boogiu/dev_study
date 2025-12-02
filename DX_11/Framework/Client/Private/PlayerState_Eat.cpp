@@ -34,6 +34,12 @@ void CPlayerState_Eat::OnUpdate(_float dt)
 			CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(m_pPlayer->Get_InfoPack().pObjectOnLeftHand);
 			m_pPlayer->Get_InfoPack().pObjectOnLeftHand = nullptr;
 		}
+			if (!m_SoundComplete) {
+		if (Animator->isOverAnimTiming(0.3)) {
+			m_pPlayer->Play_Sound("Eat");
+			m_SoundComplete = true;
+			}
+		}
 	}
 }
 
@@ -41,6 +47,7 @@ HRESULT CPlayerState_Eat::OnExit()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
+	m_SoundComplete = false;
 	return S_OK;
 }
 

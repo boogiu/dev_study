@@ -13,8 +13,10 @@ HRESULT CPlayerState_Talking::OnEnter()
 	Animator->Change_Animation("Base_Wait.anim", true);
 
 	if(m_pPlayer->Get_InfoPack().pTalker)
-		m_pPlayer->Adjust_To(m_pPlayer->Get_InfoPack().pTalker->Get_Component<CTransform>()->Get_Pos());
+ 		m_pPlayer->Adjust_To(m_pPlayer->Get_InfoPack().pTalker->Get_Component<CTransform>()->Get_Pos());
 
+	if(m_pPlayer->Get_ItemPacket().CurItem.TypeTag != itemType::None)
+		m_pPlayer->Request_State(STATE_LAYER::TOOL, "Tool_Release_State");
 	m_pPlayer->Camera_Zoom_In(m_pPlayer->Get_InfoPack().pTalker);
 	return S_OK;
 }
@@ -33,7 +35,7 @@ HRESULT CPlayerState_Talking::OnExit()
 CState* CPlayerState_Talking::HandleTransition()
 {
 	if (m_pPlayer->Get_InfoPack().pTalker == nullptr) {
-		m_pPlayer->Camera_Zoom_Out();
+		m_pPlayer->Camera_Restore();
 		return m_pLayer->Get_State("Movement_Idle_State");
 	}
 	return nullptr;

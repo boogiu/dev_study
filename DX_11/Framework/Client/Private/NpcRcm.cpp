@@ -33,6 +33,7 @@ HRESULT CNpcRcm::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 
 	m_InstanceName = "Racoon";
+	m_VoiceInt = 68;
 	return S_OK;
 }
 
@@ -75,6 +76,7 @@ void CNpcRcm::Set_Closed(OnEndDialogue endMsg)
 
 void CNpcRcm::Serve_Order(const string& order, _uint orderer)
 {
+	__super::Serve_Order(order, orderer);
 	if (order == "GivePlayerTool") {
 		m_EventPack.reservedMsg.Type = "Talking";
 		m_EventPack.nextSequenceID = 2;

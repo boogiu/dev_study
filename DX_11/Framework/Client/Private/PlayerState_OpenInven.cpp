@@ -27,7 +27,7 @@ HRESULT CPlayerState_OpenInven::OnExit()
 {
 	m_pPlayer->Close_Inventory();
 	m_pPlayer->Get_ControlPack().MsgBag = false;
-	m_pPlayer->Camera_Zoom_Out();
+	m_pPlayer->Camera_Restore();
 
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();

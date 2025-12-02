@@ -16,6 +16,7 @@
 #include "Helper_Func.h"
 #include "StaticModel.h"
 #include "Texture.h"
+#include "AudioSource.h"
 
 CBurryingGround::CBurryingGround()
 {
@@ -30,6 +31,10 @@ HRESULT CBurryingGround::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
 	Add_Component<CObjectContainer>();
+	Add_Component<CAudioSource>();
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Pl_BuryScoopStart_Grass_00.wav", "BuryStart", false, SOUND_GROUP::SFX, 0.35f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Pl_DigOut_Stone_00.wav", "BuryEnd", false, SOUND_GROUP::SFX, 0.35f);
+
 	return S_OK;
 }
 
@@ -86,6 +91,10 @@ void CBurryingGround::Update(_float dt)
 		{
 			m_Parts[i]->Set_DeActive();
 		}
+		if (!m_bEnd_Bury) {
+			Get_Component<CAudioSource>()->Play("BuryEnd");
+			m_bEnd_Bury = true;
+		}
 	}
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
@@ -101,7 +110,10 @@ void CBurryingGround::Render_GUI()
 
 _bool CBurryingGround::isEffectActive()
 {
-	return m_fLifeTime < 6.5f;
+	_bool end = m_fLifeTime < 6.5f;
+	if(!end)
+
+	return end;
 }
 
 void CBurryingGround::Reset()
@@ -114,6 +126,7 @@ void CBurryingGround::Reset()
 	m_fLifeTime = 0.f;
 	m_fTimeCheck = 0.f;
 	m_NowIndex = 0;
+	m_bEnd_Bury = false;
 }
 
 void CBurryingGround::Set_DeActive()
@@ -126,6 +139,7 @@ void CBurryingGround::Set_ReActive(const EffectData& data)
 	Reset();
 	m_Parts[m_NowIndex]->Set_ReActive({});
 	m_isAlive = true;
+	Get_Component<CAudioSource>()->Play("BuryStart");
 }
 
 CBurryingGround* CBurryingGround::Create()

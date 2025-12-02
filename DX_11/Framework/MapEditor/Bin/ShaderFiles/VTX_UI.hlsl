@@ -7,6 +7,7 @@ Texture2D UI_GradationTexture;
 float2 MaskScale = (1.2f, 1.2f);
 float2 vOffset_Tile;
 float2 vScale_Tile;
+float fElapsedTime;
 
 struct VS_IN
 {
@@ -213,6 +214,18 @@ PS_OUT PS_TEXTURE_TILE(PS_IN In)
 }
 
 
+PS_OUT PS_SCREEN_FX(PS_IN In)
+{
+    PS_OUT Out;
+    vector vDiffuse = SpriteTexture.Sample(PointLinearSampler, In.vTexcoord);
+    if(vDiffuse.a >fElapsedTime)
+        discard;
+    
+    Out.vColor = float4(0.f, 0.f, 0.f,1.f);
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass Opaque
@@ -270,6 +283,15 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = compile gs_5_0 GS_TILE();
         PixelShader = compile ps_5_0 PS_TEXTURE_TILE();
+    }
+    pass Screen_FX
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        PixelShader = compile ps_5_0 PS_SCREEN_FX();
     }
 }
 

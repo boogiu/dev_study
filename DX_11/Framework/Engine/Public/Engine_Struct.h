@@ -189,6 +189,16 @@ namespace Engine
 	typedef struct tagMinMaxBoxInfo {
 		_float3 vMin = {};
 		_float3 vMax = {};
+
+		tagMinMaxBoxInfo TransToWorld(_float4x4 worldMat) {
+			tagMinMaxBoxInfo newBox = {};
+			_matrix world = XMLoadFloat4x4(&worldMat);
+			_vector min = XMLoadFloat3(&vMin);
+			_vector max = XMLoadFloat3(&vMax);
+			XMStoreFloat3(&newBox.vMin, XMVector3TransformCoord(min,world));
+			XMStoreFloat3(&newBox.vMax, XMVector3TransformCoord(min, world));
+			return newBox;
+		}
 	}MINMAX_BOX;
 
 	/*RayInfo*/

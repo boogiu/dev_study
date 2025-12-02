@@ -71,7 +71,7 @@ VS_INSTANCE_OUT VS_INSTANCE(VS_INSTANCE_IN In)
     Out.vNormal = mul(vector(In.vNormal, 0.f), instWorld);
     Out.vProjPos = Out.vPosition;
     Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), instWorld)).xyz;
-    Out.vTangent *= -1;
+    Out.vTangent.xz *= -1;
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
     return Out;
 }
@@ -113,7 +113,7 @@ VS_INSTANCE_OUT VS_NOCURVE_INSTANCE(VS_INSTANCE_IN In)
     Out.vNormal = mul(vector(In.vNormal, 0.f), instWorld);
     Out.vProjPos = Out.vPosition;
     Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), instWorld)).xyz;
-    Out.vTangent *= -1;
+    Out.vTangent.xz *= -1;
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
     return Out;
 }
@@ -162,7 +162,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vNormal = float4(normalize(worldNormal), 0.f);
 
     float3 worldTangent = mul(float4(In.vTangent, 0.f), ObjectBufferArray[TransformIndex].Transform).xyz;
-    worldTangent *= -1; 
+    worldTangent.xz *= -1; 
     Out.vTangent = normalize(worldTangent);
 
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
@@ -189,7 +189,7 @@ VS_OUT VS_NOCURVE(VS_IN In)
     Out.vNormal = float4(normalize(worldNormal), 0.f);
 
     float3 worldTangent = mul(float4(In.vTangent, 0.f), ObjectBufferArray[TransformIndex].Transform).xyz;
-    worldTangent *= -1;
+    worldTangent.xz *= -1;
     Out.vTangent = normalize(worldTangent);
 
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
@@ -271,6 +271,36 @@ PS_OUT PS_BASE(PS_IN In)
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);\
 
+    return Out;
+}
+
+PS_OUT PS_MODEL_BASE(PS_IN In)
+{
+    PS_OUT Out;
+
+    float2 worldSize = vMax - vMin;
+    float2 WorldUV = (In.vWorldPos.xz - vMin) / worldSize;
+    float2 uv = frac(WorldUV * repeatCount);
+
+    vector Mask = g_MaskTexture.Sample(LinearSampler, uv);
+    vector Mask2 = g_MaskTexture.Sample(LinearSampler, WorldUV);
+
+    vector Palette = g_PaletteTexture.Sample(DefaultSampler, float2(PalettePixel.x, PalettePixel.y));
+    vector Palette2 = g_PaletteTexture.Sample(LinearSampler, float2(PalettePixel.x + (1 - Mask2.r) * Mask2.b, PalettePixel.y));
+
+    vector Grd = (Palette * (1 - Mask.a) + (Palette2) * (Mask.a));
+
+    Out.vDiffuse = Grd;
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+ 
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    
     return Out;
 }
 
@@ -467,6 +497,15 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_BASE();
+    }
+    pass Base
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MODEL_BASE();
     }
     pass Edge
     {

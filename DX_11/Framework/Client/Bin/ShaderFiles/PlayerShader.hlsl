@@ -62,7 +62,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vProjPos = Out.vPosition;
     
     Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), BoneMatrix)).xyz;
-    Out.vTangent *= -1;
+    Out.vTangent.xz *= -1;
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
     return Out;
 }
@@ -110,6 +110,7 @@ struct PS_OUT
     vector vDiffuse : SV_TARGET0;
     vector vNormal : SV_TARGET1;
     vector vDepth : SV_TARGET2;
+    vector vEmission : SV_TARGET3;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -131,6 +132,7 @@ PS_OUT PS_MAIN(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     
     return Out;
 }
@@ -156,6 +158,7 @@ PS_OUT PS_SKIN(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
 
     return Out;
 }
@@ -198,6 +201,7 @@ PS_OUT PS_EYE(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     return Out;
 }
 
@@ -230,6 +234,7 @@ PS_OUT PS_MOUTH(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
    
     return Out;
 }
@@ -253,6 +258,7 @@ PS_OUT PS_CHEEK(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
    
     return Out;
 }
@@ -271,6 +277,7 @@ PS_OUT PS_HAIR(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
  
     return Out;
 }
@@ -289,6 +296,7 @@ PS_OUT PS_HAIRSKIN(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     return Out;
 }
 
@@ -307,6 +315,7 @@ PS_OUT PS_CLOTH(PS_IN In)
     vNormal = mul(vNormal, WorldMatrix);
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     return Out;
 }
 

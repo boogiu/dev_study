@@ -15,14 +15,17 @@ HRESULT CPlayerState_TransferGet::OnEnter()
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Release_AnimationBlend();
 	auto TrasData = m_pPlayer->Get_InfoPack().m_nowTrans;
-	m_data = {EVENT_TYPE::TransItem, TrasData.pObject,TrasData.pSenderID };
+	m_data = {EVENT_TYPE::TransItem, TrasData.pObject,TrasData.Sender_InstanceID };
 
 	m_pPlayer->Get_InfoPack().m_nowTrans = {};
 	if (m_data.pObject) {
 		Animator->Change_Animation("Transfer_ReceiveForward.anim");
 		m_pPlayer->Camera_Zoom_In(m_pPlayer->Get_InfoPack().pTalker);
+		m_pPlayer->Play_Sound("Put_In");
 		m_eState = Transfered;
 	}
+	if (m_pPlayer->Get_ItemPacket().CurItem.TypeTag != itemType::None)
+		m_pPlayer->Request_State(STATE_LAYER::TOOL, "Tool_Release_State");
 	return S_OK;
 }
 
@@ -75,7 +78,7 @@ HRESULT CPlayerState_TransferGet::OnExit()
 		data
 	);
 
-	m_pPlayer->Camera_Zoom_Out();
+	m_pPlayer->Camera_Restore();
 	m_pPlayer->Get_InfoPack().m_nowTrans = {};
 	m_data = {};
 	m_fOutime = 0;

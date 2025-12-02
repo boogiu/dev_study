@@ -11,8 +11,8 @@
 #include "Transform.h"
 #include "Level.h"
 #include "FishSpawner.h"
-
-
+#include "AudioSource.h"
+#include "PipeLine.h"
 static vector<AUTO_TILE> TileRuleDB;
 
 CAutoTile::CAutoTile()
@@ -30,6 +30,7 @@ HRESULT CAutoTile::Initialize_Prototype()
 	Add_Component<CMaterial>();
 	Add_Component<CStaticModel>();
 	Add_Component<CTileBlock>();
+	Add_Component<CAudioSource>();
 	return S_OK;
 }
 
@@ -73,7 +74,14 @@ void CAutoTile::Priority_Update(_float dt)
 
 void CAutoTile::Update(_float dt)
 {
-
+	if (isRiver) {
+		
+		_bool isVisible = CGameInstance::GetInstance()->Get_RenderSystem()->Get_Pipeline()->isVisible(
+			Get_Component<CModel>()->Get_LocalBoundingBox(),
+			XMLoadFloat4x4(m_pTransform->Get_WorldMatrix_Ptr()));
+		if(isVisible)
+			Get_Component<CAudioSource>()->Play("River");
+	}
 }
 
 void CAutoTile::Late_Update(_float dt)
@@ -90,6 +98,7 @@ HRESULT CAutoTile::Link_Data(const string& folderName)
 	HRESULT hr = Get_Component<CModel>()->Link_Model(G_GlobalLevelKey, folderName + ".model");
 	hr = Get_Component<CMaterial>()->Link_Material(G_GlobalLevelKey, folderName + ".mat");
 	CMaterial* pMaterial = Get_Component<CMaterial>();
+
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
 		instance->Override_Pass("Base");
 	}
@@ -114,9 +123,14 @@ HRESULT CAutoTile::Link_Data(const string& folderName)
 		auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
 		tileSys->Set_Material_ID(m_Index, { 0,0,0,0 });
 		auto FishSpawner = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CFishSpawner>();
-		FishSpawner->Notice_River(m_Index);
 		tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_RIVER));
+		FishSpawner->Notice_River(m_Index);
+	}
 
+	if (m_BaseTypeName.find("Cliff") != string::npos) {
+		auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
+		tileSys->Set_Material_ID(m_Index, { 0,0,0,0 });
+		tileSys->Add_TileFlagByIndex(m_Index, static_cast<_uint>(TILE_FLAG::FLAG_CLIFF));
 	}
 	return hr;
 }
@@ -200,6 +214,12 @@ void CAutoTile::Update_State(_uint N_State)
 	{
 		m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(rotation));
 		string yIndex = "_0";
+		if (m_BaseTypeName.find("Cliff") != string::npos) {
+			if (selectedName == "8A") {
+				m_BaseTypeName = "Base";
+				selectedName = "";
+			}
+		}
 		Link_Data(m_BaseTypeName + selectedName + yIndex);
 	}
 	else
@@ -209,6 +229,20 @@ void CAutoTile::Update_State(_uint N_State)
 	}
 
 	m_CurState = N_State;
+
+		if (m_BaseTypeName.find("River") != string::npos) {
+			auto CountBit = [](_uint bit)->_uint{_uint count = 0;
+			while (bit){count += (bit & 1);bit >>= 1;}
+			return count;};
+		
+			_uint neighborCount = CountBit(N_State);  
+			if (neighborCount >= 8) {
+				isRiver = true;
+				auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
+				Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Env_RiverBase00.wav", "River", true, SOUND_GROUP::ENV);
+				Get_Component<CAudioSource>()->Set_SlotVolume("River",0.1f);
+			}
+		}
 }
 
 CAutoTile* CAutoTile::Create()

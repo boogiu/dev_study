@@ -15,6 +15,8 @@
 #include "Item_Object.h"
 #include "Helper_Func.h"
 #include "EffectSpawner.h"
+#include "AudioSource.h"
+
 CField_Stone::CField_Stone()
 {
 }
@@ -31,6 +33,8 @@ HRESULT CField_Stone::Initialize_Prototype()
 	Add_Component<CSkeletalModel>();
 	Add_Component<CMaterial>();
 	Add_Component<CAABB_Collider>();
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Obj_Stone_Break_00.wav","Break",false, SOUND_GROUP::SFX);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Break",0.4f);
 	return S_OK;
 }
 
@@ -51,6 +55,7 @@ void CField_Stone::Update(_float dt)
 	ItemSpawnCoolTime += dt;
 	if (m_eState == HITTED)
 		HittedMove(dt);
+
 	else if (m_eState == READY_TO_DESTROY) {
 		CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(this);
 		auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
@@ -58,6 +63,7 @@ void CField_Stone::Update(_float dt)
 		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
 		auto EffectSys = nowLevel->Get_LevelObject<CEffectSpawner>();
 		EffectSys->Request_Effect("Effect_RagDolStone", { Get_Position(), Get_Position() });
+		Get_Component<CAudioSource>()->Play("Break");
 		m_eState = END;
 	}
 }

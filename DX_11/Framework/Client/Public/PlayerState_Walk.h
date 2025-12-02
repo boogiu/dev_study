@@ -19,6 +19,7 @@ private:
     void Request_Dust();
 private:
     _float m_fWalkTime = {  };
+    _float m_fWalkSoundTime = {  };
 
 public:
     static CPlayerState_Walk* Create();

@@ -36,6 +36,10 @@ void CPlayerState_PickUp::OnUpdate(_float dt)
 	if (Item_Found) {
 		if (Animator->isOverAnimTiming(0.3)) {
 			m_pPlayer->ActiveCollider_LeftHand(true, "Pick_Up");
+			if (!m_SoundComplete) {
+				m_pPlayer->Play_Sound("Pick_Up");
+				m_SoundComplete = true;
+			}
 		}
 	}
 }
@@ -45,6 +49,7 @@ HRESULT CPlayerState_PickUp::OnExit()
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend(); 
 	Item_Found = false;
+	m_SoundComplete = false;
 	return S_OK;
 }
 

@@ -25,6 +25,8 @@
 #include "DebugRender.h"
 #include "EventSystem.h"
 
+#include "AudioSource.h"
+
 CPlant_Tree::CPlant_Tree()
 {
 
@@ -50,6 +52,18 @@ HRESULT CPlant_Tree::Initialize_Prototype()
 	Add_Component<CAnimator3D>();
 	Add_Component<CObjectContainer>();
 	Add_Component<CDebugRender>();
+
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry.wav", "Shake", false, SOUND_GROUP::SFX);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry.wav", "ShakeKeep", true, SOUND_GROUP::SFX);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry_HitAxe.wav", "Hit", false, SOUND_GROUP::SFX);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry_DownLand4.wav", "Cut", false, SOUND_GROUP::SFX);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry_Small.wav", "Encount", false, SOUND_GROUP::SFX);
+
+	Get_Component<CAudioSource>()->Set_SlotVolume("Shake", 0.2f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Hit", 0.2f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Cut", 0.3f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Encount", 0.2f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("ShakeKeep", 0.2f);
 
 	return S_OK;
 }
@@ -103,6 +117,9 @@ HRESULT CPlant_Tree::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string
 	char GrownLevel = m_ModelName.back();
 	if (isdigit(m_ModelName.back())) {
 		m_iGrownLevel = m_ModelName.back() - '0';
+		if (m_iGrownLevel < 4) {
+			int i = 0;
+		}
 		m_TypeName = m_ModelName.substr(0, m_ModelName.size() - 1);
 	}
 
@@ -110,12 +127,13 @@ HRESULT CPlant_Tree::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string
 	m_iObjType = objHeader.Object_type;
 	m_AdditionalData = objHeader.AdditionalData;
 
-	HRESULT hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);
+	HRESULT hr = Get_Component<CMaterial>()->Link_Material("GamePlay_Level", m_ModelName + "Node.mat");
 
 	hr = Get_Component<CModel>()->Link_Model("GamePlay_Level", m_ModelName + "Node.model");
 	if (FAILED(hr)) {
 		return E_FAIL;
 	}
+
 
 	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-5,0,-5}, {5,10,5} });
 
@@ -163,6 +181,10 @@ void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 			_float RLCheck = context.Owner->Get_Position().x;
 			m_isTargetRight = Get_Position().x < RLCheck;
 			m_isCutted = true;
+			Get_Component<CAudioSource>()->Play("Cut");
+		}
+		else {
+			Get_Component<CAudioSource>()->Play("Hit");
 		}
 	}
 
@@ -173,10 +195,12 @@ void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 
 	else if (context.Owner->Has_Tag("Player_Hand")) {
 		m_eState = SHAKE;
+		Get_Component<CAudioSource>()->Play("Shake");
 	}
 
 	else if (context.Owner->Has_Tag("Player")) {
 		m_eState = ENCOUNTERED;
+		Get_Component<CAudioSource>()->Play("Encount");
 		if (m_AdditionalData=="Event01_TreeBlock") {
 			auto eventSys  = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
 			eventSys->OnBroadCast<BaseEvent>(QUEST_MSG{ EVENT_TYPE::Quest_Msg, this, m_AdditionalData });
@@ -197,6 +221,7 @@ void CPlant_Tree::OnCollisionExit(COLLISION_CONTEXT context)
 {
 	if (context.Owner->Has_Tag("Player_Hand")) {
 		Get_Component<CAnimator3D>()->Stop_Animation();
+		Get_Component<CAudioSource>()->Set_SlotPuase("ShakeKeep",true);
 		m_eState = IDLE;
 	}
 }
@@ -220,6 +245,7 @@ void CPlant_Tree::Check_State(_float dt)
 	case SHAKING:
 		m_fShakeTime += dt;
 		PlayAnim_Shaking();
+		Get_Component<CAudioSource>()->Play("ShakeKeep");
 		break;
 	case ENCOUNTERED:
 		PlayAnim_Encounter();
@@ -338,8 +364,7 @@ void CPlant_Tree::Make_Fruits()
 
 void CPlant_Tree::Adjust_Material()
 {
-	Get_Component<CModel>()->SetDrawable(1, false);
-	Get_Component<CModel>()->SetDrawable(2, false);
+	Get_Component<CSkeletalModel>()->Hide_MehsByName("Shadow");
 
 	auto pMaterial = Get_Component<CMaterial>();
 	if (!pMaterial) return;
@@ -352,7 +377,7 @@ void CPlant_Tree::Adjust_Material()
 		palette.iSize = 0;
 		palette.typeName = "Texture2D";
 		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "Palette_mPltTreeOakTrunkColor_Grd.png")->Get_SRV();
-		TruckInstance->Set_Param("g_PaletteTexture", palette);
+		TruckInstance->Set_Param("GradationTexture", palette);
 		TruckInstance->Override_Pass("Tree");
 	}
 
@@ -369,7 +394,7 @@ void CPlant_Tree::Adjust_Material()
 		palette.typeName = "Texture2D";
 		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "Palette_mPltTreeOakLeafColor_Grd.png")->Get_SRV();
 
-		LeafInstance->Set_Param("g_PaletteTexture", palette);
+		LeafInstance->Set_Param("GradationTexture", palette);
 		SHADER_PARAM wind = {&m_WindMat, "float4x4",sizeof(_float4x4)};
 		LeafInstance->Set_Param("fWind_Matrix", wind);
 		LeafInstance->Override_Pass("Leaf");
@@ -382,8 +407,7 @@ void CPlant_Tree::Adjust_Material()
 		palette.iSize = 0;
 		palette.typeName = "Texture2D";
 		palette.pData = pRcsMgr->Load_Texture("GamePlay_Level", "Palette_mPltTreeOakLeafColor_Grd.png")->Get_SRV();
-		//LeafInstance->Set_Param("leafPalette", Leaf);
-		BackLeafInstance->Set_Param("g_PaletteTexture", palette);
+		BackLeafInstance->Set_Param("GradationTexture", palette);
 		BackLeafInstance->Override_Pass("Leaf");
 	}
 }
@@ -452,18 +476,23 @@ void CPlant_Tree::Digged_Self(_float dt)
 void CPlant_Tree::Normalize_Name(const string& modelName)
 {
 	string BaseModel = modelName;
-	size_t NodeCheck = modelName.find("Node");
-	size_t StumpCheck = modelName.find("Stump");
 
-	if (NodeCheck != string::npos) {
-		BaseModel = modelName.substr(NodeCheck + 4);
+	// "Node" 제거
+	size_t pos = BaseModel.find("Node");
+	if (pos != string::npos) {
+		BaseModel.erase(pos, 4);   // "Node" 길이 = 4
 	}
-	if (StumpCheck != string::npos) {
-		BaseModel = modelName.substr(NodeCheck + 5);
+
+	// "Stump" 제거
+	pos = BaseModel.find("Stump");
+	if (pos != string::npos) {
+		BaseModel.erase(pos, 5);   // "Stump" 길이 = 5
 	}
 
 	m_ModelName = BaseModel;
 }
+
+
 
 void CPlant_Tree::Add_Animation()
 {

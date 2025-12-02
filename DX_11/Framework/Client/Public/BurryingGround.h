@@ -26,6 +26,7 @@ private:
     CBaseEffect* m_pSmoke = { nullptr };
     _float m_fTimeCheck = {};
     _int m_NowIndex = {};
+    _bool m_bEnd_Bury = { false };
 public:
     static CBurryingGround* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

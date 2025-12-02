@@ -40,6 +40,10 @@ public:
 	static CAutoTile* Create();
 	CGameObject* Clone(INIT_DESC* pArg) override;
 	void Free() override;
+
+	//static _uint RiverPlayer
+
+	_bool isRiver = { false };
 };
 
 NS_END

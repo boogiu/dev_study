@@ -18,10 +18,6 @@ void CCameraMgr::Set_MainCam(CCamera* pCamCom)
 		Safe_Release(m_pMainCam);
 	m_pMainCam = pCamCom;
 
-	CGameInstance::GetInstance()->Get_AudioDev()->Set_Listener(
-		m_pMainCam->Get_Owner()->Get_Component<CTransform>()
-	);
-
 	Safe_AddRef(m_pMainCam);
 }
 

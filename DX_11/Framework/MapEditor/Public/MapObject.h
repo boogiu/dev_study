@@ -39,6 +39,7 @@ private:
     _uint m_ObjeType = {};
     string m_ObjName = {};
 
+    char nameBuf[64] = "";
     string m_AdditionalData = {};
 
 public:

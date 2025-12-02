@@ -32,6 +32,7 @@ public:
     virtual MINMAX_BOX Get_MeshBoundingBox(_uint index)	override;
     _bool isReadyToDraw()	override { return m_pData != nullptr; };
     void Hide_MehsByName(const string& name);
+    _int Get_MeshIndexByName(const string& name);
 public:
     void Render_GUI();
 

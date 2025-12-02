@@ -118,15 +118,6 @@
     <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action">
       <UniqueIdentifier>{478962d0-3091-4e8e-8cac-73579fa74114}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move">
-      <UniqueIdentifier>{48763684-6efc-4f37-9334-5d389fbb8ace}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\01. Walk">
-      <UniqueIdentifier>{6d57cc37-5ae2-4573-a711-82d84f9721f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\02. Run">
-      <UniqueIdentifier>{ea599003-fbe9-44d5-b832-0c4c9abbb9d4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolPose">
       <UniqueIdentifier>{3093c514-6323-4442-acb6-80c50e19658e}</UniqueIdentifier>
     </Filter>
@@ -192,9 +183,6 @@
     </Filter>
     <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. NetSwing">
       <UniqueIdentifier>{55a8ad17-8ab2-49eb-9f1e-a2847a4c5778}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\03. AimWalk">
-      <UniqueIdentifier>{0f99d984-c76d-4a32-8422-5fa215ea4d92}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. GameObjects\09. Insect">
       <UniqueIdentifier>{729048ac-fc47-4407-b3bf-ec60335158f5}</UniqueIdentifier>
@@ -361,12 +349,6 @@
     <Filter Include="02. GameObjects\05. Parts\Glass">
       <UniqueIdentifier>{a841bc77-7c8b-4750-81d5-3726c701250a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\07. LevelObject\GameModeController">
-      <UniqueIdentifier>{05f47b4e-e016-42bd-bb9f-fb091bb96870}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. GameObjects\07. LevelObject\GameModeController\GameMode">
-      <UniqueIdentifier>{f0b38f20-d3c7-47f6-9800-3d14ed1827b9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\10. NonPlayer\Special\NpcTkk">
       <UniqueIdentifier>{de797582-62a4-4a82-ad3e-d1a019a5e248}</UniqueIdentifier>
     </Filter>
@@ -433,9 +415,6 @@
     <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\WaterWaveSplash">
       <UniqueIdentifier>{b35facdd-e045-41f2-8dc3-fb6435bf72bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\LeafEffect">
-      <UniqueIdentifier>{7eca8022-67d6-458b-8cf7-7e83347c0595}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\RagdolStone">
       <UniqueIdentifier>{3113a271-776c-424c-a002-edab39703f15}</UniqueIdentifier>
     </Filter>
@@ -489,6 +468,48 @@
     </Filter>
     <Filter Include="02. GameObjects\13. Env\SunCam">
       <UniqueIdentifier>{281eb752-5d74-4ce9-9c4f-2388e36e6516}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\Special\Npc_Jcs">
+      <UniqueIdentifier>{ccf7d626-1328-461b-ad9f-5bb2e0ef36bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\03. ForcedState\06. TransferGive">
+      <UniqueIdentifier>{5d2d45fb-d26b-4db9-888f-1d59a8e24611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\02. ToolPose\06. ReleaseTool">
+      <UniqueIdentifier>{2d5815d6-bc45-4a83-8c9c-65f61a70e728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\RecieveItem">
+      <UniqueIdentifier>{d66ab90a-b819-44da-b3f3-401785ada885}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\13. Env\LeafParticle">
+      <UniqueIdentifier>{6382419f-1926-4a8a-9c68-635ff76c82a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\FlowerEffect">
+      <UniqueIdentifier>{7eca8022-67d6-458b-8cf7-7e83347c0595}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\EmotionEffect">
+      <UniqueIdentifier>{d4a33f8a-45c9-4baf-a094-c6edec7690dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\08. UI\ScreenFX">
+      <UniqueIdentifier>{b0d21c47-5758-4c4e-b109-1b45164c938d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\00. Idle\01. Move">
+      <UniqueIdentifier>{48763684-6efc-4f37-9334-5d389fbb8ace}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\00. Idle\01. Move\01. Walk">
+      <UniqueIdentifier>{6d57cc37-5ae2-4573-a711-82d84f9721f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\00. Idle\01. Move\02. Run">
+      <UniqueIdentifier>{ea599003-fbe9-44d5-b832-0c4c9abbb9d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\01. ActionState\00. Idle\01. Move\03. AimWalk">
+      <UniqueIdentifier>{0f99d984-c76d-4a32-8422-5fa215ea4d92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\00. Player\StateMachine\03. ForcedState\07. MissionComplete">
+      <UniqueIdentifier>{80a1b24b-c136-4085-b048-721f322773cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EndingController">
+      <UniqueIdentifier>{230d9fd1-f06d-440d-9330-1ade2dfc989d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -601,13 +622,13 @@
       <Filter>02. GameObjects\00. Player\StateMachine\00. PlayerState_Super</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Walk.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\01. Walk</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\00. Idle\01. Move\01. Walk</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerStateMachine.h">
       <Filter>02. GameObjects\00. Player\StateMachine</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Run.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\02. Run</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\00. Idle\01. Move\02. Run</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Structs.h">
       <Filter>99. Defines</Filter>
@@ -715,7 +736,7 @@
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. NetSwing</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_AimWalk.h">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\03. AimWalk</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\00. Idle\01. Move\03. AimWalk</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Insect_Object.h">
       <Filter>02. GameObjects\09. Insect</Filter>
@@ -849,9 +870,6 @@
     <ClInclude Include="..\Public\Glass_Acc.h">
       <Filter>02. GameObjects\05. Parts\Glass</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\GameModeController.h">
-      <Filter>02. GameObjects\07. LevelObject\GameModeController</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\NpcTkk.h">
       <Filter>02. GameObjects\10. NonPlayer\Special\NpcTkk</Filter>
     </ClInclude>
@@ -947,6 +965,36 @@
     </ClInclude>
     <ClInclude Include="..\Public\Cloud_Space.h">
       <Filter>02. GameObjects\13. Env\Cloud\CloudSpace</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcJcs.h">
+      <Filter>02. GameObjects\10. NonPlayer\Special\Npc_Jcs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_TransferGive.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\06. TransferGive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_ReleaseTool.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\06. ReleaseTool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NpcState_Interact_ReceiveItem.h">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\RecieveItem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LeafParticle.h">
+      <Filter>02. GameObjects\13. Env\LeafParticle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FlowerEffect.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\FlowerEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EmotionEffect.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\EmotionEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScreenFX.h">
+      <Filter>02. GameObjects\08. UI\ScreenFX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_MissionComplete.h">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\07. MissionComplete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EndingController.h">
+      <Filter>02. GameObjects\07. LevelObject\EndingController</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1052,13 +1100,13 @@
       <Filter>02. GameObjects\00. Player\StateMachine\00. PlayerState_Super</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Walk.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\01. Walk</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\00. Idle\01. Move\01. Walk</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerStateMachine.cpp">
       <Filter>02. GameObjects\00. Player\StateMachine</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Run.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\02. Run</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\00. Idle\01. Move\02. Run</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerPart_Hand.cpp">
       <Filter>02. GameObjects\00. Player\PlayerParts\Hand</Filter>
@@ -1154,7 +1202,7 @@
       <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\02. Action\04. NetSwing</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_AimWalk.cpp">
-      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\01. Move\03. AimWalk</Filter>
+      <Filter>02. GameObjects\00. Player\StateMachine\01. ActionState\00. Idle\01. Move\03. AimWalk</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Insect_Object.cpp">
       <Filter>02. GameObjects\09. Insect</Filter>
@@ -1285,9 +1333,6 @@
     <ClCompile Include="..\Private\Glass_Acc.cpp">
       <Filter>02. GameObjects\05. Parts\Glass</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\GameModeController.cpp">
-      <Filter>02. GameObjects\07. LevelObject\GameModeController</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\NpcTkk.cpp">
       <Filter>02. GameObjects\10. NonPlayer\Special\NpcTkk</Filter>
     </ClCompile>
@@ -1386,6 +1431,36 @@
     </ClCompile>
     <ClCompile Include="..\Private\Cloud_Env.cpp">
       <Filter>02. GameObjects\13. Env\Cloud</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcJcs.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\Special\Npc_Jcs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_TransferGive.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\06. TransferGive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_ReleaseTool.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\02. ToolPose\06. ReleaseTool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NpcState_Interact_ReceiveItem.cpp">
+      <Filter>02. GameObjects\10. NonPlayer\NpcState\02. INTERACT\RecieveItem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LeafParticle.cpp">
+      <Filter>02. GameObjects\13. Env\LeafParticle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FlowerEffect.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\FlowerEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EmotionEffect.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\EmotionEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScreenFX.cpp">
+      <Filter>02. GameObjects\08. UI\ScreenFX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_MissionComplete.cpp">
+      <Filter>02. GameObjects\00. Player\StateMachine\03. ForcedState\07. MissionComplete</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EndingController.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EndingController</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

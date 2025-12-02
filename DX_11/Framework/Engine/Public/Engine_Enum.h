@@ -22,7 +22,7 @@ namespace Engine
 
 	enum class COLLIDER_TYPE { AABB, OBB, SPHERE };
 	
-	enum class SOUND_GROUP { BGM, SFX, UI, TALK, END };
+	enum class SOUND_GROUP { BGM, SFX, UI, TALK, ENV,END };
 
 	enum class RENDER_PASS_TYPE { PRIORITY, RENDER_OPAQUE, NONLIGHT_OPAQUE};
 	enum class RENDER_LAYER { Default, CustomOnly, Both };

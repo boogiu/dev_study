@@ -25,6 +25,7 @@ private:
     TILE_INDEX m_Index = {};
     _bool m_bPlayerOn = {};
     _float m_fScaleTime = {};
+
 public:
     static CPlant_Grass* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

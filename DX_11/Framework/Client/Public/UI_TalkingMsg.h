@@ -22,6 +22,7 @@ public:
 public:
     virtual void UI_Active(void* pArg) override;
     virtual void UI_DeActive(void* pArg) override;
+    virtual void PlaySound_Vowel(wstring vowel);
 
 private:
     void SequenceClear();
@@ -34,7 +35,8 @@ private:
 private:
     _bool   m_bActive = { false };
     _bool m_bOpenComplete = { false };
-
+    string m_BaseVoice = {};
+    string m_VoiceInt = {};
     _float2 m_vOpenSize = {};
     _float   m_fOpenSpeed = {};
     _float   m_fElapseTime = {};

@@ -150,4 +150,10 @@ SamplerState PointClampSampler = sampler_state
     AddressU = CLAMP;
     AddressV = CLAMP;
 };
+SamplerState PointLinearSampler = sampler_state
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = CLAMP;
+    AddressV = CLAMP;
+};
 #endif // __SHADER_STATE_HLSL__

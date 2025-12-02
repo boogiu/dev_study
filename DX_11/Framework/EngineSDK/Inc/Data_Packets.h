@@ -102,12 +102,13 @@ namespace Engine {
 
 	/*Audio*/
 	typedef struct tagAudioPacket {
+		_bool isInfinite = { false }; 
 		_bool isPaused = { false };
 		_bool is3DAttribute = { true };
 		_uint iLoopCount = { 0};
 
 		_float fVolume = { 1.f };
-		SOUND_GROUP m_eGroup = {};
+		SOUND_GROUP eGroup = {};
 
 		class CSoundData* pSound = {};
 		FMOD::Channel** ppChannelToUpdate = { nullptr };

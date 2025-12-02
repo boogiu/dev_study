@@ -250,15 +250,18 @@ PS_OUT PS_SMOKE(PS_IN In)
 }
 
 
-PS_OUT PS_CLOUD(PS_IN In)
+PS_OUT PS_EMOTION(PS_IN In)
 {
     PS_OUT Out;
+    float2 uv = In.vTexcoord * fAtlasScale + fAtlasIndex * fAtlasScale;
 
-    float4 vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    float4 vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, uv);
+    float4 vMaskTexture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
+    if (vMtrlDiffuse.a < 0.1f)
+        discard;
+    if (vMaskTexture.a < fElapsedTime*0.5f-0.2f)
+        discard;
     
-    if (vMtrlDiffuse.a < 0.2f)
-       discard;
-        
     float2 vTexcoord;
     
     vTexcoord.x = In.vProjPos.x / In.vProjPos.w * 0.5f + 0.5f;
@@ -267,7 +270,6 @@ PS_OUT PS_CLOUD(PS_IN In)
     vector vOldDepthDesc = DepthTexture.Sample(DefaultSampler, vTexcoord);
     float fOldViewZ = vOldDepthDesc.y * zFar;
  
-    vMtrlDiffuse.xyz = 1.f;
     vMtrlDiffuse.a *= saturate(fOldViewZ - In.vProjPos.w);
     
     vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
@@ -387,14 +389,14 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_SMOKE();
     }
 
-    pass Env_Cloud
+    pass Emotion
     {
         SetRasterizerState(RS_NoCull);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_BILLBOARD();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_CLOUD();
+        PixelShader = compile ps_5_0 PS_EMOTION();
     }
     pass Shadow
     {

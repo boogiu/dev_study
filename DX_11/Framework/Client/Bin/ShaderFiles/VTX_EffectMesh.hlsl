@@ -44,7 +44,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vNormal = mul(vector(In.vNormal, 0.f), ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;
     Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), ObjectBufferArray[TransformIndex].Transform)).xyz;
-    Out.vTangent *= -1;
+    Out.vTangent.xz *= -1;
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
    
     return Out;
@@ -264,6 +264,68 @@ VS_INSTANCE_OUT VS_INSTANCE(VS_INSTANCE_IN In)
     return Out;
 }
 
+VS_INSTANCE_OUT VS_INSTANCE_LEAF(VS_INSTANCE_IN In)
+{
+    VS_INSTANCE_OUT Out;
+
+    // 인스턴스 월드 행렬
+    row_major float4x4 instWorld = float4x4(In.iRight, In.iUp, In.iLook, In.iTrans);
+
+    // ───────── 회전값 가져오기 (컬러.z) ─────────
+    float angle = In.iColor.z; // 라디안이라고 가정
+    float s = sin(angle);
+    float c = cos(angle);
+
+    // ───────── 로컬 포지션 Z축 회전 ─────────
+    float3 localPos = In.vPosition;
+
+    float3 rotatedPos;
+    rotatedPos.x = localPos.x * c - localPos.y * s;
+    rotatedPos.y = localPos.x * s + localPos.y * c;
+    rotatedPos.z = localPos.z; // Z축 회전이니까 z는 그대로
+
+    // 월드로 변환
+    float4 worldPos = mul(float4(rotatedPos, 1.0f), instWorld);
+
+    // 곡률
+    float3 toObj = worldPos.xyz - vCamPosition.xyz;
+    float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
+
+    float4 viewPos = mul(worldPos, matView);
+    float4 projPos = mul(viewPos, matProjection);
+
+    Out.vPosition = projPos;
+    Out.iColor = In.iColor;
+    Out.vTexcoord = In.vTexcoord;
+    Out.vProjPos = Out.vPosition;
+    Out.iLifeTime = In.iLifeTime;
+
+    float3 localNormal = In.vNormal;
+    float3 localTangent = In.vTangent;
+
+    float3 rotNormal;
+    rotNormal.x = localNormal.x * c - localNormal.y * s;
+    rotNormal.y = localNormal.x * s + localNormal.y * c;
+    rotNormal.z = localNormal.z;
+
+    float3 rotTangent;
+    rotTangent.x = localTangent.x * c - localTangent.y * s;
+    rotTangent.y = localTangent.x * s + localTangent.y * c;
+    rotTangent.z = localTangent.z;
+
+    float4x4 worldMat = mul(instWorld, g_WorldMatrix);
+
+    float3 worldNormal = mul(float4(rotNormal, 0), worldMat).xyz;
+    float3 worldTangent = mul(float4(rotTangent, 0), worldMat).xyz;
+
+    Out.vNormal = normalize(worldNormal);
+    Out.vTangent = normalize(worldTangent);
+    Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
+
+    return Out;
+}
 
 struct PS_INSTANCE_IN
 {
@@ -283,9 +345,7 @@ PS_OUT PS_INSTANCE(PS_INSTANCE_IN In)
     
     vector vMtrlDiffuse = DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
     vector vMixture = MixtureTexture.Sample(LinearSampler, In.vTexcoord);
-    
-    //if (vMtrlDiffuse.a < In.iLifeTime.x / In.iLifeTime.y)
-    //    discard;
+   
     
     vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
@@ -298,6 +358,98 @@ PS_OUT PS_INSTANCE(PS_INSTANCE_IN In)
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
 
+    return Out;
+}
+
+PS_OUT PS_INSTANCE_LEAF(PS_INSTANCE_IN In)
+{
+    PS_OUT Out;
+    
+    vector vAlbGry = AlbedoGrayTexture.Sample(LinearSampler, In.vTexcoord);
+    vector vMtrlDiffuse = GradationTexture.Sample(LinearSampler, float2(In.iColor.x, In.iColor.y));
+    vector vMixture = MixtureTexture.Sample(LinearSampler, In.vTexcoord);
+    
+    if (In.iLifeTime.x/In.iLifeTime.y > vMixture.a)
+        discard;
+    
+    vMtrlDiffuse += vAlbGry*0.05f;
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+ 
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+
+    return Out;
+}
+
+struct VS_OUT_SHADOW_LEAF
+{
+    float4 vPosition : SV_POSITION;
+    float4 vProjPos : TEXCOORD0;
+    float2 vTexcoord : TEXCOORD1;
+    float2 iLifeTime : TEXCOORD2;
+};
+
+VS_OUT_SHADOW_LEAF VS_INSTANCE_SHADOW_LEAF(VS_INSTANCE_IN In)
+{
+    VS_OUT_SHADOW_LEAF Out;
+
+    // 인스턴스 월드 행렬
+    row_major float4x4 instWorld = float4x4(In.iRight, In.iUp, In.iLook, In.iTrans);
+
+    // ───────── 회전값 가져오기 (컬러.z) ─────────
+    float angle = In.iColor.z; // 라디안이라고 가정
+    float s = sin(angle);
+    float c = cos(angle);
+
+    // ───────── 로컬 포지션 Z축 회전 ─────────
+    float3 localPos = In.vPosition;
+
+    float3 rotatedPos;
+    rotatedPos.x = localPos.x * c - localPos.y * s;
+    rotatedPos.y = localPos.x * s + localPos.y * c;
+    rotatedPos.z = localPos.z; // Z축 회전이니까 z는 그대로
+
+    // 월드로 변환
+    float4 worldPos = mul(float4(rotatedPos, 1.0f), instWorld);
+
+    // 곡률
+    float3 toObj = worldPos.xyz - vCamPosition.xyz;
+    float dist = dot(toObj, CameraForward);
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    worldPos.y -= curve;
+
+    float4 viewPos = mul(worldPos, matShadowView);
+    float4 projPos = mul(viewPos, matShadowProjection);
+
+    Out.vPosition = projPos;
+    Out.vProjPos = Out.vPosition;
+    Out.iLifeTime = In.iLifeTime;
+    Out.vTexcoord = In.vTexcoord;
+    return Out;
+}
+
+struct PS_IN_SHADOW
+{
+    float4 vPosition : SV_POSITION;
+    float4 vProjPos : TEXCOORD0;
+    float2 vTexcoord : TEXCOORD1;
+    float2 iLifeTime : TEXCOORD2;
+};
+
+PS_OUT_SHADOW PS_MAIN_SHADOW_LEAF(PS_IN_SHADOW In)
+{
+    PS_OUT_SHADOW Out;
+    vector vMixture = MixtureTexture.Sample(LinearSampler, In.vTexcoord);
+    if (In.iLifeTime.x / In.iLifeTime.y > vMixture.a)
+        discard;
+    
+    Out.vShadow = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zShadowFar, 0.f, 0.f);
     return Out;
 }
 
@@ -358,6 +510,17 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_INSTANCE();
     }
+
+    pass Particle_Leaf
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_INSTANCE_LEAF();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_INSTANCE_LEAF();
+    }
+
     pass Shadow
     {
         SetRasterizerState(RS_Default);
@@ -367,6 +530,18 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+    }
+
+
+    pass InstanceShadow
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_INSTANCE_SHADOW_LEAF();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_SHADOW_LEAF();
     }
 }
 

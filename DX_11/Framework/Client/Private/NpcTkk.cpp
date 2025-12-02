@@ -1,13 +1,12 @@
 #include "Client_Defines.h"
 #include "NpcTkk.h"
-#include "Client_Defines.h"
-#include "NpcRco.h"
 
 #include "NpcState_Machine.h"
 #include "GameInstance.h"
 #include "Level.h"
 #include "EventSystem.h"
-
+#include "UI_Responcer.h"
+#include "Player.h"
 CNpcTkk::CNpcTkk()
 {
 }
@@ -28,6 +27,8 @@ HRESULT CNpcTkk::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 
 	m_InstanceName = "TKK";
+	m_VoiceInt = 56;
+	m_VoiceKey = "Npc_Vocal_Man";
 	return S_OK;
 }
 
@@ -59,11 +60,24 @@ void CNpcTkk::Render_GUI()
 void CNpcTkk::Set_Closed(OnEndDialogue endMsg)
 {
 	__super::Set_Closed(endMsg);
+	string postType = endMsg.msg.Type;
 
+	if (postType.find("Response_") != string::npos) {
+		string key = "Response_";
+		string npcID = postType.substr(key.size(), postType.size());
+		EVNET_NPC_TO_NPC evt = { EVENT_TYPE::Npc_To_Npc,m_CharacterDesc.NpcID, stoi(npcID), endMsg.msg.Param1 };
+		m_EventPack.eventSystem->OnBroadCast<BaseEvent>(evt);
+		m_EventPack.Reset();
+	}
+	if (postType.find("Event_Notice") != string::npos) {
+		
+		m_TracePack.pPlayer->Request_State(STATE_LAYER::ACTION,"Action_MissionComplete_State");
+	}
 }
 
 void CNpcTkk::Serve_Order(const string& order, _uint orderer)
 {
+	__super::Serve_Order(order, orderer);
 
 }
 

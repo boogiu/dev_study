@@ -190,6 +190,7 @@
     <ClInclude Include="..\Public\DialoguePanel.h" />
     <ClInclude Include="..\Public\DialogueManager.h" />
     <ClInclude Include="..\Public\EffectSpawner.h" />
+    <ClInclude Include="..\Public\EmotionEffect.h" />
     <ClInclude Include="..\Public\EventSystem.h" />
     <ClInclude Include="..\Public\Event_Structs.h" />
     <ClInclude Include="..\Public\FieldHole.h" />
@@ -201,9 +202,10 @@
     <ClInclude Include="..\Public\FishSpawner.h" />
     <ClInclude Include="..\Public\FishSub_Tool.h" />
     <ClInclude Include="..\Public\Fish_Object.h" />
+    <ClInclude Include="..\Public\FlowerEffect.h" />
     <ClInclude Include="..\Public\Free_Camera.h" />
     <ClInclude Include="..\Public\Furniture.h" />
-    <ClInclude Include="..\Public\GameModeController.h" />
+    <ClInclude Include="..\Public\EndingController.h" />
     <ClInclude Include="..\Public\GamePlayLevel.h" />
     <ClInclude Include="..\Public\Glass_Acc.h" />
     <ClInclude Include="..\Public\GroundDump.h" />
@@ -216,6 +218,7 @@
     <ClInclude Include="..\Public\ItemSpawner.h" />
     <ClInclude Include="..\Public\Item_Object.h" />
     <ClInclude Include="..\Public\LayerState.h" />
+    <ClInclude Include="..\Public\LeafParticle.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\LoadingLevel.h" />
     <ClInclude Include="..\Public\Loading_Background.h" />
@@ -225,6 +228,7 @@
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MapLoader.h" />
     <ClInclude Include="..\Public\NonPlayer.h" />
+    <ClInclude Include="..\Public\NpcJcs.h" />
     <ClInclude Include="..\Public\NpcRcm.h" />
     <ClInclude Include="..\Public\NpcRco.h" />
     <ClInclude Include="..\Public\NpcSpawner.h" />
@@ -233,6 +237,7 @@
     <ClInclude Include="..\Public\NpcStateHub_Interact.h" />
     <ClInclude Include="..\Public\NpcState_Idle_LookAround.h" />
     <ClInclude Include="..\Public\NpcState_Idle_Wait.h" />
+    <ClInclude Include="..\Public\NpcState_Interact_ReceiveItem.h" />
     <ClInclude Include="..\Public\NpcState_Interact_SmallTalk.h" />
     <ClInclude Include="..\Public\NpcState_Machine.h" />
     <ClInclude Include="..\Public\NpcStateHub_Move.h" />
@@ -258,12 +263,14 @@
     <ClInclude Include="..\Public\PlayerState_Hand.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
     <ClInclude Include="..\Public\PlayerState_Interact.h" />
+    <ClInclude Include="..\Public\PlayerState_MissionComplete.h" />
     <ClInclude Include="..\Public\PlayerState_Net.h" />
     <ClInclude Include="..\Public\PlayerState_Dig.h" />
     <ClInclude Include="..\Public\PlayerState_NetSwing.h" />
     <ClInclude Include="..\Public\PlayerState_OpenInven.h" />
     <ClInclude Include="..\Public\PlayerState_Pole.h" />
     <ClInclude Include="..\Public\PlayerState_PoleAction.h" />
+    <ClInclude Include="..\Public\PlayerState_ReleaseTool.h" />
     <ClInclude Include="..\Public\PlayerState_Talking.h" />
     <ClInclude Include="..\Public\PlayerState_ToolBase.h" />
     <ClInclude Include="..\Public\PlayerState_PickUp.h" />
@@ -271,12 +278,14 @@
     <ClInclude Include="..\Public\PlayerState_Scoop.h" />
     <ClInclude Include="..\Public\PlayerState_ShakeTree.h" />
     <ClInclude Include="..\Public\PlayerState_TransferGet.h" />
+    <ClInclude Include="..\Public\PlayerState_TransferGive.h" />
     <ClInclude Include="..\Public\PlayerState_TransTool.h" />
     <ClInclude Include="..\Public\PlayerState_Walk.h" />
     <ClInclude Include="..\Public\Player_Inventory.h" />
     <ClInclude Include="..\Public\RagDolPart.h" />
     <ClInclude Include="..\Public\RagDolSmoke.h" />
     <ClInclude Include="..\Public\RagDolStone.h" />
+    <ClInclude Include="..\Public\ScreenFX.h" />
     <ClInclude Include="..\Public\SelectPanel.h" />
     <ClInclude Include="..\Public\SkyBox.h" />
     <ClInclude Include="..\Public\SmokeEffect.h" />
@@ -339,6 +348,7 @@
     <ClCompile Include="..\Private\DialoguePanel.cpp" />
     <ClCompile Include="..\Private\DialogueManager.cpp" />
     <ClCompile Include="..\Private\EffectSpawner.cpp" />
+    <ClCompile Include="..\Private\EmotionEffect.cpp" />
     <ClCompile Include="..\Private\EventSystem.cpp" />
     <ClCompile Include="..\Private\FieldHole.cpp" />
     <ClCompile Include="..\Private\FieldObject.cpp" />
@@ -349,9 +359,10 @@
     <ClCompile Include="..\Private\FishSpawner.cpp" />
     <ClCompile Include="..\Private\FishSub_Tool.cpp" />
     <ClCompile Include="..\Private\Fish_Object.cpp" />
+    <ClCompile Include="..\Private\FlowerEffect.cpp" />
     <ClCompile Include="..\Private\Free_Camera.cpp" />
     <ClCompile Include="..\Private\Furniture.cpp" />
-    <ClCompile Include="..\Private\GameModeController.cpp" />
+    <ClCompile Include="..\Private\EndingController.cpp" />
     <ClCompile Include="..\Private\GamePlayLevel.cpp" />
     <ClCompile Include="..\Private\Glass_Acc.cpp" />
     <ClCompile Include="..\Private\GroundDump.cpp" />
@@ -364,6 +375,7 @@
     <ClCompile Include="..\Private\ItemSpawner.cpp" />
     <ClCompile Include="..\Private\Item_Object.cpp" />
     <ClCompile Include="..\Private\LayerState.cpp" />
+    <ClCompile Include="..\Private\LeafParticle.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\LoadingLevel.cpp" />
     <ClCompile Include="..\Private\Loading_Background.cpp" />
@@ -373,6 +385,7 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapLoader.cpp" />
     <ClCompile Include="..\Private\NonPlayer.cpp" />
+    <ClCompile Include="..\Private\NpcJcs.cpp" />
     <ClCompile Include="..\Private\NpcRcm.cpp" />
     <ClCompile Include="..\Private\NpcRco.cpp" />
     <ClCompile Include="..\Private\NpcSpawner.cpp" />
@@ -381,6 +394,7 @@
     <ClCompile Include="..\Private\NpcStateHub_Interact.cpp" />
     <ClCompile Include="..\Private\NpcState_Idle_LookAround.cpp" />
     <ClCompile Include="..\Private\NpcState_Idle_Wait.cpp" />
+    <ClCompile Include="..\Private\NpcState_Interact_ReceiveItem.cpp" />
     <ClCompile Include="..\Private\NpcState_Interact_SmallTalk.cpp" />
     <ClCompile Include="..\Private\NpcState_Machine.cpp" />
     <ClCompile Include="..\Private\NpcStateHub_Move.cpp" />
@@ -406,12 +420,14 @@
     <ClCompile Include="..\Private\PlayerState_Hand.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
     <ClCompile Include="..\Private\PlayerState_Interact.cpp" />
+    <ClCompile Include="..\Private\PlayerState_MissionComplete.cpp" />
     <ClCompile Include="..\Private\PlayerState_Net.cpp" />
     <ClCompile Include="..\Private\PlayerState_Dig.cpp" />
     <ClCompile Include="..\Private\PlayerState_NetSwing.cpp" />
     <ClCompile Include="..\Private\PlayerState_OpenInven.cpp" />
     <ClCompile Include="..\Private\PlayerState_Pole.cpp" />
     <ClCompile Include="..\Private\PlayerState_PoleAction.cpp" />
+    <ClCompile Include="..\Private\PlayerState_ReleaseTool.cpp" />
     <ClCompile Include="..\Private\PlayerState_Talking.cpp" />
     <ClCompile Include="..\Private\PlayerState_ToolBase.cpp" />
     <ClCompile Include="..\Private\PlayerState_PickUp.cpp" />
@@ -419,9 +435,11 @@
     <ClCompile Include="..\Private\PlayerState_Scoop.cpp" />
     <ClCompile Include="..\Private\PlayerState_ShakeTree.cpp" />
     <ClCompile Include="..\Private\PlayerState_TransferGet.cpp" />
+    <ClCompile Include="..\Private\PlayerState_TransferGive.cpp" />
     <ClCompile Include="..\Private\PlayerState_TransTool.cpp" />
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
     <ClCompile Include="..\Private\Player_Inventory.cpp" />
+    <ClCompile Include="..\Private\ScreenFX.cpp" />
     <ClCompile Include="..\Private\RagDolPart.cpp" />
     <ClCompile Include="..\Private\RagDolSmoke.cpp" />
     <ClCompile Include="..\Private\RagDolStone.cpp" />

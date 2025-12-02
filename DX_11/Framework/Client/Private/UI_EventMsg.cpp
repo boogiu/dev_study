@@ -6,6 +6,7 @@
 #include "UI_Text.h"
 #include "TextSlot.h"
 #include "UI_Cursor.h"
+#include "AudioSource.h"
 
 CUI_EventMsg::CUI_EventMsg()
 {
@@ -19,6 +20,8 @@ CUI_EventMsg::CUI_EventMsg(const CUI_EventMsg& rhs)
 HRESULT CUI_EventMsg::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_Decide.wav", "Tab");
+	Get_Component<CAudioSource>()->Set_3DAttribute("Tab", false);
 	return S_OK;
 }
 
@@ -93,6 +96,7 @@ void CUI_EventMsg::Update(_float dt)
 			if (m_iPauseSubset < static_cast<_int>(Fulltext.size()))
 			{
 				m_iPauseSubset++;
+				Get_Component<CAudioSource>()->Play("Tab");
 				if (Fulltext.substr(m_iPauseSubset, 1) == L".")
 				{
 					m_fPauseTime = .25f;

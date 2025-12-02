@@ -17,6 +17,8 @@
 #include "StaticModel.h"
 #include "Texture.h"
 
+#include "AudioSource.h"
+
 CGroundDump::CGroundDump()
 {
 }
@@ -32,6 +34,9 @@ HRESULT CGroundDump::Initialize_Prototype()
 	Add_Component<CObjectContainer>();
 	Add_Component<CStaticModel>();
 	Add_Component<CMaterial>(); 
+
+	Add_Component<CAudioSource>();
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Pl_DigIn_Grass_00.wav", "Dig_In", false, SOUND_GROUP::SFX, 0.35f);
 	return S_OK;
 }
 
@@ -124,6 +129,7 @@ void CGroundDump::Set_ReActive(const EffectData& data)
 {
 	Reset();
 	m_isAlive = true;
+	Get_Component<CAudioSource>()->Play("Dig_In");
 }
 
 CGroundDump* CGroundDump::Create()

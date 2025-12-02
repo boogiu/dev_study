@@ -52,7 +52,7 @@ HRESULT CPipeLine::Initialize(ID3D11Device* pDevice, class CRenderSystem* pSyste
 
 	/*트랜스폼 버퍼 - > 이건 셰이더 리소스 뷰도 같이 만들어버림*/
 	vector<_float4x4> TransformMatrix;
-	BoneMatrices.resize(g_iMaxTransform);
+	TransformMatrix.resize(g_iMaxTransform);
 
 	D3D11_BUFFER_DESC TransformBufferDesc = {};
 	TransformBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -155,6 +155,7 @@ void CPipeLine::Update_Frustum()
 
 _bool CPipeLine::isVisible(MINMAX_BOX minMax, _fmatrix worldTransform)
 {
+
 	_float4x4 matViewInverse = *CGameInstance::GetInstance()->Get_CameraMgr()->Get_InversedViewMatrix();
 	_float4 vCamPosition = CGameInstance::GetInstance()->Get_CameraMgr()->Get_CameraPos();
 	_float3 CameraForward = { matViewInverse._31,matViewInverse._32,matViewInverse._33 };
@@ -187,7 +188,7 @@ _bool CPipeLine::isVisible(MINMAX_BOX minMax, _fmatrix worldTransform)
 	_vector toObj = XMVectorSubtract(sphereCenter, camPos);
 	_float dist = XMVectorGetX(XMVector3Dot(toObj, camForward));
 
-	//_float curve = (dist * dist) / 900 * 0.65;
+	//_float curve = (dist * dist) / 900 * 0.85;
 	_float curve = (dist * dist) / 1000 * 0;
 
 	worldSphere.Center.y -= curve;
@@ -396,6 +397,7 @@ void CPipeLine::Free()
 	Safe_Release(m_pDeviceObjectBuffer);
 	Safe_Release(m_pDeviceSkinningBuffer);
 	Safe_Release(m_pSkinningResource);
+	Safe_Release(m_pObjectResource);
 	Safe_Release(m_pDeviceShadowBuffer);
 	for (auto& pair : m_Palette) {
 		Safe_Release(pair.second);

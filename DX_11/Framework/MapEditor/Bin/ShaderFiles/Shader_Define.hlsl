@@ -34,11 +34,6 @@ cbuffer TransformPerDraw : register(b2)
     uint TransformIndex;
 };
 
-//  cbuffer ObjectBufferArray : register(b3)
-//  {
-//      float4x4 matWorld[1024];
-//  };
-
 cbuffer SkinningPerDraw : register(b4)
 {
     uint SkinningOffset;
@@ -75,18 +70,22 @@ cbuffer ShadowBuffer : register(b8)
 
 cbuffer CurvedWorldBuffer : register(b10)
 {
-  //float CurveStrength = { 0.65};
-  //float PlanetRadius = { 900};
+    //float CurveStrength = { 0.85 };
+    //float PlanetRadius = { 900};
     
-   float CurveStrength = { 0.f };
-   float PlanetRadius = {1000 };
+    float CurveStrength = { 0.f };
+    float PlanetRadius = {1000 };
 };
 
 struct BoneMatrix{matrix BoneMat;};
 struct TransfomMatrix{matrix Transform;};
 
-float3 ShallowColor = float3(0.38, 0.60, 0.85); // ¹à°í ¿Á»ö ¡æ ¾èÀº ¹Ù´Ù
-float3 DeepColor = float3(0.35, 0.55, 0.75); // ´õ ¾îµÎ¿î ÆÄ¶û ¡æ ±íÀº ¹Ù´Ù
+//float3 ShallowColor = float3(0.38, 0.60, 0.85); // ¹à°í ¿Á»ö ¡æ ¾èÀº ¹Ù´Ù
+//float3 DeepColor = float3(0.35, 0.55, 0.75); // ´õ ¾îµÎ¿î ÆÄ¶û ¡æ ±íÀº ¹Ù´Ù
+// ¸ðµ¿½£ ´À³¦¿¡ °¡±õ°Ô »ìÂ¦ ´õ Ã»·Ï & Ã¤µµ ³ôÀº Åæ
+
+float3 ShallowColor = float3(0.25, 0.66, 0.88); // ¹àÀº Ã»·Ï °è¿­ ¡æ ÇØº¯°¡ ¾èÀº ¹°
+float3 DeepColor = float3(0.08, 0.44, 0.72); // Á¶±Ý ´õ Â£Àº ÆÄ¶û ¡æ ¸Õ ¹Ù´Ù
 
 struct TileIndex
 {

@@ -28,7 +28,7 @@ HRESULT CCollider::Initialize(COMPONENT_DESC* pArg)
 
 void CCollider::Render_GUI()
 {
-
+	if(Get_CompActive()){
 	ImGui::SeparatorText("Collider");
 	float childWidth = ImGui::GetContentRegionAvail().x;
 	const float textLineHeight = ImGui::GetTextLineHeightWithSpacing();
@@ -40,7 +40,7 @@ void CCollider::Render_GUI()
 	ImGui::Text(ownerTag.c_str());
 	ImGui::Text(m_CollisionContext.EventTag.c_str());
 	ImGui::EndChild();
-
+	}
 }
 
 void CCollider::Set_CompActive(_bool bActive)

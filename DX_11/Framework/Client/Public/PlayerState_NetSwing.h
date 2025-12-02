@@ -24,6 +24,7 @@ public:
 
 private:
     _bool isCathced = {};
+    _bool isSoundComplete = {};
 public:
     static CPlayerState_NetSwing* Create();
     virtual void Free();

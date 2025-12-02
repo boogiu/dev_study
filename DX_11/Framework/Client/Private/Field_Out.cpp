@@ -8,6 +8,7 @@
 #include "GameInstance.h"
 #include "IResourceService.h"
 #include "Texture.h"
+#include "AudioSource.h"
 
 CField_Out::CField_Out()
 {
@@ -24,6 +25,20 @@ HRESULT CField_Out::Initialize_Prototype()
 	__super::Initialize_Prototype();
 	Add_Component<CStaticModel>();
 	Add_Component<CMaterial>();
+	Add_Component<CAudioSource>();
+
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Env_SeaWaveSplashWeak00.wav","SplashWeak00",false,SOUND_GROUP::ENV);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Env_SeaWaveSplashWeak01.wav","SplashWeak01", false,SOUND_GROUP::ENV);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Env_SeaWaveSplashMid01.wav","SplashMid01", false,SOUND_GROUP::ENV);
+
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Env_SeaWaterrock03.wav","Rock",true,SOUND_GROUP::ENV);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Env_SeaWaterWave02.wav","Wave",true,SOUND_GROUP::ENV);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Env_SeaBaseRoar00.wav","Base",true,SOUND_GROUP::ENV);
+
+	Get_Component<CAudioSource>()->Set_SlotVolume("Rock",0.1f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Wave",0.1f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Base",0.1f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("SplashWeak01",0.1f);
 	return S_OK;
 }
 
@@ -31,12 +46,6 @@ HRESULT CField_Out::Initialize(INIT_DESC* pArg)
 {
 	__super::Initialize(pArg);
 
-	//HRESULT hr = Get_Component<CStaticModel>()->Link_Model(pDesc->LevelTag,pDesc->ModelName);
-	//hr= Get_Component<CMaterial>()->Link_Material(pDesc->LevelTag,pDesc->MaterialName);
-
-	//if (SUCCEEDED(hr)) {
-	//	Override_Pass();
-	//}
     return S_OK;
 }
 
@@ -49,10 +58,15 @@ void CField_Out::Update(_float dt)
 	m_fElpaseTime += dt * .1f;
 	m_fWaveTime += dt*.1f;
 	
-	if (m_fWaveTime > 1.f)
+	if (m_fWaveTime > 1.f) {
+		Get_Component<CAudioSource>()->Play("SplashWeak01");
 		m_fWaveTime = 0.f;
+	}
 	m_fCircularTime = sinf(m_fElpaseTime*2);
-	
+
+	Get_Component<CAudioSource>()->Play("Rock");
+	Get_Component<CAudioSource>()->Play("Wave");
+	Get_Component<CAudioSource>()->Play("Base");
 }
 
 void CField_Out::Late_Update(_float dt)
@@ -61,15 +75,11 @@ void CField_Out::Late_Update(_float dt)
 
 void CField_Out::Render_GUI()
 {
-	ImGui::DragFloat("wave", &m_fElpaseTime, 0.05f, 0.0f, 3.f);
 	__super::Render_GUI();
 }
 
 HRESULT CField_Out::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
 {
-	// iter->first ID
-		// iter->second  name , modelID, MaterialID, path,path
-
 	HRESULT hr = Get_Component<CStaticModel>()->Link_Model("GamePlay_Level", modelMapTable[1]);
 	hr= Get_Component<CMaterial>()->Link_Material("GamePlay_Level", modelMapTable[2]);
 	m_iObjType = objHeader.Object_type;
@@ -131,6 +141,20 @@ void CField_Out::Override_Pass()
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mSand")) {
 		instance->Override_Pass("Sand");
 	}
+
+	_int index = Get_Component< CStaticModel>()->Get_MeshIndexByName("Sand__mSand-mesh");
+	if (index != -1) {
+		auto Box = Get_Component<CModel>()->Get_WorldBoundingBox();
+
+		_float4 min = { Box.vMin.x, Box.vMin.y , Box.vMin.z ,1.f};
+		_float4 max = { Box.vMax.x, Box.vMax.y , Box.vMax.z ,1.f};
+
+		auto TileSystem = CGameInstance::GetInstance()->Get_TileSystem();
+		auto IndexVector = TileSystem->Get_IndeciesByArea(min, max);
+
+		for (auto Index : IndexVector)
+			TileSystem->Add_TileFlagByIndex(Index, static_cast<_uint>(TILE_FLAG::FLAG_SAND));
+	};
 }
 
 

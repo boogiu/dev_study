@@ -48,9 +48,6 @@ void CResourceMgr::Clear_Resource(const string& levelTag)
 	for (auto& pair : m_Resources[index].m_Buffers)
 		Safe_Release(pair.second);
 
-	for (auto& pair : m_Resources[index].m_Sounds)
-		Safe_Release(pair.second);
-
 	for (auto& pair : m_Resources[index].m_Textures)
 		Safe_Release(pair.second);
 

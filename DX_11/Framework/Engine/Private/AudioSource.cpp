@@ -8,7 +8,6 @@
 CAudioSource::CAudioSource()
 	:m_pAudioDevice(CGameInstance::GetInstance()->Get_AudioDev())
 {
-	Safe_AddRef(m_pAudioDevice);
 }
 
 CAudioSource::CAudioSource(const CAudioSource& rhs)
@@ -17,8 +16,6 @@ CAudioSource::CAudioSource(const CAudioSource& rhs)
 {
 	for (auto& sound : m_Audios)
 		Safe_AddRef(sound.second.pSound);
-
-	Safe_AddRef(m_pAudioDevice);
 }
 
 CAudioSource::~CAudioSource()
@@ -33,50 +30,278 @@ HRESULT CAudioSource::Initialize_Prototype()
 HRESULT CAudioSource::Initialize(COMPONENT_DESC* pArg)
 {
 	m_pTransform = m_pOwner->Get_Component<CTransform>();
-	Safe_AddRef(m_pTransform);
 	return S_OK;
 }
 
-HRESULT CAudioSource::Add_Slot(const string& levelTag, const string& SoundKey, const string& slotKey, bool isLoop)
+HRESULT CAudioSource::Add_Slot(const string& levelTag, const string& SoundKey, const string& slotKey, bool isLoop, SOUND_GROUP eGroup)
+{
+	if (m_Audios.count(SoundKey)) {
+		return E_FAIL;
+	};
+
+	IResourceService* pService = CGameInstance::GetInstance()->Get_ResourceMgr();
+	AUDIO_SLOT audioSlot = {};
+	audioSlot.pSound = pService->Load_Sound(levelTag, SoundKey);
+	audioSlot.isInfinite = isLoop;
+	audioSlot.eGroup = eGroup;
+
+	if (!audioSlot.pSound)
+		return E_FAIL;
+
+	Safe_AddRef(audioSlot.pSound);
+
+	auto [it, inserted] = m_Audios.emplace(slotKey.empty() ? SoundKey : slotKey, audioSlot);
+	if (!inserted)
+	{
+		MSG_BOX("There is Same Key Audio : CAudioSource");
+		Safe_Release(audioSlot.pSound);
+		return E_FAIL;
+	}
+
+	return S_OK;
+
+}
+
+HRESULT CAudioSource::Add_Slot(const string& levelTag, const string& SoundKey, const string& slotKey, bool isLoop, SOUND_GROUP eGroup, _float sound)
 {
 	IResourceService* pService = CGameInstance::GetInstance()->Get_ResourceMgr();
 	AUDIO_SLOT audioSlot = {};
 	audioSlot.pSound = pService->Load_Sound(levelTag, SoundKey);
-	audioSlot.isLoop = isLoop;
+	audioSlot.isInfinite = isLoop;
+	audioSlot.eGroup = eGroup;
+	audioSlot.fVolume = sound;
 
-	if (audioSlot.pSound == nullptr)
+	if (!audioSlot.pSound)
 		return E_FAIL;
 
-	auto iter = m_Audios.emplace(slotKey.empty() ? SoundKey : slotKey, audioSlot);
-	if (iter.second == false)
+	Safe_AddRef(audioSlot.pSound);
+
+	auto [it, inserted] = m_Audios.emplace(slotKey.empty() ? SoundKey : slotKey, audioSlot);
+	if (!inserted)
 	{
 		MSG_BOX("There is Same Key Audio : CAudioSource");
+		Safe_Release(audioSlot.pSound);
 		return E_FAIL;
 	}
-	Safe_AddRef(audioSlot.pSound);
+
 	return S_OK;
 }
+
+void CAudioSource::Set_SlotVolume(const string& slotKey, _float fVolume)
+{
+	auto iter = m_Audios.find(slotKey);
+	if (iter == m_Audios.end())
+		return;
+
+	AUDIO_SLOT& slot = iter->second;
+	slot.fVolume = fVolume;
+	bool isPlaying = false;
+
+	if (iter->second.pChanel->isPlaying(&isPlaying) != FMOD_OK || !isPlaying)
+		return;
+	iter->second.pChanel->setVolume(slot.fVolume);
+}
+
+void CAudioSource::Set_SlotLoopCount(const string& slotKey, _int iLoopCount)
+{
+	auto iter = m_Audios.find(slotKey);
+	if (iter == m_Audios.end())
+		return;
+
+	AUDIO_SLOT& slot = iter->second;
+	slot.iLoopCount = iLoopCount;
+}
+
+void CAudioSource::Set_SlotPuase(const string& slotKey, _bool isPaused)
+{
+	auto iter = m_Audios.find(slotKey);
+	if (iter == m_Audios.end())
+		return;
+
+	AUDIO_SLOT& slot = iter->second;
+
+	if (slot.pChanel)
+	{
+		slot.pChanel->stop();      // FMOD 채널 정지
+		slot.pChanel = nullptr;    // 포인터 정리
+		slot.isPaused = false;
+	}
+}
+
+void CAudioSource::Set_3DAttribute(const string& slotKey, _bool _3DAttribute)
+{
+	auto iter = m_Audios.find(slotKey);
+	if (iter == m_Audios.end())
+		return;
+
+	AUDIO_SLOT& slot = iter->second;
+	slot.is3DAttribute = _3DAttribute;
+}
+
+void CAudioSource::FadeOut_Volume(const string& slotKey, _float factor)
+{
+	auto iter = m_Audios.find(slotKey);
+	if (iter == m_Audios.end())
+		return;
+
+	if (!iter->second.pChanel) return;
+
+	bool isPlaying = false;
+
+	if (iter->second.pChanel->isPlaying(&isPlaying) != FMOD_OK || !isPlaying)
+		return;
+	float vol = 1.f;
+	iter->second.pChanel->getVolume(&vol);
+
+	float newVol = vol * factor;
+
+	if (newVol < 0.02f) {
+		iter->second.pChanel->stop();
+		iter->second.pChanel = nullptr;
+		iter->second.isPaused = false;
+	}
+	else
+	iter->second.pChanel->setVolume(newVol);
+}
+
 
 void CAudioSource::Play(const string& SoundKey)
 {
 	auto iter = m_Audios.find(SoundKey);
-
 	if (iter == m_Audios.end())
 		return;
+
 	AUDIO_SLOT& slot = iter->second;
 
-	AUDIO_PACKET packet;
-	packet.ppChannelToUpdate = &(slot.pChanel);
-	packet.pSound = (slot.pSound);
-	_vector vec = m_pTransform->Get_Pos();
+	_float now = CGameInstance::GetInstance()->Get_TimeMgr()->Get_TotalTime("Audio_Timer");
 
-	XMStoreFloat4(
-		(&m_vPos),
-		(m_pTransform->Get_Pos())
-	);
+	if (now - slot.lastPlayTime < 0.05f)
+		return;
+	slot.lastPlayTime = now;
+
+	AUDIO_PACKET packet{};
+	packet.ppChannelToUpdate = &slot.pChanel;
+	packet.pSound = slot.pSound;
+
+	// 슬롯에서 설정한 값들 싹 복사
+	packet.isInfinite = slot.isInfinite;
+	packet.isPaused = slot.isPaused;
+	packet.is3DAttribute = slot.is3DAttribute;
+	packet.fVolume = slot.fVolume;
+	packet.iLoopCount = slot.iLoopCount;  // isInfinite면 이 값은 무시하게
+
+	// 그룹도 하나 정해서
+	packet.eGroup = slot.eGroup;
+	if (slot.isInfinite)
+	{
+		packet.iLoopCount = -1;
+		packet.isInfinite = true;
+	}
+	else
+	{
+		packet.iLoopCount = slot.iLoopCount;
+		packet.isInfinite = false;
+	}
+
+	packet.isPaused = slot.isPaused;
+
+	XMStoreFloat4(&m_vPos, m_pTransform->Get_Pos());
 	packet.vPosition = { m_vPos.x, m_vPos.y, m_vPos.z };
+
 	m_pAudioDevice->Play(packet);
 }
+void CAudioSource::PlayOnce(const string& slotKey)
+{
+	_float now = CGameInstance::GetInstance()->Get_TimeMgr()->Get_TotalTime("Audio_Timer");
+
+	auto it = m_Audios.find(slotKey);
+	if (it == m_Audios.end()) return;
+
+	AUDIO_SLOT& slot = it->second;
+
+	// 최소 간격 (예: 0.04~0.07 사이 한 번 정도)
+	float minInterval = 0.05f;
+	if (now - slot.lastPlayTime < minInterval)
+		return;
+
+	slot.lastPlayTime = now;
+
+	// 이전 채널 stop 안 함! (그냥 자연스럽게 tail 남게)
+	// if (slot.pChanel) { slot.pChanel->stop(); ... } 이런 거 제거
+
+	// 새로 재생
+	AUDIO_PACKET packet{};
+	packet.ppChannelToUpdate = &slot.pChanel;
+	packet.pSound = slot.pSound;
+	packet.is3DAttribute = false;
+	packet.fVolume = slot.fVolume;
+	packet.iLoopCount = 0;
+	packet.eGroup = slot.eGroup;
+
+	m_pAudioDevice->Play(packet);
+}
+
+void CAudioSource::RePlay(const string& slotKey)
+{
+	auto it = m_Audios.find(slotKey);
+	if (it == m_Audios.end())
+		return;
+
+	AUDIO_SLOT& slot = it->second;
+	FMOD::Channel* pChannel = slot.pChanel;
+
+	bool needNewPlay = false;
+
+	if (!pChannel)
+	{
+		// 채널 자체가 없으니 새로 재생
+		needNewPlay = true;
+	}
+	else
+	{
+		bool isPlaying = false;
+		if (pChannel->isPlaying(&isPlaying) != FMOD_OK || !isPlaying)
+		{
+			// 끝났거나 stop 된 상태 → 새로 재생
+			needNewPlay = true;
+		}
+		else
+		{
+			bool paused = false;
+			pChannel->getPaused(&paused);
+
+			if (paused)
+			{
+				// 그냥 다시 이어서 재생
+				pChannel->setPaused(false);
+				slot.isPaused = false;
+				return;
+			}
+			else
+			{
+				return;
+			}
+		}
+	}
+
+	if (needNewPlay)
+	{
+		AUDIO_PACKET packet{};
+		packet.ppChannelToUpdate = &slot.pChanel;
+		packet.pSound = slot.pSound;
+		packet.is3DAttribute = slot.is3DAttribute;
+		packet.fVolume = slot.fVolume;
+		packet.iLoopCount = slot.iLoopCount;   // PlayOnce처럼 0으로 고정하고 싶으면 0
+		packet.eGroup = slot.eGroup;
+
+		m_pAudioDevice->Play(packet);
+
+		// 타이머/쿨타임 같은 거 쓰고 싶으면 여기서 업데이트
+		slot.lastPlayTime = CGameInstance::GetInstance()
+			->Get_TimeMgr()->Get_TotalTime("Audio_Timer");
+	}
+}
+
 
 void CAudioSource::Render_GUI()
 {
@@ -117,11 +342,8 @@ void CAudioSource::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pAudioDevice);
-
 	for (auto& sound : m_Audios)
 		Safe_Release(sound.second.pSound);
 
-	Safe_Release(m_pTransform);
 	m_Audios.clear();
 }

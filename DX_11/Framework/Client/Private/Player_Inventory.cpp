@@ -7,6 +7,7 @@
 #include "UI_Cursor.h"
 #include "SelectPanel.h"
 #include "Player.h"
+#include "AudioSource.h"
 
 CPlayer_Inventory::CPlayer_Inventory()
 {
@@ -24,6 +25,7 @@ CPlayer_Inventory::~CPlayer_Inventory()
 HRESULT CPlayer_Inventory::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
+	Add_Component<CAudioSource>();
 	return S_OK;
 }
 
@@ -64,7 +66,18 @@ HRESULT CPlayer_Inventory::Initialize(INIT_DESC* pArg)
 
 	m_pCursor= dynamic_cast<CUI_Cursor*>(pUI);
 	m_pSelectPanel = dynamic_cast<CSelectPanel*>(pSelectUI);
+	
 
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_Wrapping_Wrap_Basic.wav", "Open", false, SOUND_GROUP::UI);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_PocketMenu_Close.wav", "Close", false, SOUND_GROUP::UI);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_Decide.wav", "Select", false, SOUND_GROUP::UI);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_Tab_L.wav", "Tab", false, SOUND_GROUP::UI);
+	Get_Component<CAudioSource>()->Set_3DAttribute("Open", false);
+	Get_Component<CAudioSource>()->Set_3DAttribute("Close", false);
+	Get_Component<CAudioSource>()->Set_3DAttribute("Select", false);
+	Get_Component<CAudioSource>()->Set_3DAttribute("Tab", false);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Open", 0.6f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Close", 0.6f);
 	return S_OK;
 }
 
@@ -72,8 +85,10 @@ void CPlayer_Inventory::Priority_Update(_float dt)
 {
 	if (m_eState != Closing) {
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
-			if (m_eState == Opened)
+			if (m_eState == Opened) {
 				m_eState = Selected;
+				Get_Component<CAudioSource>()->Play("Select");
+			}
 		}
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SHIFT)) {
 			if (m_eState == Selected) {
@@ -129,11 +144,14 @@ void CPlayer_Inventory::Open_Inventory()
 {
 	Get_Component<CSprite2D>()->Set_CompActive(true);
 	m_eState = Openning;
+	Get_Component<CAudioSource>()->Play("Open");
 }
 
 void CPlayer_Inventory::Close_Inventory()
 {
+	Get_Component<CAudioSource>()->Play("Close");
 	m_eState = Closing;
+	m_Filter.Reset();
 }
 
 HRESULT CPlayer_Inventory::Add_ItemToInventory(ITEM_DATA_DESC desc)
@@ -210,7 +228,6 @@ HRESULT CPlayer_Inventory::PullOut_Item(ITEM_DATA_DESC data, _uint Count)
 unordered_map<wstring, _uint> CPlayer_Inventory::Get_All_InventoryData()
 {
 	ITEM_DATA_DESC desc;
-	//vector<pair<wstring, _uint>> InvenData = {};
 	unordered_map<wstring, _uint> InvenData;
 
 	for (size_t i = 0; i < m_pSlots.size(); i++)
@@ -266,7 +283,6 @@ void CPlayer_Inventory::DeActive_Slots()
 		slot->DeActive();
 	}
 	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(false);
-
 }
 
 void CPlayer_Inventory::Openning_Inven(_float dt)
@@ -332,6 +348,14 @@ void CPlayer_Inventory::Closing_Inven(_float dt)
 		Get_Component<CSprite2D>()->Set_CompActive(false);
 	}
 }
+
+void CPlayer_Inventory::Set_Filter(itemType eType, string specific, wstring select)
+{
+	m_Filter.eType = eType;
+	m_Filter.specific = specific;
+	m_Filter.addSelection = select;
+}
+
 void CPlayer_Inventory::Pointing_Item(_float dt)
 {
 	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);
@@ -364,8 +388,9 @@ void CPlayer_Inventory::Pointing_Item(_float dt)
 	}
 
 	if (moved) {
+		Get_Component<CAudioSource>()->Play("Tab");
 	}
-	m_pSlots[nowIndex]->isHovered();
+	m_pSlots[nowIndex]->isHovered(m_Filter.CanSelect(m_pSlots[nowIndex]->Get_Data()));
 	m_pCursor->Set_Pivot(m_pSlots[nowIndex]->Get_CenterPos());
 }
 
@@ -376,19 +401,26 @@ void CPlayer_Inventory::Select_Item(_float dt)
 		m_eState = Opened;
 		return;
 	}
+
+	if (m_Filter.hasFilter() && !m_Filter.CanSelect(m_pSlots[nowIndex]->Get_Data()))
+	{
+		m_eState = Opened;
+		return;
+	}
+
 	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(false);
 	m_pSlots[nowIndex]->isHovered();
 	m_pSelectPanel->Get_Component<CSprite2D>()->Set_CompActive(true);
 
 	ITEM_DATA_DESC Data = dynamic_cast<CUI_InvenSlot*>(m_pSlots[nowIndex])->Get_Data();
-	auto vector = Switch_ItemSelect(Data.TypeTag, m_pSlots[nowIndex]->Get_Count());
-	m_pSelectPanel->Set_Selecte(vector,dt);
+	vector<wstring> selectVector;
+	selectVector = Switch_ItemSelect(Data.TypeTag, m_pSlots[nowIndex]->Get_Count());
+	m_pSelectPanel->Set_Selecte(selectVector,dt);
 	m_pSelectPanel->Active();
 	_int selectedAction = m_pSelectPanel->Check_Select();
 
 	if (selectedAction != -1) {
-		m_pPlayer->Set_InvenEvent(Data, nowIndex, vector[selectedAction]);
-		//DeActive_Slots();
+		m_pPlayer->Set_InvenEvent(Data, nowIndex, selectVector[selectedAction]);
 		m_pSelectPanel->DeActive();
 		if(m_eState != Closing)
 			m_eState = Opened;
@@ -403,13 +435,12 @@ vector<wstring> CPlayer_Inventory::Switch_ItemSelect(itemType type, _uint count)
 	{
 	case itemType::None:
 		return vector<wstring>();
-
 	case itemType::Fruit:
 		SelectScript= { L"근처에 두기",L"1개 먹기"};
 		if (count > 1)
 			SelectScript.push_back(L"1개 꺼내기");
-			break;
-
+		
+		break;
 	case itemType::Ore:
 		SelectScript = { L"근처에 두기" };
 		if (count > 1)
@@ -433,6 +464,10 @@ vector<wstring> CPlayer_Inventory::Switch_ItemSelect(itemType type, _uint count)
 			break;
 	default:
 		break;
+	}
+
+	if (m_Filter.hasFilter()) {
+		SelectScript = { m_Filter.addSelection };
 	}
 	return SelectScript;
 }

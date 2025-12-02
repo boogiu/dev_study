@@ -27,14 +27,17 @@ HRESULT CPlayerState_ChopTree::OnEnter()
 	if ((TILE_FLAG::FLAG_TREE& Flag)==0) {
 		if ((TILE_FLAG::FLAG_BLOCKED & Flag) != 0) {
 			 hr = Animator->Change_Animation("ToolAxe_Repelled.anim", true);
+			 m_eEncounter = REPELL;
 		}
 		else {
 			hr = Animator->Change_Animation("ToolAxe_Air.anim", true);
+			m_eEncounter = AIR;
 		}
 	}
 	else if ((TILE_FLAG::FLAG_TREE & Flag) != 0) {
 		hr = Animator->Change_Animation("ToolAxe_Hit.anim", true);
 		m_bOnTree = true;
+		m_eEncounter = TREE;
 	}
 
 	return hr;
@@ -52,6 +55,33 @@ void CPlayerState_ChopTree::OnUpdate(_float dt)
 		}
 	}
 
+	if (m_eEncounter != END) {
+		switch (m_eEncounter)
+		{
+		case Client::CPlayerState_ChopTree::TREE:
+			if (Animator->isOverAnimTiming(0.2f)) {
+				m_pPlayer->Play_Sound("TreeCut");
+				m_eEncounter = END;
+			}
+			break;
+		case Client::CPlayerState_ChopTree::REPELL:
+			if (Animator->isOverAnimTiming(0.2f)) {
+				m_pPlayer->Play_Sound("AxeInvalid");
+				m_eEncounter = END;
+			}
+			break;
+		case Client::CPlayerState_ChopTree::AIR:
+			if (Animator->isOverAnimTiming(0.2f)) {
+				m_pPlayer->Play_Sound("AirShot");
+				m_eEncounter = END;
+			}
+			break;
+		case Client::CPlayerState_ChopTree::END:
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 HRESULT CPlayerState_ChopTree::OnExit()

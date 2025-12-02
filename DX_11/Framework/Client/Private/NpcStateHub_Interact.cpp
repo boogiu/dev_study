@@ -5,7 +5,7 @@
 #include "NpcState_Interact_SmallTalk.h"
 #include "NpcState_Interact_TransItem.h"
 #include "NpcState_Move_Trace.h"
-
+#include "NpcState_Interact_ReceiveItem.h"
 #include "Player.h"
 CNpcStateHub_Interact::CNpcStateHub_Interact()
 {
@@ -16,6 +16,7 @@ HRESULT CNpcStateHub_Interact::Initialize()
 	auto SmallTalk = Add_State(CNpcState_Interact_SmallTalk::Create(), "Interact_SamllTalk");
 	auto Interact = Add_State(CNpcState_Interact_TransItem::Create(), "Interact_TransferItem");
 	auto Trace = Add_State(CNpcState_Move_Trace::Create(), "Interact_Trace");
+	auto Receive = Add_State(CNpcState_Interact_ReceiveItem::Create(), "Interact_Receive");
 
 	return S_OK;
 }
@@ -65,21 +66,27 @@ void CNpcStateHub_Interact::DecideSubState(_float dt)
 
  	if (eventPack.isReservedAction()) {
 		/*플레이어에게 가까워질 때까지*/
-		if (!tracePack.Player_Near)
-			Change_State("Interact_Trace");
 
-		else {
 			/*가까워졌다면, */
   			if (eventPack.reservedMsg.Type == "Talking") {
-				
-				if (m_pCharacter->Get_TracePack().pPlayer->Can_Talk())
+				if (!tracePack.Player_Near)
+					Change_State("Interact_Trace");
+
+				else if (m_pCharacter->Get_TracePack().pPlayer->Can_Talk())
 					Change_State("Interact_SamllTalk");
-			
 			}
 			else if (eventPack.reservedMsg.Type == "Transfer_Item") {
-				Change_State("Interact_TransferItem");
+				if (!tracePack.Player_Near)
+					Change_State("Interact_Trace");
+				else
+					Change_State("Interact_TransferItem");
 			}
-		}
+			else if (eventPack.reservedMsg.Type == "Receive") {
+				if (!tracePack.Player_Near)
+					Change_State("Interact_Trace");
+				else
+					Change_State("Interact_Receive");
+			}
 	}
 
 }

@@ -21,6 +21,7 @@ public:
 
 private:
     _bool Item_Found = false;
+    _bool m_SoundComplete = false;
 public:
     static CPlayerState_PickUp* Create();
     virtual void Free();

@@ -28,7 +28,6 @@ HRESULT CPlayerState_Dig::OnEnter()
 		_float4 pos = CGameInstance::GetInstance()->Get_TileSystem()->Get_PositionByIndex(forward, ANCHOR::Center);
 		pos.y += 0.5f;
 		m_pPlayer->Request_Effect("Effect_BurryingGround", { pos, pos });
-
 		m_isDigged = true;
 	}
 	else if ((TILE_FLAG::FLAG_TREE & Flag) != 0) {
@@ -42,10 +41,12 @@ HRESULT CPlayerState_Dig::OnEnter()
 	else if ((CANT_DIG_REPELL & Flag) != 0)
 	{
 		hr = Animator->Change_Animation("ToolScoop_Repelled.anim");
+		m_Flag = CANT_DIG_REPELL;
 	}
 
 	else if ((CANT_DIG_AIR & Flag) != 0) {
 		hr = Animator->Change_Animation("ToolScoop_Air.anim");
+		m_Flag = CANT_DIG_AIR;
 	}
 	
 	else {
@@ -69,6 +70,10 @@ void CPlayerState_Dig::OnUpdate(_float dt)
 	if (m_isStone) {
 		if (Animator->isOverAnimTiming(0.1f)) {
 			m_pPlayer->ActiveCollider_Tool(true,"Digged");
+			if (!m_SoundComplete) {
+				m_pPlayer->Play_Sound("Dig_Invalid");
+				m_SoundComplete = true;
+			}
 		}
 	}
 
@@ -83,6 +88,18 @@ void CPlayerState_Dig::OnUpdate(_float dt)
 		}
 	}
 
+	if(m_Flag == CANT_DIG_REPELL && !m_SoundComplete){
+		if(Animator->isOverAnimTiming(0.1f)){
+			m_pPlayer->Play_Sound("Dig_Invalid");
+			m_SoundComplete = true;
+		}
+	}
+	if(m_Flag == CANT_DIG_AIR && !m_SoundComplete){
+		if(Animator->isOverAnimTiming(0.1f)){
+			m_pPlayer->Play_Sound("AirShot");
+			m_SoundComplete = true;
+		}
+	}
 	if (m_isDigged) {
 		Burry_Hole();
 	}
@@ -97,7 +114,8 @@ HRESULT CPlayerState_Dig::OnExit()
 	m_DigComplete = false;
 	m_isStone = false;
 	m_EffectComplete = false;
-	m_CloudComplete = false;
+	m_SoundComplete = false;
+	m_Flag = TILE_FLAG::NONE;
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
 	
@@ -168,8 +186,6 @@ void CPlayerState_Dig::Burry_Hole()
 		m_pPlayer->ActiveCollider_Tool(true, "BurryHole");
 	}
 	if (Animator->isOverAnimTiming(0.75f)) {
-		//Request_Cloud();
-
 	}
 }
 

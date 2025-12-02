@@ -87,7 +87,7 @@ void CEditorSystem::Execute_TileSystem()
 
 	CGameObject* pGrid = Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Grid" })
 		.Position(m_EditorContext.ContextTileInfo.HalfPoint())
-
+		//.Position({0,0,0})
 		.Scale(m_EditorContext.ContextTileInfo.WorldSize())
 		.Build("Grid");
 
@@ -328,7 +328,7 @@ HRESULT CEditorSystem::Delete_Object(CGameObject* pObject)
 HRESULT CEditorSystem::Load_MapData()
 {
 	string Systempath = "../../Resources/Data/TileSystemData.dat";
-
+	
 	HRESULT TileInfo = CGameInstance::GetInstance()->Excute_TileSystemByData(Systempath);
 	if (FAILED(TileInfo))
 	{
@@ -337,12 +337,12 @@ HRESULT CEditorSystem::Load_MapData()
 		info.iTileCountZ = 16 * 6 * 2;
 		info.vWorldMin = { 0,0,0 };
 		info.vWorldMax = { info.iTileCountX * 10.f,	15.f	, info.iTileCountZ * 10.f };
-
+	
 		CGameInstance::GetInstance()->Excute_TileSystem(info);
 	}
-
+	
 	m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-	m_pTileSystem->Execute_InstanceModel(G_GlobalLevelKey, "Base_0.model", "Base_0.mat", "InstancingNoCurve");
+	//m_pTileSystem->Execute_InstanceModel(G_GlobalLevelKey, "Base_0.model", "Base_0.mat", "InstancingNoCurve");
 	m_EditorContext.ContextTileInfo = m_pTileSystem->Get_TileSystemInfo();
 	if (FAILED(TileInfo))
 	{
@@ -350,25 +350,25 @@ HRESULT CEditorSystem::Load_MapData()
 	}
 	string path = "../../Resources/Data/MapData.dat";
 	ifstream ifs(path.c_str(), ios::binary);
-
+	
 	if (!ifs.is_open())
 	{
 		return E_FAIL;
 	}
-
+	
 	MAP_FILE_HEADER MapFile = {};
 	ifs.read(reinterpret_cast<char*>(&MapFile), sizeof(MAP_FILE_HEADER));
 	for (size_t i = 0; i < MapFile.iObjectCount; i++)
 	{
 		NEW_MAP_OBJECT_HEADER ObjectHeader = {};
 		ifs.read(reinterpret_cast<char*>(&ObjectHeader), sizeof(NEW_MAP_OBJECT_HEADER));
-
+	
 		CGameObject* pObject =
 			Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_MapObject" })
 			.Position({ 0,0,0 })
 			.Scale({ 1,1,1 })
 			.Build("Obj");
-
+	
 		if (pObject) {
 			m_pObjMgr->Add_Object(pObject, { "Editor_Level","MapObject_Layer" });
 			dynamic_cast<CMapObject*>(pObject)->Load_Object(ObjectHeader);
@@ -380,18 +380,18 @@ HRESULT CEditorSystem::Load_MapData()
 	{
 		NEW_MAP_TILE_HEADER Tile_Header = {};
 		ifs.read(reinterpret_cast<char*>(&Tile_Header), sizeof(NEW_MAP_TILE_HEADER));
-
+	
 		CTileObject::TILE_TYPE_DESC* objDesc = new CTileObject::TILE_TYPE_DESC;
 		objDesc->TypeName = string(Tile_Header.BaseTypeName);
 		objDesc->index = Tile_Header.Index;
-
+	
 		CGameObject* pObject =
 			Builder::Create_Object({ G_GlobalLevelKey, "Proto_GameObject_Tile" })
 			.Add_ObjDesc(objDesc)
 			.Position({ 0,Tile_Header.height<0.2? 0.2f: Tile_Header.height,0 })
 			.Scale({ 1,1,1 })
 			.Build(objDesc->TypeName);
-
+	
 		if (pObject)
 			m_pObjMgr->Add_Object(pObject, { "Editor_Level","Tile_Layer" });
 		else

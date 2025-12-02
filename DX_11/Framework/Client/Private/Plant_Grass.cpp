@@ -89,15 +89,20 @@ HRESULT CPlant_Grass::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<strin
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	m_Index = tileSystem->Get_IndexByPosition(Get_Position());
 
-	tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(TILE_FLAG::FLAG_GRASS));
-	tileSystem->Set_Material_ID(objHeader.Index, { 1,1,0,0 });
-
+	
 	auto instance = Get_Component<CMaterial>()->Get_Material_Instance();
 
 	for (auto& inst : instance) {
-		if (isWeed(objHeader.Object_type))
+		if (isWeed(objHeader.Object_type)) {
 			inst->Override_Pass("Grass");
+			m_InstanceTag = "Grass";
+			tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(TILE_FLAG::FLAG_GRASS));
+			tileSystem->Set_Material_ID(objHeader.Index, { 1,1,0,0 });
+		}
 		else {
+			m_InstanceTag = "Flower";
+			tileSystem->Add_TileFlagByIndex(objHeader.Index, static_cast<_uint>(TILE_FLAG::FLAG_FLOWER));
+			tileSystem->Set_Material_ID(objHeader.Index, { 1,1,0,0 });
 			string mtl = inst->Get_MaterialName();
 			if (mtl == "mLilyFlower")
 				continue;

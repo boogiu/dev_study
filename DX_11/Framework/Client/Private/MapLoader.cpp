@@ -228,8 +228,8 @@ HRESULT CMapLoader::Load_Sequential(const LAYER_DESC& Desc)
 		CAutoTile::TILE_TYPE_DESC* objDesc = new CAutoTile::TILE_TYPE_DESC;
 		objDesc->TypeName = string(Tile_Header.BaseTypeName);
 		objDesc->index = Tile_Header.Index;
-
-		CGameObject* pObject =
+		CGameObject* pObject = {nullptr};
+		 pObject =
 			Builder::Create_Object({ "GamePlay_Level", "GamePlay_GameObject_AutoTile" })
 			.Position({ 0,Tile_Header.height,0 })
 			.Scale({ 1,1,1 })

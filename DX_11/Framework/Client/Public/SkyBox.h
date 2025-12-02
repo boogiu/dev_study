@@ -20,6 +20,7 @@ public:
 
 private:
     _float m_ElapsedTime = {};
+    _float4 m_SkyColor = {1.f,1.f,1.f,1.f};
 public:
     static CSkyBox* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

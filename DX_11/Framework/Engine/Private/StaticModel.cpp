@@ -90,6 +90,11 @@ void CStaticModel::Hide_MehsByName(const string& name)
     else
         m_DrawableMeshes[index] = false;
 }
+_int CStaticModel::Get_MeshIndexByName(const string& name)
+{
+    _int index = m_pData->Find_MeshIndex(name);
+        return index;
+}
 MINMAX_BOX CStaticModel::Get_LocalBoundingBox()
 {
     return m_pData->Get_LocalBoundingBox();

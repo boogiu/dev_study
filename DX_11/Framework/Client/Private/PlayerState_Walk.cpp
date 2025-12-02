@@ -5,7 +5,7 @@
 #include "Transform.h"
 #include "GameInstance.h"
 #include "IInputService.h"
-
+#include "AudioSource.h"
 CPlayerState_Walk::CPlayerState_Walk()
 {
 }
@@ -22,6 +22,7 @@ void CPlayerState_Walk::OnUpdate(_float dt)
 {
 	CPlayer::MovementPacket tMovePacket = m_pPlayer->Get_MovementPacket();
 
+	auto AudioSource = m_pPlayer->Get_Component<CAudioSource>();
 	if (!tMovePacket.bFliping) {
 		_float2 myAxis = {};
 
@@ -35,7 +36,18 @@ void CPlayerState_Walk::OnUpdate(_float dt)
 	}
 
 	m_fWalkTime += dt;
+	m_fWalkSoundTime += dt;
+	auto tTilePack = m_pPlayer->Get_TileInfoPacket();
 
+	if (m_fWalkSoundTime > 0.35f) {
+		
+		if ((tTilePack.nowInfo.TileFlag &TILE_FLAG::FLAG_SAND) != 0)
+			AudioSource->Play("Run_Sand_L");
+		else
+			AudioSource->Play("Run_Grass_L");
+
+		m_fWalkSoundTime = 0.f;
+	}
 	if (m_fWalkTime > 0.8f) {
 		Request_Dust();
 		m_fWalkTime = 0.f;
@@ -45,6 +57,7 @@ void CPlayerState_Walk::OnUpdate(_float dt)
 HRESULT CPlayerState_Walk::OnExit()
 {
 	m_fWalkTime = 0.f;
+	m_fWalkSoundTime = 0.35f; 
 	return S_OK;
 }
 

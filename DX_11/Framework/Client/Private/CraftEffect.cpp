@@ -14,7 +14,7 @@
 
 #include "CraftChildEffect.h"
 #include "CraftTwinkle.h"
-
+#include "AudioSource.h"
 CCraftEffect::CCraftEffect()
 {
 }
@@ -30,6 +30,12 @@ HRESULT CCraftEffect::Initialize_Prototype()
 	Add_Component<CRectModel>();
 	Add_Component<CMaterial>();
 	Add_Component<CObjectContainer>();
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Demo_WorkBench_Finish.wav", "Craft_Finish", false, SOUND_GROUP::SFX, 0.15f);
+
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Demo_WorkBench_Cut_Wood.wav", "CraftSound_1", true, SOUND_GROUP::SFX, 0.25f);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Demo_WorkBench_Hit_Wood_1.wav", "CraftSound_2", false, SOUND_GROUP::SFX, 0.25f);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Demo_WorkBench_Making_Back.wav", "CraftSound_3", true, SOUND_GROUP::SFX, 0.25f);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Demo_WorkBench_Rotate_Wood.wav", "CraftSound_4", true, SOUND_GROUP::SFX, 0.25f);
 	return S_OK;
 }
 
@@ -115,22 +121,32 @@ void CCraftEffect::Update(_float dt)
 
 	m_AtlasIndex = { (float)x, (float)y };
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
+	Get_Component<CAudioSource>()->Play("CraftSound_1");
+	Get_Component<CAudioSource>()->Play("CraftSound_4");
+
 	if (m_fLifeTime > 0.2f && m_eState == phase1) {
 		Emit_Particle(5);
 		m_eState = phase2;
+		Get_Component<CAudioSource>()->Play("CraftSound_3");
+		Get_Component<CAudioSource>()->Play("CraftSound_2");
 	}
-	if (m_fLifeTime > 1.2f && m_eState == phase2) {
+	if (m_fLifeTime > 0.8f && m_eState == phase2) {
 		Emit_Particle(5);
 		m_eState = phase3;
+		Get_Component<CAudioSource>()->Play("CraftSound_3");
+		Get_Component<CAudioSource>()->Play("CraftSound_2");
 	}
 	if (m_fLifeTime > 1.8f && m_eState == phase3) {
 		Emit_Particle(5);
 		m_eState = lastPhase;
+		Get_Component<CAudioSource>()->Play("CraftSound_3");
+		Get_Component<CAudioSource>()->Play("CraftSound_2");
 	}
-	if (m_fLifeTime > 3.1f && m_eState == lastPhase) {
+	if (m_fLifeTime > 2.6f && m_eState == lastPhase) {
 		Emit_Particle(15);
 		Emit_Twinkle();
 		m_eState = End;
+		Get_Component<CAudioSource>()->Play("Craft_Finish");
 	}
 	if (m_eState == End)
 		m_pTransform->AddScale({ -dt * 8,-dt * 8,-dt });
@@ -150,7 +166,7 @@ void CCraftEffect::Render_GUI()
 
 _bool CCraftEffect::isEffectActive()
 {
-	return m_fLifeTime < 4.6f;
+	return m_fLifeTime < 3.4f;
 }
 
 void CCraftEffect::Reset()
@@ -179,7 +195,6 @@ void CCraftEffect::Set_ReActive(const EffectData& data)
 	m_isAlive = true;
 	for (auto child : m_Childs)
 		child->Get_Component<CTransform>()->Set_PosVector(m_pTransform->Get_Pos());
-
 }
 
 void CCraftEffect::Emit_Particle(_float count, _bool isEnd)

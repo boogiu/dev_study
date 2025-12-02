@@ -33,6 +33,13 @@ HRESULT CUI_Responcer::Initialize_Prototype()
 		.Position({ g_iWinSizeX*0.5f,g_iWinSizeY * 0.5f })
 		.Build("Craft_UI");
 
+	CUI_Object* pScreenFXI = Builder::Create_UIObject({ "GamePlay_Level","GamePlay_GameObject_UI_ScreenFX" })
+		.Add_To_Level("GamePlay_Level")
+		.Add_To_Level("GamePlay_Level")
+		.Scale({ g_iWinSizeX ,g_iWinSizeX })
+		.Position({ g_iWinSizeX*0.5f,g_iWinSizeY * 0.5f })
+		.Build("Screen_FX");
+
 
 	CGameInstance::GetInstance()->Get_UIMgr()->Add_UIObject(pEventMsg, "GamePlay_Level");
 	m_UIContainer.emplace("EvtMsg", pEventMsg);
@@ -43,6 +50,9 @@ HRESULT CUI_Responcer::Initialize_Prototype()
 
 	CGameInstance::GetInstance()->Get_UIMgr()->Add_UIObject(pCraftUI, "GamePlay_Level");
 	m_UIContainer.emplace("Craft_UI", pCraftUI);
+
+	CGameInstance::GetInstance()->Get_UIMgr()->Add_UIObject(pScreenFXI, "GamePlay_Level");
+	m_UIContainer.emplace("Screen_FX", pScreenFXI);
 
 	return S_OK;
 }

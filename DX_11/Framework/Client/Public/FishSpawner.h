@@ -30,7 +30,8 @@ private:
     void Spawn_Fish();
 
 private:
-    _float m_fElapsedTime = {};
+    _float m_fElapsedTime = { 24.f };
+    _float m_fSpawnTime = {34.f};
     class CItemSpawner* m_pItemSpawner = { nullptr }; 
     unordered_map<TILE_INDEX, _uint, TILE_INDEX_HASH_FUNCTOR> m_HashedTile;
     unordered_map<string, FISH_DATA_DESC> m_FishDataTable;

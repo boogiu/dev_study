@@ -7,7 +7,7 @@
 #include "Level.h"
 #include "Helper_Func.h"
 #include "ObjectContainer.h"
-
+#include "AudioSource.h"
 CTarget_Camera::CTarget_Camera()
 {
 }
@@ -23,6 +23,7 @@ HRESULT CTarget_Camera::Initialize_Prototype()
 	Add_Component<CCamera>();
 	Add_Component<CLight>();
 	Add_Component<CObjectContainer>();
+	Add_Component<CAudioSource>();
 	return S_OK;
 }
 
@@ -35,22 +36,34 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 	_float4 TagetPos = m_pTarget->Get_Position();
 
 	m_pTransform->Set_Pos({ TagetPos.x, 50,	TagetPos.z + 50 });
-	m_vBaseLookPos = { TagetPos.x, 0,	TagetPos.z - 10 ,1.f };
+	m_vBaseLookPos = { TagetPos.x, 0,	TagetPos.z - 15 ,1.f };
 	m_vOffset = {0,50,50,1.f};
 	m_vZoomInOffset = { 0,15,50,0 };
 	m_fCurrentLookY = 0;
 
 	LIGHT_DESC desc = {};
 	desc.vLightPosition = { 0,20,0,0 };
-	desc.fLightRange = 150.0f;
-	desc.vLightDirection = _float4(0.f, -1.f, 0.f, 0.f);
+	desc.fLightRange = 80.0f;
+	desc.vLightDirection = _float4(0.f, -1.f, 1.f, 0.f);
 	desc.vLightDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	desc.vLightAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-	desc.vLightSpecular = _float4(0.f, 1.f, 0.f, 1.f);
+	desc.vLightSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	Get_Component<CLight>()->Set_Desc(desc, LIGHT_TYPE::DIRECTIONAL);
+	Get_Component<CLight>()->Set_Desc(desc, LIGHT_TYPE::POINT);
 
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","BaseWind_Summer_Weak.wav","Env_Wind",true,SOUND_GROUP::BGM);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","BGM_24Hour_00_Sunny.wav","BGM_Sunny",true, SOUND_GROUP::BGM);
 
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","System_Camera_Move_Zoom_In.wav","Zoom_In");
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","System_Camera_Move_Zoom_Out.wav","Zoom_Out");
+
+	Get_Component<CAudioSource>()->Set_SlotVolume("Env_Wind", 0.04f);
+	Get_Component<CAudioSource>()->Set_3DAttribute("Env_Wind", false);
+	Get_Component<CAudioSource>()->Set_SlotVolume("BGM_Sunny", 0.05f);
+	Get_Component<CAudioSource>()->Set_3DAttribute("BGM_Sunny", false);
+
+	Get_Component<CAudioSource>()->Set_SlotVolume("Zoom_In", 0.45f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Zoom_Out", 0.45f);
 	//Get_Component<CObjectContainer>()->Add_Child(pObj,true);
 	return S_OK;
 }
@@ -85,6 +98,9 @@ void CTarget_Camera::Priority_Update(_float dt)
 	case Client::CTarget_Camera::SHAKE:
 		Shake_Cam(dt);
 		break;
+	case Client::CTarget_Camera::FAR_OUT:
+		Far_Cam(dt);
+		break;
 	default:
 		break;
 	}
@@ -94,6 +110,8 @@ void CTarget_Camera::Priority_Update(_float dt)
 void CTarget_Camera::Update(_float dt)
 {
 	_float4 targetPos = m_pTarget->Get_Position();
+	Get_Component<CAudioSource>()->Play("Env_Wind");
+	Get_Component<CAudioSource>()->Play("BGM_Sunny");
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
@@ -115,12 +133,19 @@ void CTarget_Camera::Event_Listen(const BaseEvent& event)
 void CTarget_Camera::Execute_ZoomIn()
 {
 	m_eState = ZOOM_IN;
+	Get_Component<CAudioSource>()->Play("Zoom_In");
 }
 
 void CTarget_Camera::Release_ZoomIn()
 {
 	m_pSubject = nullptr;
 	m_eState = ZOOM_OUT;
+	Get_Component<CAudioSource>()->Play("Zoom_Out");
+}
+
+void CTarget_Camera::CameraFar()
+{
+	m_eState = FAR_OUT;
 }
 
 void CTarget_Camera::Execute_Talking(CGameObject* subject)
@@ -188,10 +213,8 @@ void CTarget_Camera::Zoom_Out(_float dt)
 		m_pTransform->LookAt(XMLoadFloat4(&m_vBaseLookPos));
 		m_fCurrentLookY = 0.f;
 		m_eState = FOLLOW;
-		Get_Component<CCamera>()->Set_FOV(60.f);
 		return;
 	}
-	Get_Component<CCamera>()->Lerp_FOV(60.f, dt * 5);
 
 	m_pTransform->LookAt(XMLoadFloat4(&m_vBaseLookPos));
 	m_pTransform->Set_Pos(DstPos);
@@ -257,6 +280,9 @@ void CTarget_Camera::Follow_Target(_float dt)
 	XMStoreFloat4(&m_vBasePos, MoveDir);
 	m_pTransform->LookAt({ XMVectorGetX(MoveDir), 5,	XMVectorGetZ(MoveDir)-50});
 	XMStoreFloat4(&m_vBaseLookPos, { XMVectorGetX(MoveDir),5,	XMVectorGetZ(MoveDir) - 50 });
+	if(m_eState != FAR_OUT)
+		Get_Component<CCamera>()->Lerp_FOV(60.f, dt * 5);
+
 }
 
 void CTarget_Camera::Shake_Cam(_float dt)
@@ -299,6 +325,12 @@ void CTarget_Camera::Shake_Cam(_float dt)
 	_float4 pos = {};
 	XMStoreFloat4(&pos, newPos);
 	m_pTransform->Set_Pos(pos);
+}
+
+void CTarget_Camera::Far_Cam(_float dt)
+{
+	Follow_Target(dt);
+	Get_Component<CCamera>()->Lerp_FOV(75, dt * 1.5);
 }
 
 

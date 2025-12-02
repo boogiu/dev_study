@@ -26,6 +26,7 @@ HRESULT CPlayerState_NetSwing::OnEnter()
 		hr = Animator->Change_Animation("ToolNet_SwingStop_Ground.anim", true);
 	}
 	m_pPlayer->ActiveCollider_Tool(true, "NetSwing");
+	m_pPlayer->Play_Sound("NetSwing");
 
 	return hr;
 }
@@ -33,8 +34,15 @@ HRESULT CPlayerState_NetSwing::OnEnter()
 void CPlayerState_NetSwing::OnUpdate(_float dt)
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	if(Animator->isOverAnimTiming(0.7))
+	if (Animator->isOverAnimTiming(0.7))
 		m_pPlayer->ActiveCollider_Tool(false, "");
+
+	if (!isSoundComplete) {
+		if (Animator->isOverAnimTiming(0.5)) {
+			m_pPlayer->Play_Sound("NetSwing_Ground");
+			isSoundComplete = true;
+		}
+	}
 }
 
 HRESULT CPlayerState_NetSwing::OnExit()
@@ -44,6 +52,7 @@ HRESULT CPlayerState_NetSwing::OnExit()
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
 	isCathced = false;
+	isSoundComplete = false;
 	return S_OK;
 }
 
@@ -85,7 +94,7 @@ void CPlayerState_NetSwing::OnCollisionEnter(COLLISION_CONTEXT context)
 }
 void CPlayerState_NetSwing::OnCollisionStay(COLLISION_CONTEXT context)
 {
-	
+
 }
 
 CPlayerState_NetSwing* CPlayerState_NetSwing::Create()

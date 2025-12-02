@@ -27,6 +27,7 @@ void CTimer::Update_Timer()
 
 	m_fDeltaTime = (m_CurTime.QuadPart - m_LastTime.QuadPart) / static_cast<_float>(m_TickCount.QuadPart);
 	m_LastTime = m_CurTime;
+	m_fTotalTime += m_fDeltaTime;
 }
 
 _float CTimer::Get_DeltaTime(_bool raw)
@@ -35,6 +36,11 @@ _float CTimer::Get_DeltaTime(_bool raw)
 		return min(m_fDeltaTime* m_fTimeScale, 0.033);
 	else
 		return m_fDeltaTime* m_fTimeScale;
+}
+
+_float CTimer::Get_TotalTime()
+{
+	return m_fTotalTime;
 }
 
 CTimer* CTimer::Create()

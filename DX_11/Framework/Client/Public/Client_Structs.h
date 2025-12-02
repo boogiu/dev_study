@@ -145,8 +145,14 @@ struct CraftData {
 };
 
 struct EffectData {
-	_float4 FxPosition = {};
 	_float4 ReqPosition = {};
+	_float4 FxPosition = {};
+	string Additional = {};
+	EffectData() {};
+	EffectData(_float4 fxPosition, _float4 reqPosition) 
+		: FxPosition(fxPosition), ReqPosition(reqPosition){}
+	EffectData(_float4 fxPosition, _float4 reqPosition,string additional) 
+		: FxPosition(fxPosition), ReqPosition(reqPosition),Additional(additional){}
 };
 
 

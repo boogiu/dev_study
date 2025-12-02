@@ -25,7 +25,7 @@
 
 #include "Target_Camera.h"
 #include "Camera.h"
-
+#include "AudioSource.h"
 #include "PlayerStateMachine.h"
 #include "ToolItem.h"
 #include "HairParts.h"
@@ -62,6 +62,7 @@ HRESULT CPlayer::Initialize_Prototype()
 	Add_Component<CObjectContainer>();
 	Add_Component<COBB_Collider>();
 	Add_Component<CMaterialAnimator>();
+	Add_Component<CAudioSource>();
 
 	m_InstanceTag = "Player";
 	return hr;
@@ -74,6 +75,7 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	Add_PartObjects();
 	Set_TargetCamera();
 	Add_Inventory();
+	Add_SoundClip();
 
 	m_pStateMachine = CPlayerStateMachine::Create(this);
 	Get_Component<CSkeletalModel>()->SetDrawable(5, false);
@@ -105,7 +107,7 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	}
 
 	Get_Component<CCollider>()->Make_MinMaxCollider(
-		{ { -3,0,-5 }, {3,5,6} }
+		{ { -3,0,-5 }, {3,5,8} }
 	);
 
 	/*Debug*/
@@ -124,7 +126,7 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
 	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
 	Add_ITEM(ItemSpawner->Get_ItemData("FtrWoodPile"));
-
+	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPresentred"));
 	return S_OK;
 }
 
@@ -287,6 +289,7 @@ void CPlayer::Update_TileInfo(_float dt)
 	if (false == m_TileInfoPack.nowIndex.isSame(currIndex)) {
 		m_vPrevIndex = m_TileInfoPack.nowIndex;
 		m_TileInfoPack.nowIndex = currIndex;
+		m_TileInfoPack.nowInfo = TileSys->Get_InfoByIndex(currIndex);
 		TileSys->Add_TileFlagByIndex(m_TileInfoPack.nowIndex, static_cast<_uint>(TILE_FLAG::ONPLAYER));
 		TileSys->Remove_TileFlagByIndex(m_vPrevIndex, static_cast<_uint>(TILE_FLAG::ONPLAYER));
 
@@ -417,10 +420,15 @@ void CPlayer::Camera_Zoom_In(CGameObject* subject)
 		m_pCamera->Execute_Talking(subject);
 	}
 }
-void CPlayer::Camera_Zoom_Out(CGameObject* subject)
+void CPlayer::Camera_Restore(CGameObject* subject)
 {
 	m_pCamera->Release_ZoomIn();
 }
+void CPlayer::Camera_Far_Out()
+{
+	m_pCamera->CameraFar();
+}
+
 void CPlayer::Open_Inventory()
 {
 	m_pInventory->Open_Inventory();
@@ -464,6 +472,7 @@ HRESULT CPlayer::Set_InvenEvent(ITEM_DATA_DESC item, _int Slot, wstring Selected
 	{
 		m_pInventory->PullOut_Item(Slot);
 		Spawner->ThrowItem(item, m_pTransform->Get_Pos(), m_pTransform->Dir(STATE::LOOK));
+		Get_Component<CAudioSource>()->Play("Item_Throw");
 	}
 
 	else if (SelectedEvent == L"1개 꺼내기") {
@@ -487,7 +496,21 @@ HRESULT CPlayer::Set_InvenEvent(ITEM_DATA_DESC item, _int Slot, wstring Selected
 		m_pInventory->PullOut_Item(Slot);
 		Insect->SpawnInsect(item.Additionaldata, Get_Position());
 	}
+	else if (SelectedEvent == L"건네주기") {
+		m_pInventory->PullOut_Item(Slot);
+		m_InfoPack.pObjectOnLeftHand = Spawner->SpawnItem(item.FileName, { Get_Position().x, Get_Position().y,Get_Position().z});
+	}
 	return S_OK;
+}
+
+void CPlayer::Request_State(STATE_LAYER layer, string stateName)
+{
+	m_pStateMachine->Request_ChangeState(layer, stateName);
+}
+
+void CPlayer::Play_Sound(const string& sound)
+{
+	Get_Component<CAudioSource>()->Play(sound);
 }
 
 void CPlayer::Open_EventMsg(EventMsgDesc* evtMsg)
@@ -678,8 +701,6 @@ void CPlayer::Add_AnimationClips()
 	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Putback.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "ToolPole_Swing.anim", "Player", false);
 
-
-
 	Animator->Add_AnimClips("GamePlay_Level", "Tree_Shake.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "Tree_ShakeReadyKeep.anim", "Player", true);
 	Animator->Add_AnimClips("GamePlay_Level", "Base_EquipOff.anim", "Player", false);
@@ -698,10 +719,13 @@ void CPlayer::Add_AnimationClips()
 	Animator->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveReturn.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "Transfer_ReceiveBack.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "Transfer_Putaway.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Transfer_PassForward.anim", "Player", false);
 
 	Animator->Add_AnimClips("GamePlay_Level", "Generic_Putaway.anim", "Player", true);
 	Animator->Add_AnimClips("GamePlay_Level", "Etc_DiyCreating.anim", "Player", true);
 	Animator->Add_AnimClips("GamePlay_Level", "Etc_DiyFinish.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Event_LoanComplete.anim", "Player", false);
+	Animator->Add_AnimClips("GamePlay_Level", "Event_LoanCompleteKeep.anim", "Player", true);
 }
 
 void CPlayer::Add_MaterialAnim()
@@ -802,6 +826,45 @@ void CPlayer::Add_Inventory()
 	m_pInventory->Set_Player(this);
 }
 
+void CPlayer::Add_SoundClip()
+{
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Grass_Walk_00_Ac.wav","Walk_Grass_L", false, SOUND_GROUP::SFX, 0.05f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Grass_Run_00_Ac.wav","Run_Grass_L", false, SOUND_GROUP::SFX, 0.05f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Sand_Run_00_Ac.wav","Run_Sand_L", false, SOUND_GROUP::SFX, 0.05f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Grass_Dash_00_Ac.wav","Dash_Grass", false, SOUND_GROUP::SFX, 0.05f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Sand_Dash_00_L.wav","Dash_Sand", false, SOUND_GROUP::SFX, 0.05f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_ItemThrow_00.wav","Item_Throw", false, SOUND_GROUP::SFX, 0.05f);
+	
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Airshot00.wav","AirShot", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_AxeTreeCuting_00.wav","TreeCut", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_AxeInvalid_Grass_00.wav","AxeInvalid", false, SOUND_GROUP::SFX, 0.15f);
+
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_BuryScoopStart_Grass_00.wav","BuryStart", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_BuryScoopEnd_Grass_00.wav","BuryEnd", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_DigIn_Stone_00.wav","Dig_In", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_DigInvalid_Stone_00.wav","Dig_Invalid", false, SOUND_GROUP::SFX, 0.15f);
+	
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Net_Swing00.wav","NetSwing", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_NetHitGround_Grass_00.wav","NetSwing_Ground", false, SOUND_GROUP::SFX, 0.15f);
+	
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Pickup_02.wav","Pick_Up", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_FishingRod_Miss_00.wav","Fishing_Miss", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_ThrowBait_00.wav","Fishing_Throw", false, SOUND_GROUP::SFX, 0.15f);
+
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","UI_WorkBench_Open.wav","WorkBench_Open", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","UI_Cmn_Close.wav","WorkBench_Close", false, SOUND_GROUP::SFX, 0.15f);
+	
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_GetFanfare_SharePlay.wav","Get", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_DisplayItem.wav","Display", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_EatFood_00.wav","Eat", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_ChangeTool_On.wav","TransTool_On", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_ChangeTool_Off.wav","TransTool_Off", false, SOUND_GROUP::SFX, 0.15f);
+
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_ItemPutIn_00.wav","Put_In", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_ItemPutOut_00.wav","Put_Out", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","LoanComplete.wav","Complete", false, SOUND_GROUP::SFX, 0.15f);
+}
+
 void CPlayer::Set_TargetCamera()
 {
 	CTarget_Camera::TARGET_CAM_DESC* pCamDesc = new CTarget_Camera::TARGET_CAM_DESC;
@@ -852,7 +915,8 @@ void CPlayer::OnEventAction(const BaseEvent& event)
 		const auto& evt = static_cast<const OnEndDialogue&>(event);
 		if (m_InfoPack.isTalking && evt.pSpeaker == m_InfoPack.pTalker)
 		{
-			m_InfoPack.isTalking = false; m_InfoPack.pTalker = nullptr;
+			m_InfoPack.isTalking = false; 
+			m_InfoPack.pTalker = nullptr;
 		}
 	}
 
@@ -866,9 +930,24 @@ void CPlayer::OnEventAction(const BaseEvent& event)
 
 	if (event.eType == EVENT_TYPE::TransItem) {
 		const auto& evt = static_cast<const TRANS_ITEM&>(event);
-		if (evt.pObject) {
+		if (evt.Reciever_InstanceID == m_ObjectID&&evt.pObject) {
 			m_InfoPack.m_nowTrans = evt;
 			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TransGet_State");
+		}
+	}
+
+	if (event.eType == EVENT_TYPE::TransItem_Response) {
+		const auto& evt = static_cast<const RESPONSE_TRANS_ITEM&>(event);
+		if (evt.pSenderID != this->m_ObjectID) return;
+		m_InfoPack.pObjectOnLeftHand = nullptr;
+	}
+
+	if (event.eType == EVENT_TYPE::TransItem_Request) {
+		const auto& evt = static_cast<const TRANS_ITEM_REQUEST&>(event);
+		if (evt.eType != itemType::None) {
+			m_InfoPack.pTalker = evt.pRequester;
+			m_pInventory->Set_Filter(evt.eType, evt.specific_Item, L"건네주기");
+			m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Action_TransGive_State");
 		}
 	}
 
@@ -894,6 +973,9 @@ void CPlayer::Request_Effect(const string& tag, const EffectData& data)
 
 void CPlayer::Open_Craft()
 {
+	if (!m_InfoPack.isCrafting)
+		Get_Component<CAudioSource>()->Play("WorkBench_Open");
+
 	m_ControlPack.MsgForceBlock = true;
 	m_InfoPack.isCrafting = true;
 
@@ -905,6 +987,7 @@ void CPlayer::Open_Craft()
 	craftDesc.InvenData = m_pInventory->Get_All_InventoryData();
 	craftDesc.OnClose = [this](const CRAFT_RESULT& result) {Close_Craft(result); };
 
+	Request_State(STATE_LAYER::TOOL, "Tool_Release_State");
 	nowLevel->Get_LevelObject<CUI_Responcer>()->Active_UI("Craft_UI", &craftDesc);
 }
 
@@ -912,8 +995,9 @@ void CPlayer::Close_Craft(const CRAFT_RESULT& result)
 {
 	m_ControlPack.MsgForceBlock = false;
 	m_InfoPack.isCrafting = false;
+	Get_Component<CAudioSource>()->Play("WorkBench_Close");
 
-	if (result.Result_ItemTag.empty()) {
+	if (result.Result_ItemTag.empty() || result.Result_ItemTag == "None") {
 		m_pStateMachine->Request_ChangeState(STATE_LAYER::ACTION, "Movement_Idle_State");
 		return;
 	}

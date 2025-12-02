@@ -4,7 +4,7 @@ NS_BEGIN(Client)
 class CTarget_Camera :
     public CGameObject
 {
-    enum CamState {NONE, FOLLOW, ZOOM_IN, ZOOM_OUT,TALKING,TALK_OUT, SHAKE};
+    enum CamState {NONE, FOLLOW, ZOOM_IN, ZOOM_OUT,TALKING,TALK_OUT, FAR_OUT, SHAKE};
 public:
     typedef struct tagTargetCamDesc : GAMEOBJECT_DESC {
         CGameObject* pTarget = { nullptr };
@@ -29,6 +29,7 @@ public:
 public:
     void Execute_ZoomIn();
     void Release_ZoomIn();
+    void CameraFar();
 
 public:
     void Execute_Talking(CGameObject* subject);
@@ -41,6 +42,7 @@ private:
     void Zoom_TalkingOut(_float dt);
     void Follow_Target(_float dt);
     void Shake_Cam(_float dt);
+    void Far_Cam(_float dt);
 
 public:
     void Render_GUI() override;

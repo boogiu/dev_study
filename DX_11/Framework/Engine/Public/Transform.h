@@ -26,6 +26,7 @@ public:
 	void Set_Y(const _float& position);
 	void Rotate(const _float3& eular);
 	void Scale(const _float3& scale);
+	void Scale_Vector(_fvector scale);
 
 	void LookAt(_fvector vAt);
 	void Override_Rotation(_fvector vAxis, _float fRadian);

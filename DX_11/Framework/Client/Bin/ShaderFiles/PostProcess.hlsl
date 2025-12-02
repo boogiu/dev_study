@@ -176,7 +176,7 @@ PS_CLOUD_OUT PS_CLOUD(PS_IN In)
     }
 
     float4 cloud = g_CloudTexture.Sample(DefaultSampler, vTexcoord);
-    float cloudDensity = saturate(cloud.r)*0.3;
+    float cloudDensity = saturate(cloud.r)*0.2;
 
     if (cloudDensity < 0.05f)
     {

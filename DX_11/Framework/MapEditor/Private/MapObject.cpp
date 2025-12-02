@@ -32,7 +32,6 @@ HRESULT CMapObject::Initialize_Prototype()
 	__super::Initialize_Prototype();
 	Add_Component<CMaterial>();
 	Add_Component<CTileBlock>();
-	Add_Component<CDebugRender>();
 	return S_OK;
 }
 
@@ -150,7 +149,6 @@ HRESULT CMapObject::Link_Data(const string& folderName)
 		m_ObjeType = stoi(iter->second[0]);
 	}
 
-	Get_Component<CDebugRender>()->Add_DebugBounding(Get_Component<CModel>()->Get_LocalBoundingBox());
 
 	return hr;
 }
@@ -198,12 +196,9 @@ HRESULT CMapObject::Save_MapData(ofstream& ofs)
 		int i = 0;
 	return S_OK;
 }
-
 void CMapObject::Render_GUI()
 {
 	__super::Render_GUI();
-
-	static char nameBuf[64] = "";
 
 	// 현재 ObjectType을 버퍼에 반영 (초기 한 번만)
 	if (strlen(nameBuf) == 0 && !m_AdditionalData.empty())

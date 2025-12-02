@@ -8,6 +8,7 @@
 
 #include "Item_Object.h"
 #include "Player.h"
+
 CNpcState_Interact_TransItem::CNpcState_Interact_TransItem()
 {
 	m_ItemData.eType = EVENT_TYPE::TransItem;
@@ -47,7 +48,8 @@ void CNpcState_Interact_TransItem::OnUpdate(_float dt)
 			//본의 파이널 매트릭스에다가 내 월드 매트릭스를 곱해줘야 하지
 			pObj->Attach_Hand(&m_SocketMatrix);
 			m_ItemData.pObject = pObj;
-			m_ItemData.pSenderID = m_pCharacter->Get_ObjectID();
+			m_ItemData.Sender_InstanceID = m_pCharacter->Get_ObjectID();
+			m_ItemData.Reciever_InstanceID = m_pCharacter->Get_TracePack().pPlayer->Get_ObjectID();
 			m_eState = ItemHandle;
 			m_pCharacter->Get_ActionPack().NextPhase();
 		}

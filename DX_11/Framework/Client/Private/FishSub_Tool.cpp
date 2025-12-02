@@ -13,7 +13,7 @@
 
 #include "Fish_Object.h"
 #include "EffectSpawner.h"
-
+#include "AudioSource.h"
 CFishSub_Tool::CFishSub_Tool()
 {
 }
@@ -34,6 +34,7 @@ HRESULT CFishSub_Tool::Initialize_Prototype()
 	Add_Component<CSkeletalModel>();
 	Add_Component<CMaterial>();
 	Add_Component<CAABB_Collider>();
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Pl_ThrowBait_WaterIn_02.wav","Water_In");
 	return S_OK;
 }
 
@@ -224,6 +225,7 @@ void CFishSub_Tool::ThrowBey(_float dt)
 		Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ { -20,-2,-20 }, { 20,2,20} });
 		Get_Component<CAABB_Collider>()->Set_ContextEvent("Finding_Fish");
 		m_eState = Flow;
+		Get_Component<CAudioSource>()->Play("Water_In");
 	}
 
 	m_pTransform->Set_Pos(pos);

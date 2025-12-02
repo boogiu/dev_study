@@ -18,7 +18,8 @@ public:
 
 public:
     virtual void Render_State()override;
-
+private:
+    _bool m_SoundComplete = { false };
 public:
     static CPlayerState_Eat* Create();
     virtual void Free()override;

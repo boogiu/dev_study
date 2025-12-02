@@ -10,6 +10,7 @@
 #include "IObjectService.h"
 #include "IGUIService.h"
 #include "IRenderService.h"
+#include "IResourceService.h"
 #include "ICameraService.h"
 #include "IUI_Service.h"
 #include "ILightService.h"

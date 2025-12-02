@@ -6,6 +6,7 @@
 #include "UI_Text.h"
 #include "TextSlot.h"
 #include "UI_Cursor.h"
+#include "AudioSource.h"
 
 CSelectPanel::CSelectPanel()
 {
@@ -23,6 +24,7 @@ CSelectPanel::~CSelectPanel()
 HRESULT CSelectPanel::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
+	Add_Component<CAudioSource>();
 	return S_OK;
 }
 
@@ -74,6 +76,15 @@ HRESULT CSelectPanel::Initialize(INIT_DESC* pArg)
 
 
 	Get_Component<CObjectContainer>()->Add_Child(pCursor, false);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_Wrapping_Wrap_Basic.wav", "Open", false, SOUND_GROUP::UI);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_PocketMenu_Close.wav", "Close", false, SOUND_GROUP::UI);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_Decide.wav", "Select", false, SOUND_GROUP::UI);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_Tab_L.wav", "Tab", false, SOUND_GROUP::UI);
+
+	Get_Component<CAudioSource>()->Set_3DAttribute("Open", false);
+	Get_Component<CAudioSource>()->Set_3DAttribute("Close", false);
+	Get_Component<CAudioSource>()->Set_3DAttribute("Select", false);
+	Get_Component<CAudioSource>()->Set_3DAttribute("Tab", false);
 	return S_OK;
 }
 
@@ -84,10 +95,11 @@ void CSelectPanel::Priority_Update(_float dt)
 	if (m_SelectCount > 1) {
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_DOWN)) {
 			m_NowIndex++;
-
+			Get_Component<CAudioSource>()->Play("Tab");
 		}
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_UP)) {
 			m_NowIndex--;
+			Get_Component<CAudioSource>()->Play("Tab");
 		}
 		if (m_NowIndex > m_SelectCount - 1)
 			m_NowIndex = m_SelectCount - 1;
@@ -96,6 +108,7 @@ void CSelectPanel::Priority_Update(_float dt)
 	}
 	if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
 		m_SelectedIndex = m_NowIndex;
+		Get_Component<CAudioSource>()->Play("Select");
 	}
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }

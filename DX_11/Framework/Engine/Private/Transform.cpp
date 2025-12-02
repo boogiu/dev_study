@@ -157,6 +157,12 @@ void CTransform::Scale(const _float3& scale)
 
 }
 
+void CTransform::Scale_Vector(_fvector scale)
+{
+	XMStoreFloat4(&m_vScale, scale);
+	MarkDirty();
+}
+
 _float4x4* CTransform::Get_WorldMatrix_Ptr()
 {
 	if (Check_Dirty())

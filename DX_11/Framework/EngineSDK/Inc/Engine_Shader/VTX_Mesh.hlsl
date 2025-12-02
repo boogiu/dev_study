@@ -38,7 +38,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vNormal = mul(vector(In.vNormal, 0.f), ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;
     Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), ObjectBufferArray[TransformIndex].Transform)).xyz;
-    Out.vTangent *= -1;
+    Out.vTangent.xz *= -1;
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
    
     return Out;
@@ -59,7 +59,7 @@ VS_OUT VS_NOCURVE_MAIN(VS_IN In)
     Out.vNormal = mul(vector(In.vNormal, 0.f), ObjectBufferArray[TransformIndex].Transform);
     Out.vProjPos = Out.vPosition;
     Out.vTangent = normalize(mul(vector(In.vTangent, 0.f), ObjectBufferArray[TransformIndex].Transform)).xyz;
-    Out.vTangent *= -1;
+    Out.vTangent.xz *= -1;
     Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz));
    
     return Out;
@@ -80,6 +80,7 @@ struct PS_OUT
     vector vDiffuse : SV_TARGET0;
     vector vNormal : SV_TARGET1;
     vector vDepth : SV_TARGET2;
+    vector vEmission : SV_TARGET3;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -101,7 +102,8 @@ PS_OUT PS_MAIN(PS_IN In)
     
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
-   return Out;
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
+    return Out;
 }
 
 PS_OUT PS_Gradation_Main(PS_IN In)
@@ -125,10 +127,36 @@ PS_OUT PS_Gradation_Main(PS_IN In)
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     
     return Out;
 }
 
+PS_OUT PS_Gradation_Present(PS_IN In)
+{
+    PS_OUT Out;
+    
+    vector vMixture = MixtureTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vAlbGry = AlbedoGrayTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = GradationTexture.Sample(DefaultSampler, float2(1 - vMixture.g,0 ));
+    vMtrlDiffuse += (vAlbGry.r);
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+  
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    return Out;
+}
 PS_OUT PS_Leaf_Main(PS_IN In)
 {
     PS_OUT Out;
@@ -153,6 +181,7 @@ PS_OUT PS_Leaf_Main(PS_IN In)
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     
     return Out;
 }
@@ -177,6 +206,7 @@ PS_OUT PS_Fruit_Main(PS_IN In)
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     
     return Out;
 }
@@ -188,6 +218,7 @@ PS_OUT PS_FORCE(PS_IN In)
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDiffuse = (1.f, 1.f, 1.f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmission = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
     return Out;
 }
 
@@ -275,6 +306,15 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_Fruit_Main();
     }  
+    pass Item_Present
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_Gradation_Present();
+    }
     pass Force_See
     {
         SetRasterizerState(RS_Default);

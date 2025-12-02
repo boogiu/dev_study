@@ -69,7 +69,7 @@ void CPlayerState_CraftAction::OnUpdate(_float dt)
 		break;
 	case Client::CPlayerState_CraftAction::Putin:
 		if (Animator->isCurrentAnimEnd()) {
-			m_pPlayer->Camera_Zoom_Out();
+			m_pPlayer->Camera_Restore();
 			m_eState = End;
 		}
 		break;

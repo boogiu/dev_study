@@ -106,6 +106,9 @@ public:
 		}
 	};
 
+	struct NPC_Item_Packet {
+		class CItem_Object* pItem = { nullptr };
+	};
 
 protected:
 	CNonPlayer();
@@ -129,11 +132,13 @@ protected:
 	void Adjust_Cloth_Material(CGameObject* pObject, string TextureKey, string subsetKey);
 	void Add_EventListen();
 	void Add_MatAnimator();
+	void Add_AudioSource();
 
 public:
 	void LookToPlayer(_float dt);
 	void LookTo(_fvector pos);
 	class CItem_Object* Spawn_Item(const string tag, _float3 pos = {});
+	_float4x4 Get_SocketMatrix(string socketName);
 
 public:
 	virtual void Set_Animation(const string tag);
@@ -145,10 +150,10 @@ public:
 public:
 	virtual void Serve_Order(const string& order, _uint orderer);
 	virtual void Receive_QuestMsg(QUEST_MSG msg) {};
+	virtual void EventAction(const BaseEvent& event);
+
 public:
-		virtual void EventAction(const BaseEvent& event);
-public:
-	_float4x4 Get_SocketMatrix(string socketName);
+	void Request_Effect(const string& effectTag, const EffectData& data);
 
 public:
 	NPC_MovementPacket& Get_MovementPack() { return m_MovementPack; }
@@ -156,14 +161,17 @@ public:
 	NPC_TileInfoPacket& Get_TilePack() { return m_TileInfoPack; }
 	NPC_EventPacket& Get_EventPack() { return m_EventPack; }
 	NPC_ActionStatePacket& Get_ActionPack() { return m_ActionPack; }
-
-public:
+	NPC_Item_Packet& Get_ItemPack() { return m_ItemPacket; }
 	NPC_DATA_DESC Get_NpcData() { return m_CharacterDesc; }
 
+	_int Get_VoiceInt() { return m_VoiceInt; };
+	string Get_VoiceKey() { return m_VoiceKey; };
+
+	void Take_Controll() { m_isLooseControl = true; };
 protected:
 	void Update_Movement(_float dt);
 	void Update_TileInfo(_float dt);
-	/* string Socketbone = { "Armature_Hand_R" };*/
+
 protected:
 	class CNpcState_Machine* m_pMachine = { nullptr };
 	NPC_DATA_DESC m_CharacterDesc = {};
@@ -173,8 +181,12 @@ protected:
 	NPC_TileInfoPacket m_TileInfoPack = {};
 	NPC_EventPacket m_EventPack = {};
 	NPC_ActionStatePacket m_ActionPack = {};
-
+	NPC_Item_Packet m_ItemPacket = {};
 	TILE_INDEX prevIndex = {};
+	_int m_VoiceInt = {62};
+	string  m_VoiceKey= {"Npc_Vocal_Boy"};
+
+	_bool m_isLooseControl = { false };
 public:
 	static CNonPlayer* Create();
 	CGameObject* Clone(INIT_DESC* pArg) override;

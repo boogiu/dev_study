@@ -187,7 +187,8 @@ void CUI_InvenSlot::SizeControl(_float dt)
 	case CUI_InvenSlot::Hovered:
 		size = XMVectorLerp(XMLoadFloat2(&curSize), XMLoadFloat2(&m_vHoveredSize), dt * 15);
 		XMStoreFloat2(&vSize, size);
-		Get_Component<CSprite2D>()->ChangeSprite(1);
+		if(m_isValid)
+			Get_Component<CSprite2D>()->ChangeSprite(1);
 		if (m_itemData.itemCount != 0) {
 			m_pText->Set_Text(m_itemData.itemData.ItemName, true);
 		}

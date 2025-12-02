@@ -17,6 +17,7 @@ public:
 
     HRESULT Reserved_Load(string filePath, const LAYER_DESC& Desc);
     HRESULT Load_Sequential(const LAYER_DESC& Desc);
+    _bool isComplete() { return reservedMapObj.empty() && reservedMapTile.empty(); }
 private:
     queue< NEW_MAP_OBJECT_HEADER> reservedMapObj = {};
     queue< NEW_MAP_TILE_HEADER> reservedMapTile= {};

@@ -38,7 +38,6 @@ public:
     void Get();
 
 public:
-public:
     void OnCollisionEnter(COLLISION_CONTEXT context) override;
     void OnCollisionStay(COLLISION_CONTEXT context)override;
     void OnCollisionExit(COLLISION_CONTEXT context)override;
@@ -53,7 +52,7 @@ private:
     void Move_DISAPPEAR(_float dt);
     void Check_Axis();
     void Check_Rotation(_float dt);
-
+    _bool InWater();
 private:
     MoveState m_eState = { IDLE };
 

@@ -45,7 +45,7 @@ void CNpcState_Interact_SmallTalk::OnUpdate(_float dt)
 HRESULT CNpcState_Interact_SmallTalk::OnExit()
 {
     auto Animator = m_pCharacter->Get_Component<CAnimator3D>();
-    Animator->Change_Animation("Base_Wait.anim", true);
+    Animator->Change_Animation("Base_Wa`it.anim", true);
 
     return S_OK;
 }

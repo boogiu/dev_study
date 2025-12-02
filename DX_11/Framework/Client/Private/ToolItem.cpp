@@ -11,6 +11,7 @@
 #include "ObjectContainer.h"
 #include "FishSub_Tool.h"
 
+#include "MaterialInstance.h"
 CToolItem::CToolItem()
 {
 }
@@ -96,7 +97,11 @@ void CToolItem::AdjustByItem(itemType type)
 
 	if (type == itemType::FishingRod) {
 		m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
-	}else{
+	}
+	if (type == itemType::Net) {
+		m_pTransform->Override_Rotation({ 0,0,1,0 }, XMConvertToRadians(180));
+	}
+	else{
 		m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(0));
 	}
 }
@@ -131,20 +136,24 @@ void CToolItem::Set_Item(TOOL_DATA_DESC data)
 
 	if (data.TypeTag == itemType::None) {
 		Get_Component<CModel>()->Set_CompActive(false);
-
 		Get_Component<CAnimator3D>()->Set_CompActive(false);
 		m_pSubTool->Get_Component<CModel>()->Set_CompActive(false);
 		m_pSubTool->Sync_Bont_To_Rod(nullptr);
 		return;
 	}
 	else {
-		AdjustByItem(data.TypeTag);
 		Get_Component<CModel>()->Set_CompActive(true);
 	}
 
 	Get_Component<CModel>()->Link_Model("GamePlay_Level", data.modelName);
 	Get_Component<CMaterial>()->Link_Material("GamePlay_Level", data.materialName);
 	Get_Component<CCollider>()->Make_MinMaxCollider(Get_Component<CModel>()->Get_LocalBoundingBox());
+
+	if(data.TypeTag == itemType::Net|| data.TypeTag == itemType::FishingRod)
+		m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(180));
+	else {
+		m_pTransform->Override_Rotation({ 0,1,0,0 }, XMConvertToRadians(0));
+	}
 
 	if (data.TypeTag == itemType::FishingRod) {
 	

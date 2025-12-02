@@ -36,6 +36,9 @@
 #include "PlayerState_Diy.h"
 #include "PlayerState_CraftAction.h"
 #include "PlayerState_PoleAction.h"
+#include "PlayerState_TransferGive.h"
+#include"PlayerState_ReleaseTool.h"
+#include "PlayerState_MissionComplete.h"
 
 CPlayerStateMachine::CPlayerStateMachine(CPlayer* pPlayer)
 	:m_pOwner(pPlayer)
@@ -57,9 +60,12 @@ HRESULT CPlayerStateMachine::Initialize()
 	auto Diy = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Diy>("Action_Diy_State");
 	auto Interact = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Interact>("Action_Interact_State");
 	auto TransGet = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_TransferGet>("Action_TransGet_State");
+	auto TransGive = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_TransferGive>("Action_TransGive_State");
+	auto MissionComplete = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_MissionComplete>("Action_MissionComplete_State");
 
 	auto Talking = m_LayerStates[STATE_LAYER::ACTION]->Add_State<CPlayerState_Talking>("Interact_Talking_State");
 	Trans_Tool->Set_Owner(m_pOwner);
+	TransGive->Set_Owner(m_pOwner);
 	Open_Inven->Set_Owner(m_pOwner);
 	Get->Set_Owner(m_pOwner);
 	Eat->Set_Owner(m_pOwner);
@@ -68,6 +74,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	TransGet->Set_Owner(m_pOwner);
 	Diy->Set_Owner(m_pOwner);
 	Craft->Set_Owner(m_pOwner);
+	MissionComplete->Set_Owner(m_pOwner);
 	
 	auto toolLayer = CLayerState::Create();
 	toolLayer->Set_Machine(this);
@@ -94,6 +101,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	auto Scoop= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Scoop>("Tool_Scoop_State");
 	auto Net= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Net>("Tool_Net_State");
 	auto Pole= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_Pole>("Tool_Pole_State");
+	auto ReleaseTool= m_LayerStates[STATE_LAYER::TOOL]->Add_State<CPlayerState_ReleaseTool>("Tool_Release_State");
 
 	Idle->Set_Owner(m_pOwner);
 	Walk->Set_Owner(m_pOwner);
@@ -112,6 +120,7 @@ HRESULT CPlayerStateMachine::Initialize()
 	Pole->Set_Owner(m_pOwner);
 	PoleAction->Set_Owner(m_pOwner);
 
+	ReleaseTool->Set_Owner(m_pOwner);
 	ActionHub->Set_Owner(m_pOwner);
 
 	m_LayerStates[STATE_LAYER::TOOL]->Excute(ToolBase);

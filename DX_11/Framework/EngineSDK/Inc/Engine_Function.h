@@ -49,7 +49,6 @@ namespace Engine
 			if (0 == iRefCnt)
 				pInstance = nullptr;
 		}
-
 		return iRefCnt;
 	}
 

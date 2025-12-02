@@ -32,8 +32,8 @@ private:
 private:
 	class CItemSpawner* m_pItemSpawner = { nullptr };
 	CGameObject* m_pTarget = { nullptr };
-	_float m_fSpawnTime = { 24.f };
-	_float m_fElapsedTime = { 0.f };
+	_float m_fSpawnTime = { 34.f };
+	_float m_fElapsedTime = { 34.f };
 	unordered_map<string, INSECT_DATA_DESC> m_InsectDataTable;
 	unordered_map<_uint, string> m_NameTable;
 

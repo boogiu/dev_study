@@ -53,7 +53,6 @@ HRESULT CGridObject::Initialize(INIT_DESC* pArg)
 	if(MaterialDat)
 	MaterialDat->Link_Shader(G_GlobalLevelKey, "VTX_PlaneGrid.hlsl");
 	customInstance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "TileCell.png", TEXTURE_TYPE::ALBEDO);
-	customInstance->Set_Blended(true);
 	SHADER_PARAM ScaleXParam = {};
 	ScaleXParam.iSize = sizeof(_uint);
 	ScaleXParam.pData = &m_iScaleX;

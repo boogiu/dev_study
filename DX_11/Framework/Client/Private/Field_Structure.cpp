@@ -68,12 +68,18 @@ HRESULT CField_Structure::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<s
 	if (FAILED(hr)) {
 		int i = 0;
 	}
+
 	if (CSkeletalModel* pSkel = Get_Component<CSkeletalModel>()) {
 		Get_Component<CSkeletalModel>()->Hide_MehsByName("mWinterSnow-mesh");
 		Get_Component<CSkeletalModel>()->Hide_MehsByName("mWinterSnow");
 		Get_Component<CSkeletalModel>()->Hide_MehsByName("Snow_1__mWinterSnow");
 		Get_Component<CSkeletalModel>()->Hide_MehsByName("Snow_1__mWinterSnow-mesh");
 	}
+	for (auto& instance : Get_Component<CMaterial>()->Get_Material_Instance())
+	{
+		instance->Override_Pass("Structure");
+	}
+
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
 	auto Box = Get_Component<CModel>()->Get_WorldBoundingBox();
 	auto Indecies = tileSystem->Get_IndeciesByArea(
@@ -84,7 +90,6 @@ HRESULT CField_Structure::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<s
 	{
 		tileSystem->Add_TileFlagByIndex(idx, static_cast<_uint>(
 			TILE_FLAG::FLAG_BLOCKED | TILE_FLAG::FLAG_STRUCTURE));
-			tileSystem->Set_Material_ID(idx, { 1,1,0,0 });
 	}
 
 	return hr;

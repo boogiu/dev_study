@@ -1,7 +1,7 @@
 #pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
-class CPipeLine :
+class ENGINE_DLL CPipeLine :
     public CBase
 {
     struct alignas(16)  FrameBuffer
@@ -26,15 +26,6 @@ class CPipeLine :
         _float4 vShadowPosition;
         _float zShadowFar;
         _float3 ShadowPadding;
-    };
-
-    struct ObjectBuffer
-    {
-        _float4x4 matWorld;
-    };
-
-    struct ObjectBufferArray {
-        ObjectBuffer Objects[1024]; 
     };
 
     struct SkinningBuffer

@@ -15,6 +15,7 @@ public:
     virtual void Update_Timer(const string& imguiID) PURE;
     virtual _float Get_DeltaTime(const string& imguiID, _bool raw = false) PURE;
     virtual void Set_TimeScale(const string& imguiID, _float scale) PURE;
+    virtual _float Get_TotalTime(const string& timerID) PURE;
 };
 
 NS_END

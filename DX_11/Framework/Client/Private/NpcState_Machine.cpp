@@ -40,8 +40,6 @@ void CNpcState_Machine::Update(_float dt)
 			LayerState.second->Update(dt);
 	}
 
-	auto Animator = m_pOwner->Get_Component<CAnimator3D>();
-	Animator->Update_Animation(dt);
 }
 
 void CNpcState_Machine::Request_ChangeState(STATE_LAYER eLayer, const string& NextState)

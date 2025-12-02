@@ -32,11 +32,6 @@ HRESULT CFishSpawner::Initialize(INIT_DESC* pArg)
 
 void CFishSpawner::Awake()
 {
-	//		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
-	//		if (!nowLevel)
-	//			return;
-	//		auto EventSys = nowLevel->Get_LevelObject<CEventSystem>();
-	//		EventSys->Add_Listner<CFishSpawner, BaseEvent>(this, &CFishSpawner::Register_River);
 }
 
 HRESULT CFishSpawner::Link_ItemSpawner(CItemSpawner* pItemSpawner)
@@ -58,14 +53,10 @@ void CFishSpawner::Priority_Update(_float dt)
 
 void CFishSpawner::Update(_float dt)
 {
-	static bool span = { false };
-	if (!span) {
+	
+	if (m_fElapsedTime > m_fSpawnTime) {
 		Spawn_Fish();
-		span = true;
 	}
-//	if (m_fElapsedTime >5.f) {
-//		Spawn_Fish();
-//	}
 }
 
 void CFishSpawner::Late_Update(_float dt)

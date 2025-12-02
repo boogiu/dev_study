@@ -3,6 +3,7 @@
 
 NS_BEGIN(Engine)
 class CGameInstance;
+class CUI_Object;
 class IProtoService;
 class IObjectService;
 NS_END
@@ -33,8 +34,10 @@ private:
 	CGameObject* m_pSky = { nullptr };
 	CGameObject* m_pSun = { nullptr };
 	CGameObject* m_pCloud = { nullptr };
+	CGameObject* m_pLeaf = { nullptr };
 	CGameObject* m_pPlayer = { nullptr };
 	class CMapLoader* m_pLoader = { nullptr };
+	_bool m_bStart = false;
 public:
 	static CGamePlayLevel* Create(const string& LevelKey);
 	virtual void Free() override;

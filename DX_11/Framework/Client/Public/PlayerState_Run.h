@@ -20,11 +20,15 @@ public:
 
 private:
     void Request_Dust();
+    void Request_Flower();
+
 private:
     _bool m_bFliping = { false };
     _float2 m_vLastAxis = {};
     _float m_fDuration = {};
     _float m_fRunTime = {};
+    _float m_fRunSoundTime = {};
+    TILE_INDEX m_prevIndex = {};
 public:
     static CPlayerState_Run* Create();
     virtual void Free();

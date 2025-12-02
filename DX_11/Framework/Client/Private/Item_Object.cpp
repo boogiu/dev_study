@@ -9,6 +9,8 @@
 #include "Animator3D.h"
 #include "MaterialData.h"
 #include "MaterialInstance.h"
+#include "AudioSource.h"
+
 CItem_Object::CItem_Object()
 {
 }
@@ -26,6 +28,7 @@ HRESULT CItem_Object::Initialize_Prototype()
 	Add_Component<CMaterial>();
 	Add_Component<CAABB_Collider>();
 	Add_Component<CBoneFollower>();
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Obj_FallLand_Leaf_Grass_00.wav", "Ground");
 
 	return S_OK;
 }
@@ -132,6 +135,7 @@ void CItem_Object::Update_ByState(_float dt)
 		//m_pTransform->Translate({ 0,-dt * 45,0 });
 		if (Get_Position().y <= m_MarginY) {
 			Find_Ground();
+			Get_Component<CAudioSource>()->Play("Ground");
 		}
 	}
 			 break;
@@ -185,7 +189,7 @@ void CItem_Object::Throw_Item(_float dt)
 	/*포물선 느낌으로*/
 	_float4 movePos;
 	XMStoreFloat4(&movePos, MovedPos);
-	movePos.y += 3 * sinf(XMConvertToRadians(45)) - m_fBoundingTime * 9.8f;
+	movePos.y += 1 * sinf(XMConvertToRadians(45)) - m_fBoundingTime * 4.8f;
 
 	if (movePos.y <= m_MarginY) {
 		movePos.y = m_MarginY;
@@ -301,12 +305,13 @@ void CItem_Object::MoveToIndex(_float dt)
 		m_eState = FINDED; /*Change _To FInded*/
 		m_fBoundingTime = 0.f;
 		Find_Ground();
+		Get_Component<CAudioSource>()->Play("Ground");
 		return;
 	}
 
 	_float4 movePos;
 	XMStoreFloat4(&movePos, vMove);
-	movePos.y += 3 * sinf(XMConvertToRadians(45)) - m_fBoundingTime * 9.8f;
+	movePos.y += 2 * sinf(XMConvertToRadians(45)) - m_fBoundingTime *4.8f;
 
 	if (movePos.y <= m_MarginY) {
 		movePos.y = m_MarginY;

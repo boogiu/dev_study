@@ -41,7 +41,6 @@ HRESULT CPlayerState_Get::OnEnter()
 		default:
 			break;
 	}
-
 	return S_OK;
 }
 
@@ -62,6 +61,7 @@ void CPlayerState_Get::OnUpdate(_float dt)
 		if (Animator->isOverAnimTiming(0.95)) {
 			m_pPlayer->Camera_Zoom_In();
 			Animator->Change_Animation("Generic_Get.anim", true);
+			m_pPlayer->Play_Sound("Get");
 			m_ePhase = Idle;
 		}
 		break;
@@ -153,7 +153,7 @@ EventMsgDesc CPlayerState_Get::Make_Sequence(CGameObject* pObject)
 	desc.OnClose = [&]() {
 		auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 		Animator->Change_Animation("Generic_Putaway.anim", true);
-		m_pPlayer->Camera_Zoom_Out();
+		m_pPlayer->Camera_Restore();
 		m_ePhase = PutIn;
 		};
 

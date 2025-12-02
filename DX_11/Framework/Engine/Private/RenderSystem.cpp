@@ -142,6 +142,10 @@ HRESULT CRenderSystem::Render_Combined()
 	m_pTargetManager->Get_TargetParam("Target_Depth", DepthParam);
 	m_pShader->Bind_Value("g_DepthTexture", DepthParam);
 
+	SHADER_PARAM EmmisiveParam = {};
+	m_pTargetManager->Get_TargetParam("Target_Emission", EmmisiveParam);
+	m_pShader->Bind_Value("g_EmmisiveTexture", EmmisiveParam);
+
 	SHADER_PARAM ShadeParam = {};
 	m_pTargetManager->Get_TargetParam("Target_Shade", ShadeParam);
 	m_pShader->Bind_Value("g_ShadeTexture", ShadeParam);

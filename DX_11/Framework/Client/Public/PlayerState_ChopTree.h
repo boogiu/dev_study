@@ -4,6 +4,7 @@ NS_BEGIN(Client)
 class CPlayerState_ChopTree :
     public CPlayerState
 {
+    enum Encountered {TREE,REPELL,AIR,END};
 private:
     CPlayerState_ChopTree();
     virtual ~CPlayerState_ChopTree() DEFAULT;
@@ -22,6 +23,7 @@ public:
 private:
     _bool m_bOnTree = {};
     _bool m_bInCycle = {};
+    Encountered m_eEncounter;
 public:
     static CPlayerState_ChopTree* Create();
     virtual void Free();

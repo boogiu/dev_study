@@ -76,8 +76,8 @@ void CDialogueManager::onStart_Dialogue(OnStartDialogue startMsg)
 		return;
 
 	const string& expectedCond = seqList[0].EntryCondition;
-	if (!expectedCond.empty() && expectedCond != startMsg.EntryCondition)
-		return;
+	//if (!expectedCond.empty() && expectedCond != startMsg.EntryCondition)
+	//	return;
 
 	m_pSystem->OnBroadCast<BaseEvent>(OnNoticeDialogue{ EVENT_TYPE::NoticeDialogue, startMsg.pSpeaker, startMsg.pListner });
 	m_pSystem->OnBroadCast<BaseEvent>(OnNoticeDialogue{ EVENT_TYPE::NoticeDialogue, startMsg.pListner, startMsg.pSpeaker });

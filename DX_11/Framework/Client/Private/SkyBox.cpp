@@ -54,6 +54,7 @@ HRESULT CSkyBox::Initialize(INIT_DESC* pArg)
 		instance->Set_Param("IndirectTexture", { pRcsMgr->Load_Texture("GamePlay_Level","Cloud_m_cloud_indirect.png")->Get_SRV(), "Texture2D", 0 });
 		instance->Set_Param("CloudTexture", { pRcsMgr->Load_Texture("GamePlay_Level","Cloud_m_cloud_seed.png")->Get_SRV(), "Texture2D", 0 });
 		instance->Set_Param("CommonTexture", { pRcsMgr->Load_Texture("GamePlay_Level","Cloud_VRCloudCommon.png")->Get_SRV(), "Texture2D", 0 });
+		instance->Set_Param("skyColor", { &m_SkyColor, "float4", sizeof(_float4)});
 	}
 	return S_OK;
 }
@@ -73,6 +74,7 @@ void CSkyBox::Late_Update(_float dt)
 
 void CSkyBox::Render_GUI()
 {
+	ImGui::ColorEdit4("SkyColor", &m_SkyColor.x);
 }
 
  

@@ -18,6 +18,7 @@ HRESULT CPlayerState_PoleAction::OnEnter()
 	auto TilePack = m_pPlayer->Get_TileInfoPacket();
 	_uint Flag = TilePack.Range_FowardInfo.TileFlag;
 
+	//m_TileInfoPack.Range_FowardInfo = TileSys->Get_InfoByIndex(Get_FowardIndex());
 	HRESULT hr;
 
 	if ((TILE_FLAG::FLAG_RIVER & Flag) != 0) {
@@ -29,7 +30,6 @@ HRESULT CPlayerState_PoleAction::OnEnter()
 		m_pPlayer->Change_Tool_Anim("ToolPoleAnim_Air.anim");
 		m_eState = AIR;
 	}
-
 	return S_OK;
 }
 
@@ -46,7 +46,7 @@ void CPlayerState_PoleAction::OnUpdate(_float dt)
 	if (m_eState == CATCH && m_pPlayer->Get_InfoPack().pObjectOnLeftHand) {
 		m_eState = GET;
 		Animator->Change_Animation("ToolPole_CatchKeep.anim");
-		Animator->Change_Animation("ToolPoleAnim_CatchKee.anim");
+		Animator->Change_Animation("ToolPoleAnim_CatchKeep.anim");
 		isCatch = true;
 	}
 
@@ -56,6 +56,8 @@ void CPlayerState_PoleAction::OnUpdate(_float dt)
 		if (Animator->isOverAnimTiming(0.4f)) {
 			m_pPlayer->BroadCast_Event(POLE_THROW_EVENT{ EVENT_TYPE::FishBeyThrow, m_pPlayer->Get_Component<CTransform>()->Dir(STATE::LOOK),false });
 			m_eState = THROW;
+			m_pPlayer->Camera_Far_Out();
+			m_pPlayer->Play_Sound("Fishing_Throw");
 		}
 		break;
 
@@ -81,6 +83,7 @@ void CPlayerState_PoleAction::OnUpdate(_float dt)
 			m_pPlayer->BroadCast_Event(
 				POLE_THROW_EVENT{ EVENT_TYPE::FishBeyThrow, {},true });
 				m_eState = PULLBACK;
+				m_pPlayer->Play_Sound("Fishing_Miss");
 		}
 		break;
 
@@ -99,6 +102,7 @@ void CPlayerState_PoleAction::OnUpdate(_float dt)
 	case Client::CPlayerState_PoleAction::PULLBACK:
 		if (Animator->isCurrentAnimEnd()) {
 			m_eState = END;
+			m_pPlayer->Camera_Restore();
 		}
 		break;
 

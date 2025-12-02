@@ -13,6 +13,8 @@
 #include "Level.h"
 #include "DialogueManager.h"
 #include "NonPlayer.h"
+#include "ClientHelper.h"
+#include "AudioSource.h"
 
 CUI_TalkingMsg::CUI_TalkingMsg()
 {
@@ -26,6 +28,7 @@ CUI_TalkingMsg::CUI_TalkingMsg(const CUI_TalkingMsg& rhs)
 HRESULT CUI_TalkingMsg::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
+	Add_Component<CAudioSource>();
 	return S_OK;
 }
 
@@ -84,7 +87,6 @@ void CUI_TalkingMsg::Update(_float dt)
 	if (!m_bActive) return;
 	if (!m_bOpenComplete)
 		return;
-
 	m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);
 	m_pTexts->Set_Active(true);
 	m_pNameTag->Set_Active(true);
@@ -103,14 +105,21 @@ void CUI_TalkingMsg::Update(_float dt)
 			//아직 잘라낸 숫자가(타이핑이 된 숫자가) 적은 동안에는 계속 타이핑 진행
 			m_iTypeSubStr++; //타이핑 시간 지났으니 다음 것도 출력
 
-			if (Fulltext.substr(m_iTypeSubStr, 1) == L"."|| Fulltext.substr(m_iTypeSubStr, 1) == L",")
+			if (Fulltext.substr(m_iTypeSubStr, 1) == L"." || Fulltext.substr(m_iTypeSubStr, 1) == L",")
 				m_fTypePuaseTime = .15f;
 			else
-				m_fTypePuaseTime = .05f;
+				m_fTypePuaseTime = .08f;
 
+			wstring vowels = ClientHelper::ExtractVowels(Fulltext.substr(m_iTypeSubStr - 1, 1));
+			if (!vowels.empty())
+			{
+				wstring one(1, vowels.back());
+				PlaySound_Vowel(one);
+			}
+			else
+				PlaySound_Vowel(L"");
 		}
 		m_fTypingTime = 0.f;
-
 
 		visibleText = Fulltext.substr(0, m_iTypeSubStr);
 		m_pTexts->Get_Component<CTextSlot>()->Set_Text(visibleText);
@@ -119,6 +128,7 @@ void CUI_TalkingMsg::Update(_float dt)
 		if (visibleText.size() == Fulltext.size() && m_fElapseTime > m_Sequences[m_nowSeqIndex].pauseTime && m_bMotionCalled)
 		{
 			m_bHasSelection = !(m_Sequences[m_nowSeqIndex].choiceSelection.empty());
+			PlaySound_Vowel(L"");
 
 			// 선택지가 없다면
 			if (!m_bHasSelection) {
@@ -135,7 +145,6 @@ void CUI_TalkingMsg::Update(_float dt)
 			}
 		}
 	}
-
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 }
 
@@ -166,16 +175,39 @@ void CUI_TalkingMsg::UI_Active(void* pArg)
 	m_bActive = true;
 	m_SpeakerName = desc->SpeakerName;
 	m_pSpeaker = desc->pSpeaker;
+
+	m_VoiceInt = to_string(m_pSpeaker->Get_VoiceInt());
+	m_BaseVoice = m_pSpeaker->Get_VoiceKey();
+
 	if (desc && desc->OnClose)
 		m_onClose = desc->OnClose;
 
 	m_bSeqComplete = false;
+
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level",m_BaseVoice + "_A_" + m_VoiceInt + ".wav",	m_BaseVoice + "_A_" + m_VoiceInt + ".wav",	false, SOUND_GROUP::TALK);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level",m_BaseVoice + "_E_" + m_VoiceInt + ".wav",	m_BaseVoice + "_E_" + m_VoiceInt + ".wav",	false, SOUND_GROUP::TALK);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level",m_BaseVoice + "_I_" + m_VoiceInt + ".wav",	m_BaseVoice + "_I_" + m_VoiceInt + ".wav",	false, SOUND_GROUP::TALK);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level",m_BaseVoice + "_O_" + m_VoiceInt + ".wav",	m_BaseVoice + "_O_" + m_VoiceInt + ".wav",	false, SOUND_GROUP::TALK);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level",m_BaseVoice + "_U_" + m_VoiceInt + ".wav",	m_BaseVoice + "_U_" + m_VoiceInt + ".wav",	false, SOUND_GROUP::TALK);
+
+
+	Get_Component<CAudioSource>()->Set_3DAttribute(m_BaseVoice + "_A_" + m_VoiceInt + ".wav", false);
+	Get_Component<CAudioSource>()->Set_3DAttribute(m_BaseVoice + "_E_" + m_VoiceInt + ".wav", false);
+	Get_Component<CAudioSource>()->Set_3DAttribute(m_BaseVoice + "_I_" + m_VoiceInt + ".wav", false);
+	Get_Component<CAudioSource>()->Set_3DAttribute(m_BaseVoice + "_O_" + m_VoiceInt + ".wav", false);
+	Get_Component<CAudioSource>()->Set_3DAttribute(m_BaseVoice + "_U_" + m_VoiceInt + ".wav", false);
+
+	Get_Component<CAudioSource>()->Set_SlotVolume(m_BaseVoice + "_A_" + m_VoiceInt + ".wav", 0.8);
+	Get_Component<CAudioSource>()->Set_SlotVolume(m_BaseVoice + "_E_" + m_VoiceInt + ".wav", 0.8);
+	Get_Component<CAudioSource>()->Set_SlotVolume(m_BaseVoice + "_I_" + m_VoiceInt + ".wav", 0.8);
+	Get_Component<CAudioSource>()->Set_SlotVolume(m_BaseVoice + "_O_" + m_VoiceInt + ".wav", 0.8);
+	Get_Component<CAudioSource>()->Set_SlotVolume(m_BaseVoice + "_U_" + m_VoiceInt + ".wav", 0.8);
 }
 
 void CUI_TalkingMsg::UI_DeActive(void* pArg)
 {
 	m_bActive = false;
-	
+
 	m_vOpenSize = { 0,0 };
 	m_fSizeX = 0;
 	m_fSizeY = 0;
@@ -197,12 +229,50 @@ void CUI_TalkingMsg::UI_DeActive(void* pArg)
 			nullptr,
 			m_Sequences[m_nowSeqIndex].NextSequenceID,
 			m_Sequences[m_nowSeqIndex].NextCondition,
-			m_Sequences[m_nowSeqIndex].postActionMsg}
-		);
+			m_Sequences[m_nowSeqIndex].postActionMsg }
+			);
 
 	m_onClose = nullptr;
 	SequenceClear();
 }
+void CUI_TalkingMsg::PlaySound_Vowel(wstring vowel)
+{
+	auto audio = Get_Component<CAudioSource>();
+
+	// 이전 모음들 부드럽게 정리 (모든 슬롯 공통 페이드)
+	audio->FadeOut_Volume(m_BaseVoice + "_A_" + m_VoiceInt + ".wav", 0.21f);
+	audio->FadeOut_Volume(m_BaseVoice + "_E_" + m_VoiceInt + ".wav", 0.24f);
+	audio->FadeOut_Volume(m_BaseVoice + "_I_" + m_VoiceInt + ".wav", 0.12f);
+	audio->FadeOut_Volume(m_BaseVoice + "_O_" + m_VoiceInt + ".wav", 0.17f);
+	audio->FadeOut_Volume(m_BaseVoice + "_U_" + m_VoiceInt + ".wav", 0.20f);
+
+	if (vowel == L"아") {
+		string key = m_BaseVoice + "_A_" + m_VoiceInt + ".wav";
+		audio->RePlay(key);
+		audio->Set_SlotVolume(key, 0.8f);
+	}
+	else if (vowel == L"에") {
+		string key = m_BaseVoice + "_E_" + m_VoiceInt + ".wav";
+		audio->RePlay(key);
+		audio->Set_SlotVolume(key, 1.0f);
+	}
+	else if (vowel == L"이") {
+		string key = m_BaseVoice + "_I_" + m_VoiceInt + ".wav";
+		audio->RePlay(key);
+		audio->Set_SlotVolume(key, 0.8f);
+	}
+	else if (vowel == L"오") {
+		string key = m_BaseVoice + "_O_" + m_VoiceInt + ".wav";
+		audio->RePlay(key);
+		audio->Set_SlotVolume(key, 0.9f);
+	}
+	else if (vowel == L"우") {
+		string key = m_BaseVoice + "_U_" + m_VoiceInt + ".wav";
+		audio->RePlay(key);
+		audio->Set_SlotVolume(key, 0.65f);
+	}
+}
+
 
 void CUI_TalkingMsg::SequenceClear()
 {
@@ -276,6 +346,7 @@ void CUI_TalkingMsg::DoSeqMotions()
 
 	m_pSpeaker->Set_Animation(m_Sequences[m_nowSeqIndex].Motion);
 	if (m_bMotionCalled) return;
+
 	m_pSpeaker->Set_Voice(m_Sequences[m_nowSeqIndex].Voice);
 	m_pSpeaker->Set_Emotion(m_Sequences[m_nowSeqIndex].Emotion);
 	m_pSpeaker->Set_Camera(m_Sequences[m_nowSeqIndex].Camera);
@@ -313,7 +384,7 @@ void CUI_TalkingMsg::ReArrange_Sequence(_int selectChoice)
 	m_bSelectionActive = false;
 	m_pSelectPanel->DeActive();
 	m_pSelectPanel->Get_Component<CSprite2D>()->Set_CompActive(false);
-	m_iTypeSubStr =  0;
+	m_iTypeSubStr = 0;
 }
 
 CUI_TalkingMsg* CUI_TalkingMsg::Create()
