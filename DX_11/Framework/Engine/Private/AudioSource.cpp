@@ -120,12 +120,10 @@ void CAudioSource::Set_SlotPuase(const string& slotKey, _bool isPaused)
 
 	AUDIO_SLOT& slot = iter->second;
 
-	if (slot.pChanel)
-	{
-		slot.pChanel->stop();      // FMOD 채널 정지
-		slot.pChanel = nullptr;    // 포인터 정리
-		slot.isPaused = false;
-	}
+	if (!slot.pChanel)
+		return;
+	slot.pChanel->setPaused(isPaused);
+	slot.isPaused = isPaused;
 }
 
 void CAudioSource::Set_3DAttribute(const string& slotKey, _bool _3DAttribute)
@@ -162,6 +160,37 @@ void CAudioSource::FadeOut_Volume(const string& slotKey, _float factor)
 	}
 	else
 	iter->second.pChanel->setVolume(newVol);
+}
+
+void CAudioSource::FadeIn_Volume(const string& slotKey, _float step, _float dst)
+{
+	auto iter = m_Audios.find(slotKey);
+	if (iter == m_Audios.end())
+		return;
+
+	auto& slot = iter->second;
+
+	if (!slot.pChanel)
+		return;
+
+	bool isPlaying = false;
+	if (slot.pChanel->isPlaying(&isPlaying) != FMOD_OK || !isPlaying)
+		return;
+
+	float vol = 0.f;
+	slot.pChanel->getVolume(&vol);
+
+	float newVol = vol + step;   
+
+	if (newVol >= dst)
+	{
+		newVol = dst;
+		slot.pChanel->setVolume(newVol);
+	}
+	else
+	{
+		slot.pChanel->setVolume(newVol);
+	}
 }
 
 

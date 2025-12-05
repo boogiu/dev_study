@@ -100,7 +100,7 @@ void CSmokeEffect::Update(_float dt)
 		float angle = XM_2PI * (float)((i * 2) % m_ParicleCount) / m_ParicleCount + phase;
 		auto transform = m_Clouds[i]->Get_Component<CTransform>();
 		auto Lerp = [](_float a, _float b, _float t) -> _float{return a + (b - a) * t;};
-		float scale = Lerp(1.f, 9.0f, s); // 가장 작을 때 0.4, 최대 2.0
+		float scale = Lerp(1.f, 14.0f, s); // 가장 작을 때 0.4, 최대 2.0
 		transform->Scale({ scale, scale, scale });
 
 		// 위치 퍼짐

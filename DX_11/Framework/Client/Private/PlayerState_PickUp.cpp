@@ -6,6 +6,7 @@
 #include "GameInstance.h"
 #include "IInputService.h"
 #include "TileSystem.h"
+#include "Item_Object.h"
 
 CPlayerState_PickUp::CPlayerState_PickUp()
 {
@@ -14,14 +15,14 @@ CPlayerState_PickUp::CPlayerState_PickUp()
 HRESULT CPlayerState_PickUp::OnEnter()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	HRESULT hr =E_FAIL;
-	_uint Flag =m_pPlayer->Get_TileInfoPacket().Range_FowardInfo.TileFlag;
+	HRESULT hr = E_FAIL;
+	_uint Flag = m_pPlayer->Get_TileInfoPacket().Range_FowardInfo.TileFlag;
 
 	if ((TILE_FLAG::FLAG_ONITEM & Flag) != 0) {
 		Animator->Stop_AnimationBlend();
 		Item_Found = true;
 		m_pPlayer->Adjust_To_Foward();
-		 hr = Animator->ForceChange_Animation("Pickup.anim", false);
+		hr = Animator->ForceChange_Animation("Pickup.anim", false);
 	}
 	else {
 		return E_FAIL;
@@ -47,9 +48,11 @@ void CPlayerState_PickUp::OnUpdate(_float dt)
 HRESULT CPlayerState_PickUp::OnExit()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
-	Animator->Restart_AnimationBlend(); 
+	Animator->Restart_AnimationBlend();
+	m_pPlayer->ActiveCollider_LeftHand(false, "");
 	Item_Found = false;
 	m_SoundComplete = false;
+	m_pPlayer->Get_InfoPack().isAddedItem = false;
 	return S_OK;
 }
 
@@ -65,6 +68,17 @@ CState* CPlayerState_PickUp::HandleTransition()
 	}
 
 	return nullptr;
+}
+void CPlayerState_PickUp::OnCollisionEnter(COLLISION_CONTEXT context)
+{
+	if (context.EventTag == "PickedByHand")
+	{
+
+		if (!m_pPlayer->Get_InfoPack().isAddedItem) {
+			m_pPlayer->Add_ITEM(dynamic_cast<CItem_Object*>(context.Owner)->Get_ItemData());
+			m_pPlayer->Get_InfoPack().isAddedItem = true;
+		}
+	}
 }
 
 void CPlayerState_PickUp::Render_State()

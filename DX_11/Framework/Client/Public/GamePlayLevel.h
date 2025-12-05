@@ -38,6 +38,8 @@ private:
 	CGameObject* m_pPlayer = { nullptr };
 	class CMapLoader* m_pLoader = { nullptr };
 	_bool m_bStart = false;
+	_bool m_bFirstIn = false;
+
 public:
 	static CGamePlayLevel* Create(const string& LevelKey);
 	virtual void Free() override;

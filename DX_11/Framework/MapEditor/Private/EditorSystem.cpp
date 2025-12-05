@@ -342,7 +342,7 @@ HRESULT CEditorSystem::Load_MapData()
 	}
 	
 	m_pTileSystem = CGameInstance::GetInstance()->Get_TileSystem();
-	//m_pTileSystem->Execute_InstanceModel(G_GlobalLevelKey, "Base_0.model", "Base_0.mat", "InstancingNoCurve");
+	m_pTileSystem->Execute_InstanceModel(G_GlobalLevelKey, "Base_0.model", "Base_0.mat", "InstancingNoCurve");
 	m_EditorContext.ContextTileInfo = m_pTileSystem->Get_TileSystemInfo();
 	if (FAILED(TileInfo))
 	{

@@ -14,6 +14,7 @@ public:
 	virtual  FMOD::System* Get_System() PURE;
 	virtual void Play(AUDIO_PACKET& packet) PURE;
 	virtual void Set_Listener(class CTransform* pTransform) PURE;
+	virtual void Set_GroupVolume(SOUND_GROUP group, _float volume)PURE;
 
 };
 

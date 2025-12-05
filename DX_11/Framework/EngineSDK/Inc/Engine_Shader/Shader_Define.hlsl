@@ -50,9 +50,9 @@ cbuffer MaterialBuffer : register(b6)
 cbuffer TileSystemInfo : register(b7)
 {
     float2 vMin = float2(400.0f, 480.0f);
-    float2 vMax = float2(1520.0f, 1440.0f);
+    float2 vMax = float2(1320.0f, 1320.0f);
     float2 WorldSize;
-    float repeatCount = 100.0f;
+    float repeatCount = 50.0f;
     float2 PalettePixel = { 0.5f, 0.54f };
 };
 
@@ -70,12 +70,20 @@ cbuffer ShadowBuffer : register(b8)
 
 cbuffer CurvedWorldBuffer : register(b10)
 {
-    //float CurveStrength = { 0.85 };
-    //float PlanetRadius = { 900};
+    float CurveStrength = { 0.85 };
+    float PlanetRadius = { 900};
     
-    float CurveStrength = { 0.f };
-    float PlanetRadius = {1000 };
+   // float CurveStrength = { 0.f };
+   // float PlanetRadius = {1000 };
 };
+float3 ApplyCurve(float3 pos)
+{
+    float3 toObj = pos - vCamPosition.xyz;
+    float dist = dot(toObj, CameraForward); // 카메라 전방 기준 거리
+    float curve = (dist * dist) / PlanetRadius * CurveStrength;
+    pos.y -= curve;
+    return pos;
+}
 
 struct BoneMatrix{matrix BoneMat;};
 struct TransfomMatrix{matrix Transform;};

@@ -50,6 +50,7 @@ private:
     _int m_Col = {5};
     _int m_Row = {5};
     _int m_NowIndex = {};
+    _int m_PrevIndex = {};
 
     class CUI_Cursor* m_pCursor = { nullptr };
     class CCraftCard* m_pCraftCard= { nullptr };

@@ -145,7 +145,9 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     float4 vWorldPos = mul(vViewPos, matViewInverse);
 
     // 式式 Point Light 寞щ/馬潸 式式式式式式式式式式式式式式式式式式式式式
-    float3 Lvec = (g_vLightPos.xyz - vWorldPos.xyz); // 塭檜お ⊥ а撚
+    
+    float3 lightPosCurved = ApplyCurve(g_vLightPos.xyz); // 塭檜お紫 堊睦 瞳辨
+    float3 Lvec = (lightPosCurved.xyz - vWorldPos.xyz); // 塭檜お ⊥ а撚
     float dist = length(Lvec);
     float3 L = Lvec / max(dist, 1e-4f);
 
@@ -227,6 +229,25 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     return Out;
 }
 
+float BloomThreshold = 1.0;
+PS_OUT_BACKBUFFER PS_MAIN_BRIGHTNESS(PS_IN In)
+{
+    PS_OUT_BACKBUFFER Out;
+
+    vector vScene = g_FinalTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vEmissive = g_EmmisiveTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    vector vBrightFromScene = max(vScene - BloomThreshold, 0.0f);
+
+    vector vBrightFromEmissive = vEmissive;
+
+    vector vBloomSrc = vBrightFromScene + vBrightFromEmissive;
+
+    Out.vBackBuffer = float4(vBloomSrc.rgb, 1.0f);
+    return Out;
+}
+
 float exposure = 2.3f; // 髦礎 嫩啪
 float whitePoint = 8.f; // ж檜塭檜お 說葬 揚楝憮 睡萄毀啪.8;
 
@@ -305,7 +326,15 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_COMBINED();
     }
-
+    pass Brightness
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_BRIGHTNESS();
+    }
     pass Final
     {
         SetRasterizerState(RS_Default);

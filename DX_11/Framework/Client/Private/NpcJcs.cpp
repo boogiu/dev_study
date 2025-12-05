@@ -29,7 +29,7 @@ HRESULT CNpcJcs::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 
 	m_InstanceName = "JCS";
-	m_VoiceInt = 72;
+	m_VoiceInt = 70;
 	return S_OK;
 }
 

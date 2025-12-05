@@ -4,6 +4,7 @@ float fRadian;
 float2 fAtlasIndex;
 float2 fAtlasScale;
 Texture2D DepthTexture;
+float4x4 g_WorldMatrix;
 
 struct VS_IN
 {
@@ -107,6 +108,14 @@ struct PS_OUT
     float4 vDiffuse : SV_TARGET0;
     float4 vNormal : SV_TARGET1;
     float4 vDepth : SV_TARGET2;
+};
+
+struct PS_G_OUT
+{
+    float4 vDiffuse : SV_TARGET0;
+    float4 vNormal : SV_TARGET1;
+    float4 vDepth : SV_TARGET2;
+    float4 vEmmision : SV_TARGET3;
 };
 
 PS_OUT PS_DUST(PS_IN In)
@@ -285,6 +294,19 @@ PS_OUT PS_EMOTION(PS_IN In)
     return Out;
 }
 
+PS_G_OUT PS_NOTE(PS_IN In)
+{
+    PS_G_OUT Out;
+    
+    float4 vMtrlDiffuse = DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
+    if(vMtrlDiffuse.a < 0.2f)
+        discard;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vEmmision = vMtrlDiffuse;
+    return Out;
+}
+
 
 struct VS_OUT_SHADOW
 {
@@ -330,6 +352,7 @@ PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHDOW In)
    
     return Out;
 }
+
 
 technique11 DefaultTechnique
 {
@@ -397,6 +420,15 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_BILLBOARD();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_EMOTION();
+    }
+    pass Note
+    {
+        SetRasterizerState(RS_NoCull);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_BILLBOARD();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_NOTE();
     }
     pass Shadow
     {

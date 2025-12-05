@@ -82,7 +82,6 @@ void CLight::Set_Desc(const LIGHT_DESC& desc, LIGHT_TYPE eType)
 	m_eType = eType;
 	if(m_ID == -1)
 		m_ID = CGameInstance::GetInstance()->Get_LightMgr()->Register_Light(this);
-
 }
 
 _float4 CLight::Get_Position()

@@ -383,21 +383,21 @@ PS_OUT PS_TILE_INSTANCE_DBUG(PS_INSTATNCE_IN In)
     PS_OUT Out;
        vector Diffuse;
     
-    //if (In.iMtlType.y == -1.f)
-    //{
-    //    Diffuse = float4(0.6, 0.6, 0.2, 0.8);
-    //}
-    //    
-    //else if(In.iMtlType.y == -2.f)
-    //{
-    //    Diffuse = float4(0.f, 0.6, 0.6, 0.8);
-    //}
-    //else if (In.iMtlType.x == 1.f)
-    //{
-    //    Diffuse = float4(1.6, 0.6, 0.2, 0.8);
-    //}
-    //else
-    //    discard;
+    if (In.iMtlType.y == -1.f)
+    {
+        Diffuse = float4(0.6, 0.6, 0.2, 0.8);
+    }
+        
+    else if(In.iMtlType.y == -2.f)
+    {
+        Diffuse = float4(0.f, 0.6, 0.6, 0.8);
+    }
+    else if (In.iMtlType.x != 0.f)
+  {
+      Diffuse = float4(1.6, 0.6, 0.2, 0.8);
+  }
+  else
+      discard;
     
     Out.vDiffuse = Diffuse;
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);

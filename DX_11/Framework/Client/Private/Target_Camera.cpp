@@ -65,6 +65,7 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 	Get_Component<CAudioSource>()->Set_SlotVolume("Zoom_In", 0.45f);
 	Get_Component<CAudioSource>()->Set_SlotVolume("Zoom_Out", 0.45f);
 	//Get_Component<CObjectContainer>()->Add_Child(pObj,true);
+
 	return S_OK;
 }
 
@@ -101,8 +102,17 @@ void CTarget_Camera::Priority_Update(_float dt)
 	case Client::CTarget_Camera::FAR_OUT:
 		Far_Cam(dt);
 		break;
+	case Client::CTarget_Camera::LOOSE:
+		Get_Component<CAudioSource>()->FadeOut_Volume("Env_Wind", 0.9);
+		Get_Component<CAudioSource>()->FadeOut_Volume("BGM_Sunny", 0.9);
+		break;
 	default:
 		break;
+	}
+	if (m_eState != LOOSE)
+	{
+		Get_Component<CAudioSource>()->Play("Env_Wind");
+		Get_Component<CAudioSource>()->Play("BGM_Sunny");
 	}
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
@@ -110,9 +120,8 @@ void CTarget_Camera::Priority_Update(_float dt)
 void CTarget_Camera::Update(_float dt)
 {
 	_float4 targetPos = m_pTarget->Get_Position();
-	Get_Component<CAudioSource>()->Play("Env_Wind");
-	Get_Component<CAudioSource>()->Play("BGM_Sunny");
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
+
 }
 
 void CTarget_Camera::Late_Update(_float dt)
@@ -127,6 +136,9 @@ void CTarget_Camera::Event_Listen(const BaseEvent& event)
 		m_prevState = m_eState;
 			if (evt.moveTag == "Shake")
 				m_eState = SHAKE;
+	}
+	if (event.eType == EVENT_TYPE::Ending) {
+		m_eState = LOOSE;
 	}
 }
 

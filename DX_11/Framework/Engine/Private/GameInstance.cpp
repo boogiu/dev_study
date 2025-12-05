@@ -82,6 +82,7 @@ void CGameInstance::Clear_LevelResource(const string& levelKey)
 
 void CGameInstance::Update_Engine(_float dt)
 {
+	m_totalFrameCount++;
 	/*엔진 제어 업데이트 -> 동기화용*/
 	m_pObjectManager->Pre_EngineUpdate(dt);
 	m_pUIManager->Pre_EngineUpdate(dt);
@@ -164,8 +165,9 @@ CLevel* CGameInstance::Get_CurrentLevel()
 }
 HRESULT CGameInstance::Excute_TileSystemByData(const string& LoadPath)
 {
-	if (m_pTileSystem)
-		return E_FAIL;
+	if (m_pTileSystem) {
+		Safe_Release(m_pTileSystem);
+	}
 
 	m_pTileSystem = CTileSystem::CreateByData(LoadPath);
 

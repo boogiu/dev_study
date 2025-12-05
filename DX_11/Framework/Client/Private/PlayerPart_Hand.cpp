@@ -87,6 +87,7 @@ void CPlayerPart_Hand::Render_GUI()
 void CPlayerPart_Hand::OnCollisionEnter(COLLISION_CONTEXT context)
 {
 	COLLISION_CONTEXT ownerContext = context;
+
 	if (context.Owner->Has_Tag("Item")) {
 		if (context.EventTag.find("ByHand") == string::npos)
 		{
@@ -95,7 +96,6 @@ void CPlayerPart_Hand::OnCollisionEnter(COLLISION_CONTEXT context)
 		}
 	}
 	m_pOwner->OnCollisionEnter(ownerContext);
-
 }
 
 void CPlayerPart_Hand::OnCollisionStay(COLLISION_CONTEXT context)

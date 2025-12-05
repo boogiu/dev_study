@@ -54,9 +54,20 @@ _matrix CCamera::Get_ProjMatrix()
 	return XMMatrixPerspectiveFovLH(XMConvertToRadians(m_fFov), m_fAspect,m_fNear,m_fFar);
 }
 
-void CCamera::Lerp_FOV(_float dst, _float dt)
+_bool CCamera::Lerp_FOV(_float dst, _float dt)
 {
-	m_fFov= m_fFov + (dst - m_fFov) * dt;
+	if (dt < 0.f) dt = 0.f;
+	if (dt > 1.f) dt = 1.f;
+
+	m_fFov = m_fFov + (dst - m_fFov) * dt;
+
+	if (fabsf(dst - m_fFov) < 0.05f)
+	{
+		m_fFov = dst;
+		return true;
+	}
+
+	return false;
 }
 
 void CCamera::Render_GUI()

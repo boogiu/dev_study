@@ -26,6 +26,7 @@
 #include "EventSystem.h"
 
 #include "AudioSource.h"
+#include "EffectSpawner.h"
 
 CPlant_Tree::CPlant_Tree()
 {
@@ -56,12 +57,14 @@ HRESULT CPlant_Tree::Initialize_Prototype()
 	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry.wav", "Shake", false, SOUND_GROUP::SFX);
 	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry.wav", "ShakeKeep", true, SOUND_GROUP::SFX);
 	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry_HitAxe.wav", "Hit", false, SOUND_GROUP::SFX);
-	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry_DownLand4.wav", "Cut", false, SOUND_GROUP::SFX);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry_DownLand4.wav", "Destroy", false, SOUND_GROUP::SFX);
 	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry_Small.wav", "Encount", false, SOUND_GROUP::SFX);
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Tree_Shake_Oak_Dry_Down4.wav", "Down", false, SOUND_GROUP::SFX);
 
 	Get_Component<CAudioSource>()->Set_SlotVolume("Shake", 0.2f);
 	Get_Component<CAudioSource>()->Set_SlotVolume("Hit", 0.2f);
-	Get_Component<CAudioSource>()->Set_SlotVolume("Cut", 0.3f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Down", 0.3f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Destroy", 0.3f);
 	Get_Component<CAudioSource>()->Set_SlotVolume("Encount", 0.2f);
 	Get_Component<CAudioSource>()->Set_SlotVolume("ShakeKeep", 0.2f);
 
@@ -92,6 +95,9 @@ void CPlant_Tree::Update(_float dt)
 	Make_Fruits();
 	Get_Component<CAnimator3D>()->Update_Animation(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
+
+	if (m_isEnded)
+		Update_Bounce(dt);
 }
 
 void CPlant_Tree::Late_Update(_float dt)
@@ -107,6 +113,8 @@ void CPlant_Tree::Render_GUI()
 	}
 
 	ImGui::Text("Type : %d", m_iObjType);
+	ImGui::InputFloat("BoneRadian", &zRadian);
+	ImGui::InputInt("BoneInex", &BoneIndex);
 }
 
 HRESULT CPlant_Tree::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable)
@@ -134,7 +142,6 @@ HRESULT CPlant_Tree::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string
 		return E_FAIL;
 	}
 
-
 	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-5,0,-5}, {5,10,5} });
 
 	auto tileSystem = CGameInstance::GetInstance()->Get_TileSystem();
@@ -152,7 +159,28 @@ HRESULT CPlant_Tree::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string
 		auto eventSys = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
 		eventSys->Add_Listner<CPlant_Tree, BaseEvent>(this, &CPlant_Tree::Remove_Additional);
 	}
+
+	if (m_AdditionalData == "Rythm1") {
+		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+		nowLevel->Get_LevelObject<CEventSystem>()->Add_Listner<CPlant_Tree, BaseEvent>(this, &CPlant_Tree::EventListen);
+	}
+	if (m_AdditionalData == "Rythm2") {
+		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+		nowLevel->Get_LevelObject<CEventSystem>()->Add_Listner<CPlant_Tree, BaseEvent>(this, &CPlant_Tree::EventListen);
+	}
+	if (m_AdditionalData == "Rythm3") {
+		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+		nowLevel->Get_LevelObject<CEventSystem>()->Add_Listner<CPlant_Tree, BaseEvent>(this, &CPlant_Tree::EventListen);
+	}
 	return S_OK;
+}
+
+void CPlant_Tree::EventListen(const BaseEvent& evt)
+{
+	if (evt.eType == EVENT_TYPE::Ending) {
+		m_isEnded = true;
+		m_fLifeTime = 0;
+	}
 }
 
 void CPlant_Tree::Remove_Additional(const BaseEvent& event)
@@ -181,7 +209,7 @@ void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 			_float RLCheck = context.Owner->Get_Position().x;
 			m_isTargetRight = Get_Position().x < RLCheck;
 			m_isCutted = true;
-			Get_Component<CAudioSource>()->Play("Cut");
+			Get_Component<CAudioSource>()->Play("Down");
 		}
 		else {
 			Get_Component<CAudioSource>()->Play("Hit");
@@ -197,14 +225,9 @@ void CPlant_Tree::OnCollisionEnter(COLLISION_CONTEXT context)
 		m_eState = SHAKE;
 		Get_Component<CAudioSource>()->Play("Shake");
 	}
-
 	else if (context.Owner->Has_Tag("Player")) {
 		m_eState = ENCOUNTERED;
 		Get_Component<CAudioSource>()->Play("Encount");
-		if (m_AdditionalData=="Event01_TreeBlock") {
-			auto eventSys  = CGameInstance::GetInstance()->Get_CurrentLevel()->Get_LevelObject<CEventSystem>();
-			eventSys->OnBroadCast<BaseEvent>(QUEST_MSG{ EVENT_TYPE::Quest_Msg, this, m_AdditionalData });
-		}
 	}
 }
 
@@ -267,13 +290,21 @@ void CPlant_Tree::PlayAnim_Cut()
 			Get_Component<CAnimator3D>()->Change_Animation(m_ModelName + "CutL0.anim", false);
 		}
 		m_isCutted = false;
+		Get_Component<CAudioSource>()->Play("Destroy");
+
 	}
 
-	if (Get_Component<CAnimator3D>()->isCurrentAnimEnd()) {
+	if (Get_Component<CAnimator3D>()->isOverAnimTiming(0.8)) {
+		Get_Component<CAudioSource>()->Play("Down");
 		Get_Component<CModel>()->Link_Model("GamePlay_Level", m_ModelName + "Stump.model");
 		auto spawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
 		spawner->ThrowItem("UnitIconPltWood", m_pTransform->Get_Pos(), m_pTransform->Dir(STATE::LOOK));
 		spawner->ThrowItem("UnitIconPltWood", m_pTransform->Get_Pos(), m_pTransform->Dir(STATE::RIGHT));
+
+		auto nowLevel = CGameInstance::GetInstance()->Get_CurrentLevel();
+		_float4 pos = Get_Position();
+		m_isTargetRight ? pos.x -= 10 : pos.x+= 10;
+		nowLevel->Get_LevelObject<CEffectSpawner>()->Request_Effect("Effect_Smoke", { pos ,pos });
 		m_eState = STUMP;
 		m_InstanceTag = "Stump";
 	}
@@ -462,7 +493,6 @@ void CPlant_Tree::Digged_Self(_float dt)
 			{
 				TILE_INDEX ni = { m_Index.IndexX + NEIGHBOR_OFFSET[i].IndexX,
 								  m_Index.IndexZ + NEIGHBOR_OFFSET[i].IndexZ };
-
 				tileSystem->Remove_TileFlagByIndex(ni,
 					static_cast<_uint>(TILE_FLAG::FLAG_BLOCKED)
 				);
@@ -492,7 +522,71 @@ void CPlant_Tree::Normalize_Name(const string& modelName)
 	m_ModelName = BaseModel;
 }
 
+void CPlant_Tree::Update_Bounce(_float dt)
+{
+	
+	if (m_AdditionalData == "Rythm3") {
+		const float period = .6;
+		_float localTime = fmodf(m_fLifeTime, period);      // 0 ~ period
+		_float phase = localTime / period;											// 0 ~ 1
 
+		_float t = phase <= 0.5f ? phase * 2.0f : (1.0f - phase) * 2.0f;
+
+		_float e = EaseIn(t);
+		_float baseScale = 1.0f;
+		_float bounceScale = 1.08f;
+		_float scale = baseScale + (bounceScale - baseScale) *(1- e);
+		m_pTransform->Scale({ 1,scale,1 });
+	}
+	else{
+		const float period = 1.f;
+
+		_float localTime = fmodf(m_fLifeTime, period);      // 0 ~ period
+		_float phase = localTime / period;											// 0 ~ 1
+		_float t = (phase <= 0.5f) ? phase * 2.f : (1.f - phase) * 2.f; // 0→1→0
+
+		_float tA = t;
+		_float tB = -t;          // 위상 반전
+
+		_float eA = EaseInSigned((tA + 1.f) * 0.5);
+		_float eB = EaseInSigned((tB + 1.f) * 0.5);
+
+	float angle =
+		XMConvertToRadians(5.f *
+			(m_AdditionalData == "Rythm1" ? eA : -eA));
+
+	Get_Component<CAnimator3D>()->Control_BoneByIndex(
+		BoneIndex,
+		XMMatrixRotationY(angle)
+	);
+	}
+}
+
+_float CPlant_Tree::EaseIn(_float time)
+{
+	_float c1 = 1.70158;
+	_float c3 = c1 + 1;
+
+	return c3 * time * time * time - c1 * time * time;
+}
+
+_float CPlant_Tree::EaseInSigned(_float time)
+{
+	time = max(0.f, min(time, 1.f)); // saturate
+
+	_float c1 = 1.70158f;
+	_float c3 = c1 + 1.f;
+
+	_float x = c3 * time * time * time - c1 * time * time; // 원래 EaseIn
+
+	// 0~1 → -1~1
+	_float y = x * 2.f - 1.f;
+
+	// BackEase때문에 약간 -1 밑으로 내려갈 수 있으니 필요하면 클램프
+	y = max(-1.f, min(y, 1.f));
+
+	return y;
+}
 
 void CPlant_Tree::Add_Animation()
 {

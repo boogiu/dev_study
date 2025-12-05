@@ -20,8 +20,8 @@ HRESULT CAudioDevice::Initialize()
 		m_Groups.push_back(pGroup);
 	}
     float dopplerScale = 1.0f; // 도플러 효과 강도
-    float distanceFactor = 10.0f; // 1.0이면 1 유닛 = 1m
-    float rolloffScale = 0.5f; // 작을수록 거리 감쇠가 완만해짐
+    float distanceFactor = 15.0f; // 1.0이면 1 유닛 = 1m
+    float rolloffScale = 0.7f; // 작을수록 거리 감쇠가 완만해짐
 
     m_pSystem->set3DSettings(dopplerScale, distanceFactor, rolloffScale);
 
@@ -141,6 +141,11 @@ void CAudioDevice::Set_Listener(CTransform* pTransform)
     Safe_Release(m_pTransform);
     m_pTransform = pTransform;
     Safe_AddRef(m_pTransform);
+}
+
+void CAudioDevice::Set_GroupVolume(SOUND_GROUP group, _float volume)
+{
+    m_Groups[static_cast<_uint>(group)]->setVolume(volume);
 }
 
 CAudioDevice* CAudioDevice::Create()

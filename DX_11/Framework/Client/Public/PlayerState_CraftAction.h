@@ -17,7 +17,10 @@ public:
 public:
     virtual void Render_State() override;
     virtual _uint Get_InputMask() const override;
+    EventMsgDesc Make_Sequence(CGameObject* pObject);
 
+public:
+    void EndDisplay();
 private:
     _float m_ElapsedTime = {};
     state m_eState = { Start };

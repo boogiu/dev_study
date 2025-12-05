@@ -62,7 +62,7 @@ HRESULT CPlayerState_TransferGive::OnExit()
 {
 	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
 	Animator->Restart_AnimationBlend();
-
+	m_eState = IDLE;
 	return S_OK;
 }
 

@@ -37,6 +37,7 @@ HRESULT CPlayerState_Get::OnEnter()
 	case itemType::FishingRod:
 		Animator->Change_Animation("ToolPole_Get.anim", true);
 		m_ePhase = Phase::Priority;
+		m_bFish = true;
 		break;
 		default:
 			break;
@@ -50,10 +51,31 @@ void CPlayerState_Get::OnUpdate(_float dt)
 	auto InfoPack = m_pPlayer->Get_InfoPack();
 
 	if (CGameObject* pObject = InfoPack.pObjectOnLeftHand) {
-		if (m_ePhase == Idle)
-			pObject->Get_Component<CModel>()->Set_CompActive(true);
-		_float4 pos = InfoPack.pLeftHand->Get_Position();
-		pObject->Get_Component<CTransform>()->TranslateMatrix(XMLoadFloat4x4(InfoPack.pLeftHand->Get_WorldMatrix()));
+		if (m_ePhase == Idle|| m_ePhase == Priority)
+		{
+			if(m_ePhase == Idle)
+				pObject->Get_Component<CModel>()->Set_CompActive(true);
+
+			_matrix boneWorld =
+				XMLoadFloat4x4(Animator->Get_BoneMatrixPtr("Armature_Hand_L")) *
+				XMLoadFloat4x4(m_pPlayer->Get_Component<CTransform>()->Get_WorldMatrix_Ptr());
+
+			_vector scale, rot, trans;
+			XMMatrixDecompose(&scale, &rot, &trans, boneWorld);
+			trans += _vector{ 0,0,2,0 };
+			_float angle = XMConvertToRadians(-90.f);
+			_vector axis = m_bFish? XMVectorSet(0.f, 1.f, 0.f, 0.f) : XMVectorSet(1.f, 0.f, 0.f, 0.f);
+
+			_vector newRot = XMQuaternionRotationAxis(axis, angle);
+			_matrix mScale = XMMatrixScalingFromVector(scale);
+			_matrix mRot = XMMatrixRotationQuaternion(newRot);
+			_matrix mTrans = XMMatrixTranslationFromVector(trans);
+			_matrix world = mScale * mRot * mTrans;
+
+			auto pTr = pObject->Get_Component<CTransform>();
+			pTr->TranslateMatrix(world);
+		}
+
 	}
 	switch (m_ePhase)
 	{
@@ -107,6 +129,7 @@ HRESULT CPlayerState_Get::OnExit()
 	CGameInstance::GetInstance()->Get_ObjectMgr()->Remove_Object(m_pPlayer->Get_InfoPack().pObjectOnLeftHand);
 	m_pPlayer->Get_InfoPack().pObjectOnLeftHand = nullptr;
 	m_bMsgComplete = false;
+	m_bFish = false;
 	return S_OK;
 }
 

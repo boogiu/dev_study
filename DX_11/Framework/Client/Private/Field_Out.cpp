@@ -10,6 +10,13 @@
 #include "Texture.h"
 #include "AudioSource.h"
 
+#include "Level.h"
+#include "EventSystem.h"
+#include "PipeLine.h"
+
+CField_Out* CField_Out::s_pSoundOwner = nullptr;
+_uint      CField_Out::s_LastFrameUpdated = 0;
+
 CField_Out::CField_Out()
 {
 }
@@ -35,10 +42,15 @@ HRESULT CField_Out::Initialize_Prototype()
 	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Env_SeaWaterWave02.wav","Wave",true,SOUND_GROUP::ENV);
 	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Env_SeaBaseRoar00.wav","Base",true,SOUND_GROUP::ENV);
 
-	Get_Component<CAudioSource>()->Set_SlotVolume("Rock",0.1f);
-	Get_Component<CAudioSource>()->Set_SlotVolume("Wave",0.1f);
-	Get_Component<CAudioSource>()->Set_SlotVolume("Base",0.1f);
-	Get_Component<CAudioSource>()->Set_SlotVolume("SplashWeak01",0.1f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Rock",0.88f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Wave", 0.88f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Base", 0.88f);
+	Get_Component<CAudioSource>()->Set_SlotVolume("SplashWeak01", 0.88f);
+
+	//Get_Component<CAudioSource>()->Play("Rock");
+	//Get_Component<CAudioSource>()->Play("Wave");
+	//Get_Component<CAudioSource>()->Play("Base");
+
 	return S_OK;
 }
 
@@ -58,15 +70,53 @@ void CField_Out::Update(_float dt)
 	m_fElpaseTime += dt * .1f;
 	m_fWaveTime += dt*.1f;
 	
-	if (m_fWaveTime > 1.f) {
-		Get_Component<CAudioSource>()->Play("SplashWeak01");
-		m_fWaveTime = 0.f;
-	}
 	m_fCircularTime = sinf(m_fElpaseTime*2);
+	
+	auto* pGI = CGameInstance::GetInstance();
+	auto* pPipeline = pGI->Get_RenderSystem()->Get_Pipeline();
 
-	Get_Component<CAudioSource>()->Play("Rock");
-	Get_Component<CAudioSource>()->Play("Wave");
-	Get_Component<CAudioSource>()->Play("Base");
+	_uint curFrame = pGI->Get_FrameCount();   // 없으면 직접 하나 만들어도 됨
+	if (s_LastFrameUpdated != curFrame)
+	{
+		s_LastFrameUpdated = curFrame;
+		s_pSoundOwner = nullptr;
+	}
+
+	_bool isVisible = pPipeline->isVisible(
+		Get_Component<CModel>()->Get_LocalBoundingBox(),
+		XMLoadFloat4x4(m_pTransform->Get_WorldMatrix_Ptr())
+	);
+
+	// 이번 프레임에 아직 오너가 없고, 내가 보이면 내가 담당
+	if (isVisible && s_pSoundOwner == nullptr)
+		s_pSoundOwner = this;
+
+	auto* pAudio = Get_Component<CAudioSource>();
+
+	if (s_pSoundOwner == this)
+	{
+		Get_Component<CAudioSource>()->Set_SlotPuase("Rock", false);
+		Get_Component<CAudioSource>()->Set_SlotPuase("Wave", false);
+		Get_Component<CAudioSource>()->Set_SlotPuase("Base", false);
+		pAudio->Play("Rock");
+		pAudio->Play("Wave");
+		pAudio->Play("Base");
+
+		if (m_fWaveTime > 1.f) {
+			Get_Component<CAudioSource>()->Play("SplashWeak01");
+			m_fWaveTime = 0.f;
+		}
+	}
+	else
+	{
+		Get_Component<CAudioSource>()->Set_SlotPuase("Rock", true);
+		Get_Component<CAudioSource>()->Set_SlotPuase("Wave", true);
+		Get_Component<CAudioSource>()->Set_SlotPuase("Base", true);
+
+		if (m_fWaveTime > 1.f) {
+			m_fWaveTime = 0.f;
+		}
+	}
 }
 
 void CField_Out::Late_Update(_float dt)
@@ -90,6 +140,7 @@ HRESULT CField_Out::Sync_MapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string>
 	return S_OK;
 }
 
+
 void CField_Out::Override_Pass()
 {
 	CMaterial* pMaterial = Get_Component<CMaterial>();
@@ -106,6 +157,7 @@ void CField_Out::Override_Pass()
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mGrass")) {
 		instance->Override_Pass("Base");
 	}
+
 	SHADER_PARAM param = { pRcsMgr->Load_Texture("GamePlay_Level","Palette_mWater_Alb.png")->Get_SRV(),"Texture2D",0 };
 	SHADER_PARAM Normal = { pRcsMgr->Load_Texture("GamePlay_Level","Waves_mSeaWater_Nrm.png")->Get_SRV(),"Texture2D",0 };
 	SHADER_PARAM Sand = { pRcsMgr->Load_Texture("GamePlay_Level","Waves_mSand_Alb.dds")->Get_SRV(),"Texture2D",0 };
@@ -114,7 +166,6 @@ void CField_Out::Override_Pass()
 	SHADER_PARAM TimeParam = { &m_fElpaseTime,"float",sizeof(_float) };
 	SHADER_PARAM CircularParam = { &m_fCircularTime,"float",sizeof(_float) };
 	SHADER_PARAM fadeParam = { &m_fFade,"float",sizeof(_float) };
-
 	
 	if (auto instance = pMaterial->Get_MaterialInstanceByName("mWaveFoam")) {
 		instance->Set_Param("DiffuseTexture", param);

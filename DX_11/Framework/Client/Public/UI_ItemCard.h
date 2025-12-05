@@ -33,7 +33,8 @@ public:
    void Render_Card(ID3D11DeviceContext* pContext);
    class CTarget_Texture* Make_Part(string textureKey, const  _float2& size, const  _float2& pos,const string& passKey,const string& levelKey);
 public:
-    void Hover();
+    _bool Hover();
+    void UnHover() { m_bHover = false; };
     void Set_Data(const string& recipeImage, _bool CanCraft, wstring name);
     wstring Get_Data();
 private:
@@ -42,6 +43,7 @@ private:
 private:
     _bool   m_bActive = { false };
     _bool   m_bHover = { false };
+
     wstring name = {};
     _bool CanCraft = { false };
 

@@ -17,6 +17,9 @@ public:
 	virtual void Play(AUDIO_PACKET& packet)override;
 	virtual void Set_Listener(class CTransform* pTransform) override;
 
+public:
+	virtual void Set_GroupVolume(SOUND_GROUP group, _float volume);
+
 private:
 	FMOD::System* m_pSystem = { nullptr };
 	vector<FMOD::Channel*> m_Channels;

@@ -166,7 +166,6 @@ public:
 
 	_int Get_VoiceInt() { return m_VoiceInt; };
 	string Get_VoiceKey() { return m_VoiceKey; };
-
 	void Take_Controll() { m_isLooseControl = true; };
 protected:
 	void Update_Movement(_float dt);

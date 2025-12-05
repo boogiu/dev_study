@@ -25,6 +25,7 @@ enum class TILE_FLAG : unsigned int {
     FLAG_CLIFF = 1 << 16,
 
     /*ON*/
+    FLAG_HIDEPLAYER = 1 << 26,
     FLAG_ONFURNITURE = 1 << 27,
     FLAG_ONITEM= 1 << 28,
     ONPLAYER= 1 << 29,

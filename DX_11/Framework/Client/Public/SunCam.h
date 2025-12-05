@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+NS_BEGIN(Client)
 class CSunCam :
     public CGameObject
 {
@@ -20,6 +21,7 @@ public:
 
 public:
     void Set_Target(CGameObject* pObj) { m_pTarget = pObj; };
+    void Set_Night();
 
 private:
     _float m_InitialHeight = { 120 };
@@ -30,4 +32,4 @@ public:
     CGameObject* Clone(INIT_DESC* pArg) override;
     virtual void Free() override;
 };
-
+NS_END

@@ -20,6 +20,7 @@ public:
     void Render_GUI() override;
 
 public:
+    void Set_DeActive();
 
 private:
     _uint m_ParticleCount = {};

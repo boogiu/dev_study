@@ -511,6 +511,21 @@
     <Filter Include="02. GameObjects\07. LevelObject\EndingController">
       <UniqueIdentifier>{230d9fd1-f06d-440d-9330-1ade2dfc989d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameObjects\01. Camera\SceneCam">
+      <UniqueIdentifier>{1e0efeb8-de2d-4c43-b414-a8cbae51d401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\LightParicle">
+      <UniqueIdentifier>{cf238053-d661-469d-8458-5bd0278e2d23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\07. LevelObject\EffectSystem\Effect\NoteEffect">
+      <UniqueIdentifier>{a585c4c8-1089-479e-8d3f-eb204383f323}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\13. Env\Moon">
+      <UniqueIdentifier>{220112e9-a82e-4596-a23c-7746156e88b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameObjects\13. Env\Stars">
+      <UniqueIdentifier>{f3846018-aab9-46a4-84c7-61d85afe6740}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -996,6 +1011,18 @@
     <ClInclude Include="..\Public\EndingController.h">
       <Filter>02. GameObjects\07. LevelObject\EndingController</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SceneCamera.h">
+      <Filter>02. GameObjects\01. Camera\SceneCam</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NoteEffect.h">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\NoteEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Moon.h">
+      <Filter>02. GameObjects\13. Env\Moon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Stars.h">
+      <Filter>02. GameObjects\13. Env\Stars</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -1461,6 +1488,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\EndingController.cpp">
       <Filter>02. GameObjects\07. LevelObject\EndingController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SceneCamera.cpp">
+      <Filter>02. GameObjects\01. Camera\SceneCam</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NoteEffect.cpp">
+      <Filter>02. GameObjects\07. LevelObject\EffectSystem\Effect\NoteEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Moon.cpp">
+      <Filter>02. GameObjects\13. Env\Moon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Stars.cpp">
+      <Filter>02. GameObjects\13. Env\Stars</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

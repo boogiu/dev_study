@@ -13,7 +13,10 @@
 #include "FishSpawner.h"
 #include "AudioSource.h"
 #include "PipeLine.h"
+
 static vector<AUTO_TILE> TileRuleDB;
+CAutoTile* CAutoTile::s_pRiverSoundOwner = nullptr;
+_uint      CAutoTile::s_LastFrameUpdated = 0;
 
 CAutoTile::CAutoTile()
 {
@@ -31,6 +34,8 @@ HRESULT CAutoTile::Initialize_Prototype()
 	Add_Component<CStaticModel>();
 	Add_Component<CTileBlock>();
 	Add_Component<CAudioSource>();
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Env_RiverBase00.wav", "River", true, SOUND_GROUP::ENV);
+	Get_Component<CAudioSource>()->Set_SlotVolume("River", 1.f);
 	return S_OK;
 }
 
@@ -74,13 +79,38 @@ void CAutoTile::Priority_Update(_float dt)
 
 void CAutoTile::Update(_float dt)
 {
-	if (isRiver) {
-		
-		_bool isVisible = CGameInstance::GetInstance()->Get_RenderSystem()->Get_Pipeline()->isVisible(
-			Get_Component<CModel>()->Get_LocalBoundingBox(),
-			XMLoadFloat4x4(m_pTransform->Get_WorldMatrix_Ptr()));
-		if(isVisible)
-			Get_Component<CAudioSource>()->Play("River");
+	if (!isRiver)
+		return;
+
+	auto* pGI = CGameInstance::GetInstance();
+	auto* pPipeline = pGI->Get_RenderSystem()->Get_Pipeline();
+
+	_uint curFrame = pGI->Get_FrameCount();   // 없으면 직접 하나 만들어도 됨
+	if (s_LastFrameUpdated != curFrame)
+	{
+		s_LastFrameUpdated = curFrame;
+		s_pRiverSoundOwner = nullptr;
+	}
+
+	_bool isVisible = pPipeline->isVisible(
+		Get_Component<CModel>()->Get_LocalBoundingBox(),
+		XMLoadFloat4x4(m_pTransform->Get_WorldMatrix_Ptr())
+	);
+
+	// 이번 프레임에 아직 오너가 없고, 내가 보이면 내가 담당
+	if (isVisible && s_pRiverSoundOwner == nullptr)
+		s_pRiverSoundOwner = this;
+
+	auto* pAudio = Get_Component<CAudioSource>();
+
+	if (s_pRiverSoundOwner == this)
+	{
+		pAudio->Set_SlotPuase("River", false);
+		pAudio->Play("River");
+	}
+	else
+	{
+		pAudio->Set_SlotPuase("River", true);
 	}
 }
 
@@ -236,12 +266,8 @@ void CAutoTile::Update_State(_uint N_State)
 			return count;};
 		
 			_uint neighborCount = CountBit(N_State);  
-			if (neighborCount >= 8) {
-				isRiver = true;
-				auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
-				Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Env_RiverBase00.wav", "River", true, SOUND_GROUP::ENV);
-				Get_Component<CAudioSource>()->Set_SlotVolume("River",0.1f);
-			}
+			auto tileSys = CGameInstance::GetInstance()->Get_TileSystem();
+			
 		}
 }
 

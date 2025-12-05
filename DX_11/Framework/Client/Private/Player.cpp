@@ -112,21 +112,21 @@ HRESULT CPlayer::Initialize(INIT_DESC* pArg)
 
 	/*Debug*/
 	auto ItemSpawner = CGameInstance::GetInstance()->Get_LevelMgr()->Get_CurrentLevel()->Get_LevelObject<CItemSpawner>();
-	TOOL_DATA_DESC AxeData = ItemSpawner->Get_ItemData("ToolAxeFirst");
-	TOOL_DATA_DESC NetData = ItemSpawner->Get_ItemData("ToolNetFirst");
-	TOOL_DATA_DESC ScoopData = ItemSpawner->Get_ItemData("ToolScoopFirst");
-	TOOL_DATA_DESC FishingRod = ItemSpawner->Get_ItemData("Main");
-
-	Add_ITEM(AxeData);
-	Add_ITEM(NetData);
-	Add_ITEM(ScoopData);
-	Add_ITEM(FishingRod);
-
-	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
-	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
-	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
-	Add_ITEM(ItemSpawner->Get_ItemData("FtrWoodPile"));
-	Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPresentred"));
+	///		TOOL_DATA_DESC AxeData = ItemSpawner->Get_ItemData("ToolAxeFirst");
+	///		TOOL_DATA_DESC NetData = ItemSpawner->Get_ItemData("ToolNetFirst");
+			TOOL_DATA_DESC ScoopData = ItemSpawner->Get_ItemData("ToolScoopFirst");
+	///		TOOL_DATA_DESC FishingRod = ItemSpawner->Get_ItemData("Main");
+	///		
+	///		Add_ITEM(AxeData);
+	///		Add_ITEM(NetData);
+			//Add_ITEM(ScoopData);
+	///		Add_ITEM(FishingRod);
+	///		
+	///		Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
+			//Add_ITEM(ItemSpawner->Get_ItemData("UnitIconIron"));
+	///		Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPltWood"));
+	///		Add_ITEM(ItemSpawner->Get_ItemData("FtrWoodPile"));
+	///		Add_ITEM(ItemSpawner->Get_ItemData("UnitIconPresentred"));
 	return S_OK;
 }
 
@@ -148,8 +148,10 @@ void CPlayer::Priority_Update(_float dt)
 
 void CPlayer::Update(_float dt)
 {
+	if (!m_ControlPack.MsgTakeControl){
 	Update_Movement(dt);
 	Update_TileInfo(dt);
+	}
 	BroadCast_Position();
 	Get_Component<CMaterialAnimator>()->Update_Animation(dt);
 	m_pStateMachine->Update(dt);
@@ -290,9 +292,8 @@ void CPlayer::Update_TileInfo(_float dt)
 		m_vPrevIndex = m_TileInfoPack.nowIndex;
 		m_TileInfoPack.nowIndex = currIndex;
 		m_TileInfoPack.nowInfo = TileSys->Get_InfoByIndex(currIndex);
-		TileSys->Add_TileFlagByIndex(m_TileInfoPack.nowIndex, static_cast<_uint>(TILE_FLAG::ONPLAYER));
-		TileSys->Remove_TileFlagByIndex(m_vPrevIndex, static_cast<_uint>(TILE_FLAG::ONPLAYER));
-
+		TileSys->Add_TileFlagByIndex(m_TileInfoPack.nowIndex, static_cast<_uint>(m_TileInfoPack.markFlag));
+		TileSys->Remove_TileFlagByIndex(m_vPrevIndex, static_cast<_uint>(m_TileInfoPack.markFlag));
 	}
 }
 
@@ -376,10 +377,7 @@ void CPlayer::OnCollisionEnter(COLLISION_CONTEXT context)
 	m_InfoPack.pEncounter = context.Owner;
 	m_InfoPack.EncounterTag = context.Owner->Get_Tag();
 
-	if (context.EventTag == "PickedByHand")
-	{
-		m_pInventory->Add_ItemToInventory(dynamic_cast<CItem_Object*>(context.Owner)->Get_ItemData());
-	}
+	
 
 	if (context.Owner->Has_Tag("WorkBench")) {
 		m_InfoPack.WorkBenchEncounter = true;
@@ -726,6 +724,7 @@ void CPlayer::Add_AnimationClips()
 	Animator->Add_AnimClips("GamePlay_Level", "Etc_DiyFinish.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "Event_LoanComplete.anim", "Player", false);
 	Animator->Add_AnimClips("GamePlay_Level", "Event_LoanCompleteKeep.anim", "Player", true);
+	Animator->Add_AnimClips("GamePlay_Level", "Act_Rhythm03.anim", "Player", true);
 }
 
 void CPlayer::Add_MaterialAnim()
@@ -828,11 +827,11 @@ void CPlayer::Add_Inventory()
 
 void CPlayer::Add_SoundClip()
 {
-	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Grass_Walk_00_Ac.wav","Walk_Grass_L", false, SOUND_GROUP::SFX, 0.05f);
-	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Grass_Run_00_Ac.wav","Run_Grass_L", false, SOUND_GROUP::SFX, 0.05f);
-	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Sand_Run_00_Ac.wav","Run_Sand_L", false, SOUND_GROUP::SFX, 0.05f);
-	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Grass_Dash_00_Ac.wav","Dash_Grass", false, SOUND_GROUP::SFX, 0.05f);
-	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Sand_Dash_00_L.wav","Dash_Sand", false, SOUND_GROUP::SFX, 0.05f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Grass_Walk_00_Ac.wav","Walk_Grass_L", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Grass_Run_00_Ac.wav","Run_Grass_L", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Sand_Run_00_Ac.wav","Run_Sand_L", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Grass_Dash_00_Ac.wav","Dash_Grass", false, SOUND_GROUP::SFX, 0.15f);
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Footstep_Geta_Sand_Dash_00_L.wav","Dash_Sand", false, SOUND_GROUP::SFX, 0.15f);
 	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_ItemThrow_00.wav","Item_Throw", false, SOUND_GROUP::SFX, 0.05f);
 	
 	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level","Pl_Airshot00.wav","AirShot", false, SOUND_GROUP::SFX, 0.15f);

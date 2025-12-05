@@ -115,12 +115,12 @@ HRESULT CNpcSpawner::Read_CharacterData(const string& filePath)
 }
 
 
-HRESULT CNpcSpawner::Spawn_Npc(const wstring& npcName,  _float3 position, string SpcTag)
+class CGameObject* CNpcSpawner::Spawn_Npc(const wstring& npcName,  _float3 position, string SpcTag)
 {
     auto iter = m_NpcTable.find(npcName);
 
     if (iter == m_NpcTable.end())
-        return E_FAIL;
+        return nullptr;
 
     CNonPlayer::NPC_SPAWN_DATA* data = new CNonPlayer::NPC_SPAWN_DATA;
     data->characterDesc = iter->second;
@@ -132,7 +132,7 @@ HRESULT CNpcSpawner::Spawn_Npc(const wstring& npcName,  _float3 position, string
 
     CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pNpc, { "GamePlay_Level", "NonPlayer_Layer" });
 
-    return S_OK;
+    return pNpc;
 }
 
 

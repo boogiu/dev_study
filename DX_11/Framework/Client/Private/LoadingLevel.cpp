@@ -49,7 +49,7 @@ void CLoadingLevel::Update()
 	auto Timer = CGameInstance::GetInstance()->Get_TimeMgr();
 	m_fLoadingTime += Timer->Get_DeltaTime("Timer_Frame60");
 
-	if (m_pLoader->isFinished()) {
+	if (m_pLoader->isFinished()&& m_fLoadingTime>5.f) {
 		CGameInstance::GetInstance()->Get_LevelMgr()->Notify_LoadComplete();
 	}
 }

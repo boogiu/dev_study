@@ -30,7 +30,7 @@ HRESULT CSunCam::Initialize(INIT_DESC* pArg)
 	desc.fLightRange = 150.0f;
 	desc.vLightDirection = _float4(0.f, -1.f, 0.f, 0.f);
 	desc.vLightDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	desc.vLightAmbient = _float4(0.15f, 0.15f, 0.15f, 1.f);
+	desc.vLightAmbient = _float4(0.65f, 0.65f, 0.65f, 1.f);
 	desc.vLightSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
 
 	Get_Component<CLight>()->Set_Desc(desc, LIGHT_TYPE::DIRECTIONAL);
@@ -40,6 +40,11 @@ HRESULT CSunCam::Initialize(INIT_DESC* pArg)
 
 void CSunCam::Priority_Update(_float dt)
 {
+}
+void CSunCam::Set_Night()
+{
+	Get_Component<CLight>()->Get_Desc()->vLightAmbient = _float4(0.18f, 0.18f, 0.18f, 1.f);
+	Get_Component<CLight>()->Get_Desc()->vLightDiffuse = _float4(0.3f, 0.3f, 0.45f, 1.f);
 }
 
 void CSunCam::Update(_float dt)

@@ -25,14 +25,23 @@ public:
 public:
     void Batch_Character();
     void Execute_Scene();
-    void Set_EnvCam();
+    void Set_EnvObject(class CGameObject* pSky, class CGameObject* pSun, class CGameObject* pLeaf);
+
 private:
     _bool m_bEndingStart = { false };
+    _bool m_bEndingProceed= { false };
     _float m_fElapsedTime = {};
 
     class CEventSystem* m_pEventSystem = { nullptr };
     class CPlayer* m_Player = { nullptr };
     vector<class CNonPlayer*> m_NonPlayers ;
+
+    class CSunCam* m_pSun = { nullptr };
+    class CSkyBox* m_pSkyBox = { nullptr };
+    class CLeafParticle* m_pLeaf = { nullptr };
+    class CMoon* m_pMoon= { nullptr };
+    class CGameObject* m_pStars= { nullptr };
+    class CSceneCamera* m_pEndingCam = { nullptr };
 public:
     static CEndingController* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

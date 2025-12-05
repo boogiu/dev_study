@@ -23,7 +23,7 @@ public:
     HRESULT Read_CharacterData(const string& filePath);
 
 public:
-    HRESULT Spawn_Npc(const wstring& npcName, _float3 position = {},string SpcTag = {});
+    class CGameObject* Spawn_Npc(const wstring& npcName, _float3 position = {},string SpcTag = {});
     NPC_DATA_DESC Get_NpcData(wstring npcName);
 
 private:

@@ -115,12 +115,9 @@ void CPlayerState_PoleAction::OnUpdate(_float dt)
 			m_pPlayer->Change_Tool_Anim("ToolPoleAnim_CompleteKeep.anim");
 			m_eState = END;
 		}
-
 		dynamic_cast<CFish_Object*>(m_pPlayer->Get_InfoPack().pObjectOnLeftHand)->Get();
-		m_pPlayer->Get_InfoPack()
-			.pObjectOnLeftHand->Get_Component<CTransform>()->TranslateMatrix(
-				XMLoadFloat4x4(m_pPlayer->Get_InfoPack().pLeftHand->Get_Component<CTransform>()->Get_WorldMatrix_Ptr())
-			);
+		m_pPlayer->Get_InfoPack().pObjectOnLeftHand->Get_Component<CTransform>()->TranslateMatrix(
+				XMLoadFloat4x4(m_pPlayer->Get_InfoPack().pLeftHand->Get_Component<CTransform>()->Get_WorldMatrix_Ptr()));
 		break;
 	case Client::CPlayerState_PoleAction::END:
 		break;

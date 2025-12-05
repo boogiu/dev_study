@@ -108,10 +108,8 @@ void CTextSlot::Set_AutoPos(ANCHOR anchor, _float2 Pivot)
 void CTextSlot::Set_Anchor(ANCHOR anchor, _float2 Pivot)
 {
 	_vector size = m_pFont->TextSize(m_Info.Text);
-
-	float w = XMVectorGetX(size);
-	float h = XMVectorGetY(size);
-
+	float w = XMVectorGetX(size) * m_Info.Scale;
+	float h = XMVectorGetY(size) * m_Info.Scale;
 	_uint anchorFlags = static_cast<_uint>(anchor);
 
 	// Xรเ

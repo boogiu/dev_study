@@ -26,10 +26,19 @@ public:
 
 public:
     HRESULT Make_FurnitureByMapData(NEW_MAP_OBJECT_HEADER objHeader, vector<string> modelMapTable);
-
+    void EventListen(const BaseEvent& evt);
+private:
+    void Update_Bounce(_float dt);
+    void Update_LightBounce(_float dt);
+    _float EaseIn(_float time);
 protected:
     string m_FurnitureName = {};
     TILE_INDEX m_Index = {};
+    _bool m_bLightObject = {};
+    _bool m_bAmpObject = {};
+    _float m_ElapsedTime = {};
+
+    _bool m_bEmitEffect= {};
 public:
     static CFurniture* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

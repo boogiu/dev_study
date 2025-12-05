@@ -46,6 +46,7 @@ HRESULT CEmotionEffect::Initialize(INIT_DESC* pArg)
 	pRcsMgr->Add_ResourcePath("Effect_surprise02.png", "../../Resources/Effect/surprise02.png");
 	pRcsMgr->Add_ResourcePath("Effect_surprisemark03.png", "../../Resources/Effect/surprisemark03.png");
 	pRcsMgr->Add_ResourcePath("Effect_sadmark06.png", "../../Resources/Effect/sadmark06.png");
+	pRcsMgr->Add_ResourcePath("Effect_lovemark.png", "../../Resources/Effect/lovemark.png");
 
 	CMaterial* pMaterial = Get_Component<CMaterial>();
 	CMaterialInstance* customInstance = CMaterialInstance::Create_Handle("Rect_Effect_Base", "Craft", pDevice);
@@ -59,6 +60,7 @@ HRESULT CEmotionEffect::Initialize(INIT_DESC* pArg)
 	/*5*/m_pMaterial_Instance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "Effect_surprise02.png", TEXTURE_TYPE::ALBEDO);
 	/*6*/m_pMaterial_Instance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "Effect_surprisemark03.png", TEXTURE_TYPE::ALBEDO);
 	/*7*/m_pMaterial_Instance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "Effect_sadmark06.png", TEXTURE_TYPE::ALBEDO);
+	/*8*/m_pMaterial_Instance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "Effect_lovemark.png", TEXTURE_TYPE::ALBEDO);
 
 	m_pMaterial_Instance->Get_MaterialData()->Link_Texture(G_GlobalLevelKey, "Effect_noiz01.png", TEXTURE_TYPE::MIX);
 
@@ -170,7 +172,7 @@ void CEmotionEffect::Convert_ByData(const EffectData& data)
 		m_AtlasCount = { 1,1 };
 		m_AtlasMaxFrame = 1;
 		m_pMaterial_Instance->ChangeTexture(TEXTURE_TYPE::ALBEDO, 5);
-		m_pTransform->Set_PosVector(RqPos-FXDir+FXRight+ adjustY);
+		m_pTransform->Set_PosVector(RqPos+ adjustY);
 		m_vDstScale = { 10,10,5 };
 	}
 
@@ -189,6 +191,14 @@ void CEmotionEffect::Convert_ByData(const EffectData& data)
 		m_AtlasMaxFrame = 4;
 		m_pMaterial_Instance->ChangeTexture(TEXTURE_TYPE::ALBEDO, 7);
 		m_pTransform->Set_PosVector(RqPos - FXDir + FXRight + adjustY);
+		m_vDstScale = { 5,5,5 };
+	}
+	else if (data.Additional == "Happy") {
+		m_AtlasScale = { 1 / 3.f,1 / 3.f };
+		m_AtlasCount = { 3,3 };
+		m_AtlasMaxFrame = 9;
+		m_pMaterial_Instance->ChangeTexture(TEXTURE_TYPE::ALBEDO, 8);
+		m_pTransform->Set_PosVector(RqPos + adjustY);
 		m_vDstScale = { 5,5,5 };
 	}
 

@@ -218,93 +218,108 @@ HRESULT CMapLoader::Load_ModelData()
 HRESULT CMapLoader::Load_Sequential(const LAYER_DESC& Desc)
 {
 	if (reservedMapObj.empty() && reservedMapTile.empty())
-		return S_OK;
-	auto pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
+		return S_FALSE; 
 
 	if (!reservedMapTile.empty()) {
-		NEW_MAP_TILE_HEADER Tile_Header = reservedMapTile.front();
-		reservedMapTile.pop();
-
-		CAutoTile::TILE_TYPE_DESC* objDesc = new CAutoTile::TILE_TYPE_DESC;
-		objDesc->TypeName = string(Tile_Header.BaseTypeName);
-		objDesc->index = Tile_Header.Index;
-		CGameObject* pObject = {nullptr};
-		 pObject =
-			Builder::Create_Object({ "GamePlay_Level", "GamePlay_GameObject_AutoTile" })
-			.Position({ 0,Tile_Header.height,0 })
-			.Scale({ 1,1,1 })
-			.Add_ObjDesc(objDesc)
-			.Build(objDesc->TypeName);
-
-		if (pObject)
-			pObjMgr->Add_Object(pObject, { Desc.LevelTag,"Tile_Layer" });
-		else
-			Safe_Release(pObject);
-
+		for (size_t i = 0; i < 20; i++)
+			Load_Tile(Desc);
 		return S_OK;
 	}
 
 	if (!reservedMapObj.empty()) {
-		NEW_MAP_OBJECT_HEADER header = reservedMapObj.front();
-		reservedMapObj.pop();
-		auto iter = g_ModelMapTable.find(header.Object_type);
-		if (iter == g_ModelMapTable.end())
-			return E_FAIL;
-		CGameObject* pObject = { nullptr };
-		if (isFieldOut(header.Object_type)) {
-			pObject =
-				Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldOut" })
-				.Build(iter->second[0]);
-		}
-		else if (isTree(header.Object_type)) {
-			pObject =
-				Builder::Create_Object({ Desc.LevelTag , "GameObject_PlantTree" })
-				.Build(iter->second[0]);
-		}
-		else if (isStone(header.Object_type)) {
-			pObject =
-				Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldStone" })
-				.Build(iter->second[0]);
-		}
-		else if (isBridge(header.Object_type)) {
-			pObject =
-				Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldBridge" })
-				.Build(iter->second[0]);
-		}
-		else if (isStructure(header.Object_type)) {
-			pObject =
-				Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldStructure" })
-				.Build(iter->second[0]);
-		}
-		else if (isWeed(header.Object_type)||isFlower(header.Object_type)) {
-			pObject =
-				Builder::Create_Object({ Desc.LevelTag , "GameObject_PlantGrass" })
-				.Build(iter->second[0]);
-		}
-		else if (isFurniture(header.Object_type)) {
-			pObject =
-				Builder::Create_Object({ Desc.LevelTag , "GameObject_Furniture" })
-				.Build(iter->second[0]);
-
-			dynamic_cast<CFurniture*>(pObject)->Make_FurnitureByMapData(header, iter->second);
-		}
-		else {
-			return E_FAIL;
-		}
-
-		if (pObject) {
-			auto Obj = dynamic_cast<CFieldObject*>(pObject);
-			if (Obj)
-				Obj->Sync_MapData(header, iter->second);
-
-			pObjMgr->Add_Object(pObject, Desc);
-
-			return S_OK;
-		}
+		for (size_t i = 0; i < 10; i++)
+			Load_MapObj(Desc);
 	}
 
 	return S_OK;
 }
+void CMapLoader::Load_Tile(const LAYER_DESC& Desc)
+{
+	if (reservedMapTile.empty())
+		return;
+
+	NEW_MAP_TILE_HEADER Tile_Header = reservedMapTile.front();
+	reservedMapTile.pop();
+	auto pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
+	
+	CAutoTile::TILE_TYPE_DESC* objDesc = new CAutoTile::TILE_TYPE_DESC;
+	objDesc->TypeName = string(Tile_Header.BaseTypeName);
+	objDesc->index = Tile_Header.Index;
+	CGameObject* pObject = {nullptr};
+	 pObject =
+		Builder::Create_Object({ "GamePlay_Level", "GamePlay_GameObject_AutoTile" })
+		.Position({ 0,Tile_Header.height,0 })
+		.Scale({ 1,1,1 })
+		.Add_ObjDesc(objDesc)
+		.Build(objDesc->TypeName);
+	
+	if (pObject)
+		pObjMgr->Add_Object(pObject, { Desc.LevelTag,"Tile_Layer" });
+	else
+		Safe_Release(pObject);
+}
+
+void CMapLoader::Load_MapObj(const LAYER_DESC& Desc)
+{
+	if (reservedMapObj.empty())
+		return;
+	
+	auto pObjMgr = CGameInstance::GetInstance()->Get_ObjectMgr();
+	NEW_MAP_OBJECT_HEADER header = reservedMapObj.front();
+	reservedMapObj.pop();
+
+	auto iter = g_ModelMapTable.find(header.Object_type);
+	if (iter == g_ModelMapTable.end())
+		return ;
+	
+	CGameObject* pObject = { nullptr };
+	
+	if (isFieldOut(header.Object_type)) {
+		pObject =
+			Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldOut" })
+			.Build(iter->second[0]);
+	}
+	else if (isTree(header.Object_type)) {
+		pObject =
+			Builder::Create_Object({ Desc.LevelTag , "GameObject_PlantTree" })
+			.Build(iter->second[0]);
+	}
+	else if (isStone(header.Object_type)) {
+		pObject =
+			Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldStone" })
+			.Build(iter->second[0]);
+	}
+	else if (isBridge(header.Object_type)) {
+		pObject =
+			Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldBridge" })
+			.Build(iter->second[0]);
+	}
+	else if (isStructure(header.Object_type)) {
+		pObject =
+			Builder::Create_Object({ Desc.LevelTag , "GameObject_FieldStructure" })
+			.Build(iter->second[0]);
+	}
+	else if (isWeed(header.Object_type) || isFlower(header.Object_type)) {
+		pObject =
+			Builder::Create_Object({ Desc.LevelTag , "GameObject_PlantGrass" })
+			.Build(iter->second[0]);
+	}
+	else if (isFurniture(header.Object_type)) {
+		pObject =
+			Builder::Create_Object({ Desc.LevelTag , "GameObject_Furniture" })
+			.Build(iter->second[0]);
+	
+		dynamic_cast<CFurniture*>(pObject)->Make_FurnitureByMapData(header, iter->second);
+	}
+	if (pObject) {
+		auto Obj = dynamic_cast<CFieldObject*>(pObject);
+		if (Obj)
+			Obj->Sync_MapData(header, iter->second);
+	
+		pObjMgr->Add_Object(pObject, Desc);
+	}
+}
+
 CMapLoader* CMapLoader::Create()
 {
 	return new CMapLoader;

@@ -15,6 +15,8 @@ public:
     virtual CState* HandleTransition();
 
 public:
+    void OnCollisionEnter(COLLISION_CONTEXT context) override;
+
     virtual void Render_State();
 public:
     virtual _uint Get_InputMask() const override;

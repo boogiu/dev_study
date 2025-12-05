@@ -27,6 +27,7 @@ HRESULT CPlayerState_NetSwing::OnEnter()
 	}
 	m_pPlayer->ActiveCollider_Tool(true, "NetSwing");
 	m_pPlayer->Play_Sound("NetSwing");
+	m_pPlayer->Play_Sound("NetSwing_Ground");
 
 	return hr;
 }
@@ -38,8 +39,7 @@ void CPlayerState_NetSwing::OnUpdate(_float dt)
 		m_pPlayer->ActiveCollider_Tool(false, "");
 
 	if (!isSoundComplete) {
-		if (Animator->isOverAnimTiming(0.5)) {
-			m_pPlayer->Play_Sound("NetSwing_Ground");
+		if (Animator->isOverAnimTiming(0.1)) {
 			isSoundComplete = true;
 		}
 	}

@@ -39,6 +39,9 @@ void CEventSystem::Late_Update(_float dt)
 
 void CEventSystem::UnregisterAll(CGameObject* pObj)
 {
+	if (m_Callbacks.empty())
+		return;
+
 	for (auto& [typeIndex, structPtr] : m_Callbacks)
 	{
 		structPtr->RemoveByOwner(pObj);

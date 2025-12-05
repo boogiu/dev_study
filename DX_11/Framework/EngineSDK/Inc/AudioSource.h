@@ -38,6 +38,7 @@ public:
     void Set_SlotPuase(const string& slotKey, _bool isPaused);
     void Set_3DAttribute(const string& slotKey, _bool _3DAttribute);
     void FadeOut_Volume(const string& slotKey, _float factor);
+    void FadeIn_Volume(const string& slotKey, _float factor,_float dst = 1.f);
 
     void Play(const string& SoundKey);
     void PlayOnce(const string& SoundKey);

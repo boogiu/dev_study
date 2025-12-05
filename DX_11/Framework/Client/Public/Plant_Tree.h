@@ -31,6 +31,8 @@ public:
     void Remove_Additional(const BaseEvent& event);
 
 public:
+    void EventListen(const BaseEvent& evt);
+public:
     void OnCollisionEnter(COLLISION_CONTEXT context) override;
     void OnCollisionStay(COLLISION_CONTEXT context)override;
     void OnCollisionExit(COLLISION_CONTEXT context)override;
@@ -53,6 +55,11 @@ private:
     void Drop_Items();
     void Regenerate_Items();
     void Digged_Self(_float dt);
+
+private:
+    void Update_Bounce(_float dt);
+    _float EaseInSigned(_float time);
+    _float EaseIn(_float time);
 
 private:
     _float2 LeafPalette = {};
@@ -78,6 +85,11 @@ private:
     class CItem_Object* m_pFruits[3] = { nullptr, nullptr, nullptr};
 
     string m_AdditionalData = {};
+
+    _bool m_isEnded = { false };
+     _float zRadian = {};
+     _int BoneIndex = {4};
+
 public:
     static CPlant_Tree* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

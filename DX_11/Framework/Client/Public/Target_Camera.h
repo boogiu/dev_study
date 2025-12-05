@@ -4,7 +4,7 @@ NS_BEGIN(Client)
 class CTarget_Camera :
     public CGameObject
 {
-    enum CamState {NONE, FOLLOW, ZOOM_IN, ZOOM_OUT,TALKING,TALK_OUT, FAR_OUT, SHAKE};
+    enum CamState {NONE, FOLLOW, ZOOM_IN, ZOOM_OUT,TALKING,TALK_OUT, FAR_OUT, SHAKE,LOOSE};
 public:
     typedef struct tagTargetCamDesc : GAMEOBJECT_DESC {
         CGameObject* pTarget = { nullptr };

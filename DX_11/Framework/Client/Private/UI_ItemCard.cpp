@@ -8,6 +8,7 @@
 #include "IRenderService.h"
 #include "Target_Texture.h"
 #include "IUI_Service.h"
+#include "AudioSource.h"
 
 CUI_ItemCard::CUI_ItemCard()
 {
@@ -22,6 +23,7 @@ HRESULT CUI_ItemCard::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
 	Add_Component<CObjectContainer>();
+	Add_Component<CAudioSource>();
 	return S_OK;
 }
 
@@ -32,7 +34,9 @@ HRESULT CUI_ItemCard::Initialize(INIT_DESC* pArg)
 	/*∫ª¿Œ*/
 	Get_Component<CSprite2D>()->Link_Shader(G_GlobalLevelKey, "VTX_UI.hlsl");
 	Get_Component<CSprite2D>()->Set_CompActive(true);
-
+	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_HighAndLow_Card_1.wav", "Hover",false);
+	Get_Component<CAudioSource>()->Set_3DAttribute("Hover", false);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Hover", 0.2f);
 	fBaseRadian = m_fRadian;
 	m_InstanceName = "Card" + to_string(m_ObjectID);
 	
@@ -49,7 +53,6 @@ void CUI_ItemCard::Awake()
 
 void CUI_ItemCard::Priority_Update(_float dt)
 {
-	m_bHover = false;
 	Get_Component<CObjectContainer>()->Priority_UpdateChild(dt);
 }
 
@@ -70,7 +73,6 @@ void CUI_ItemCard::Update(_float dt)
 void CUI_ItemCard::Late_Update(_float dt)
 {
 	Get_Component<CObjectContainer>()->Late_UpdateChild(dt);
-
 }
 
 void CUI_ItemCard::Render_GUI()
@@ -138,9 +140,18 @@ CTarget_Texture* CUI_ItemCard::Make_Part(string textureKey, const _float2& size,
 	return pTarget;
 }
 
-void CUI_ItemCard::Hover()
+_bool CUI_ItemCard::Hover()
 {
+	_bool alreadyHovered = m_bHover;
+
 	m_bHover = true;
+
+	if (!alreadyHovered)
+	{
+		Get_Component<CAudioSource>()->Play("Hover");
+	}
+
+	return alreadyHovered; 
 }
 
 void CUI_ItemCard::Set_Data(const string& recipeImage, _bool CanCraft, wstring name)

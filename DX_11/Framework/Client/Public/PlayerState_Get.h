@@ -26,6 +26,7 @@ private:
 private:
     Phase m_ePhase = { Priority };
     _bool m_bMsgComplete = { false };
+    _bool m_bFish = { false };
 public:
     static CPlayerState_Get* Create();
     virtual void Free();

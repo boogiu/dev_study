@@ -88,7 +88,6 @@ void CPlayerState_MissionComplete::Complete()
 	m_pPlayer->BroadCast_Event(ENDING_EVENT{ EVENT_TYPE::Ending, true });
 	m_eState = End;
 	m_pPlayer->Get_ControlPack().MsgForceBlock = true;
-	m_pPlayer->Camera_Far_Out();
 }
 
 EventMsgDesc CPlayerState_MissionComplete::Make_Sequence()

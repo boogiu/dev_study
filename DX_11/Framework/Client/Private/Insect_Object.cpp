@@ -144,14 +144,22 @@ void CInsect_Object::MoveFly(_float dt)
 
 void CInsect_Object::MoveRunaway(_float dt)
 {
+	m_fLifeTime += dt;
+	if (m_fLifeTime > 8.f)
+		m_eState = RUN;
+	else{
 	_vector LookAt = m_pTransform->Get_Pos() + XMLoadFloat4(&m_vMoveDir);
-	_float MoveSpeed = { 20.f }; 
+	_float MoveSpeed = { 30.f }; 
 	m_pTransform->LookAt(LookAt);
 	m_pTransform->Translate(XMLoadFloat4(&m_vMoveDir) * dt * MoveSpeed);
+	}
 }
 
 void CInsect_Object::Check_Player()
 {
+	if (m_eState == RUNAWAY)
+		return;
+
 	auto TileSys = CGameInstance::GetInstance()->Get_TileSystem();
 	_float4 pos = Get_Position();
 	vector<TILE_INDEX> Neighbor = TileSys->Get_IndeciesByArea(
@@ -169,8 +177,9 @@ void CInsect_Object::Check_Player()
 			_vector playerV = XMLoadFloat4(&PlayerPos);
 			_vector MyPos = m_pTransform->Get_Pos();
 			XMStoreFloat4(&m_vMoveDir, XMVector4Normalize(MyPos - playerV));
-			m_vMoveDir.y = 0.1f;
+			m_vMoveDir.y = 0.05f;
 			m_eState = RUNAWAY;
+			m_fLifeTime = 0.f;
 			return;
 		}
 	}

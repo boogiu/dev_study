@@ -33,6 +33,7 @@ public:
 	};
 
 	struct ControlPacket {
+		_bool MsgTakeControl = false; //External Control
 		_bool MsgForceBlock = false; ///강제 막기
 		_bool MsgMove = false; //방향키
 		_bool MsgAction = false; //도구 사용키 스페이스
@@ -61,6 +62,7 @@ public:
 		_bool isCrafting = { false };
 
 		_bool isFishBitted = { false };
+		_bool isAddedItem= { false };
 
 		TRANS_ITEM m_nowTrans = {}; //지금 건네 받은;
 	};

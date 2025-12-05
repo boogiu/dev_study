@@ -75,7 +75,7 @@ void CNonPlayer::Awake()
 	Get_Component<CMaterialAnimator>()->LinkAnimate_Material(Get_Component<CMaterial>());
 
 	Get_Component<CAnimator3D>()->Change_Animation("Base_Wait.anim", false);
-	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-5,0,-5}, {5,5,5} });
+	Get_Component<CAABB_Collider>()->Make_MinMaxCollider({ {-7,0,-7}, {7,5,7} });
 	
 	Add_Parts();
 	Add_EventListen();
@@ -92,11 +92,12 @@ void CNonPlayer::Priority_Update(_float dt)
 
 void CNonPlayer::Update(_float dt)
 {
+	if (!m_isLooseControl)
+	{
 	Update_Movement(dt);
 	Update_TileInfo(dt);
-	if(!m_isLooseControl)
 		m_pMachine->Update(dt);
-
+	}
 	Get_Component<CAnimator3D>()->Update_Animation(dt);
 	Get_Component<CMaterialAnimator>()->Update_Animation(dt);
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
@@ -269,7 +270,26 @@ void CNonPlayer::Add_MatAnimator()
 
 void CNonPlayer::Add_AudioSource()
 {
-	Get_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "Pl_Net_Swing00.wav", "NetSwing", true);
+	auto audio = Get_Component<CAudioSource>();
+	audio->Add_Slot("GamePlay_Level", "Manpu_03_Happy_OneShot01.wav", "Happy", false);
+	audio->Add_Slot("GamePlay_Level", "Manpu_04_Love.wav", "Love", false);
+	audio->Add_Slot("GamePlay_Level", "Manpu_15_HA.wav", "Ha", false);
+	audio->Add_Slot("GamePlay_Level", "Manpu_38_BigSmile.wav", "BigSmile", false);
+	audio->Add_Slot("GamePlay_Level", "Manpu_41_Oops.wav", "Oops", false);
+	audio->Add_Slot("GamePlay_Level", "Manpu_Confused.wav", "Confused", false);
+	audio->Add_Slot("GamePlay_Level", "Manpu_Hello.wav", "Hello", false);
+	audio->Add_Slot("GamePlay_Level", "Manpu_Serious.wav", "Serious", false);
+	audio->Add_Slot("GamePlay_Level", "Manpu_Silent.wav", "Silent", false);
+
+	audio->Set_SlotVolume("Happy", 0.2f);
+	audio->Set_SlotVolume("Love", 0.2f);
+	audio->Set_SlotVolume("Ha", 0.2f);
+	audio->Set_SlotVolume("BigSmile", 0.2f);
+	audio->Set_SlotVolume("Oops", 0.2f);
+	audio->Set_SlotVolume("Confused", 0.2f);
+	audio->Set_SlotVolume("Hello", 0.2f);
+	audio->Set_SlotVolume("Serious", 0.2f);
+	audio->Set_SlotVolume("Silent", 0.2f);
 }
 
 void CNonPlayer::LookToPlayer(_float dt)
@@ -362,7 +382,7 @@ void CNonPlayer::Set_Emotion(const string tag)
 
 void CNonPlayer::Set_Voice(const string tag)
 {
-
+	Get_Component<CAudioSource>()->Play(tag);
 }
 
 void CNonPlayer::Set_Camera(const string tag)

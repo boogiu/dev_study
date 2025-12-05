@@ -23,8 +23,8 @@ public:
     void Render_GUI() override;
 
 private:
-    _bool IsActive = {};
-    _float m_fLifeTime = {1.f};
+    _bool IsActive = {false};
+    _float m_fLifeTime = {0.f};
 
 public:
     static CScreenFX* Create();

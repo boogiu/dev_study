@@ -51,19 +51,15 @@ void CUI_ItemText::Update(_float dt)
 
 	if (m_eState == state::Idle) {
 		Get_Component<CTextSlot>()->Push_Text();
+		Get_Component<CTextSlot>()->Set_Anchor(ANCHOR::Center, { m_fWorldX, m_fWorldY });
 	}
 	if (m_eState == Opened) {
-		m_fOpenTime += dt * 6;
-		_float2 CurSize = { m_fSizeX, m_fSizeY };
-		m_BaseSize.x = Get_Component<CTextSlot>()->Get_TextSize();
-		_vector LerpSize = XMVectorLerp(XMLoadFloat2(&CurSize), XMLoadFloat2(&m_BaseSize), m_fOpenTime);
-		Set_Size(LerpSize);
-
-		if (m_fOpenTime > 1.f) {
+		m_BaseSize.x= Get_Component<CTextSlot>()->Get_TextSize();
+		_bool SetSize = Size_To(XMLoadFloat2(&m_BaseSize), dt * 8);
+		if (SetSize) {
 			Get_Component<CTextSlot>()->Set_CompActive(true);
 			Get_Component<CSprite2D>()->Set_CompActive(true);
 			m_eState = Idle;
-			m_fOpenTime = 0;
 		}
 	}
 	Get_Component<CTextSlot>()->Set_Anchor(ANCHOR::Center, { m_fWorldX ,m_fWorldY + 3 });

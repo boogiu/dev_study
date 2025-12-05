@@ -31,15 +31,15 @@ HRESULT CScreenFX::Initialize(INIT_DESC* pArg)
 
 void CScreenFX::Priority_Update(_float dt)
 {
+	if (IsActive)
+		m_fLifeTime += dt * 1.5;
+	else
+		m_fLifeTime -= dt * 1.5;
 }
 
 void CScreenFX::Update(_float dt)
 {
-	if (IsActive) 
-		m_fLifeTime += dt*1.5;
-	else
-		m_fLifeTime -= dt * 1.5;
-
+	
 }
 
 void CScreenFX::Late_Update(_float dt)
@@ -49,7 +49,10 @@ void CScreenFX::Late_Update(_float dt)
 void CScreenFX::UI_Active(void* pArg)
 {
 	IsActive = !IsActive;
-	m_fLifeTime = m_fLifeTime / fabs(m_fLifeTime);
+	if (m_fLifeTime < 0)
+		m_fLifeTime = -1;
+	else
+		m_fLifeTime = 1;
 }
 
 void CScreenFX::UI_DeActive(void* pArg)

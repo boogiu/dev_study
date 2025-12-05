@@ -172,8 +172,8 @@ void PriorityPass::Execute(ID3D11DeviceContext* pContext)
 
 	for (auto& packet : m_Packets)
 	{
-		if (!pPipeLine->isVisible(packet.pModel->Get_MeshBoundingBox(packet.DrawIndex), XMLoadFloat4x4(packet.pWorldMatrix)))
-			continue;
+		//if (!pPipeLine->isVisible(packet.pModel->Get_MeshBoundingBox(packet.DrawIndex), XMLoadFloat4x4(packet.pWorldMatrix)))
+		//	continue;
 
 		//여기서 인덱스 추가 저장해줌
 		_uint TransformIndex = pPipeLine->Write_ObjectData(*packet.pWorldMatrix);

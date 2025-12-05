@@ -23,6 +23,31 @@ struct VS_OUT
     float3 vBinormal : BINORMAL;
 };
 
+VS_OUT VS_MOON(VS_IN In)
+{
+    VS_OUT Out;
+
+    float3 worldPos = mul(float4(In.vPosition, 1.f), ObjectBufferArray[TransformIndex].Transform);
+    worldPos = ApplyCurve(worldPos);
+    float4 viewPos = mul(float4(worldPos, 1.f), matView);
+    float4 projPos = mul(viewPos, matProjection);
+
+    Out.vPosition = projPos;
+    Out.vWorldPos = float4(worldPos, 1.f);
+    Out.vTexcoord = In.vTexcoord;
+
+    float3x3 rotScale = (float3x3) ObjectBufferArray[TransformIndex].Transform;
+    Out.vNormal = float4(normalize(mul(In.vNormal, rotScale)), 0.f);
+    Out.vTangent = normalize(mul(In.vTangent, rotScale));
+    Out.vTangent.xz *= -1;
+    Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent));
+
+    Out.vProjPos = Out.vPosition;
+
+    return Out;
+}
+
+
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out;
@@ -66,6 +91,7 @@ struct PS_OUT
     vector vDiffuse : SV_TARGET0;
     vector vNormal : SV_TARGET1;
     vector vDepth : SV_TARGET2;
+    vector vEmmision : SV_TARGET3;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -132,7 +158,23 @@ PS_OUT PS_GRAD(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_MOON(PS_IN In)
+{
+    PS_OUT Out;
+    vector vMtrlDiffuse = DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
 
+    vector vOpacity = OpacityTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vEmmisive = EmmisionTexture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vDiffuse = vMtrlDiffuse * (vOpacity.a);
+    if (Out.vDiffuse.a <0.3)
+        discard;
+    
+    Out.vEmmision = vEmmisive;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    
+    return Out;
+}
 
 PS_OUT PS_PALETTE(PS_IN In)
 {
@@ -387,6 +429,30 @@ PS_OUT PS_INSTANCE_LEAF(PS_INSTANCE_IN In)
     return Out;
 }
 
+PS_OUT PS_INSTANCE_STAR(PS_INSTANCE_IN In)
+{
+    PS_OUT Out;
+    
+    vector vMixture = MixtureTexture.Sample(LinearSampler, In.vTexcoord);
+    
+    if (vMixture.r< 0.2f)
+        discard;
+    
+    vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+ 
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vDiffuse = In.iColor * vMixture.r;
+    Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 1.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / zFar, 0.f, 1.f);
+    Out.vEmmision = Out.vDiffuse;
+    
+    return Out;
+}
+
 struct VS_OUT_SHADOW_LEAF
 {
     float4 vPosition : SV_POSITION;
@@ -520,6 +586,25 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_INSTANCE_LEAF();
     }
+    pass Moon
+    {
+        SetRasterizerState(RS_NoCull);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MOON();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MOON();
+    }
+
+    pass Stars
+    {
+        SetRasterizerState(RS_NoCull);
+        SetDepthStencilState(DSS_ReadOnly, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_INSTANCE();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_INSTANCE_STAR();
+    }
 
     pass Shadow
     {
@@ -538,7 +623,6 @@ technique11 DefaultTechnique
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
         VertexShader = compile vs_5_0 VS_INSTANCE_SHADOW_LEAF();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW_LEAF();

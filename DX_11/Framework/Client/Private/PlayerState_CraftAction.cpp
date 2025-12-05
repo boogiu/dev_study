@@ -55,17 +55,13 @@ void CPlayerState_CraftAction::OnUpdate(_float dt)
 		if (Animator->isOverAnimTiming(0.95)) {
 			Animator->Change_Animation("Generic_GetKeep.anim");
 			m_eState = GetKeep;
+			m_pPlayer->Play_Sound("Display");
 		}
 		break;
-	case Client::CPlayerState_CraftAction::GetKeep:
-		m_ElapsedTime += dt;
-		if (m_ElapsedTime > 2.5f) {
-			m_eState = Putin;
-			Animator->Change_Animation("Generic_Putaway.anim");
-			pItem->Remove_Item();
-			m_pPlayer->Add_ITEM(pItem->Get_ItemData());
-			m_pPlayer->Get_InfoPack().pObjectOnLeftHand = nullptr;
-		}
+	case Client::CPlayerState_CraftAction::GetKeep:{
+		EventMsgDesc desc = Make_Sequence(m_pPlayer->Get_InfoPack().pObjectOnLeftHand);
+		m_pPlayer->Open_EventMsg(&desc);
+	}
 		break;
 	case Client::CPlayerState_CraftAction::Putin:
 		if (Animator->isCurrentAnimEnd()) {
@@ -101,6 +97,29 @@ void CPlayerState_CraftAction::Render_State()
 _uint CPlayerState_CraftAction::Get_InputMask() const
 {
 	return 0;
+}
+
+EventMsgDesc CPlayerState_CraftAction::Make_Sequence(CGameObject* pObject)
+{
+	CItem_Object* pItem = dynamic_cast<CItem_Object*>(pObject);
+	EventMsgDesc desc = {};
+	desc.OpenSize = { 600,150 };
+	desc.OpenSpeed = 8.f;
+	desc.textSequence = { pItem->Get_ItemData().ItemName + L"를 만들었다!"};
+	desc.OnClose = [this]() {EndDisplay(); };
+	return desc;
+}
+
+void CPlayerState_CraftAction::EndDisplay()
+{
+	auto Animator = m_pPlayer->Get_Component<CAnimator3D>();
+	m_eState = Putin;
+	Animator->Change_Animation("Generic_Putaway.anim");
+	auto pObj = m_pPlayer->Get_InfoPack().pObjectOnLeftHand;
+	CItem_Object* pItem = dynamic_cast<CItem_Object*>(pObj); 
+	pItem->Remove_Item();
+	m_pPlayer->Add_ITEM(pItem->Get_ItemData());
+	m_pPlayer->Get_InfoPack().pObjectOnLeftHand = nullptr;
 }
 
 CPlayerState_CraftAction* CPlayerState_CraftAction::Create()

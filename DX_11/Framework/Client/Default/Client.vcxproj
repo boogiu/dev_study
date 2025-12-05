@@ -227,7 +227,9 @@
     <ClInclude Include="..\Public\LogoLevel.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MapLoader.h" />
+    <ClInclude Include="..\Public\Moon.h" />
     <ClInclude Include="..\Public\NonPlayer.h" />
+    <ClInclude Include="..\Public\NoteEffect.h" />
     <ClInclude Include="..\Public\NpcJcs.h" />
     <ClInclude Include="..\Public\NpcRcm.h" />
     <ClInclude Include="..\Public\NpcRco.h" />
@@ -285,10 +287,12 @@
     <ClInclude Include="..\Public\RagDolPart.h" />
     <ClInclude Include="..\Public\RagDolSmoke.h" />
     <ClInclude Include="..\Public\RagDolStone.h" />
+    <ClInclude Include="..\Public\SceneCamera.h" />
     <ClInclude Include="..\Public\ScreenFX.h" />
     <ClInclude Include="..\Public\SelectPanel.h" />
     <ClInclude Include="..\Public\SkyBox.h" />
     <ClInclude Include="..\Public\SmokeEffect.h" />
+    <ClInclude Include="..\Public\Stars.h" />
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\Public\SunCam.h" />
@@ -384,7 +388,9 @@
     <ClCompile Include="..\Private\LogoLevel.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapLoader.cpp" />
+    <ClCompile Include="..\Private\Moon.cpp" />
     <ClCompile Include="..\Private\NonPlayer.cpp" />
+    <ClCompile Include="..\Private\NoteEffect.cpp" />
     <ClCompile Include="..\Private\NpcJcs.cpp" />
     <ClCompile Include="..\Private\NpcRcm.cpp" />
     <ClCompile Include="..\Private\NpcRco.cpp" />
@@ -439,6 +445,7 @@
     <ClCompile Include="..\Private\PlayerState_TransTool.cpp" />
     <ClCompile Include="..\Private\PlayerState_Walk.cpp" />
     <ClCompile Include="..\Private\Player_Inventory.cpp" />
+    <ClCompile Include="..\Private\SceneCamera.cpp" />
     <ClCompile Include="..\Private\ScreenFX.cpp" />
     <ClCompile Include="..\Private\RagDolPart.cpp" />
     <ClCompile Include="..\Private\RagDolSmoke.cpp" />
@@ -446,6 +453,7 @@
     <ClCompile Include="..\Private\SelectPanel.cpp" />
     <ClCompile Include="..\Private\SkyBox.cpp" />
     <ClCompile Include="..\Private\SmokeEffect.cpp" />
+    <ClCompile Include="..\Private\Stars.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\Private\SunCam.cpp" />

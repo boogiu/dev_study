@@ -18,7 +18,7 @@ public:
 	_matrix Get_PureViewMatrix();
 	_matrix Get_ProjMatrix();
 	_float Get_Far() { return m_fFar; };
-	void Lerp_FOV(_float dst, _float dt);
+	_bool Lerp_FOV(_float dst, _float dt);
 	void Set_FOV(_float fov) { m_fFov = fov; };
 	void Set_Far(_float zfar) { m_fFar = zfar; };
 

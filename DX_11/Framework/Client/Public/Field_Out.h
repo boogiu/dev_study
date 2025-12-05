@@ -28,6 +28,11 @@ private:
     _float m_fWaveTime = {0.f};
     _float m_fCircularTime = {0.f};
     _float m_fFade = {0.f};
+
+    _float m_Distance = {0.f};
+    static _float Player_Distance;
+    static CField_Out* s_pSoundOwner;
+    static _uint      s_LastFrameUpdated;
 public:
     static CField_Out* Create();
     CGameObject* Clone(INIT_DESC* pArg) override;

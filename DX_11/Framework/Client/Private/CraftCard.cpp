@@ -13,6 +13,8 @@
 #include "Target_Texture.h"
 #include "Target_Text.h"
 #include "UI_CraftPanel.h"
+#include "AudioSource.h"
+
 CCraftCard::CCraftCard()
 {
 }
@@ -26,6 +28,14 @@ HRESULT CCraftCard::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
 	Add_Component<CObjectContainer>();
+
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_Decide.wav", "Select");
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level", "UI_Invalid.wav", "Invalid");
+	Get_Component<CAudioSource>()->Set_3DAttribute("Select", false);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Select", 0.3f);
+
+	Get_Component<CAudioSource>()->Set_3DAttribute("Invalid", false);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Invalid", 0.3f);
 	return S_OK;
 }
 
@@ -67,7 +77,12 @@ void CCraftCard::Priority_Update(_float dt)
 
 	if (m_fElpasedTime >0.5f&&CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SPACE)) {
 		if(m_data.isAbleToCraft())
+		{
 			ButtonOn = true;
+			Get_Component<CAudioSource>()->Play("Select");
+		}
+		else
+			Get_Component<CAudioSource>()->Play("Invalid");
 	}
 }
 

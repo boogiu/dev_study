@@ -30,6 +30,7 @@
 #include "FlowerEffect.h"
 #include "EmotionEffect.h"
 
+#include "NoteEffect.h"
 CEffectSpawner::CEffectSpawner()
 {
 }
@@ -63,6 +64,7 @@ HRESULT CEffectSpawner::Initialize_Prototype()
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_Effect_SmokeEffect", CSmokeEffect::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_Effect_FlowerEffect", CFlowerEffect::Create());
 	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_Effect_EmotionEffect", CEmotionEffect::Create());
+	pProtoMgr->Add_ProtoType("GamePlay_Level", "GamePlay_Effect_NoteEffect", CNoteEffect::Create());
 
 	IResourceService* pRcsMgr = CGameInstance::GetInstance()->Get_ResourceMgr();
 	pRcsMgr->Add_ResourcePath("VTX_NorTexEffect.hlsl", "../Bin/ShaderFiles/VTX_NorTexEffect.hlsl");
@@ -155,6 +157,9 @@ CBaseEffect* CEffectSpawner::Build_Effect(const string& tag)
 	}
 	if (tag == "Effect_Emotion") {
 		pEffect = Builder::Create_Object({ "GamePlay_Level","GamePlay_Effect_EmotionEffect" }).Build("Effect_Emotion");
+	}
+	if (tag == "Effect_Note") {
+		pEffect = Builder::Create_Object({ "GamePlay_Level","GamePlay_Effect_NoteEffect" }).Build("Effect_Note");
 	}
 	CGameInstance::GetInstance()->Get_ObjectMgr()->Add_Object(pEffect, { "GamePlay_Level" , "Effect_Layer" });
 

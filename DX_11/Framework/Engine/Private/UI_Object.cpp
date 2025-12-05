@@ -111,8 +111,11 @@ _bool CUI_Object::Size_To(_fvector size, _float Speed)
     _vector length = XMVector2Length(size - XMLoadFloat2(&vSize));
     _vector nextSize;
 
-    if (XMVectorGetX(length) < 0.2f) {
+    if (XMVectorGetX(length) < 5.0f) {
         nextSize = size;
+        XMStoreFloat2(&vSize, nextSize);
+        m_fSizeX = vSize.x;
+        m_fSizeY = vSize.y; 
         return true;
     }
     else {
@@ -121,6 +124,8 @@ _bool CUI_Object::Size_To(_fvector size, _float Speed)
     XMStoreFloat2(&vSize, nextSize);
     m_fSizeX = vSize.x;
     m_fSizeY = vSize.y;
+
+    return false;
 }
 
 _bool CUI_Object::Move_To(_fvector pos, _float Speed)
@@ -140,6 +145,7 @@ _bool CUI_Object::Move_To(_fvector pos, _float Speed)
     XMStoreFloat2(&vPos, nextSize);
     m_fLocalX = vPos.x;
     m_fLocalY = vPos.y;
+    return false;
 }
 
 _bool CUI_Object::Rotate_To(_float rad, _float Speed)

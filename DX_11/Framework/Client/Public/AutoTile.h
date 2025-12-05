@@ -41,9 +41,9 @@ public:
 	CGameObject* Clone(INIT_DESC* pArg) override;
 	void Free() override;
 
-	//static _uint RiverPlayer
-
 	_bool isRiver = { false };
+	static CAutoTile* s_pRiverSoundOwner;
+	static _uint      s_LastFrameUpdated;
 };
 
 NS_END

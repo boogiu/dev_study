@@ -120,6 +120,12 @@ void CLeafParticle::Late_Update(_float dt)
 {
 }
 
+void CLeafParticle::Set_DeActive()
+{
+	Get_Component<CModel>()->Set_CompActive(false);
+	m_isAlive = false;
+}
+
 void CLeafParticle::Render_GUI()
 {
 }

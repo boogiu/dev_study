@@ -119,7 +119,10 @@ void CSelectPanel::Update(_float dt)
 	_bool Sizecomp = 
 		Size_To({ 
 		MaxWidth * 1.3f < 130 ? 130 : MaxWidth * 1.3f,
-			40.f * m_SelectCount < 130 ? 130 : 40.f * m_SelectCount}, 10 * dt);
+			40.f * m_SelectCount < 130 ? 130 : 40.f * m_SelectCount}, 15 * dt);
+
+	if(!Sizecomp)
+		m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(false);
 
 	if (Sizecomp) {
 		m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);

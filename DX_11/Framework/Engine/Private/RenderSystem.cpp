@@ -75,7 +75,7 @@ HRESULT CRenderSystem::Render()
 	m_pDebugPass->Execute(m_pContext);
 #endif // _DEBUG
 	if (FAILED(m_pTargetManager->End_MRT()))return E_FAIL;
-
+	//Render_Bright();
 	/*Custrom Rendering*/
 	if (FAILED(m_pTargetManager->Begin_MRT("MRT_UI"))) return E_FAIL;
 	/*UI Rendering*/
@@ -182,6 +182,36 @@ HRESULT CRenderSystem::Render_Blended()
 	Safe_Release(pPrevRTV);
 	Safe_Release(pPrevDSV);
 
+	return S_OK;
+}
+
+HRESULT CRenderSystem::Render_Bright()
+{
+
+	m_pShader->SetConstantBuffer("FrameBuffer", m_pPipeLine->Get_FrameBuffer());
+	m_pShader->SetConstantBuffer("ShadowBuffer", m_pPipeLine->Get_ShadowBuffer());
+
+	ID3D11InputLayout* pLayout;
+	Get_BufferInputLayout(m_pVIBuffer, m_pShader, "Brightness", &pLayout);
+	m_pContext->IASetInputLayout(pLayout);
+
+	SHADER_PARAM BrightParam = {};
+	m_pTargetManager->Get_TargetParam("Target_Emission", BrightParam);
+	m_pShader->Bind_Value("g_EmmisiveTexture", BrightParam);
+
+	SHADER_PARAM FinalParam = {};
+	m_pTargetManager->Get_TargetParam("Target_Fianl", FinalParam);
+	m_pShader->Bind_Value("g_FinalTexture", FinalParam);
+
+	SHADER_PARAM WorldMat = {};
+	WorldMat.iSize = sizeof(_float4x4);
+	WorldMat.typeName = "float4x4";
+	WorldMat.pData = &m_WorldMatrix;
+	m_pShader->Bind_Value("g_WorldMatrix", WorldMat);
+
+	m_pShader->Apply("Brightness", m_pContext);
+	m_pVIBuffer->Bind_Buffer(m_pContext);
+	m_pVIBuffer->Render(m_pContext);
 	return S_OK;
 }
 

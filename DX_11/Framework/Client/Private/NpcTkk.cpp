@@ -7,6 +7,7 @@
 #include "EventSystem.h"
 #include "UI_Responcer.h"
 #include "Player.h"
+
 CNpcTkk::CNpcTkk()
 {
 }
@@ -27,7 +28,7 @@ HRESULT CNpcTkk::Initialize(INIT_DESC* pArg)
 	__super::Initialize(pArg);
 
 	m_InstanceName = "TKK";
-	m_VoiceInt = 56;
+	m_VoiceInt = 64;
 	m_VoiceKey = "Npc_Vocal_Man";
 	return S_OK;
 }

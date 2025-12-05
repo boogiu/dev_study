@@ -24,6 +24,8 @@
 #include "EventSystem.h"
 #include "UI_Transition.h"
 
+#include "AudioSource.h"
+
 CUI_CraftPanel::CUI_CraftPanel()
 {
 }
@@ -36,6 +38,15 @@ CUI_CraftPanel::CUI_CraftPanel(const CUI_CraftPanel& rhs)
 HRESULT CUI_CraftPanel::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
+
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level","UI_Select.wav","Select");
+	Add_Component<CAudioSource>()->Add_Slot("GamePlay_Level","UI_Invalid.wav","Invalid");
+	Get_Component<CAudioSource>()->Set_3DAttribute("Select", false);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Select", 0.3f);
+
+	Get_Component<CAudioSource>()->Set_3DAttribute("Invalid", false);
+	Get_Component<CAudioSource>()->Set_SlotVolume("Invalid", 0.3f);
+
 	return S_OK;
 }
 
@@ -76,7 +87,7 @@ void CUI_CraftPanel::Priority_Update(_float dt)
 {
 	Get_Component<CSprite2D>()->Set_CompActive(m_bActive);
 	if (!m_bActive) return;
-
+	m_PrevIndex = m_NowIndex;
 	if (m_eState == Opened) {
 		m_pText->Set_Text(m_pCards[m_NowIndex]->Get_Data(), true);
 		m_pCursor->Get_Component<CSprite2D>()->Set_CompActive(true);
@@ -109,6 +120,7 @@ void CUI_CraftPanel::Priority_Update(_float dt)
 			m_eState = Selected;
 			m_pCraftCard->UI_Active(nullptr);
 			m_pCraftCard->Set_Data(m_CraftData[m_pCards[m_NowIndex]->Get_Data()]);
+			Get_Component<CAudioSource>()->Play("Select");
 		}
 		if (CGameInstance::GetInstance()->Get_InputDev()->Key_Tap(VK_SHIFT)) {
 			m_eState = Closed;
@@ -138,7 +150,12 @@ void CUI_CraftPanel::Update(_float dt)
 {
 	if (!m_bActive) return;
 	m_pCursor->Set_Pivot(m_pCards[m_NowIndex]->Get_CenterPos(), { xCardSize * 0.5f,yCardSize * 0.2f }, { .5f, .5f });
+	
 	m_pCards[m_NowIndex]->Hover();
+
+	if(m_NowIndex != m_PrevIndex)
+		m_pCards[m_PrevIndex]->UnHover();
+
 	m_pText->Set_CenterPos(m_pCards[m_NowIndex]->Local_CT(0.f - 20.f));
 	Get_Component<CObjectContainer>()->UpdateChild(dt);
 	Render_Cards();

@@ -3,7 +3,11 @@
 
 NS_BEGIN(Engine)
 class CGameInstance;
+class CUI_Object;
+class IProtoService;
+class IObjectService;
 NS_END
+
 
 NS_BEGIN(Client)
 
@@ -16,6 +20,7 @@ private:
 
 public:
     virtual HRESULT Initialize() override;
+    virtual HRESULT Awake() override;
     virtual void Update() override;
     virtual HRESULT Render()override;
 
@@ -24,6 +29,7 @@ public:
 
 private:
     CGameInstance* m_pGameInstance = { nullptr };
+    _bool m_bStart = false;
 public:
     static CLogoLevel* Create(const string& LevelKey);
     virtual void Free() override;
