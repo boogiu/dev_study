@@ -190,9 +190,7 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
     
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector vEmmision = g_EmmisiveTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    // 1) 조명만 먼저 계산
     vector vLighting = vDiffuse * vShade + vSpecular;
 
     // ====== 깊이 / 그림자 계산 (기존 그대로) ======
@@ -219,11 +217,9 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
 
     if (vWorldPos.w - 0.1f > vLightDepthDesc.y * zShadowFar)
     {
-        // 2) 그림자는 조명에만 적용
         vLighting *= 0.8f;
     }
 
-    // 3) 최종 색 = 조명 + 에미션
     Out.vBackBuffer = float4(vLighting.rgb + vEmmision.rgb, 1.f);
 
     return Out;

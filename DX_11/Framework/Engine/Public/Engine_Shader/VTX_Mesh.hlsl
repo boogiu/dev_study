@@ -89,9 +89,6 @@ PS_OUT PS_MAIN(PS_IN In)
     
     vector vMtrlDiffuse = DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
     
-  // if (vMtrlDiffuse.a < 0.3f)
-  //     discard;
-    
     Out.vDiffuse = vMtrlDiffuse;
     vector vNormalDesc = NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
@@ -210,6 +207,7 @@ PS_OUT PS_Fruit_Main(PS_IN In)
     
     return Out;
 }
+
 PS_OUT PS_FORCE(PS_IN In)
 {
     PS_OUT Out;

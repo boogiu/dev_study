@@ -37,7 +37,7 @@ HRESULT CTarget_Camera::Initialize(INIT_DESC* pArg)
 
 	m_pTransform->Set_Pos({ TagetPos.x, 50,	TagetPos.z + 50 });
 	m_vBaseLookPos = { TagetPos.x, 0,	TagetPos.z - 15 ,1.f };
-	m_vOffset = {0,50,50,1.f};
+	m_vOffset = {0,30,30,1.f};
 	m_vZoomInOffset = { 0,15,50,0 };
 	m_fCurrentLookY = 0;
 
